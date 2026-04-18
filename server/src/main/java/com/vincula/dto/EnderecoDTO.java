@@ -1,11 +1,9 @@
 package com.vincula.dto;
 
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class EnderecoDTO {
@@ -13,15 +11,19 @@ public class EnderecoDTO {
     private Long id;
 
     @NotBlank(message = "Rua é obrigatória")
+    @Size(max = 150, message = "Rua deve ter no máximo 150 caracteres")
     private String rua;
 
     @NotBlank(message = "Número é obrigatório")
+    @Pattern(regexp = "\\d{10}", message = "Número deve ter no máximo 10 caracteres")
     private String numero;
 
     @NotBlank(message = "Bairro é obrigatório")
+    @Size(max = 100, message = "Bairro deve ter no máximo 100 caracteres")
     private String bairro;
 
     @NotBlank(message = "Cidade é obrigatória")
+    @Size(max = 100, message = "Cidade deve ter no máximo 100 caracteres")
     private String cidade;
 
     @NotBlank(message = "Estado é obrigatório")

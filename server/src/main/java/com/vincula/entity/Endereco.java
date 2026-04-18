@@ -3,11 +3,10 @@ package com.vincula.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-
 @Entity
 @Table(name = "endereco")
 @Data
-public class EnderecoEntity {
+public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,7 +15,7 @@ public class EnderecoEntity {
     @Column(nullable = false, length = 150)
     private String rua;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 10)
     private String numero;
 
     @Column(nullable = false, length = 100)

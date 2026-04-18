@@ -1,13 +1,10 @@
 package com.vincula.repository;
 
-import com.vincula.entity.PacienteEntity;
+import com.vincula.entity.Paciente;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-import java.util.List;
 import java.util.Optional;
 
-public interface PacienteRepository extends JpaRepository<PacienteEntity, Long> {
+public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     boolean existsByCpf(String cpf);
 
@@ -17,19 +14,8 @@ public interface PacienteRepository extends JpaRepository<PacienteEntity, Long> 
 
     boolean existsByCnsAndIdNot(String cns, Long id);
 
-    Optional<PacienteEntity> findByCpf(String cpf);
+    Optional<Paciente> findByCpf(String cpf);
 
-    Optional<PacienteEntity> findByCns(String cns);
+    Optional<Paciente> findByCns(String cns);
 
-    @Query("SELECT p FROM PacienteEntity p JOIN FETCH p.endereco WHERE p.id = :id")
-    Optional<PacienteEntity> findByIdComEndereco(Long id);
-
-    @Query("SELECT p FROM PacienteEntity p JOIN FETCH p.endereco WHERE p.cpf = :cpf")
-    Optional<PacienteEntity> findByCpfComEndereco(String cpf);
-
-    @Query("SELECT p FROM PacienteEntity p JOIN FETCH p.endereco WHERE p.cns = :cns")
-    Optional<PacienteEntity> findByCnsComEndereco(String cns);
-
-    @Query("SELECT p FROM PacienteEntity p JOIN FETCH p.endereco")
-    List<PacienteEntity> findAllComEndereco();
 }

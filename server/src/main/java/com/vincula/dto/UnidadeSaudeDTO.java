@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class PacienteDTO {
+public class UnidadeSaudeDTO {
 
     private Long id;
 
@@ -16,20 +16,9 @@ public class PacienteDTO {
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
     private String nome;
 
-    @NotBlank(message = "Sobrenome é obrigatório")
-    @Size(max = 100, message = "Sobrenome deve ter no máximo 150 caracteres")
-    private String sobrenome;
-
-    @Pattern(regexp = "\\d{10,11}")
-    private String telefone; // opcional
-
-    @NotBlank(message = "CPF é obrigatório")
-    @Pattern(regexp = "\\d{11}", message = "CPF inválido")
-    private String cpf;
-
-    @NotBlank(message = "CNS é obrigatório")
-    @Pattern(regexp = "\\d{15}", message = "CNS inválido")
-    private String cns;
+    @NotBlank(message = "CNES é obrigatório")
+    @Pattern(regexp = "\\d{7}", message = "CNES inválido")
+    private String cnes;
 
     @NotNull(message = "Endereço é obrigatório")
     @Valid

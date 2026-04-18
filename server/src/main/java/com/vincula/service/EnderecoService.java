@@ -1,8 +1,7 @@
 package com.vincula.service;
 
 import com.vincula.dto.EnderecoDTO;
-import com.vincula.dto.PacienteDTO;
-import com.vincula.entity.EnderecoEntity;
+import com.vincula.entity.Endereco;
 import com.vincula.repository.EnderecoRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +18,8 @@ public class EnderecoService {
     }
 
     public EnderecoDTO criar(EnderecoDTO dto) {
-        EnderecoEntity entity = toEntity(dto);
-        EnderecoEntity salvo = enderecoRepository.save(entity);
+        Endereco entity = toEntity(dto);
+        Endereco salvo = enderecoRepository.save(entity);
         return toDTO(salvo);
     }
 
@@ -32,13 +31,13 @@ public class EnderecoService {
     }
 
     public EnderecoDTO buscarPorId(Long id) {
-        EnderecoEntity entity = enderecoRepository.findById(id)
+        Endereco entity = enderecoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
         return toDTO(entity);
     }
 
     public EnderecoDTO atualizar(Long id, EnderecoDTO dto) {
-        EnderecoEntity entity = enderecoRepository.findById(id)
+        Endereco entity = enderecoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
 
         entity.setRua(dto.getRua());
@@ -50,19 +49,19 @@ public class EnderecoService {
         entity.setLatitude(dto.getLatitude());
         entity.setLongitude(dto.getLongitude());
 
-        EnderecoEntity atualizado = enderecoRepository.save(entity);
+        Endereco atualizado = enderecoRepository.save(entity);
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
-        EnderecoEntity entity = enderecoRepository.findById(id)
+        Endereco entity = enderecoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
 
         enderecoRepository.delete(entity);
     }
 
-    public EnderecoEntity toEntity(EnderecoDTO dto) {
-        EnderecoEntity entity = new EnderecoEntity();
+    public Endereco toEntity(EnderecoDTO dto) {
+        Endereco entity = new Endereco();
 
         entity.setRua(dto.getRua());
         entity.setNumero(dto.getNumero());
@@ -76,7 +75,7 @@ public class EnderecoService {
         return entity;
     }
 
-    public EnderecoDTO toDTO(EnderecoEntity entity) {
+    public EnderecoDTO toDTO(Endereco entity) {
         EnderecoDTO dto = new EnderecoDTO();
 
         dto.setId(entity.getId());

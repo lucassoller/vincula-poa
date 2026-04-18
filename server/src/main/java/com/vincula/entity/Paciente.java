@@ -6,7 +6,7 @@ import lombok.Data;
 @Entity
 @Table(name = "paciente")
 @Data
-public class PacienteEntity {
+public class Paciente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class PacienteEntity {
     @Column(nullable = false, unique = true, length = 15)
     private String cns;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "endereco_id", nullable = false, unique = true)
-    private EnderecoEntity endereco;
+    private Endereco endereco;
 }
