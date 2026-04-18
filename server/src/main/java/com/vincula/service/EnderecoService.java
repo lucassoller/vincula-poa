@@ -1,6 +1,7 @@
 package com.vincula.service;
 
 import com.vincula.dto.EnderecoDTO;
+import com.vincula.dto.PacienteDTO;
 import com.vincula.entity.EnderecoEntity;
 import com.vincula.repository.EnderecoRepository;
 import org.springframework.stereotype.Service;

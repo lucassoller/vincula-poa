@@ -1,5 +1,6 @@
 package com.vincula.service;
 
+import com.vincula.dto.EnderecoDTO;
 import com.vincula.dto.PacienteDTO;
 import com.vincula.entity.EnderecoEntity;
 import com.vincula.entity.PacienteEntity;
@@ -15,14 +16,17 @@ public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
     private final EnderecoRepository enderecoRepository;
+    private final EnderecoService enderecoService;
 
-    public PacienteService(PacienteRepository pacienteRepository, EnderecoRepository enderecoRepository) {
+    public PacienteService(PacienteRepository pacienteRepository, EnderecoRepository enderecoRepository, EnderecoService enderecoService) {
         this.pacienteRepository = pacienteRepository;
         this.enderecoRepository = enderecoRepository;
+        this.enderecoService = enderecoService;
     }
 
     public PacienteDTO criar(PacienteDTO dto) {
         PacienteEntity entity = toEntity(dto);
+
         PacienteEntity salvo = pacienteRepository.save(entity);
         return toDTO(salvo);
     }
@@ -55,59 +59,30 @@ public class PacienteService {
         return toDTO(paciente);
     }
 
-    public List<PacienteDTO> listarTodosComEndereco() {
-        return pacienteRepository.findAllComEndereco()
-                .stream()
-                .map(this::toDTOComEnd)
-                .collect(Collectors.toList());
-    }
-
-    public PacienteDTO buscarPorIdComEndereco(Long id) {
-        PacienteEntity paciente = pacienteRepository.findByIdComEndereco(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
-
-        return toDTOComEnd(paciente);
-    }
-
-    public PacienteDTO buscarPorCpfComEndereco(String cpf) {
-        PacienteEntity paciente = pacienteRepository.findByCpfComEndereco(cpf)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado com o CPF informado"));
-
-        return toDTOComEnd(paciente);
-    }
-
-    public PacienteDTO buscarPorCnsComEndereco(String cns) {
-        PacienteEntity paciente = pacienteRepository.findByCnsComEndereco(cns)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado com o CNS informado"));
-
-        return toDTOComEnd(paciente);
-    }
-
     public PacienteDTO atualizar(Long id, PacienteDTO dto) {
         PacienteEntity paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
-        if (!paciente.getCpf().equals(dto.getCpf()) && pacienteRepository.existsByCpf(dto.getCpf())) {
-            throw new RuntimeException("CPF já cadastrado");
-        }
-
-        if (!paciente.getCns().equals(dto.getCns()) && pacienteRepository.existsByCns(dto.getCns())) {
-            throw new RuntimeException("CNS já cadastrado");
-        }
-
-        EnderecoEntity enderecoAntigo = paciente.getEndereco();
-        EnderecoEntity novoEndereco = resolverEndereco(dto);
+        validarCpfECnsEIdDif(id, dto);
 
         paciente.setNome(dto.getNome());
         paciente.setSobrenome(dto.getSobrenome());
         paciente.setTelefone(dto.getTelefone());
         paciente.setCpf(dto.getCpf());
         paciente.setCns(dto.getCns());
-        paciente.setEndereco(novoEndereco);
+
+        EnderecoEntity endereco = paciente.getEndereco();
+
+        endereco.setRua(dto.getEndereco().getRua());
+        endereco.setNumero(dto.getEndereco().getNumero());
+        endereco.setBairro(dto.getEndereco().getBairro());
+        endereco.setCidade(dto.getEndereco().getCidade());
+        endereco.setEstado(dto.getEndereco().getEstado());
+        endereco.setCep(dto.getEndereco().getCep());
+        endereco.setLatitude(dto.getEndereco().getLatitude());
+        endereco.setLongitude(dto.getEndereco().getLongitude());
 
         PacienteEntity atualizado = pacienteRepository.save(paciente);
-
-        limparEnderecoOrfao(enderecoAntigo);
 
         return toDTO(atualizado);
     }
@@ -116,11 +91,7 @@ public class PacienteService {
         PacienteEntity paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
-        EnderecoEntity endereco = paciente.getEndereco();
-
         pacienteRepository.delete(paciente);
-
-        limparEnderecoOrfao(endereco);
     }
 
     private void validarCpfECns(PacienteDTO dto) {
@@ -133,47 +104,20 @@ public class PacienteService {
         }
     }
 
-    private EnderecoEntity resolverEndereco(PacienteDTO dto) {
-        if (dto.getEndereco() == null) {
-            throw new RuntimeException("Endereço é obrigatório");
+    private void validarCpfECnsEIdDif(Long id, PacienteDTO dto) {
+        if (pacienteRepository.existsByCpfAndIdNot(dto.getCpf(), id)) {
+            throw new RuntimeException("CPF já cadastrado");
         }
 
-        Long enderecoId = dto.getEndereco().getId();
-
-        if (enderecoId != null && enderecoId > 0) {
-            return enderecoRepository.findById(enderecoId)
-                    .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
-        }
-
-        EnderecoEntity novoEndereco = new EnderecoEntity();
-        novoEndereco.setRua(dto.getEndereco().getRua());
-        novoEndereco.setNumero(dto.getEndereco().getNumero());
-        novoEndereco.setBairro(dto.getEndereco().getBairro());
-        novoEndereco.setCidade(dto.getEndereco().getCidade());
-        novoEndereco.setEstado(dto.getEndereco().getEstado());
-        novoEndereco.setCep(dto.getEndereco().getCep());
-        novoEndereco.setLatitude(dto.getEndereco().getLatitude());
-        novoEndereco.setLongitude(dto.getEndereco().getLongitude());
-
-        return enderecoRepository.save(novoEndereco);
-    }
-
-    private void limparEnderecoOrfao(EnderecoEntity endereco) {
-        if (endereco == null || endereco.getId() == null) {
-            return;
-        }
-
-        boolean aindaEmUso = pacienteRepository.existsByEndereco_Id(endereco.getId());
-
-        if (!aindaEmUso) {
-            enderecoRepository.deleteById(endereco.getId());
+        if (pacienteRepository.existsByCpfAndIdNot(dto.getCns(), id)) {
+            throw new RuntimeException("CNS já cadastrado");
         }
     }
 
     private PacienteEntity toEntity(PacienteDTO dto) {
         validarCpfECns(dto);
 
-        EnderecoEntity endereco = resolverEndereco(dto);
+        EnderecoEntity endereco = enderecoService.toEntity(dto.getEndereco());
 
         PacienteEntity entity = new PacienteEntity();
         entity.setNome(dto.getNome());
@@ -187,6 +131,7 @@ public class PacienteService {
     }
 
     private PacienteDTO toDTO(PacienteEntity entity) {
+
         PacienteDTO dto = new PacienteDTO();
 
         dto.setId(entity.getId());
@@ -195,13 +140,6 @@ public class PacienteService {
         dto.setTelefone(entity.getTelefone());
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
-
-        return dto;
-    }
-
-    private PacienteDTO toDTOComEnd(PacienteEntity entity) {
-
-        PacienteDTO dto = toDTO(entity);
 
         dto.setEndereco(new com.vincula.dto.EnderecoDTO());
         dto.getEndereco().setId(entity.getEndereco().getId());

@@ -49,30 +49,6 @@ public class PacienteController {
         return ResponseEntity.ok(paciente);
     }
 
-    @GetMapping("endereco")
-    public ResponseEntity<List<PacienteDTO>> listarTodosComEndereco() {
-        List<PacienteDTO> pacientes = pacienteService.listarTodosComEndereco();
-        return ResponseEntity.ok(pacientes);
-    }
-
-    @GetMapping("endereco/{id}")
-    public ResponseEntity<PacienteDTO> buscarPorIdComEndereco(@PathVariable Long id) {
-        PacienteDTO paciente = pacienteService.buscarPorIdComEndereco(id);
-        return ResponseEntity.ok(paciente);
-    }
-
-    @GetMapping("endereco/cpf/{cpf}")
-    public ResponseEntity<PacienteDTO> buscarPorCpfComEndereco(@PathVariable String cpf) {
-        PacienteDTO paciente = pacienteService.buscarPorCpfComEndereco(cpf);
-        return ResponseEntity.ok(paciente);
-    }
-
-    @GetMapping("endereco/cns/{cns}")
-    public ResponseEntity<PacienteDTO> buscarPorCnsComEndereco(@PathVariable String cns) {
-        PacienteDTO paciente = pacienteService.buscarPorCnsComEndereco(cns);
-        return ResponseEntity.ok(paciente);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<PacienteDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PacienteDTO dto) {
         PacienteDTO pacienteAtualizado = pacienteService.atualizar(id, dto);

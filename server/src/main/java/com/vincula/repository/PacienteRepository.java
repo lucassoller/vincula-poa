@@ -13,7 +13,9 @@ public interface PacienteRepository extends JpaRepository<PacienteEntity, Long> 
 
     boolean existsByCns(String cns);
 
-    boolean existsByEndereco_Id(Long enderecoId);
+    boolean existsByCpfAndIdNot(String cpf, Long id);
+
+    boolean existsByCnsAndIdNot(String cns, Long id);
 
     Optional<PacienteEntity> findByCpf(String cpf);
 
