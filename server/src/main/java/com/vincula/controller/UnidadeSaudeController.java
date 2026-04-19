@@ -1,5 +1,6 @@
 package com.vincula.controller;
 
+import com.vincula.dto.PacienteDTO;
 import com.vincula.dto.UnidadeSaudeDTO;
 import com.vincula.service.UnidadeSaudeService;
 import jakarta.validation.Valid;
@@ -33,6 +34,11 @@ public class UnidadeSaudeController {
     @GetMapping("/{id}")
     public ResponseEntity<UnidadeSaudeDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(unidadeSaudeService.buscarPorId(id));
+    }
+
+    @GetMapping("/{id}/pacientes")
+    public ResponseEntity<List<PacienteDTO>> listarPacientesPorUnidade(@PathVariable Long id) {
+        return ResponseEntity.ok(unidadeSaudeService.listarPacientesPorUnidade(id));
     }
 
     @GetMapping("/cnes/{cnes}")

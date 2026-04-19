@@ -30,4 +30,8 @@ public class Paciente {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "endereco_id", nullable = false, unique = true)
     private Endereco endereco;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "unidade_saude_id", nullable = false)
+    private UnidadeSaude unidadeSaude;
 }

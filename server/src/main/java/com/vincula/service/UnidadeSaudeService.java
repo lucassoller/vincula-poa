@@ -1,8 +1,10 @@
 package com.vincula.service;
 
 import com.vincula.dto.EnderecoDTO;
+import com.vincula.dto.PacienteDTO;
 import com.vincula.dto.UnidadeSaudeDTO;
 import com.vincula.entity.Endereco;
+import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.repository.UnidadeSaudeRepository;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,14 @@ public class UnidadeSaudeService {
         return unidadeSaudeRepository.findAll()
                 .stream()
                 .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<PacienteDTO> listarPacientesPorUnidade(Long unidadeSaudeId) {
+        List<Paciente> pacientes = unidadeSaudeRepository.findPacientesByUnidadeSaudeId(unidadeSaudeId);
+
+        return pacientes.stream()
+                .map(this::toPacienteDTO)
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +103,7 @@ public class UnidadeSaudeService {
         }
     }
 
-    private UnidadeSaude toEntity(UnidadeSaudeDTO dto){
+    public UnidadeSaude toEntity(UnidadeSaudeDTO dto){
         validarCnesCreate(dto);
 
         Endereco endereco = enderecoService.toEntity(dto.getEndereco());
@@ -106,12 +116,27 @@ public class UnidadeSaudeService {
         return entity;
     }
 
-    private UnidadeSaudeDTO toDTO(UnidadeSaude entity) {
+    public UnidadeSaudeDTO toDTO(UnidadeSaude entity) {
         UnidadeSaudeDTO dto = new UnidadeSaudeDTO();
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
         dto.setCnes(entity.getCnes());
         dto.setEndereco(enderecoService.toDTO(entity.getEndereco()));
+        return dto;
+    }
+
+    private PacienteDTO toPacienteDTO(Paciente entity) {
+        PacienteDTO dto = new PacienteDTO();
+
+        dto.setId(entity.getId());
+        dto.setNome(entity.getNome());
+        dto.setSobrenome(entity.getSobrenome());
+        dto.setTelefone(entity.getTelefone());
+        dto.setCpf(entity.getCpf());
+        dto.setCns(entity.getCns());
+        dto.setEndereco(enderecoService.toDTO(entity.getEndereco()));
+        dto.setUnidadeSaude(this.toDTO(entity.getUnidadeSaude()));
+
         return dto;
     }
 }

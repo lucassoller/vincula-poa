@@ -120,7 +120,7 @@ public class UsuarioSistemaService {
         }
     }
 
-    private UsuarioSistema toEntity(UsuarioSistemaDTO dto) {
+    public UsuarioSistema toEntity(UsuarioSistemaDTO dto) {
         validarDuplicidadeCreate(dto);
         validarPerfilEUnidade(dto);
 
@@ -142,7 +142,7 @@ public class UsuarioSistemaService {
         return entity;
     }
 
-    private UsuarioSistemaDTO toDTO(UsuarioSistema entity) {
+    public UsuarioSistemaDTO toDTO(UsuarioSistema entity) {
         UsuarioSistemaDTO dto = new UsuarioSistemaDTO();
 
         dto.setId(entity.getId());

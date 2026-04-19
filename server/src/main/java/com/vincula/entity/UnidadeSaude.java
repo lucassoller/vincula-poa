@@ -2,6 +2,7 @@ package com.vincula.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.List;
 
 @Entity
 @Table(name = "unidade_saude")
@@ -21,4 +22,7 @@ public class UnidadeSaude {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "endereco_id", nullable = false, unique = true)
     private Endereco endereco;
+
+    @OneToMany(mappedBy = "unidadeSaude", fetch = FetchType.LAZY)
+    private List<Paciente> pacientes;
 }

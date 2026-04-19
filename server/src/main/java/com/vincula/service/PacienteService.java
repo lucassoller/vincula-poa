@@ -1,9 +1,12 @@
 package com.vincula.service;
 
 import com.vincula.dto.PacienteDTO;
+import com.vincula.dto.UnidadeSaudeRefDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
+import com.vincula.entity.UnidadeSaude;
 import com.vincula.repository.PacienteRepository;
+import com.vincula.repository.UnidadeSaudeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +17,15 @@ public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
     private final EnderecoService enderecoService;
+    private final UnidadeSaudeService unidadeSaudeService;
+    private final UnidadeSaudeRepository unidadeSaudeRepository;
 
-    public PacienteService(PacienteRepository pacienteRepository, EnderecoService enderecoService) {
+    public PacienteService(PacienteRepository pacienteRepository, EnderecoService enderecoService,
+                           UnidadeSaudeService unidadeSaudeService, UnidadeSaudeRepository unidadeSaudeRepository) {
         this.pacienteRepository = pacienteRepository;
         this.enderecoService = enderecoService;
+        this.unidadeSaudeService = unidadeSaudeService;
+        this.unidadeSaudeRepository = unidadeSaudeRepository;
     }
 
     public PacienteDTO criar(PacienteDTO dto) {
@@ -61,6 +69,10 @@ public class PacienteService {
 
         validarCpfECnsEIdDif(id, dto);
 
+        UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
+                .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+
+        paciente.setUnidadeSaude(unidadeSaude);
         paciente.setNome(dto.getNome());
         paciente.setSobrenome(dto.getSobrenome());
         paciente.setTelefone(dto.getTelefone());
@@ -110,10 +122,12 @@ public class PacienteService {
         }
     }
 
-    private Paciente toEntity(PacienteDTO dto) {
+    public Paciente toEntity(PacienteDTO dto) {
         validarCpfECns(dto);
 
         Endereco endereco = enderecoService.toEntity(dto.getEndereco());
+        UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
+                .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
 
         Paciente entity = new Paciente();
         entity.setNome(dto.getNome());
@@ -122,11 +136,12 @@ public class PacienteService {
         entity.setCpf(dto.getCpf());
         entity.setCns(dto.getCns());
         entity.setEndereco(endereco);
+        entity.setUnidadeSaude(unidadeSaude);
 
         return entity;
     }
 
-    private PacienteDTO toDTO(Paciente entity) {
+    public PacienteDTO toDTO(Paciente entity) {
 
         PacienteDTO dto = new PacienteDTO();
 
@@ -137,6 +152,7 @@ public class PacienteService {
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
         dto.setEndereco(enderecoService.toDTO(entity.getEndereco()));
+        dto.setUnidadeSaude(unidadeSaudeService.toDTO(entity.getUnidadeSaude()));
 
         return dto;
     }
