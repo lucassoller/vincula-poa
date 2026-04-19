@@ -17,7 +17,7 @@ public class PacienteDTO {
     private String nome;
 
     @NotBlank(message = "Sobrenome é obrigatório")
-    @Size(max = 100, message = "Sobrenome deve ter no máximo 150 caracteres")
+    @Size(max = 100, message = "Sobrenome deve ter no máximo 100 caracteres")
     private String sobrenome;
 
     @Pattern(regexp = "\\d{10,11}")

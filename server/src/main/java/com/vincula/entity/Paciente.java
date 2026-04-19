@@ -15,7 +15,7 @@ public class Paciente {
     @Column(nullable = false, length = 100)
     private String nome;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, length = 100)
     private String sobrenome;
 
     @Column(length = 11)
