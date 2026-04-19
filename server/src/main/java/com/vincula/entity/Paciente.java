@@ -3,6 +3,8 @@ package com.vincula.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "paciente")
 @Data
@@ -34,4 +36,7 @@ public class Paciente {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "unidade_saude_id", nullable = false)
     private UnidadeSaude unidadeSaude;
+
+    @OneToMany(mappedBy = "paciente", fetch = FetchType.LAZY)
+    private List<Observacao> observacoes;
 }

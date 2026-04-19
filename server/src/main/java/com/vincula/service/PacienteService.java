@@ -1,7 +1,6 @@
 package com.vincula.service;
 
 import com.vincula.dto.PacienteDTO;
-import com.vincula.dto.UnidadeSaudeRefDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;

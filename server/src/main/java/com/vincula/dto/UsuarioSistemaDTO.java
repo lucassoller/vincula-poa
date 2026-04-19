@@ -35,7 +35,8 @@ public class UsuarioSistemaDTO {
 
     // Pode ser obrigatório dependendo do perfil (validar no service)
     @Valid
-    private UnidadeSaudeRefDTO unidadeSaude;
+    @NotNull(message = "Unidade de saúde é obrigatório")
+    private Long unidadeSaudeId;
 
     private Boolean ativo;
 }

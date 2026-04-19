@@ -1,6 +1,5 @@
 package com.vincula.service;
 
-import com.vincula.dto.UnidadeSaudeRefDTO;
 import com.vincula.dto.UsuarioSistemaDTO;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.UsuarioSistema;
@@ -73,8 +72,8 @@ public class UsuarioSistemaService {
         entity.setPerfil(dto.getPerfil());
         entity.setAtivo(dto.getAtivo());
 
-        if (dto.getUnidadeSaude() != null && dto.getUnidadeSaude().getId() != null) {
-            UnidadeSaude unidade = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
+        if (dto.getUnidadeSaudeId() != null) {
+            UnidadeSaude unidade = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
                     .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
             entity.setUnidadeSaude(unidade);
         } else {
@@ -114,7 +113,7 @@ public class UsuarioSistemaService {
 
     private void validarPerfilEUnidade(UsuarioSistemaDTO dto) {
         if (dto.getPerfil() == PerfilUsuario.EXECUTOR_APS) {
-            if (dto.getUnidadeSaude() == null || dto.getUnidadeSaude().getId() == null) {
+            if (dto.getUnidadeSaudeId() == null) {
                 throw new RuntimeException("Usuário executor APS deve estar vinculado a uma unidade de saúde");
             }
         }
@@ -133,8 +132,8 @@ public class UsuarioSistemaService {
         entity.setPerfil(dto.getPerfil());
         entity.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : true);
 
-        if (dto.getUnidadeSaude() != null && dto.getUnidadeSaude().getId() != null) {
-            UnidadeSaude unidade = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
+        if (dto.getUnidadeSaudeId() != null) {
+            UnidadeSaude unidade = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
                     .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
             entity.setUnidadeSaude(unidade);
         }
@@ -152,12 +151,7 @@ public class UsuarioSistemaService {
         dto.setSenha(null);
         dto.setPerfil(entity.getPerfil());
         dto.setAtivo(entity.getAtivo());
-
-        if (entity.getUnidadeSaude() != null) {
-            UnidadeSaudeRefDTO unidadeDTO = new UnidadeSaudeRefDTO();
-            unidadeDTO.setId(entity.getUnidadeSaude().getId());
-            dto.setUnidadeSaude(unidadeDTO);
-        }
+        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
 
         return dto;
     }
