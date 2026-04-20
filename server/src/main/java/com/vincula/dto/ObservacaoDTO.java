@@ -20,7 +20,4 @@ public class ObservacaoDTO {
 
     @NotNull(message = "Paciente é obrigatório")
     private Long pacienteId;
-
-    @NotNull(message = "Usuário é obrigatório")
-    private Long usuarioId;
 }

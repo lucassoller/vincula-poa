@@ -19,13 +19,16 @@ public class ObservacaoService {
     private final ObservacaoRepository observacaoRepository;
     private final PacienteRepository pacienteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     public ObservacaoService(ObservacaoRepository observacaoRepository,
                              PacienteRepository pacienteRepository,
-                             UsuarioRepository usuarioRepository) {
+                             UsuarioRepository usuarioRepository,
+                             UsuarioService usuarioService) {
         this.observacaoRepository = observacaoRepository;
         this.pacienteRepository = pacienteRepository;
         this.usuarioRepository = usuarioRepository;
+        this.usuarioService = usuarioService;
     }
 
     public ObservacaoDTO criar(ObservacaoDTO dto) {
@@ -33,8 +36,7 @@ public class ObservacaoService {
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+        Usuario usuario = usuarioService.buscarUsuarioLogado();
 
         Observacao entity = new Observacao();
         entity.setDescricao(dto.getDescricao());
@@ -81,8 +83,7 @@ public class ObservacaoService {
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+        Usuario usuario = usuarioService.buscarUsuarioLogado();
 
         entity.setDescricao(dto.getDescricao());
         entity.setPaciente(paciente);
@@ -105,7 +106,6 @@ public class ObservacaoService {
         dto.setDescricao(entity.getDescricao());
         dto.setDataHora(entity.getDataHora());
         dto.setPacienteId(entity.getPaciente().getId());
-        dto.setUsuarioId(entity.getUsuario().getId());
         return dto;
     }
 }

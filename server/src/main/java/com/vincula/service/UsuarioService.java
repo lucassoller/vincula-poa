@@ -162,6 +162,17 @@ public class UsuarioService {
         return entity;
     }
 
+    public Usuario buscarUsuarioLogado() {
+        String login = com.vincula.security.SecurityUtils.getLoginUsuarioLogado();
+
+        if (login == null) {
+            throw new BusinessException("Usuário não autenticado");
+        }
+
+        return usuarioRepository.findByLogin(login)
+                .orElseThrow(() -> new NotFoundException("Usuário autenticado não encontrado"));
+    }
+
     public UsuarioDTO toDTO(Usuario entity) {
         UsuarioDTO dto = new UsuarioDTO();
 
