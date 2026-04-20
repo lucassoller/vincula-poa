@@ -7,9 +7,9 @@ import lombok.Data;
 import java.util.List;
 
 @Entity
-@Table(name = "usuario_sistema")
+@Table(name = "usuario")
 @Data
-public class UsuarioSistema {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,8 @@ public class UsuarioSistema {
     @Column(nullable = false, unique = true, length = 50)
     private String login;
 
-    @Column(nullable = false, length = 50)
-    private String senha;
+    @Column(nullable = false, length = 255)
+    private String senhaHash;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)

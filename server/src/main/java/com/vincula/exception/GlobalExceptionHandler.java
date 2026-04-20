@@ -1,9 +1,6 @@
-package com.vincula.config;
+package com.vincula.exception;
 
 import com.vincula.dto.ErrorResponseDTO;
-import com.vincula.exception.BusinessException;
-import com.vincula.exception.ConflictException;
-import com.vincula.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,6 +75,34 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAuthorizationDenied(
+            org.springframework.security.authorization.AuthorizationDeniedException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponseDTO response = new ErrorResponseDTO(
+                "Acesso negado",
+                null,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponseDTO response = new ErrorResponseDTO(
+                "Acesso negado",
+                null,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(Exception.class)

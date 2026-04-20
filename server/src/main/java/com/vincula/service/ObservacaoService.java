@@ -3,11 +3,11 @@ package com.vincula.service;
 import com.vincula.dto.ObservacaoDTO;
 import com.vincula.entity.Observacao;
 import com.vincula.entity.Paciente;
-import com.vincula.entity.UsuarioSistema;
+import com.vincula.entity.Usuario;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.ObservacaoRepository;
 import com.vincula.repository.PacienteRepository;
-import com.vincula.repository.UsuarioSistemaRepository;
+import com.vincula.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,11 +18,11 @@ public class ObservacaoService {
 
     private final ObservacaoRepository observacaoRepository;
     private final PacienteRepository pacienteRepository;
-    private final UsuarioSistemaRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public ObservacaoService(ObservacaoRepository observacaoRepository,
                              PacienteRepository pacienteRepository,
-                             UsuarioSistemaRepository usuarioRepository) {
+                             UsuarioRepository usuarioRepository) {
         this.observacaoRepository = observacaoRepository;
         this.pacienteRepository = pacienteRepository;
         this.usuarioRepository = usuarioRepository;
@@ -33,7 +33,7 @@ public class ObservacaoService {
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
-        UsuarioSistema usuario = usuarioRepository.findById(dto.getUsuarioId())
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
         Observacao entity = new Observacao();
@@ -81,7 +81,7 @@ public class ObservacaoService {
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
-        UsuarioSistema usuario = usuarioRepository.findById(dto.getUsuarioId())
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
         entity.setDescricao(dto.getDescricao());

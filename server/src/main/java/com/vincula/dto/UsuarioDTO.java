@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UsuarioSistemaDTO {
+public class UsuarioDTO {
 
     private Long id;
 
@@ -27,15 +27,13 @@ public class UsuarioSistemaDTO {
     private String login;
 
     @NotBlank(message = "Senha é obrigatória")
-    @Size(max = 50, message = "Senha deve ter no máximo 50 caracteres")
+    @Size(max = 255, message = "Senha deve ter no máximo 255 caracteres")
     private String senha;
 
     @NotNull(message = "Perfil é obrigatório")
     private PerfilUsuario perfil;
 
     // Pode ser obrigatório dependendo do perfil (validar no service)
-    @Valid
-    @NotNull(message = "Unidade de saúde é obrigatório")
     private Long unidadeSaudeId;
 
     private Boolean ativo;

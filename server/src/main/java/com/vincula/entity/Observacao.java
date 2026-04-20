@@ -2,8 +2,6 @@ package com.vincula.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -28,5 +26,5 @@ public class Observacao {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private UsuarioSistema usuario;
+    private Usuario usuario;
 }

@@ -69,7 +69,7 @@ public class PacienteService {
         Paciente paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
-        validarCpfECnsEIdDif(id, dto);
+        validarCpfECnsUpdate(id, dto);
 
         UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
                 .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
@@ -104,7 +104,7 @@ public class PacienteService {
         pacienteRepository.delete(paciente);
     }
 
-    private void validarCpfECns(PacienteDTO dto) {
+    private void validarCpfECnsCreate(PacienteDTO dto) {
         if (pacienteRepository.existsByCpf(dto.getCpf())) {
             throw new ConflictException("CPF já cadastrado");
         }
@@ -114,7 +114,7 @@ public class PacienteService {
         }
     }
 
-    private void validarCpfECnsEIdDif(Long id, PacienteDTO dto) {
+    private void validarCpfECnsUpdate(Long id, PacienteDTO dto) {
         if (pacienteRepository.existsByCpfAndIdNot(dto.getCpf(), id)) {
             throw new ConflictException("CPF já cadastrado");
         }
@@ -125,7 +125,7 @@ public class PacienteService {
     }
 
     public Paciente toEntity(PacienteDTO dto) {
-        validarCpfECns(dto);
+        validarCpfECnsCreate(dto);
 
         Endereco endereco = enderecoService.toEntity(dto.getEndereco());
         UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())

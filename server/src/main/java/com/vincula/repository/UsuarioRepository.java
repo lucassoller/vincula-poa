@@ -1,11 +1,11 @@
 package com.vincula.repository;
 
-import com.vincula.entity.UsuarioSistema;
+import com.vincula.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UsuarioSistemaRepository extends JpaRepository<UsuarioSistema, Long> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByEmail(String email);
 
@@ -15,7 +15,7 @@ public interface UsuarioSistemaRepository extends JpaRepository<UsuarioSistema, 
 
     boolean existsByLoginAndIdNot(String login, Long id);
 
-    Optional<UsuarioSistema> findByEmail(String email);
+    Optional<Usuario> findByEmail(String email);
 
-    Optional<UsuarioSistema> findByLogin(String login);
+    Optional<Usuario> findByLogin(String login);
 }
