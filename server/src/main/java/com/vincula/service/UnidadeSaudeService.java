@@ -6,6 +6,9 @@ import com.vincula.dto.UnidadeSaudeDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
+import com.vincula.exception.BusinessException;
+import com.vincula.exception.ConflictException;
+import com.vincula.exception.NotFoundException;
 import com.vincula.repository.UnidadeSaudeRepository;
 import org.springframework.stereotype.Service;
 
@@ -47,21 +50,21 @@ public class UnidadeSaudeService {
 
     public UnidadeSaudeDTO buscarPorId(Long id) {
         UnidadeSaude entity = unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
 
         return toDTO(entity);
     }
 
     public UnidadeSaudeDTO buscarPorCnes(String cnes) {
         UnidadeSaude entity = unidadeSaudeRepository.findByCnes(cnes)
-                .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
 
         return toDTO(entity);
     }
 
     public UnidadeSaudeDTO atualizar(Long id, UnidadeSaudeDTO dto) {
         UnidadeSaude entity = unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
 
         validarCnesUpdate(dto, id);
 
@@ -86,20 +89,20 @@ public class UnidadeSaudeService {
 
     public void deletar(Long id) {
         UnidadeSaude entity = unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
 
         unidadeSaudeRepository.delete(entity);
     }
 
     private void validarCnesCreate(UnidadeSaudeDTO dto) {
         if (unidadeSaudeRepository.existsByCnes(dto.getCnes())) {
-            throw new RuntimeException("CNES já cadastrado");
+            throw new ConflictException("CNES já cadastrado");
         }
     }
 
     private void validarCnesUpdate(UnidadeSaudeDTO dto, Long id) {
         if (unidadeSaudeRepository.existsByCnesAndIdNot(dto.getCnes(), id)) {
-            throw new RuntimeException("CNES já cadastrado");
+            throw new ConflictException("CNES já cadastrado");
         }
     }
 

@@ -2,6 +2,7 @@ package com.vincula.service;
 
 import com.vincula.dto.EnderecoDTO;
 import com.vincula.entity.Endereco;
+import com.vincula.exception.NotFoundException;
 import com.vincula.repository.EnderecoRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +33,13 @@ public class EnderecoService {
 
     public EnderecoDTO buscarPorId(Long id) {
         Endereco entity = enderecoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Endereço não encontrado"));
         return toDTO(entity);
     }
 
     public EnderecoDTO atualizar(Long id, EnderecoDTO dto) {
         Endereco entity = enderecoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Endereço não encontrado"));
 
         entity.setRua(dto.getRua());
         entity.setNumero(dto.getNumero());
@@ -55,7 +56,7 @@ public class EnderecoService {
 
     public void deletar(Long id) {
         Endereco entity = enderecoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Endereço não encontrado"));
 
         enderecoRepository.delete(entity);
     }

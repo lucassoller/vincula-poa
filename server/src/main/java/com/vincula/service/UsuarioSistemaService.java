@@ -4,6 +4,9 @@ import com.vincula.dto.UsuarioSistemaDTO;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.UsuarioSistema;
 import com.vincula.enums.PerfilUsuario;
+import com.vincula.exception.BusinessException;
+import com.vincula.exception.ConflictException;
+import com.vincula.exception.NotFoundException;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.repository.UsuarioSistemaRepository;
 import org.springframework.stereotype.Service;
@@ -39,28 +42,28 @@ public class UsuarioSistemaService {
 
     public UsuarioSistemaDTO buscarPorId(Long id) {
         UsuarioSistema entity = usuarioSistemaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário do sistema não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
 
         return toDTO(entity);
     }
 
     public UsuarioSistemaDTO buscarPorEmail(String email) {
         UsuarioSistema entity = usuarioSistemaRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário do sistema não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
 
         return toDTO(entity);
     }
 
     public UsuarioSistemaDTO buscarPorLogin(String login) {
         UsuarioSistema entity = usuarioSistemaRepository.findByLogin(login)
-                .orElseThrow(() -> new RuntimeException("Usuário do sistema não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
 
         return toDTO(entity);
     }
 
     public UsuarioSistemaDTO atualizar(Long id, UsuarioSistemaDTO dto) {
         UsuarioSistema entity = usuarioSistemaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário do sistema não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
 
         validarDuplicidadeUpdate(dto, id);
         validarPerfilEUnidade(dto);
@@ -74,7 +77,7 @@ public class UsuarioSistemaService {
 
         if (dto.getUnidadeSaudeId() != null) {
             UnidadeSaude unidade = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
-                    .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+                    .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
             entity.setUnidadeSaude(unidade);
         } else {
             entity.setUnidadeSaude(null);
@@ -86,35 +89,35 @@ public class UsuarioSistemaService {
 
     public void deletar(Long id) {
         UsuarioSistema entity = usuarioSistemaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário do sistema não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
 
         usuarioSistemaRepository.delete(entity);
     }
 
     private void validarDuplicidadeCreate(UsuarioSistemaDTO dto) {
         if (usuarioSistemaRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new ConflictException("Email já cadastrado");
         }
 
         if (usuarioSistemaRepository.existsByLogin(dto.getLogin())) {
-            throw new RuntimeException("Login já cadastrado");
+            throw new ConflictException("Login já cadastrado");
         }
     }
 
     private void validarDuplicidadeUpdate(UsuarioSistemaDTO dto, Long id) {
         if (usuarioSistemaRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new ConflictException("Email já cadastrado");
         }
 
         if (usuarioSistemaRepository.existsByLoginAndIdNot(dto.getLogin(), id)) {
-            throw new RuntimeException("Login já cadastrado");
+            throw new ConflictException("Login já cadastrado");
         }
     }
 
     private void validarPerfilEUnidade(UsuarioSistemaDTO dto) {
         if (dto.getPerfil() == PerfilUsuario.EXECUTOR_APS) {
             if (dto.getUnidadeSaudeId() == null) {
-                throw new RuntimeException("Usuário executor APS deve estar vinculado a uma unidade de saúde");
+                throw new BusinessException("Usuário executor APS deve estar vinculado a uma unidade de saúde");
             }
         }
     }
@@ -134,7 +137,7 @@ public class UsuarioSistemaService {
 
         if (dto.getUnidadeSaudeId() != null) {
             UnidadeSaude unidade = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
-                    .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+                    .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
             entity.setUnidadeSaude(unidade);
         }
 

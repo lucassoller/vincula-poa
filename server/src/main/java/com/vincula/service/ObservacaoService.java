@@ -4,6 +4,7 @@ import com.vincula.dto.ObservacaoDTO;
 import com.vincula.entity.Observacao;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UsuarioSistema;
+import com.vincula.exception.NotFoundException;
 import com.vincula.repository.ObservacaoRepository;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UsuarioSistemaRepository;
@@ -30,10 +31,10 @@ public class ObservacaoService {
     public ObservacaoDTO criar(ObservacaoDTO dto) {
 
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
         UsuarioSistema usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
         Observacao entity = new Observacao();
         entity.setDescricao(dto.getDescricao());
@@ -68,20 +69,20 @@ public class ObservacaoService {
 
     public ObservacaoDTO buscarPorId(Long id) {
         Observacao entity = observacaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Observação não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Observação não encontrada"));
 
         return toDTO(entity);
     }
 
     public ObservacaoDTO atualizar(Long id, ObservacaoDTO dto) {
         Observacao entity = observacaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Observação não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Observação não encontrada"));
 
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
         UsuarioSistema usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
         entity.setDescricao(dto.getDescricao());
         entity.setPaciente(paciente);
@@ -93,7 +94,7 @@ public class ObservacaoService {
 
     public void deletar(Long id) {
         Observacao entity = observacaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Observação não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Observação não encontrada"));
 
         observacaoRepository.delete(entity);
     }

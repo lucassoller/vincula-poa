@@ -4,6 +4,9 @@ import com.vincula.dto.PacienteDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
+import com.vincula.exception.BusinessException;
+import com.vincula.exception.ConflictException;
+import com.vincula.exception.NotFoundException;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import org.springframework.stereotype.Service;
@@ -43,33 +46,33 @@ public class PacienteService {
 
     public PacienteDTO buscarPorId(Long id) {
         Paciente paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
         return toDTO(paciente);
     }
 
     public PacienteDTO buscarPorCpf(String cpf) {
         Paciente paciente = pacienteRepository.findByCpf(cpf)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado com o CPF informado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado com o CPF informado"));
 
         return toDTO(paciente);
     }
 
     public PacienteDTO buscarPorCns(String cns) {
         Paciente paciente = pacienteRepository.findByCns(cns)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado com o CNS informado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado com o CNS informado"));
 
         return toDTO(paciente);
     }
 
     public PacienteDTO atualizar(Long id, PacienteDTO dto) {
         Paciente paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
         validarCpfECnsEIdDif(id, dto);
 
         UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
-                .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
 
         paciente.setUnidadeSaude(unidadeSaude);
         paciente.setNome(dto.getNome());
@@ -96,28 +99,28 @@ public class PacienteService {
 
     public void deletar(Long id) {
         Paciente paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
         pacienteRepository.delete(paciente);
     }
 
     private void validarCpfECns(PacienteDTO dto) {
         if (pacienteRepository.existsByCpf(dto.getCpf())) {
-            throw new RuntimeException("CPF já cadastrado");
+            throw new ConflictException("CPF já cadastrado");
         }
 
         if (pacienteRepository.existsByCns(dto.getCns())) {
-            throw new RuntimeException("CNS já cadastrado");
+            throw new ConflictException("CNS já cadastrado");
         }
     }
 
     private void validarCpfECnsEIdDif(Long id, PacienteDTO dto) {
         if (pacienteRepository.existsByCpfAndIdNot(dto.getCpf(), id)) {
-            throw new RuntimeException("CPF já cadastrado");
+            throw new ConflictException("CPF já cadastrado");
         }
 
         if (pacienteRepository.existsByCnsAndIdNot(dto.getCns(), id)) {
-            throw new RuntimeException("CNS já cadastrado");
+            throw new ConflictException("CNS já cadastrado");
         }
     }
 
@@ -126,7 +129,7 @@ public class PacienteService {
 
         Endereco endereco = enderecoService.toEntity(dto.getEndereco());
         UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
-                .orElseThrow(() -> new RuntimeException("Unidade de saúde não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
 
         Paciente entity = new Paciente();
         entity.setNome(dto.getNome());
