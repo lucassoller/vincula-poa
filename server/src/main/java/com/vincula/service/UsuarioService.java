@@ -1,7 +1,5 @@
 package com.vincula.service;
 
-import com.vincula.dto.LoginRequestDTO;
-import com.vincula.dto.LoginResponseDTO;
 import com.vincula.dto.UsuarioDTO;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
@@ -11,11 +9,6 @@ import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.repository.UsuarioRepository;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,16 +21,13 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                           UnidadeSaudeRepository unidadeSaudeRepository,
-                          PasswordEncoder passwordEncoder,
-                          AuthenticationManager authenticationManager) {
+                          PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
     }
 
     public UsuarioDTO criar(UsuarioDTO dto) {
@@ -140,32 +130,6 @@ public class UsuarioService {
                 throw new BusinessException("Usuário executor APS deve estar vinculado a uma unidade de saúde");
             }
         }
-    }
-
-    public LoginResponseDTO login(LoginRequestDTO dto) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            dto.getLogin(),
-                            dto.getSenha()
-                    )
-            );
-        } catch (DisabledException ex) {
-            throw new BusinessException("Usuário inativo");
-        } catch (AuthenticationException ex) {
-            throw new BusinessException("Login ou senha inválidos");
-        }
-
-        Usuario usuario = usuarioRepository.findByLogin(dto.getLogin())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
-
-        return new LoginResponseDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getLogin(),
-                usuario.getPerfil(),
-                usuario.getAtivo()
-        );
     }
 
     public Usuario toEntity(UsuarioDTO dto) {

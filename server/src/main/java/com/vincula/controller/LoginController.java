@@ -2,23 +2,23 @@ package com.vincula.controller;
 
 import com.vincula.dto.LoginRequestDTO;
 import com.vincula.dto.LoginResponseDTO;
-import com.vincula.service.UsuarioService;
+import com.vincula.service.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class LoginController {
 
-    private final UsuarioService usuarioService;
+    private final LoginService loginService;
 
-    public AuthController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
-        return ResponseEntity.ok(usuarioService.login(dto));
+        return ResponseEntity.ok(loginService.login(dto));
     }
 }
