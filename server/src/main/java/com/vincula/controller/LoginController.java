@@ -21,4 +21,9 @@ public class LoginController {
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         return ResponseEntity.ok(loginService.login(dto));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        return ResponseEntity.noContent().build();
+    }
 }
