@@ -138,7 +138,7 @@ public class UnidadeSaudeService {
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
         dto.setEndereco(enderecoService.toDTO(entity.getEndereco()));
-        dto.setUnidadeSaude(this.toDTO(entity.getUnidadeSaude()));
+        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
 
         return dto;
     }

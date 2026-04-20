@@ -4,7 +4,6 @@ import com.vincula.dto.PacienteDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
-import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.PacienteRepository;
@@ -19,14 +18,12 @@ public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
     private final EnderecoService enderecoService;
-    private final UnidadeSaudeService unidadeSaudeService;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
 
     public PacienteService(PacienteRepository pacienteRepository, EnderecoService enderecoService,
-                           UnidadeSaudeService unidadeSaudeService, UnidadeSaudeRepository unidadeSaudeRepository) {
+                           UnidadeSaudeRepository unidadeSaudeRepository) {
         this.pacienteRepository = pacienteRepository;
         this.enderecoService = enderecoService;
-        this.unidadeSaudeService = unidadeSaudeService;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
     }
 
@@ -71,7 +68,7 @@ public class PacienteService {
 
         validarCpfECnsUpdate(id, dto);
 
-        UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
+        UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
                 .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
 
         paciente.setUnidadeSaude(unidadeSaude);
@@ -128,7 +125,7 @@ public class PacienteService {
         validarCpfECnsCreate(dto);
 
         Endereco endereco = enderecoService.toEntity(dto.getEndereco());
-        UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaude().getId())
+        UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
                 .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
 
         Paciente entity = new Paciente();
@@ -154,7 +151,7 @@ public class PacienteService {
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
         dto.setEndereco(enderecoService.toDTO(entity.getEndereco()));
-        dto.setUnidadeSaude(unidadeSaudeService.toDTO(entity.getUnidadeSaude()));
+        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
 
         return dto;
     }
