@@ -5,7 +5,7 @@ import com.vincula.service.EmailService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@PreAuthorize("hasRole('EXECUTOR_APS')")
+@PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS')")
 @RestController
 @RequestMapping("/email")
 public class EmailController {
