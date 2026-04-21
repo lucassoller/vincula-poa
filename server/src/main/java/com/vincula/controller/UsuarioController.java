@@ -20,40 +20,51 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PostMapping
     public ResponseEntity<UsuarioDTO> criar(@Valid @RequestBody UsuarioDTO dto) {
         UsuarioDTO criado = usuarioService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
-    //@PreAuthorize("isAuthenticated()")
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/email/{email}")
     public ResponseEntity<UsuarioDTO> buscarPorEmail(@PathVariable String email) {
         return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/login/{login}")
     public ResponseEntity<UsuarioDTO> buscarPorLogin(@PathVariable String login) {
         return ResponseEntity.ok(usuarioService.buscarPorLogin(login));
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioDTO> getUsuarioLogado() {
+        return ResponseEntity.ok(usuarioService.getUsuarioAutenticadoDTO());
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody UsuarioDTO dto) {
         return ResponseEntity.ok(usuarioService.atualizar(id, dto));
     }
 
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         usuarioService.deletar(id);

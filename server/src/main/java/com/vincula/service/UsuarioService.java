@@ -159,6 +159,11 @@ public class UsuarioService {
         }
     }
 
+    public UsuarioDTO getUsuarioAutenticadoDTO() {
+        Usuario usuario = buscarUsuarioAutenticado();
+        return toDTO(usuario);
+    }
+
     private Usuario toEntity(UsuarioDTO dto) {
         Usuario entity = new Usuario();
 

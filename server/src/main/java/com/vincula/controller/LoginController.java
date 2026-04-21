@@ -5,6 +5,7 @@ import com.vincula.dto.LoginResponseDTO;
 import com.vincula.service.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,7 @@ public class LoginController {
         return ResponseEntity.ok(loginService.login(dto));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         return ResponseEntity.noContent().build();
