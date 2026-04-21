@@ -1,5 +1,6 @@
 package com.vincula.dto;
 
+import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,12 @@ public class DemandaDTO {
     @Size(max = 12, message = "Status da demanda deve ter no máximo 12 caracteres")
     private StatusDemanda status;
 
+    @Size(max = 18, message = "Desfecho da demanda deve ter no máximo 18 caracteres")
+    private DesfechoDemanda desfecho;
+
+    @Size(max = 500, message = "Descrição do desfecho da demanda deve ter no máximo 500 caracteres")
+    private String descricaoDesfecho;
+
     private LocalDateTime dataHoraCriacao;
 
     private LocalDateTime dataHoraFinalizacao;
@@ -33,4 +40,8 @@ public class DemandaDTO {
     private Long usuarioCriadorId;
 
     private String usuarioCriadorNome;
+
+    private Long usuarioEncerramentoId;
+
+    private String usuarioEncerramentoNome;
 }

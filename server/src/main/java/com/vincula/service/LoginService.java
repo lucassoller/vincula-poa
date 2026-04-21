@@ -13,7 +13,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,8 +46,7 @@ public class LoginService {
             throw new BusinessException("Login ou senha inválidos");
         }
 
-        Usuario usuario = usuarioRepository.findByLogin(dto.getLogin())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+        Usuario usuario = buscarUsuarioPorLogin(dto.getLogin());
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(usuario.getLogin());
         String token = jwtService.generateToken(userDetails);
@@ -61,5 +59,10 @@ public class LoginService {
                 usuario.getPerfil(),
                 usuario.getAtivo()
         );
+    }
+
+    private Usuario buscarUsuarioPorLogin(String login){
+        return usuarioRepository.findByLogin(login)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
     }
 }

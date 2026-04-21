@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -31,6 +30,9 @@ public class UsuarioService {
     }
 
     public UsuarioDTO criar(UsuarioDTO dto) {
+        validarDuplicidadeCreate(dto);
+        validarPerfilEUnidade(dto);
+
         Usuario entity = toEntity(dto);
         Usuario salvo = usuarioRepository.save(entity);
 
@@ -41,12 +43,11 @@ public class UsuarioService {
         return usuarioRepository.findAll()
                 .stream()
                 .map(this::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public UsuarioDTO buscarPorId(Long id) {
-        Usuario entity = usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
+        Usuario entity = buscarUsuarioPorId(id);
 
         return toDTO(entity);
     }
@@ -66,8 +67,7 @@ public class UsuarioService {
     }
 
     public UsuarioDTO atualizar(Long id, UsuarioDTO dto) {
-        Usuario entity = usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
+        Usuario entity = buscarUsuarioPorId(id);
 
         validarDuplicidadeUpdate(dto, id);
         validarPerfilEUnidade(dto);
@@ -75,22 +75,12 @@ public class UsuarioService {
         entity.setNome(dto.getNome());
         entity.setEmail(dto.getEmail());
         entity.setLogin(dto.getLogin());
-        entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
         entity.setPerfil(dto.getPerfil());
         entity.setAtivo(dto.getAtivo());
+        entity.setUnidadeSaude(resolverUnidadeSaude(dto));
 
-        if (dto.getUnidadeSaudeId() != null) {
-            if(dto.getPerfil().equals(PerfilUsuario.SOLICITANTE) || dto.getPerfil().equals(PerfilUsuario.GESTAO_MUNICIPAL)){
-                throw new BusinessException(dto.getPerfil() + " não deve estar vinculado a uma unidade de saúde");
-            }
-            UnidadeSaude unidade = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
-                    .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
-            entity.setUnidadeSaude(unidade);
-        } else {
-            if(dto.getPerfil().equals(PerfilUsuario.EXECUTOR_APS)){
-                throw new BusinessException(dto.getPerfil() + " deve estar vinculado a uma unidade de saúde");
-            }
-            entity.setUnidadeSaude(null);
+        if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
+            entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
         }
 
         Usuario atualizado = usuarioRepository.save(entity);
@@ -98,8 +88,7 @@ public class UsuarioService {
     }
 
     public void deletar(Long id) {
-        Usuario entity = usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
+        Usuario entity = buscarUsuarioPorId(id);
 
         usuarioRepository.delete(entity);
     }
@@ -132,37 +121,7 @@ public class UsuarioService {
         }
     }
 
-    public Usuario toEntity(UsuarioDTO dto) {
-        validarDuplicidadeCreate(dto);
-        validarPerfilEUnidade(dto);
-
-        Usuario entity = new Usuario();
-
-        entity.setNome(dto.getNome());
-        entity.setEmail(dto.getEmail());
-        entity.setLogin(dto.getLogin());
-        entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
-        entity.setPerfil(dto.getPerfil());
-        entity.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : true);
-
-        if (dto.getUnidadeSaudeId() != null) {
-            if(dto.getPerfil().equals(PerfilUsuario.SOLICITANTE) || dto.getPerfil().equals(PerfilUsuario.GESTAO_MUNICIPAL)){
-                throw new BusinessException(dto.getPerfil() + " não deve estar vinculado a uma unidade de saúde");
-            }
-            UnidadeSaude unidade = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
-                    .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
-            entity.setUnidadeSaude(unidade);
-        } else {
-            if(dto.getPerfil().equals(PerfilUsuario.EXECUTOR_APS)){
-                throw new BusinessException(dto.getPerfil() + " deve estar vinculado a uma unidade de saúde");
-            }
-            entity.setUnidadeSaude(null);
-        }
-
-        return entity;
-    }
-
-    public Usuario buscarUsuarioLogado() {
+    public Usuario buscarUsuarioAutenticado() {
         String login = com.vincula.security.SecurityUtils.getLoginUsuarioLogado();
 
         if (login == null) {
@@ -173,7 +132,48 @@ public class UsuarioService {
                 .orElseThrow(() -> new NotFoundException("Usuário autenticado não encontrado"));
     }
 
-    public UsuarioDTO toDTO(Usuario entity) {
+    private Usuario buscarUsuarioPorId(Long id){
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
+    }
+
+    private UnidadeSaude resolverUnidadeSaude(UsuarioDTO dto) {
+
+        if (dto.getUnidadeSaudeId() != null) {
+
+            if (dto.getPerfil() == PerfilUsuario.SOLICITANTE ||
+                    dto.getPerfil() == PerfilUsuario.GESTAO_MUNICIPAL) {
+                throw new BusinessException(dto.getPerfil() + " não deve estar vinculado a uma unidade de saúde");
+            }
+
+            return unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
+                    .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+
+        } else {
+
+            if (dto.getPerfil() == PerfilUsuario.EXECUTOR_APS) {
+                throw new BusinessException(dto.getPerfil() + " deve estar vinculado a uma unidade de saúde");
+            }
+
+            return null;
+        }
+    }
+
+    private Usuario toEntity(UsuarioDTO dto) {
+        Usuario entity = new Usuario();
+
+        entity.setNome(dto.getNome());
+        entity.setEmail(dto.getEmail());
+        entity.setLogin(dto.getLogin());
+        entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
+        entity.setPerfil(dto.getPerfil());
+        entity.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : true);
+        entity.setUnidadeSaude(resolverUnidadeSaude(dto));
+
+        return entity;
+    }
+
+    private UsuarioDTO toDTO(Usuario entity) {
         UsuarioDTO dto = new UsuarioDTO();
 
         dto.setId(entity.getId());

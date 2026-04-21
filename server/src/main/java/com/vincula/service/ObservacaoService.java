@@ -7,7 +7,6 @@ import com.vincula.entity.Usuario;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.ObservacaoRepository;
 import com.vincula.repository.PacienteRepository;
-import com.vincula.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,31 +17,19 @@ public class ObservacaoService {
 
     private final ObservacaoRepository observacaoRepository;
     private final PacienteRepository pacienteRepository;
-    private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
 
     public ObservacaoService(ObservacaoRepository observacaoRepository,
                              PacienteRepository pacienteRepository,
-                             UsuarioRepository usuarioRepository,
                              UsuarioService usuarioService) {
         this.observacaoRepository = observacaoRepository;
         this.pacienteRepository = pacienteRepository;
-        this.usuarioRepository = usuarioRepository;
         this.usuarioService = usuarioService;
     }
 
     public ObservacaoDTO criar(ObservacaoDTO dto) {
 
-        Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
-
-        Usuario usuario = usuarioService.buscarUsuarioLogado();
-
-        Observacao entity = new Observacao();
-        entity.setDescricao(dto.getDescricao());
-        entity.setDataHora(LocalDateTime.now());
-        entity.setPaciente(paciente);
-        entity.setUsuario(usuario);
+        Observacao entity = toEntity(dto);
 
         Observacao salvo = observacaoRepository.save(entity);
         return toDTO(salvo);
@@ -70,34 +57,50 @@ public class ObservacaoService {
     }
 
     public ObservacaoDTO buscarPorId(Long id) {
-        Observacao entity = observacaoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Observação não encontrada"));
+        Observacao entity = buscarObservacaoPorId(id);
 
         return toDTO(entity);
     }
 
     public ObservacaoDTO atualizar(Long id, ObservacaoDTO dto) {
-        Observacao entity = observacaoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Observação não encontrada"));
+        Observacao entity = buscarObservacaoPorId(id);
 
-        Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
-
-        Usuario usuario = usuarioService.buscarUsuarioLogado();
+        Paciente paciente = buscarPacientePorId(dto.getPacienteId());
 
         entity.setDescricao(dto.getDescricao());
         entity.setPaciente(paciente);
-        entity.setUsuario(usuario);
 
         Observacao atualizado = observacaoRepository.save(entity);
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
-        Observacao entity = observacaoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Observação não encontrada"));
+        Observacao entity = buscarObservacaoPorId(id);
 
         observacaoRepository.delete(entity);
+    }
+
+    private Observacao buscarObservacaoPorId(Long id) {
+        return observacaoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Observação não encontrada"));
+    }
+
+    private Paciente buscarPacientePorId(Long id) {
+        return pacienteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
+    }
+
+    private Observacao toEntity(ObservacaoDTO dto){
+        Paciente paciente = buscarPacientePorId(dto.getPacienteId());
+
+        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+
+        Observacao entity = new Observacao();
+        entity.setDescricao(dto.getDescricao());
+        entity.setDataHora(LocalDateTime.now());
+        entity.setPaciente(paciente);
+        entity.setUsuario(usuario);
+        return entity;
     }
 
     private ObservacaoDTO toDTO(Observacao entity) {
@@ -106,6 +109,8 @@ public class ObservacaoService {
         dto.setDescricao(entity.getDescricao());
         dto.setDataHora(entity.getDataHora());
         dto.setPacienteId(entity.getPaciente().getId());
+        dto.setUsuarioId(entity.getUsuario().getId());
+        dto.setUsuarioNome(entity.getUsuario().getNome());
         return dto;
     }
 }

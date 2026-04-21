@@ -6,28 +6,29 @@ import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
+import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
-    private final EnderecoService enderecoService;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
+    private final EnderecoMapper enderecoMapper;
 
-    public PacienteService(PacienteRepository pacienteRepository, EnderecoService enderecoService,
-                           UnidadeSaudeRepository unidadeSaudeRepository) {
+    public PacienteService(PacienteRepository pacienteRepository, UnidadeSaudeRepository unidadeSaudeRepository, EnderecoMapper enderecoMapper) {
         this.pacienteRepository = pacienteRepository;
-        this.enderecoService = enderecoService;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
+        this.enderecoMapper = enderecoMapper;
     }
 
     public PacienteDTO criar(PacienteDTO dto) {
+        validarCpfECnsCreate(dto);
+
         Paciente entity = toEntity(dto);
 
         Paciente salvo = pacienteRepository.save(entity);
@@ -38,38 +39,35 @@ public class PacienteService {
         return pacienteRepository.findAll()
                 .stream()
                 .map(this::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public PacienteDTO buscarPorId(Long id) {
-        Paciente paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
+        Paciente paciente = buscarPacientePorId(id);
 
         return toDTO(paciente);
     }
 
     public PacienteDTO buscarPorCpf(String cpf) {
         Paciente paciente = pacienteRepository.findByCpf(cpf)
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado com o CPF informado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
         return toDTO(paciente);
     }
 
     public PacienteDTO buscarPorCns(String cns) {
         Paciente paciente = pacienteRepository.findByCns(cns)
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado com o CNS informado"));
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
         return toDTO(paciente);
     }
 
     public PacienteDTO atualizar(Long id, PacienteDTO dto) {
-        Paciente paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
+        Paciente paciente = buscarPacientePorId(id);
 
         validarCpfECnsUpdate(id, dto);
 
-        UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+        UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
 
         paciente.setUnidadeSaude(unidadeSaude);
         paciente.setNome(dto.getNome());
@@ -78,16 +76,7 @@ public class PacienteService {
         paciente.setCpf(dto.getCpf());
         paciente.setCns(dto.getCns());
 
-        Endereco endereco = paciente.getEndereco();
-
-        endereco.setRua(dto.getEndereco().getRua());
-        endereco.setNumero(dto.getEndereco().getNumero());
-        endereco.setBairro(dto.getEndereco().getBairro());
-        endereco.setCidade(dto.getEndereco().getCidade());
-        endereco.setEstado(dto.getEndereco().getEstado());
-        endereco.setCep(dto.getEndereco().getCep());
-        endereco.setLatitude(dto.getEndereco().getLatitude());
-        endereco.setLongitude(dto.getEndereco().getLongitude());
+        enderecoMapper.updateEntityFromDto(dto.getEndereco(), paciente.getEndereco());
 
         Paciente atualizado = pacienteRepository.save(paciente);
 
@@ -95,8 +84,7 @@ public class PacienteService {
     }
 
     public void deletar(Long id) {
-        Paciente paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
+        Paciente paciente = buscarPacientePorId(id);
 
         pacienteRepository.delete(paciente);
     }
@@ -121,12 +109,20 @@ public class PacienteService {
         }
     }
 
-    public Paciente toEntity(PacienteDTO dto) {
-        validarCpfECnsCreate(dto);
+    private Paciente buscarPacientePorId(Long id){
+        return pacienteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
+    }
 
-        Endereco endereco = enderecoService.toEntity(dto.getEndereco());
-        UnidadeSaude unidadeSaude = unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
+    private UnidadeSaude buscarUnidadeSaudePorId(Long id) {
+        return unidadeSaudeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+    }
+
+    private Paciente toEntity(PacienteDTO dto) {
+        Endereco endereco = enderecoMapper.toEntity(dto.getEndereco());
+
+        UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
 
         Paciente entity = new Paciente();
         entity.setNome(dto.getNome());
@@ -140,7 +136,7 @@ public class PacienteService {
         return entity;
     }
 
-    public PacienteDTO toDTO(Paciente entity) {
+    private PacienteDTO toDTO(Paciente entity) {
 
         PacienteDTO dto = new PacienteDTO();
 
@@ -150,7 +146,7 @@ public class PacienteService {
         dto.setTelefone(entity.getTelefone());
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
-        dto.setEndereco(enderecoService.toDTO(entity.getEndereco()));
+        dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
 
         return dto;

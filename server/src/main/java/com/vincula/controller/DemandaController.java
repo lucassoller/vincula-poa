@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.DemandaDTO;
+import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.service.DemandaService;
 import jakarta.validation.Valid;
@@ -76,10 +77,12 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUsuarioCriador(usuarioId));
     }
 
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<DemandaDTO> atualizarStatus(@PathVariable Long id,
-                                                      @RequestParam StatusDemanda status) {
-        return ResponseEntity.ok(demandaService.atualizarStatus(id, status));
+    @PatchMapping("/{id}/encerrar")
+    public ResponseEntity<DemandaDTO> encerrar(@PathVariable Long id,
+                                               @RequestParam DesfechoDemanda desfecho,
+                                               @RequestParam(required = false) String descricao) {
+
+        return ResponseEntity.ok(demandaService.encerrar(id, desfecho, descricao));
     }
 
     @DeleteMapping("/{id}")

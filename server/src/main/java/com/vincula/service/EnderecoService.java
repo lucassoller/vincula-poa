@@ -7,7 +7,6 @@ import com.vincula.repository.EnderecoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EnderecoService {
@@ -28,55 +27,38 @@ public class EnderecoService {
         return enderecoRepository.findAll()
                 .stream()
                 .map(this::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public EnderecoDTO buscarPorId(Long id) {
-        Endereco entity = enderecoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Endereço não encontrado"));
-        return toDTO(entity);
+        return toDTO(buscarEnderecoPorId(id));
     }
 
     public EnderecoDTO atualizar(Long id, EnderecoDTO dto) {
-        Endereco entity = enderecoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Endereço não encontrado"));
-
-        entity.setRua(dto.getRua());
-        entity.setNumero(dto.getNumero());
-        entity.setBairro(dto.getBairro());
-        entity.setCidade(dto.getCidade());
-        entity.setEstado(dto.getEstado());
-        entity.setCep(dto.getCep());
-        entity.setLatitude(dto.getLatitude());
-        entity.setLongitude(dto.getLongitude());
+        Endereco entity = buscarEnderecoPorId(id);
+        preencherEndereco(entity, dto);
 
         Endereco atualizado = enderecoRepository.save(entity);
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
-        Endereco entity = enderecoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Endereço não encontrado"));
-
+        Endereco entity = buscarEnderecoPorId(id);
         enderecoRepository.delete(entity);
     }
 
-    public Endereco toEntity(EnderecoDTO dto) {
+    private Endereco buscarEnderecoPorId(Long id) {
+        return enderecoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Endereço não encontrado"));
+    }
+
+    private Endereco toEntity(EnderecoDTO dto) {
         Endereco entity = new Endereco();
-
-        entity.setRua(dto.getRua());
-        entity.setNumero(dto.getNumero());
-        entity.setBairro(dto.getBairro());
-        entity.setCidade(dto.getCidade());
-        entity.setEstado(dto.getEstado());
-        entity.setCep(dto.getCep());
-        entity.setLatitude(dto.getLatitude());
-        entity.setLongitude(dto.getLongitude());
-
+        preencherEndereco(entity, dto);
         return entity;
     }
 
-    public EnderecoDTO toDTO(Endereco entity) {
+    private EnderecoDTO toDTO(Endereco entity) {
         EnderecoDTO dto = new EnderecoDTO();
 
         dto.setId(entity.getId());
@@ -90,5 +72,16 @@ public class EnderecoService {
         dto.setLongitude(entity.getLongitude());
 
         return dto;
+    }
+
+    private void preencherEndereco(Endereco entity, EnderecoDTO dto) {
+        entity.setRua(dto.getRua());
+        entity.setNumero(dto.getNumero());
+        entity.setBairro(dto.getBairro());
+        entity.setCidade(dto.getCidade());
+        entity.setEstado(dto.getEstado());
+        entity.setCep(dto.getCep());
+        entity.setLatitude(dto.getLatitude());
+        entity.setLongitude(dto.getLongitude());
     }
 }

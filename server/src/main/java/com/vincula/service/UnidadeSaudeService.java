@@ -1,32 +1,31 @@
 package com.vincula.service;
 
-import com.vincula.dto.EnderecoDTO;
 import com.vincula.dto.PacienteDTO;
 import com.vincula.dto.UnidadeSaudeDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
-import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
+import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.UnidadeSaudeRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UnidadeSaudeService {
 
     private final UnidadeSaudeRepository unidadeSaudeRepository;
-    private final EnderecoService enderecoService;
+    private final EnderecoMapper enderecoMapper;
 
-    public UnidadeSaudeService(UnidadeSaudeRepository unidadeSaudeRepository, EnderecoService enderecoService) {
+    public UnidadeSaudeService(UnidadeSaudeRepository unidadeSaudeRepository, EnderecoMapper enderecoMapper) {
         this.unidadeSaudeRepository = unidadeSaudeRepository;
-        this.enderecoService = enderecoService;
+        this.enderecoMapper = enderecoMapper;
     }
 
     public UnidadeSaudeDTO criar(UnidadeSaudeDTO dto) {
+        validarCnesCreate(dto);
+
         UnidadeSaude entity = toEntity(dto);
 
         UnidadeSaude salvo = unidadeSaudeRepository.save(entity);
@@ -37,7 +36,7 @@ public class UnidadeSaudeService {
         return unidadeSaudeRepository.findAll()
                 .stream()
                 .map(this::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<PacienteDTO> listarPacientesPorUnidade(Long unidadeSaudeId) {
@@ -45,12 +44,11 @@ public class UnidadeSaudeService {
 
         return pacientes.stream()
                 .map(this::toPacienteDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public UnidadeSaudeDTO buscarPorId(Long id) {
-        UnidadeSaude entity = unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+        UnidadeSaude entity = buscarUnidadeSaudePorId(id);
 
         return toDTO(entity);
     }
@@ -63,24 +61,15 @@ public class UnidadeSaudeService {
     }
 
     public UnidadeSaudeDTO atualizar(Long id, UnidadeSaudeDTO dto) {
-        UnidadeSaude entity = unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+
+        UnidadeSaude entity = buscarUnidadeSaudePorId(id);
 
         validarCnesUpdate(dto, id);
 
         entity.setNome(dto.getNome());
         entity.setCnes(dto.getCnes());
 
-        Endereco endereco = entity.getEndereco();
-
-        endereco.setRua(dto.getEndereco().getRua());
-        endereco.setNumero(dto.getEndereco().getNumero());
-        endereco.setBairro(dto.getEndereco().getBairro());
-        endereco.setCidade(dto.getEndereco().getCidade());
-        endereco.setEstado(dto.getEndereco().getEstado());
-        endereco.setCep(dto.getEndereco().getCep());
-        endereco.setLatitude(dto.getEndereco().getLatitude());
-        endereco.setLongitude(dto.getEndereco().getLongitude());
+        enderecoMapper.updateEntityFromDto(dto.getEndereco(), entity.getEndereco());
 
         UnidadeSaude atualizado = unidadeSaudeRepository.save(entity);
 
@@ -88,8 +77,7 @@ public class UnidadeSaudeService {
     }
 
     public void deletar(Long id) {
-        UnidadeSaude entity = unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+        UnidadeSaude entity = buscarUnidadeSaudePorId(id);
 
         unidadeSaudeRepository.delete(entity);
     }
@@ -106,10 +94,13 @@ public class UnidadeSaudeService {
         }
     }
 
-    public UnidadeSaude toEntity(UnidadeSaudeDTO dto){
-        validarCnesCreate(dto);
+    private UnidadeSaude buscarUnidadeSaudePorId(Long id) {
+        return unidadeSaudeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+    }
 
-        Endereco endereco = enderecoService.toEntity(dto.getEndereco());
+    public UnidadeSaude toEntity(UnidadeSaudeDTO dto){
+        Endereco endereco = enderecoMapper.toEntity(dto.getEndereco());
 
         UnidadeSaude entity = new UnidadeSaude();
         entity.setNome(dto.getNome());
@@ -124,7 +115,7 @@ public class UnidadeSaudeService {
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
         dto.setCnes(entity.getCnes());
-        dto.setEndereco(enderecoService.toDTO(entity.getEndereco()));
+        dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         return dto;
     }
 
@@ -137,8 +128,7 @@ public class UnidadeSaudeService {
         dto.setTelefone(entity.getTelefone());
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
-        dto.setEndereco(enderecoService.toDTO(entity.getEndereco()));
-        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+        dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
 
         return dto;
     }
