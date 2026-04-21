@@ -1,5 +1,6 @@
 package com.vincula.dto;
 
+import com.vincula.enums.Sexo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +22,13 @@ public class PacienteDTO {
     private String sobrenome;
 
     @Pattern(regexp = "\\d{10,11}")
-    private String telefone; // opcional
+    private String telefone; //
+
+    @Size(max = 50, message = "Email deve ter no máximo 50 caracteres")
+    private String email;
+
+    @Size(max = 13, message = "Sexo deve ter no máximo 13 caracteres")
+    private Sexo sexo;
 
     @NotBlank(message = "CPF é obrigatório")
     @Pattern(regexp = "\\d{11}", message = "CPF inválido")

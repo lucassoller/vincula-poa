@@ -4,6 +4,7 @@ import com.vincula.dto.PacienteDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
+import com.vincula.enums.Sexo;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
@@ -75,6 +76,8 @@ public class PacienteService {
         paciente.setTelefone(dto.getTelefone());
         paciente.setCpf(dto.getCpf());
         paciente.setCns(dto.getCns());
+        paciente.setEmail(dto.getEmail());
+        paciente.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
 
         enderecoMapper.updateEntityFromDto(dto.getEndereco(), paciente.getEndereco());
 
@@ -132,6 +135,8 @@ public class PacienteService {
         entity.setCns(dto.getCns());
         entity.setEndereco(endereco);
         entity.setUnidadeSaude(unidadeSaude);
+        entity.setEmail(dto.getEmail());
+        entity.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
 
         return entity;
     }
@@ -148,6 +153,8 @@ public class PacienteService {
         dto.setCns(entity.getCns());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+        dto.setEmail(entity.getEmail());
+        dto.setSexo(entity.getSexo());
 
         return dto;
     }

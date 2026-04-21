@@ -1,5 +1,6 @@
 package com.vincula.entity;
 
+import com.vincula.enums.Sexo;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,6 +23,12 @@ public class Paciente {
 
     @Column(length = 11)
     private String telefone;
+
+    @Column(length = 50)
+    private String email;
+
+    @Column(nullable = false, length = 13)
+    private Sexo sexo;
 
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;

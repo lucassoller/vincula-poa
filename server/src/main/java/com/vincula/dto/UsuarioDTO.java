@@ -33,7 +33,6 @@ public class UsuarioDTO {
     @NotNull(message = "Perfil é obrigatório")
     private PerfilUsuario perfil;
 
-    // Pode ser obrigatório dependendo do perfil (validar no service)
     private Long unidadeSaudeId;
 
     private Boolean ativo;
