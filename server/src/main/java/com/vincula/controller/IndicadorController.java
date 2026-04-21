@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.IndicadorValorDTO;
+import com.vincula.dto.MotivoQuantidadeDTO;
 import com.vincula.service.IndicadorService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -88,5 +89,63 @@ public class IndicadorController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
     ) {
         return ResponseEntity.ok(indicadorService.tempoMedioResolucaoEmHorasPorPeriodo(inicio, fim));
+    }
+
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/tempo-primeira-tentativa")
+    public ResponseEntity<IndicadorValorDTO> tempoMedioAtePrimeiraTentativa() {
+        return ResponseEntity.ok(indicadorService.tempoMedioAtePrimeiraTentativa());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/tempo-primeira-tentativa/unidade/{unidadeSaudeId}")
+    public ResponseEntity<IndicadorValorDTO> tempoMedioAtePrimeiraTentativaPorUnidade(@PathVariable Long unidadeSaudeId) {
+        return ResponseEntity.ok(indicadorService.tempoMedioAtePrimeiraTentativaPorUnidade(unidadeSaudeId));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/motivos-insucesso")
+    public ResponseEntity<List<MotivoQuantidadeDTO>> principaisMotivosInsucesso() {
+        return ResponseEntity.ok(indicadorService.principaisMotivosInsucesso());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/motivos-insucesso/unidade/{unidadeSaudeId}")
+    public ResponseEntity<List<MotivoQuantidadeDTO>> principaisMotivosInsucessoPorUnidade(@PathVariable Long unidadeSaudeId) {
+        return ResponseEntity.ok(indicadorService.principaisMotivosInsucessoPorUnidade(unidadeSaudeId));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/media-tentativas")
+    public ResponseEntity<IndicadorValorDTO> mediaTentativasPorDemanda() {
+        return ResponseEntity.ok(indicadorService.mediaTentativasPorDemanda());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/media-tentativas/unidade/{unidadeSaudeId}")
+    public ResponseEntity<IndicadorValorDTO> mediaTentativasPorDemandaPorUnidade(@PathVariable Long unidadeSaudeId) {
+        return ResponseEntity.ok(indicadorService.mediaTentativasPorDemandaPorUnidade(unidadeSaudeId));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/media-tentativas/periodo")
+    public ResponseEntity<IndicadorValorDTO> mediaTentativasPorDemandaPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorService.mediaTentativasPorDemandaPorPeriodo(inicio, fim));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/media-tentativas/unidade/{unidadeSaudeId}/periodo")
+    public ResponseEntity<IndicadorValorDTO> mediaTentativasPorDemandaPorUnidadeEPeriodo(
+            @PathVariable Long unidadeSaudeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(
+                indicadorService.mediaTentativasPorDemandaPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
+        );
     }
 }

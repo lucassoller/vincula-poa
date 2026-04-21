@@ -1,9 +1,11 @@
 package com.vincula.service;
 
 import com.vincula.dto.IndicadorValorDTO;
+import com.vincula.dto.MotivoQuantidadeDTO;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
+import com.vincula.repository.TentativaContatoRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,9 +15,11 @@ import java.util.List;
 public class IndicadorService {
 
     private final DemandaRepository demandaRepository;
+    private final TentativaContatoRepository tentativaContatoRepository;
 
-    public IndicadorService(DemandaRepository demandaRepository) {
+    public IndicadorService(DemandaRepository demandaRepository, TentativaContatoRepository tentativaContatoRepository) {
         this.demandaRepository = demandaRepository;
+        this.tentativaContatoRepository = tentativaContatoRepository;
     }
 
     public List<IndicadorValorDTO> indicadoresGerais() {
@@ -136,6 +140,105 @@ public class IndicadorService {
                 new IndicadorValorDTO("percentualObito", obito),
                 new IndicadorValorDTO("percentualForaDoTerritorio", foraDoTerritorio),
                 new IndicadorValorDTO("outro", outro)
+        );
+    }
+
+    public List<IndicadorValorDTO> percentualPorDesfechoPorUnidade(Long unidadeSaudeId) {
+        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.FINALIZADA, unidadeSaudeId);
+
+        double encontrado = totalFinalizadas == 0 ? 0.0 :
+                demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.ENCONTRADO, unidadeSaudeId) * 100.0 / totalFinalizadas;
+
+        double naoEncontrado = totalFinalizadas == 0 ? 0.0 :
+                demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.NAO_ENCONTRADO, unidadeSaudeId) * 100.0 / totalFinalizadas;
+
+        double obito = totalFinalizadas == 0 ? 0.0 :
+                demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.OBITO, unidadeSaudeId) * 100.0 / totalFinalizadas;
+
+        double foraDoTerritorio = totalFinalizadas == 0 ? 0.0 :
+                demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.FORA_DO_TERRITORIO, unidadeSaudeId) * 100.0 / totalFinalizadas;
+
+        double outro = totalFinalizadas == 0 ? 0.0 :
+                demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.OUTRO, unidadeSaudeId) * 100.0 / totalFinalizadas;
+
+        return List.of(
+                new IndicadorValorDTO("percentualEncontrado", encontrado),
+                new IndicadorValorDTO("percentualNaoEncontrado", naoEncontrado),
+                new IndicadorValorDTO("percentualObito", obito),
+                new IndicadorValorDTO("percentualForaDoTerritorio", foraDoTerritorio),
+                new IndicadorValorDTO("outro", outro)
+        );
+    }
+
+    public IndicadorValorDTO tempoMedioAtePrimeiraTentativa() {
+        Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHoras();
+
+        return new IndicadorValorDTO(
+                "tempoMedioAtePrimeiraTentativaHoras",
+                valor == null ? 0.0 : valor
+        );
+    }
+
+    public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidade(Long unidadeSaudeId) {
+        Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(unidadeSaudeId);
+
+        return new IndicadorValorDTO(
+                "tempoMedioAtePrimeiraTentativaHoras",
+                valor == null ? 0.0 : valor
+        );
+    }
+
+    public List<MotivoQuantidadeDTO> principaisMotivosInsucesso() {
+        return demandaRepository.listarPrincipaisMotivosInsucesso()
+                .stream()
+                .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
+                .toList();
+    }
+
+    public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorUnidade(Long unidadeSaudeId) {
+        return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidade(unidadeSaudeId)
+                .stream()
+                .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
+                .toList();
+    }
+
+    public IndicadorValorDTO mediaTentativasPorDemanda() {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemanda();
+
+        return new IndicadorValorDTO(
+                "mediaTentativasPorDemanda",
+                valor == null ? 0.0 : valor
+        );
+    }
+
+    public IndicadorValorDTO mediaTentativasPorDemandaPorUnidade(Long unidadeSaudeId) {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidade(unidadeSaudeId);
+
+        return new IndicadorValorDTO(
+                "mediaTentativasPorDemanda",
+                valor == null ? 0.0 : valor
+        );
+    }
+
+    public IndicadorValorDTO mediaTentativasPorDemandaPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorPeriodo(inicio, fim);
+
+        return new IndicadorValorDTO(
+                "mediaTentativasPorDemanda",
+                valor == null ? 0.0 : valor
+        );
+    }
+
+    public IndicadorValorDTO mediaTentativasPorDemandaPorUnidadeEPeriodo(Long unidadeSaudeId,
+                                                                         LocalDateTime inicio,
+                                                                         LocalDateTime fim) {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeEPeriodo(
+                unidadeSaudeId, inicio, fim
+        );
+
+        return new IndicadorValorDTO(
+                "mediaTentativasPorDemanda",
+                valor == null ? 0.0 : valor
         );
     }
 }
