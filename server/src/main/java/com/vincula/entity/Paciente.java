@@ -26,7 +26,8 @@ public class Paciente {
 
     @Column(length = 50)
     private String email;
-
+    
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 13)
     private Sexo sexo;
 
