@@ -5,12 +5,16 @@ import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.enums.Sexo;
+import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.List;
 
 
@@ -70,10 +74,14 @@ public class PacienteService {
 
         UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
 
+        if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDateTime.from(LocalDate.now()))) {
+            throw new BusinessException("Data de nascimento não pode ser futura");
+        }
+
         paciente.setUnidadeSaude(unidadeSaude);
-        paciente.setNome(dto.getNome());
-        paciente.setSobrenome(dto.getSobrenome());
+        paciente.setNomeCompleto(dto.getNomeCompleto());
         paciente.setTelefone(dto.getTelefone());
+        paciente.setDataNascimento(dto.getDataNascimento());
         paciente.setCpf(dto.getCpf());
         paciente.setCns(dto.getCns());
         paciente.setEmail(dto.getEmail());
@@ -93,6 +101,11 @@ public class PacienteService {
     }
 
     private void validarCpfECnsCreate(PacienteDTO dto) {
+        if ((dto.getCpf() == null || dto.getCpf().isBlank()) &&
+                (dto.getCns() == null || dto.getCns().isBlank())) {
+            throw new BusinessException("Paciente deve informar CPF ou CNS");
+        }
+
         if (pacienteRepository.existsByCpf(dto.getCpf())) {
             throw new ConflictException("CPF já cadastrado");
         }
@@ -103,6 +116,11 @@ public class PacienteService {
     }
 
     private void validarCpfECnsUpdate(Long id, PacienteDTO dto) {
+        if ((dto.getCpf() == null || dto.getCpf().isBlank()) &&
+                (dto.getCns() == null || dto.getCns().isBlank())) {
+            throw new BusinessException("Paciente deve informar CPF ou CNS");
+        }
+
         if (pacienteRepository.existsByCpfAndIdNot(dto.getCpf(), id)) {
             throw new ConflictException("CPF já cadastrado");
         }
@@ -127,10 +145,14 @@ public class PacienteService {
 
         UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
 
+        if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDateTime.from(LocalDate.now()))) {
+            throw new BusinessException("Data de nascimento não pode ser futura");
+        }
+
         Paciente entity = new Paciente();
-        entity.setNome(dto.getNome());
-        entity.setSobrenome(dto.getSobrenome());
+        entity.setNomeCompleto(dto.getNomeCompleto());
         entity.setTelefone(dto.getTelefone());
+        entity.setDataNascimento(dto.getDataNascimento());
         entity.setCpf(dto.getCpf());
         entity.setCns(dto.getCns());
         entity.setEndereco(endereco);
@@ -146,9 +168,9 @@ public class PacienteService {
         PacienteDTO dto = new PacienteDTO();
 
         dto.setId(entity.getId());
-        dto.setNome(entity.getNome());
-        dto.setSobrenome(entity.getSobrenome());
+        dto.setNomeCompleto(entity.getNomeCompleto());
         dto.setTelefone(entity.getTelefone());
+        dto.setDataNascimento(entity.getDataNascimento());
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));

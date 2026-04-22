@@ -1,4 +1,4 @@
-package com.vincula.dto;
+package com.vincula.dto.projection;
 
 public interface MotivoQuantidadeProjection {
     String getMotivo();

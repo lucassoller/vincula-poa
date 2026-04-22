@@ -4,6 +4,7 @@ import com.vincula.enums.Sexo;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -16,13 +17,13 @@ public class Paciente {
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String nome;
-
-    @Column(nullable = false, length = 100)
-    private String sobrenome;
+    private String nomeCompleto;
 
     @Column(length = 11)
     private String telefone;
+
+    @Column()
+    private LocalDateTime dataNascimento;
 
     @Column(length = 50)
     private String email;
@@ -31,10 +32,10 @@ public class Paciente {
     @Column(nullable = false, length = 13)
     private Sexo sexo;
 
-    @Column(nullable = false, unique = true, length = 11)
+    @Column(unique = true, length = 11)
     private String cpf;
 
-    @Column(nullable = false, unique = true, length = 15)
+    @Column(unique = true, length = 15)
     private String cns;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

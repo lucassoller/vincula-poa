@@ -1,6 +1,6 @@
 package com.vincula.repository;
 
-import com.vincula.dto.MotivoQuantidadeProjection;
+import com.vincula.dto.projection.MotivoQuantidadeProjection;
 import com.vincula.entity.Demanda;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
