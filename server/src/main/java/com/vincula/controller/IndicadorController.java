@@ -5,6 +5,8 @@ import com.vincula.dto.IndicadorValorDTO;
 import com.vincula.dto.MotivoQuantidadeDTO;
 import com.vincula.service.IndicadorService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -193,5 +195,60 @@ public class IndicadorController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
     ) {
         return ResponseEntity.ok(indicadorService.dashboardPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim));
+    }
+
+    // =========================
+    // EXPORTACAO
+    // =========================
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping(value = "/dashboard/exportar", produces = "text/csv")
+    public ResponseEntity<String> exportarDashboardGeralCsv() {
+        String csv = indicadorService.exportarDashboardGeralCsv();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=dashboard-geral.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(csv);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/dashboard/unidade/{unidadeSaudeId}/exportar", produces = "text/csv")
+    public ResponseEntity<String> exportarDashboardPorUnidadeCsv(@PathVariable Long unidadeSaudeId) {
+        String csv = indicadorService.exportarDashboardPorUnidadeCsv(unidadeSaudeId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=dashboard-unidade-" + unidadeSaudeId + ".csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(csv);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/dashboard/periodo/exportar", produces = "text/csv")
+    public ResponseEntity<String> exportarDashboardPorPeriodoCsv(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        String csv = indicadorService.exportarDashboardPorPeriodoCsv(inicio, fim);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=dashboard-periodo.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(csv);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/dashboard/unidade/{unidadeSaudeId}/periodo/exportar", produces = "text/csv")
+    public ResponseEntity<String> exportarDashboardPorUnidadeEPeriodoCsv(
+            @PathVariable Long unidadeSaudeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        String csv = indicadorService.exportarDashboardPorUnidadeEPeriodoCsv(unidadeSaudeId, inicio, fim);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=dashboard-unidade-" + unidadeSaudeId + "-periodo.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(csv);
     }
 }

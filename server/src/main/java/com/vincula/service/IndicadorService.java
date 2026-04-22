@@ -468,4 +468,58 @@ public class IndicadorService {
 
         throw new BusinessException("Usuário não pode acessar indicadores por unidade");
     }
+
+    private String montarCsvDashboard(DashboardIndicadoresDTO dashboard) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("categoria,indicador,valor\n");
+
+        for (IndicadorValorDTO item : dashboard.getProducao()) {
+            sb.append("producao,")
+                    .append(item.getIndicador()).append(",")
+                    .append(item.getValor()).append("\n");
+        }
+
+        for (IndicadorValorDTO item : dashboard.getProcesso()) {
+            sb.append("processo,")
+                    .append(item.getIndicador()).append(",")
+                    .append(item.getValor()).append("\n");
+        }
+
+        for (IndicadorValorDTO item : dashboard.getResultado()) {
+            sb.append("resultado,")
+                    .append(item.getIndicador()).append(",")
+                    .append(item.getValor()).append("\n");
+        }
+
+        for (MotivoQuantidadeDTO item : dashboard.getPrincipaisMotivosInsucesso()) {
+            sb.append("motivo_insucesso,")
+                    .append(item.getMotivo()).append(",")
+                    .append(item.getQuantidade()).append("\n");
+        }
+
+        return "\uFEFF" + sb.toString();
+    }
+
+    public String exportarDashboardGeralCsv() {
+        DashboardIndicadoresDTO dashboard = dashboardGeral();
+        return montarCsvDashboard(dashboard);
+    }
+
+    public String exportarDashboardPorUnidadeCsv(Long unidadeSaudeId) {
+        DashboardIndicadoresDTO dashboard = dashboardPorUnidade(unidadeSaudeId);
+        return montarCsvDashboard(dashboard);
+    }
+
+    public String exportarDashboardPorPeriodoCsv(LocalDateTime inicio, LocalDateTime fim) {
+        DashboardIndicadoresDTO dashboard = dashboardPorPeriodo(inicio, fim);
+        return montarCsvDashboard(dashboard);
+    }
+
+    public String exportarDashboardPorUnidadeEPeriodoCsv(Long unidadeSaudeId,
+                                                         LocalDateTime inicio,
+                                                         LocalDateTime fim) {
+        DashboardIndicadoresDTO dashboard = dashboardPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
+        return montarCsvDashboard(dashboard);
+    }
 }

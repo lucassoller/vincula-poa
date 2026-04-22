@@ -57,6 +57,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getUsuarioAutenticadoDTO());
     }
 
+    // COMENTAR ROLE PARA CADASTRAR USUARIO
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id,
