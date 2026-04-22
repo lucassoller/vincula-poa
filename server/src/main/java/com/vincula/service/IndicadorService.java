@@ -1,8 +1,11 @@
 package com.vincula.service;
 
 import com.vincula.dto.*;
+import com.vincula.entity.Usuario;
 import com.vincula.enums.DesfechoDemanda;
+import com.vincula.enums.PerfilUsuario;
 import com.vincula.enums.StatusDemanda;
+import com.vincula.exception.BusinessException;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.TentativaContatoRepository;
 import org.springframework.stereotype.Service;
@@ -15,14 +18,19 @@ public class IndicadorService {
 
     private final DemandaRepository demandaRepository;
     private final TentativaContatoRepository tentativaContatoRepository;
+    private final UsuarioService usuarioService;
 
     public IndicadorService(DemandaRepository demandaRepository,
-                            TentativaContatoRepository tentativaContatoRepository) {
+                            TentativaContatoRepository tentativaContatoRepository,
+                            UsuarioService usuarioService) {
         this.demandaRepository = demandaRepository;
         this.tentativaContatoRepository = tentativaContatoRepository;
+        this.usuarioService = usuarioService;
     }
 
     public List<IndicadorValorDTO> indicadoresGerais() {
+        validarAcessoDashboardGeral();
+
         return List.of(
                 new IndicadorValorDTO("totalDemandas",  demandaRepository.countBy()),
                 new IndicadorValorDTO("demandasAbertas",  demandaRepository.countByStatus(StatusDemanda.ABERTA)),
@@ -32,6 +40,8 @@ public class IndicadorService {
     }
 
     public List<IndicadorValorDTO> indicadoresPorUnidade(Long unidadeSaudeId) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         return List.of(
                 new IndicadorValorDTO("totalDemandas",  demandaRepository.countByUnidadeSaudeId(unidadeSaudeId)),
                 new IndicadorValorDTO("demandasAbertas",  demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.ABERTA, unidadeSaudeId)),
@@ -41,6 +51,8 @@ public class IndicadorService {
     }
 
     public List<IndicadorValorDTO> indicadoresPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoDashboardGeral();
+
         return List.of(
                 new IndicadorValorDTO("demandasCriadas",  demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)),
                 new IndicadorValorDTO("demandasFinalizadas",  demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim))
@@ -48,6 +60,8 @@ public class IndicadorService {
     }
 
     public List<IndicadorValorDTO> indicadoresPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         return List.of(
                 new IndicadorValorDTO("demandasCriadas",  demandaRepository.countByUnidadeSaudeIdAndDataHoraCriacaoBetween(unidadeSaudeId, inicio, fim)),
                 new IndicadorValorDTO("demandasFinalizadas",  demandaRepository.countByUnidadeSaudeIdAndDataHoraFinalizacaoBetween(unidadeSaudeId, inicio, fim))
@@ -55,6 +69,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO percentualDemandasResolvidas() {
+        validarAcessoDashboardGeral();
+
         double total = demandaRepository.countBy();
         double finalizadas = demandaRepository.countByStatus(StatusDemanda.FINALIZADA);
 
@@ -64,6 +80,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO percentualDemandasResolvidasPorUnidade(Long unidadeSaudeId) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         double total = demandaRepository.countByUnidadeSaudeId(unidadeSaudeId);
         double finalizadas = demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.FINALIZADA, unidadeSaudeId);
 
@@ -73,6 +91,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO percentualDemandasResolvidasPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoDashboardGeral();
+
         double total = demandaRepository.countByDataHoraCriacaoBetween(inicio, fim);
         double finalizadas = demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, inicio, fim);
 
@@ -82,6 +102,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO percentualDemandasResolvidasPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         double total = demandaRepository.countByUnidadeSaudeIdAndDataHoraCriacaoBetween(unidadeSaudeId, inicio, fim);
         double finalizadas = demandaRepository.countByStatusAndUnidadeSaudeIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeSaudeId, inicio, fim);
 
@@ -91,6 +113,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHoras() {
+        validarAcessoDashboardGeral();
+
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundos();
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
@@ -98,6 +122,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidade(Long unidadeSaudeId) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidade(unidadeSaudeId);
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
@@ -105,6 +131,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoDashboardGeral();
+
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorPeriodo(inicio, fim);
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
@@ -112,6 +140,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
@@ -119,6 +149,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativa() {
+        validarAcessoDashboardGeral();
+
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHoras();
 
         return new IndicadorValorDTO(
@@ -126,6 +158,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidade(Long unidadeSaudeId) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(unidadeSaudeId);
 
         return new IndicadorValorDTO(
@@ -133,6 +167,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoDashboardGeral();
+
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorPeriodo(inicio, fim);
 
         return new IndicadorValorDTO(
@@ -140,6 +176,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
 
         return new IndicadorValorDTO(
@@ -147,6 +185,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO mediaTentativasPorDemanda() {
+        validarAcessoDashboardGeral();
+
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemanda();
 
         return new IndicadorValorDTO(
@@ -154,6 +194,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorUnidade(Long unidadeSaudeId) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidade(unidadeSaudeId);
 
         return new IndicadorValorDTO(
@@ -161,6 +203,8 @@ public class IndicadorService {
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoDashboardGeral();
+
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorPeriodo(inicio, fim);
 
         return new IndicadorValorDTO(
@@ -170,6 +214,8 @@ public class IndicadorService {
     public IndicadorValorDTO mediaTentativasPorDemandaPorUnidadeEPeriodo(Long unidadeSaudeId,
                                                                          LocalDateTime inicio,
                                                                          LocalDateTime fim) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeEPeriodo(
                 unidadeSaudeId, inicio, fim
         );
@@ -179,6 +225,8 @@ public class IndicadorService {
     }
 
     public List<IndicadorValorDTO> percentualPorDesfecho() {
+        validarAcessoDashboardGeral();
+
         double totalFinalizadas = demandaRepository.countByStatus(StatusDemanda.FINALIZADA);
 
         double encontrado = totalFinalizadas == 0 ? 0.0 :
@@ -202,6 +250,8 @@ public class IndicadorService {
     }
 
     public List<IndicadorValorDTO> percentualPorDesfechoPorUnidade(Long unidadeSaudeId) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.FINALIZADA, unidadeSaudeId);
 
         double encontrado = totalFinalizadas == 0 ? 0.0 :
@@ -225,6 +275,8 @@ public class IndicadorService {
     }
 
     public List<IndicadorValorDTO> percentualPorDesfechoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoDashboardGeral();
+
         double totalFinalizadas = demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, inicio, fim);
 
         double encontrado = totalFinalizadas == 0 ? 0.0 :
@@ -248,6 +300,8 @@ public class IndicadorService {
     }
 
     public List<IndicadorValorDTO> percentualPorDesfechoPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSaudeIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeSaudeId, inicio, fim);
 
         double encontrado = totalFinalizadas == 0 ? 0.0 :
@@ -271,6 +325,8 @@ public class IndicadorService {
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucesso() {
+        validarAcessoDashboardGeral();
+
         return demandaRepository.listarPrincipaisMotivosInsucesso()
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
@@ -278,6 +334,8 @@ public class IndicadorService {
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorUnidade(Long unidadeSaudeId) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidade(unidadeSaudeId)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
@@ -285,6 +343,8 @@ public class IndicadorService {
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoDashboardGeral();
+
         return demandaRepository.listarPrincipaisMotivosInsucessoPorPeriodo(inicio, fim)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
@@ -292,6 +352,8 @@ public class IndicadorService {
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
@@ -299,6 +361,8 @@ public class IndicadorService {
     }
 
     public DashboardIndicadoresDTO dashboardGeral() {
+        validarAcessoDashboardGeral();
+
         List<IndicadorValorDTO> producao = indicadoresGerais();
 
         List<IndicadorValorDTO> processo = List.of(
@@ -316,6 +380,8 @@ public class IndicadorService {
     }
 
     public DashboardIndicadoresDTO dashboardPorUnidade(Long unidadeSaudeId) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         List<IndicadorValorDTO> producao = indicadoresPorUnidade(unidadeSaudeId);
 
         List<IndicadorValorDTO> processo = List.of(
@@ -333,6 +399,8 @@ public class IndicadorService {
     }
 
     public DashboardIndicadoresDTO dashboardPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoDashboardGeral();
+
         List<IndicadorValorDTO> producao = indicadoresPorPeriodo(inicio, fim);
 
         List<IndicadorValorDTO> processo = List.of(
@@ -350,6 +418,8 @@ public class IndicadorService {
     }
 
     public DashboardIndicadoresDTO dashboardPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        validarAcessoUnidade(unidadeSaudeId);
+
         List<IndicadorValorDTO> producao = indicadoresPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
 
         List<IndicadorValorDTO> processo = List.of(
@@ -372,5 +442,30 @@ public class IndicadorService {
         }
 
         return Math.round(valor * 100.0) / 100.0;
+    }
+
+    private void validarAcessoDashboardGeral() {
+        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+
+        if (usuario.getPerfil() != PerfilUsuario.GESTAO_MUNICIPAL) {
+            throw new BusinessException("Usuário não pode acessar indicadores gerais");
+        }
+    }
+
+    private void validarAcessoUnidade(Long unidadeSaudeId) {
+        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+
+        if (usuario.getPerfil() == PerfilUsuario.GESTAO_MUNICIPAL) {
+            return;
+        }
+
+        if (usuario.getPerfil() == PerfilUsuario.EXECUTOR_APS) {
+            if (usuario.getUnidadeSaude() == null || !usuario.getUnidadeSaude().getId().equals(unidadeSaudeId)) {
+                throw new BusinessException("Usuário não pode acessar indicadores de outra unidade");
+            }
+            return;
+        }
+
+        throw new BusinessException("Usuário não pode acessar indicadores por unidade");
     }
 }
