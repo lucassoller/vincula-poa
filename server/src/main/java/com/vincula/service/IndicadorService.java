@@ -1,5 +1,6 @@
 package com.vincula.service;
 
+import com.vincula.constants.IndicadorNomes;
 import com.vincula.dto.*;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.DesfechoDemanda;
@@ -9,7 +10,6 @@ import com.vincula.exception.BusinessException;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.TentativaContatoRepository;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,10 +32,10 @@ public class IndicadorService {
         validarAcessoDashboardGeral();
 
         return List.of(
-                new IndicadorValorDTO("totalDemandas",  demandaRepository.countBy()),
-                new IndicadorValorDTO("demandasAbertas",  demandaRepository.countByStatus(StatusDemanda.ABERTA)),
-                new IndicadorValorDTO("demandasEmAndamento",  demandaRepository.countByStatus(StatusDemanda.EM_ANDAMENTO)),
-                new IndicadorValorDTO("demandasFinalizadas",  demandaRepository.countByStatus(StatusDemanda.FINALIZADA))
+                new IndicadorValorDTO(IndicadorNomes.TOTAL_DEMANDAS,  demandaRepository.countBy()),
+                new IndicadorValorDTO(IndicadorNomes.DEMANDAS_ABERTAS,  demandaRepository.countByStatus(StatusDemanda.ABERTA)),
+                new IndicadorValorDTO(IndicadorNomes.DEMANDAS_ANDAMENTO,  demandaRepository.countByStatus(StatusDemanda.EM_ANDAMENTO)),
+                new IndicadorValorDTO(IndicadorNomes.DEMANDAS_FINALIZADAS,  demandaRepository.countByStatus(StatusDemanda.FINALIZADA))
         );
     }
 
@@ -43,10 +43,10 @@ public class IndicadorService {
         validarAcessoUnidade(unidadeSaudeId);
 
         return List.of(
-                new IndicadorValorDTO("totalDemandas",  demandaRepository.countByUnidadeSaudeId(unidadeSaudeId)),
-                new IndicadorValorDTO("demandasAbertas",  demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.ABERTA, unidadeSaudeId)),
-                new IndicadorValorDTO("demandasEmAndamento",  demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.EM_ANDAMENTO, unidadeSaudeId)),
-                new IndicadorValorDTO("demandasFinalizadas",  demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.FINALIZADA, unidadeSaudeId))
+                new IndicadorValorDTO(IndicadorNomes.TOTAL_DEMANDAS,  demandaRepository.countByUnidadeSaudeId(unidadeSaudeId)),
+                new IndicadorValorDTO(IndicadorNomes.DEMANDAS_ABERTAS,  demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.ABERTA, unidadeSaudeId)),
+                new IndicadorValorDTO(IndicadorNomes.DEMANDAS_ANDAMENTO,  demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.EM_ANDAMENTO, unidadeSaudeId)),
+                new IndicadorValorDTO(IndicadorNomes.DEMANDAS_FINALIZADAS,  demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.FINALIZADA, unidadeSaudeId))
         );
     }
 
@@ -54,8 +54,8 @@ public class IndicadorService {
         validarAcessoDashboardGeral();
 
         return List.of(
-                new IndicadorValorDTO("demandasCriadas",  demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)),
-                new IndicadorValorDTO("demandasFinalizadas",  demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim))
+                new IndicadorValorDTO(IndicadorNomes.TOTAL_DEMANDAS,  demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)),
+                new IndicadorValorDTO(IndicadorNomes.DEMANDAS_FINALIZADAS,  demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim))
         );
     }
 
@@ -63,8 +63,8 @@ public class IndicadorService {
         validarAcessoUnidade(unidadeSaudeId);
 
         return List.of(
-                new IndicadorValorDTO("demandasCriadas",  demandaRepository.countByUnidadeSaudeIdAndDataHoraCriacaoBetween(unidadeSaudeId, inicio, fim)),
-                new IndicadorValorDTO("demandasFinalizadas",  demandaRepository.countByUnidadeSaudeIdAndDataHoraFinalizacaoBetween(unidadeSaudeId, inicio, fim))
+                new IndicadorValorDTO(IndicadorNomes.TOTAL_DEMANDAS,  demandaRepository.countByUnidadeSaudeIdAndDataHoraCriacaoBetween(unidadeSaudeId, inicio, fim)),
+                new IndicadorValorDTO(IndicadorNomes.DEMANDAS_FINALIZADAS,  demandaRepository.countByUnidadeSaudeIdAndDataHoraFinalizacaoBetween(unidadeSaudeId, inicio, fim))
         );
     }
 
@@ -76,7 +76,7 @@ public class IndicadorService {
 
         double percentual = total == 0 ? 0.0 : ( finalizadas / total) * 100.0;
 
-        return new IndicadorValorDTO("percentualDemandasResolvidas", arredondarDuasCasas(percentual));
+        return new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_RESOLVIDAS, arredondarDuasCasas(percentual));
     }
 
     public IndicadorValorDTO percentualDemandasResolvidasPorUnidade(Long unidadeSaudeId) {
@@ -87,7 +87,7 @@ public class IndicadorService {
 
         double percentual = total == 0 ? 0.0 : ( finalizadas / total) * 100.0;
 
-        return new IndicadorValorDTO("percentualDemandasResolvidas", arredondarDuasCasas(percentual));
+        return new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_RESOLVIDAS, arredondarDuasCasas(percentual));
     }
 
     public IndicadorValorDTO percentualDemandasResolvidasPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
@@ -98,7 +98,7 @@ public class IndicadorService {
 
         double percentual = total == 0 ? 0.0 : ( finalizadas / total) * 100.0;
 
-        return new IndicadorValorDTO("percentualDemandasResolvidas", arredondarDuasCasas(percentual));
+        return new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_RESOLVIDAS, arredondarDuasCasas(percentual));
     }
 
     public IndicadorValorDTO percentualDemandasResolvidasPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
@@ -109,7 +109,7 @@ public class IndicadorService {
 
         double percentual = total == 0 ? 0.0 : ( finalizadas / total) * 100.0;
 
-        return new IndicadorValorDTO("percentualDemandasResolvidas", arredondarDuasCasas(percentual));
+        return new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_RESOLVIDAS, arredondarDuasCasas(percentual));
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHoras() {
@@ -118,7 +118,7 @@ public class IndicadorService {
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundos();
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
-        return new IndicadorValorDTO("tempoMedioResolucaoHoras", arredondarDuasCasas(mediaHoras));
+        return new IndicadorValorDTO(IndicadorNomes.TEMPO_MEDIO_RESOLUCAO, arredondarDuasCasas(mediaHoras));
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidade(Long unidadeSaudeId) {
@@ -127,7 +127,7 @@ public class IndicadorService {
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidade(unidadeSaudeId);
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
-        return new IndicadorValorDTO("tempoMedioResolucaoHoras", arredondarDuasCasas(mediaHoras));
+        return new IndicadorValorDTO(IndicadorNomes.TEMPO_MEDIO_RESOLUCAO, arredondarDuasCasas(mediaHoras));
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
@@ -136,7 +136,7 @@ public class IndicadorService {
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorPeriodo(inicio, fim);
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
-        return new IndicadorValorDTO("tempoMedioResolucaoHoras", arredondarDuasCasas(mediaHoras));
+        return new IndicadorValorDTO(IndicadorNomes.TEMPO_MEDIO_RESOLUCAO, arredondarDuasCasas(mediaHoras));
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
@@ -145,7 +145,7 @@ public class IndicadorService {
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
-        return new IndicadorValorDTO("tempoMedioResolucaoHoras", arredondarDuasCasas(mediaHoras));
+        return new IndicadorValorDTO(IndicadorNomes.TEMPO_MEDIO_RESOLUCAO, arredondarDuasCasas(mediaHoras));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativa() {
@@ -154,7 +154,7 @@ public class IndicadorService {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHoras();
 
         return new IndicadorValorDTO(
-                "tempoMedioAtePrimeiraTentativaHoras", arredondarDuasCasas(valor));
+                IndicadorNomes.TEMPO_PRIMEIRA_TENTATIVA, arredondarDuasCasas(valor));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidade(Long unidadeSaudeId) {
@@ -163,7 +163,7 @@ public class IndicadorService {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(unidadeSaudeId);
 
         return new IndicadorValorDTO(
-                "tempoMedioAtePrimeiraTentativaHoras", arredondarDuasCasas(valor));
+                IndicadorNomes.TEMPO_PRIMEIRA_TENTATIVA, arredondarDuasCasas(valor));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
@@ -172,7 +172,7 @@ public class IndicadorService {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorPeriodo(inicio, fim);
 
         return new IndicadorValorDTO(
-                "tempoMedioAtePrimeiraTentativaHoras", arredondarDuasCasas(valor));
+                IndicadorNomes.TEMPO_PRIMEIRA_TENTATIVA, arredondarDuasCasas(valor));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
@@ -181,7 +181,7 @@ public class IndicadorService {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
 
         return new IndicadorValorDTO(
-                "tempoMedioAtePrimeiraTentativaHoras", arredondarDuasCasas(valor));
+                IndicadorNomes.TEMPO_PRIMEIRA_TENTATIVA, arredondarDuasCasas(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemanda() {
@@ -190,7 +190,7 @@ public class IndicadorService {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemanda();
 
         return new IndicadorValorDTO(
-                "mediaTentativasPorDemanda", arredondarDuasCasas(valor));
+                IndicadorNomes.MEDIA_TENTATIVAS, arredondarDuasCasas(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorUnidade(Long unidadeSaudeId) {
@@ -199,7 +199,7 @@ public class IndicadorService {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidade(unidadeSaudeId);
 
         return new IndicadorValorDTO(
-                "mediaTentativasPorDemanda", arredondarDuasCasas(valor));
+                IndicadorNomes.MEDIA_TENTATIVAS, arredondarDuasCasas(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
@@ -208,7 +208,7 @@ public class IndicadorService {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorPeriodo(inicio, fim);
 
         return new IndicadorValorDTO(
-                "mediaTentativasPorDemanda", arredondarDuasCasas(valor));
+                IndicadorNomes.MEDIA_TENTATIVAS, arredondarDuasCasas(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorUnidadeEPeriodo(Long unidadeSaudeId,
@@ -221,7 +221,7 @@ public class IndicadorService {
         );
 
         return new IndicadorValorDTO(
-                "mediaTentativasPorDemanda", arredondarDuasCasas(valor));
+                IndicadorNomes.MEDIA_TENTATIVAS, arredondarDuasCasas(valor));
     }
 
     public List<IndicadorValorDTO> percentualPorDesfecho() {
@@ -242,10 +242,10 @@ public class IndicadorService {
                 demandaRepository.countByDesfecho(DesfechoDemanda.FORA_DO_TERRITORIO) * 100.0 / totalFinalizadas;
 
         return List.of(
-                new IndicadorValorDTO("percentualEncontrado", arredondarDuasCasas(encontrado)),
-                new IndicadorValorDTO("percentualNaoEncontrado", arredondarDuasCasas(naoEncontrado)),
-                new IndicadorValorDTO("percentualObito", arredondarDuasCasas(obito)),
-                new IndicadorValorDTO("percentualForaDoTerritorio", arredondarDuasCasas(foraDoTerritorio))
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_ENCONTRADO, arredondarDuasCasas(encontrado)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_NAO_ENCONTRADO, arredondarDuasCasas(naoEncontrado)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_OBITO, arredondarDuasCasas(obito)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_FORA_TERRITORIO, arredondarDuasCasas(foraDoTerritorio))
         );
     }
 
@@ -267,10 +267,10 @@ public class IndicadorService {
                 demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.FORA_DO_TERRITORIO, unidadeSaudeId) * 100.0 / totalFinalizadas;
 
         return List.of(
-                new IndicadorValorDTO("percentualEncontrado", arredondarDuasCasas(encontrado)),
-                new IndicadorValorDTO("percentualNaoEncontrado", arredondarDuasCasas(naoEncontrado)),
-                new IndicadorValorDTO("percentualObito", arredondarDuasCasas(obito)),
-                new IndicadorValorDTO("percentualForaDoTerritorio", arredondarDuasCasas(foraDoTerritorio))
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_ENCONTRADO, arredondarDuasCasas(encontrado)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_NAO_ENCONTRADO, arredondarDuasCasas(naoEncontrado)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_OBITO, arredondarDuasCasas(obito)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_FORA_TERRITORIO, arredondarDuasCasas(foraDoTerritorio))
         );
     }
 
@@ -292,10 +292,10 @@ public class IndicadorService {
                 demandaRepository.countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda.FORA_DO_TERRITORIO, inicio, fim) * 100.0 / totalFinalizadas;
 
         return List.of(
-                new IndicadorValorDTO("percentualEncontrado", arredondarDuasCasas(encontrado)),
-                new IndicadorValorDTO("percentualNaoEncontrado", arredondarDuasCasas(naoEncontrado)),
-                new IndicadorValorDTO("percentualObito", arredondarDuasCasas(obito)),
-                new IndicadorValorDTO("percentualForaDoTerritorio", arredondarDuasCasas(foraDoTerritorio))
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_ENCONTRADO, arredondarDuasCasas(encontrado)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_NAO_ENCONTRADO, arredondarDuasCasas(naoEncontrado)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_OBITO, arredondarDuasCasas(obito)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_FORA_TERRITORIO, arredondarDuasCasas(foraDoTerritorio))
         );
     }
 
@@ -317,10 +317,10 @@ public class IndicadorService {
                 demandaRepository.countByDesfechoAndUnidadeSaudeIdAndDataHoraCriacaoBetween(DesfechoDemanda.FORA_DO_TERRITORIO, unidadeSaudeId, inicio, fim) * 100.0 / totalFinalizadas;
 
         return List.of(
-                new IndicadorValorDTO("percentualEncontrado", arredondarDuasCasas(encontrado)),
-                new IndicadorValorDTO("percentualNaoEncontrado", arredondarDuasCasas(naoEncontrado)),
-                new IndicadorValorDTO("percentualObito", arredondarDuasCasas(obito)),
-                new IndicadorValorDTO("percentualForaDoTerritorio", arredondarDuasCasas(foraDoTerritorio))
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_ENCONTRADO, arredondarDuasCasas(encontrado)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_NAO_ENCONTRADO, arredondarDuasCasas(naoEncontrado)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_OBITO, arredondarDuasCasas(obito)),
+                new IndicadorValorDTO(IndicadorNomes.PERCENTUAL_FORA_TERRITORIO, arredondarDuasCasas(foraDoTerritorio))
         );
     }
 
