@@ -44,7 +44,15 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     double countByDataHoraFinalizacaoBetween(LocalDateTime inicio, LocalDateTime fim);
 
     double countByUnidadeSaudeIdAndDataHoraFinalizacaoBetween(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim);
-    
+
+    double countByStatusAndDataHoraCriacaoBetween(StatusDemanda status, LocalDateTime inicio, LocalDateTime fim);
+
+    double countByStatusAndUnidadeSaudeIdAndDataHoraCriacaoBetween(StatusDemanda status, Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim);
+
+    double countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda desfecho, LocalDateTime inicio, LocalDateTime fim);
+
+    double countByDesfechoAndUnidadeSaudeIdAndDataHoraCriacaoBetween(DesfechoDemanda desfecho, Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim);
+
     @Query(value = """
        SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
        FROM demanda d
@@ -69,6 +77,17 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     Double calcularTempoMedioResolucaoEmSegundosPorPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 
     @Query(value = """
+        SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
+        FROM demanda d
+        WHERE d.data_hora_finalizacao IS NOT NULL
+          AND d.unidade_saude_id = :unidadeSaudeId
+          AND d.data_hora_criacao BETWEEN :inicio AND :fim
+        """, nativeQuery = true)
+    Double calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(@Param("unidadeSaudeId") Long unidadeSaudeId,
+                                                                   @Param("inicio") LocalDateTime inicio,
+                                                                   @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
     SELECT d.motivo AS motivo, COUNT(*) AS quantidade
     FROM demanda d
     WHERE d.desfecho IN ('NAO_ENCONTRADO', 'FORA_DO_TERRITORIO')
@@ -86,5 +105,29 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     ORDER BY quantidade DESC
     """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidade(@Param("unidadeSaudeId") Long unidadeSaudeId);
+
+    @Query(value = """
+        SELECT d.motivo AS motivo, COUNT(*) AS quantidade
+        FROM demanda d
+        WHERE d.desfecho IN ('NAO_ENCONTRADO', 'FORA_DO_TERRITORIO')
+          AND d.data_hora_criacao BETWEEN :inicio AND :fim
+        GROUP BY d.motivo
+        ORDER BY quantidade DESC
+        """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorPeriodo(@Param("inicio") LocalDateTime inicio,
+                                                                                @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+        SELECT d.motivo AS motivo, COUNT(*) AS quantidade
+        FROM demanda d
+        WHERE d.desfecho IN ('NAO_ENCONTRADO', 'FORA_DO_TERRITORIO')
+          AND d.unidade_saude_id = :unidadeSaudeId
+          AND d.data_hora_criacao BETWEEN :inicio AND :fim
+        GROUP BY d.motivo
+        ORDER BY quantidade DESC
+        """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(@Param("unidadeSaudeId") Long unidadeSaudeId,
+                                                                                        @Param("inicio") LocalDateTime inicio,
+                                                                                        @Param("fim") LocalDateTime fim);
 
 }

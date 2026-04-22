@@ -63,16 +63,16 @@ public class DemandaService {
 
         Demanda entity = buscarDemandaPorId(id);
 
+        if (entity.getStatus() == StatusDemanda.FINALIZADA) {
+            throw new BusinessException("Demanda já está finalizada");
+        }
+
         if (desfecho == null) {
             throw new BusinessException("Desfecho é obrigatório");
         }
 
-        if (desfecho == DesfechoDemanda.OUTRO && (descricao == null || descricao.isBlank())) {
-            throw new BusinessException("Descrição é obrigatória para desfecho OUTRO");
-        }
-
-        if (entity.getStatus() == StatusDemanda.FINALIZADA) {
-            throw new BusinessException("Demanda já está finalizada");
+        if (descricao == null || descricao.isBlank()) {
+            throw new BusinessException("Descrição é obrigatória para desfecho");
         }
 
         Usuario usuario = usuarioService.buscarUsuarioAutenticado();
