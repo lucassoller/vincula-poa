@@ -39,7 +39,7 @@ public class Demanda {
     private LocalDateTime dataHoraFinalizacao;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 18)
+    @Column(length = 20)
     private DesfechoDemanda desfecho;
 
     @Column(length = 500)

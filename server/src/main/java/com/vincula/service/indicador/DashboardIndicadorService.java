@@ -7,9 +7,7 @@ import com.vincula.exception.BusinessException;
 import com.vincula.export.DashboardIndicadoresExporter;
 import com.vincula.service.UsuarioService;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class DashboardIndicadorService {
@@ -39,7 +37,7 @@ public class DashboardIndicadorService {
 
         return new DashboardIndicadoresDTO(
                 indicadorProducaoService.indicadoresGerais(),
-                montarProcessoGeral(),
+                indicadorProcessoService.montarProcessoGeral(),
                 indicadorResultadoService.percentualPorDesfecho(),
                 indicadorInsucessoService.principaisMotivosInsucesso()
         );
@@ -50,7 +48,7 @@ public class DashboardIndicadorService {
 
         return new DashboardIndicadoresDTO(
                 indicadorProducaoService.indicadoresPorUnidade(unidadeSaudeId),
-                montarProcessoPorUnidade(unidadeSaudeId),
+                indicadorProcessoService.montarProcessoPorUnidade(unidadeSaudeId),
                 indicadorResultadoService.percentualPorDesfechoPorUnidade(unidadeSaudeId),
                 indicadorInsucessoService.principaisMotivosInsucessoPorUnidade(unidadeSaudeId)
         );
@@ -61,7 +59,7 @@ public class DashboardIndicadorService {
 
         return new DashboardIndicadoresDTO(
                 indicadorProducaoService.indicadoresPorPeriodo(inicio, fim),
-                montarProcessoPorPeriodo(inicio, fim),
+                indicadorProcessoService.montarProcessoPorPeriodo(inicio, fim),
                 indicadorResultadoService.percentualPorDesfechoPorPeriodo(inicio, fim),
                 indicadorInsucessoService.principaisMotivosInsucessoPorPeriodo(inicio, fim)
         );
@@ -72,7 +70,7 @@ public class DashboardIndicadorService {
 
         return new DashboardIndicadoresDTO(
                 indicadorProducaoService.indicadoresPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
-                montarProcessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
+                indicadorProcessoService.montarProcessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorResultadoService.percentualPorDesfechoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorInsucessoService.principaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
         );
@@ -92,42 +90,6 @@ public class DashboardIndicadorService {
 
     public String exportarDashboardPorUnidadeEPeriodoCsv(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
         return csvExporter.exportar(dashboardPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim));
-    }
-
-    private List<IndicadorValorDTO> montarProcessoGeral() {
-        return List.of(
-                indicadorProcessoService.percentualDemandasResolvidas(),
-                indicadorProcessoService.tempoMedioResolucaoEmHoras(),
-                indicadorProcessoService.tempoMedioAtePrimeiraTentativa(),
-                indicadorProcessoService.mediaTentativasPorDemanda()
-        );
-    }
-
-    private List<IndicadorValorDTO> montarProcessoPorUnidade(Long unidadeSaudeId) {
-        return List.of(
-                indicadorProcessoService.percentualDemandasResolvidasPorUnidade(unidadeSaudeId),
-                indicadorProcessoService.tempoMedioResolucaoEmHorasPorUnidade(unidadeSaudeId),
-                indicadorProcessoService.tempoMedioAtePrimeiraTentativaPorUnidade(unidadeSaudeId),
-                indicadorProcessoService.mediaTentativasPorDemandaPorUnidade(unidadeSaudeId)
-        );
-    }
-
-    private List<IndicadorValorDTO> montarProcessoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        return List.of(
-                indicadorProcessoService.percentualDemandasResolvidasPorPeriodo(inicio, fim),
-                indicadorProcessoService.tempoMedioResolucaoEmHorasPorPeriodo(inicio, fim),
-                indicadorProcessoService.tempoMedioAtePrimeiraTentativaPorPeriodo(inicio, fim),
-                indicadorProcessoService.mediaTentativasPorDemandaPorPeriodo(inicio, fim)
-        );
-    }
-
-    private List<IndicadorValorDTO> montarProcessoPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
-        return List.of(
-                indicadorProcessoService.percentualDemandasResolvidasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
-                indicadorProcessoService.tempoMedioResolucaoEmHorasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
-                indicadorProcessoService.tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
-                indicadorProcessoService.mediaTentativasPorDemandaPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
-        );
     }
 
     private void validarAcessoDashboardGeral() {

@@ -5,10 +5,10 @@ import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.TentativaContatoRepository;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class IndicadorProcessoService {
@@ -120,6 +120,66 @@ public class IndicadorProcessoService {
     public IndicadorValorDTO mediaTentativasPorDemandaPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim);
         return new IndicadorValorDTO("Média de tentativas por demanda", arredondar(valor == null ? 0.0 : valor));
+    }
+
+    public IndicadorValorDTO mediaTentativasPorUsuario() {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorUsuario();
+        return new IndicadorValorDTO("Média de tentativas por usuário", arredondar(valor == null ? 0.0 : valor));
+    }
+
+    public IndicadorValorDTO mediaTentativasPorUsuarioPorUnidade(Long unidadeSaudeId) {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorUsuarioPorUnidade(unidadeSaudeId);
+        return new IndicadorValorDTO("Média de tentativas por usuário", arredondar(valor == null ? 0.0 : valor));
+    }
+
+    public IndicadorValorDTO mediaTentativasPorUsuarioPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorUsuarioPorPeriodo(inicio, fim);
+        return new IndicadorValorDTO("Média de tentativas por usuário", arredondar(valor == null ? 0.0 : valor));
+    }
+
+    public IndicadorValorDTO mediaTentativasPorUsuarioPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorUsuarioPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
+        return new IndicadorValorDTO("Média de tentativas por usuário", arredondar(valor == null ? 0.0 : valor));
+    }
+
+    public List<IndicadorValorDTO> montarProcessoGeral() {
+        return List.of(
+                percentualDemandasResolvidas(),
+                tempoMedioResolucaoEmHoras(),
+                tempoMedioAtePrimeiraTentativa(),
+                mediaTentativasPorDemanda(),
+                mediaTentativasPorUsuario()
+        );
+    }
+
+    public List<IndicadorValorDTO> montarProcessoPorUnidade(Long unidadeSaudeId) {
+        return List.of(
+                percentualDemandasResolvidasPorUnidade(unidadeSaudeId),
+                tempoMedioResolucaoEmHorasPorUnidade(unidadeSaudeId),
+                tempoMedioAtePrimeiraTentativaPorUnidade(unidadeSaudeId),
+                mediaTentativasPorDemandaPorUnidade(unidadeSaudeId),
+                mediaTentativasPorUsuarioPorUnidade(unidadeSaudeId)
+        );
+    }
+
+    public List<IndicadorValorDTO> montarProcessoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        return List.of(
+                percentualDemandasResolvidasPorPeriodo(inicio, fim),
+                tempoMedioResolucaoEmHorasPorPeriodo(inicio, fim),
+                tempoMedioAtePrimeiraTentativaPorPeriodo(inicio, fim),
+                mediaTentativasPorDemandaPorPeriodo(inicio, fim),
+                mediaTentativasPorUsuarioPorPeriodo(inicio, fim)
+        );
+    }
+
+    public List<IndicadorValorDTO> montarProcessoPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        return List.of(
+                percentualDemandasResolvidasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
+                tempoMedioResolucaoEmHorasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
+                tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
+                mediaTentativasPorDemandaPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
+                mediaTentativasPorUsuarioPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
+        );
     }
 
     private double arredondar(Double valor) {

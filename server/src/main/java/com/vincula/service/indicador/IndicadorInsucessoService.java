@@ -3,7 +3,6 @@ package com.vincula.service.indicador;
 import com.vincula.dto.MotivoQuantidadeDTO;
 import com.vincula.repository.DemandaRepository;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 

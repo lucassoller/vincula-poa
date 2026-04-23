@@ -41,10 +41,6 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
 
     double countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(Long unidadeRespondavelId, LocalDateTime inicio, LocalDateTime fim);
 
-    double countByDataHoraFinalizacaoBetween(LocalDateTime inicio, LocalDateTime fim);
-
-    double countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(Long unidadeRespondavelId, LocalDateTime inicio, LocalDateTime fim);
-
     double countByStatusAndDataHoraCriacaoBetween(StatusDemanda status, LocalDateTime inicio, LocalDateTime fim);
 
     double countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda status, Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim);
@@ -64,7 +60,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
        SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
        FROM demanda d
        WHERE d.data_hora_finalizacao IS NOT NULL
-         AND d.unidade_saude_id = :unidadeResponsavelId
+         AND d.unidade_responsavel_id = :unidadeResponsavelId
        """, nativeQuery = true)
     Double calcularTempoMedioResolucaoEmSegundosPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
 
@@ -80,7 +76,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
         SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
         FROM demanda d
         WHERE d.data_hora_finalizacao IS NOT NULL
-          AND d.unidade_saude_id = :unidadeResponsavelId
+          AND d.unidade_responsavel_id = :unidadeResponsavelId
           AND d.data_hora_criacao BETWEEN :inicio AND :fim
         """, nativeQuery = true)
     Double calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
@@ -88,44 +84,44 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
                                                                    @Param("fim") LocalDateTime fim);
 
     @Query(value = """
-    SELECT d.motivo AS motivo, COUNT(*) AS quantidade
+    SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.desfecho IN ('NAO_ENCONTRADO', 'FORA_DO_TERRITORIO')
-    GROUP BY d.motivo
+    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
+    GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucesso();
 
     @Query(value = """
-    SELECT d.motivo AS motivo, COUNT(*) AS quantidade
+    SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.desfecho IN ('NAO_ENCONTRADO', 'FORA_DO_TERRITORIO')
-      AND d.unidade_saude_id = :unidadeResponsavelId
-    GROUP BY d.motivo
+    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
+      AND d.unidade_responsavel_id = :unidadeResponsavelId
+    GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
 
     @Query(value = """
-        SELECT d.motivo AS motivo, COUNT(*) AS quantidade
-        FROM demanda d
-        WHERE d.desfecho IN ('NAO_ENCONTRADO', 'FORA_DO_TERRITORIO')
-          AND d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY d.motivo
-        ORDER BY quantidade DESC
-        """, nativeQuery = true)
+    SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
+      AND d.data_hora_criacao BETWEEN :inicio AND :fim
+    GROUP BY d.motivo_busca_ativa
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorPeriodo(@Param("inicio") LocalDateTime inicio,
                                                                                 @Param("fim") LocalDateTime fim);
 
     @Query(value = """
-        SELECT d.motivo AS motivo, COUNT(*) AS quantidade
-        FROM demanda d
-        WHERE d.desfecho IN ('NAO_ENCONTRADO', 'FORA_DO_TERRITORIO')
-          AND d.unidade_saude_id = :unidadeResponsavelId
-          AND d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY d.motivo
-        ORDER BY quantidade DESC
-        """, nativeQuery = true)
+    SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
+      AND d.unidade_responsavel_id = :unidadeResponsavelId
+      AND d.data_hora_criacao BETWEEN :inicio AND :fim
+    GROUP BY d.motivo_busca_ativa
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
                                                                                         @Param("inicio") LocalDateTime inicio,
                                                                                         @Param("fim") LocalDateTime fim);

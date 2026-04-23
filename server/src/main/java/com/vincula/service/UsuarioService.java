@@ -164,21 +164,6 @@ public class UsuarioService {
         return toDTO(usuario);
     }
 
-    public boolean usuarioAutenticadoEhGestaoMunicipal() {
-        Usuario usuario = buscarUsuarioAutenticado();
-        return usuario.getPerfil() == PerfilUsuario.GESTAO_MUNICIPAL;
-    }
-
-    public Long getUnidadeSaudeIdUsuarioAutenticado() {
-        Usuario usuario = buscarUsuarioAutenticado();
-
-        if (usuario.getUnidadeSaude() == null) {
-            return null;
-        }
-
-        return usuario.getUnidadeSaude().getId();
-    }
-
     private Usuario toEntity(UsuarioDTO dto) {
         Usuario entity = new Usuario();
 

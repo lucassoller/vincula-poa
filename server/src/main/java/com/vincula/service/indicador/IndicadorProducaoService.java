@@ -4,7 +4,6 @@ import com.vincula.dto.IndicadorValorDTO;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,15 +36,19 @@ public class IndicadorProducaoService {
 
     public List<IndicadorValorDTO> indicadoresPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         return List.of(
-                new IndicadorValorDTO("Demandas criadas no período", demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)),
-                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim))
+                new IndicadorValorDTO("Total de demandas no período", demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)),
+                new IndicadorValorDTO("Demandas abertas no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.ABERTA, inicio, fim)),
+                new IndicadorValorDTO("Demandas em andamento no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.EM_ANDAMENTO, inicio, fim)),
+                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, inicio, fim))
         );
     }
 
     public List<IndicadorValorDTO> indicadoresPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
         return List.of(
-                new IndicadorValorDTO("Demandas criadas no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim)),
-                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(unidadeResponsavelId, inicio, fim))
+                new IndicadorValorDTO("Total de demandas no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim)),
+                new IndicadorValorDTO("Demandas abertas no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.ABERTA, unidadeResponsavelId, inicio, fim)),
+                new IndicadorValorDTO("Demandas em andamento no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.EM_ANDAMENTO, unidadeResponsavelId, inicio, fim)),
+                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeResponsavelId, inicio, fim))
         );
     }
 }

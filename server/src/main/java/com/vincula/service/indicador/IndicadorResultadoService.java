@@ -5,7 +5,6 @@ import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
