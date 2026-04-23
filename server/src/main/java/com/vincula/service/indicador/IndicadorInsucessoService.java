@@ -18,28 +18,38 @@ public class IndicadorInsucessoService {
     public List<MotivoQuantidadeDTO> principaisMotivosInsucesso() {
         return demandaRepository.listarPrincipaisMotivosInsucesso()
                 .stream()
-                .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
+                .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorUnidade(Long unidadeSaudeId) {
         return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidade(unidadeSaudeId)
                 .stream()
-                .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
+                .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         return demandaRepository.listarPrincipaisMotivosInsucessoPorPeriodo(inicio, fim)
                 .stream()
-                .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
+                .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
         return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
                 .stream()
-                .map(item -> new MotivoQuantidadeDTO(item.getMotivo(), item.getQuantidade()))
+                .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
+    }
+
+    private String traduzirMotivo(String motivo) {
+        return switch (motivo) {
+            case "FALTOSO" -> "Faltoso";
+            case "ABANDONO" -> "Abandono de tratamento";
+            case "CONDICAO_SAUDE" -> "Condição de saúde";
+            case "OUTRO" -> "Outro";
+            default -> motivo;
+        };
     }
 }

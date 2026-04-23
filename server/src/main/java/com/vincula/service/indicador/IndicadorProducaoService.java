@@ -1,10 +1,11 @@
 package com.vincula.service.indicador;
 
 import com.vincula.dto.IndicadorValorDTO;
-import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,40 +18,66 @@ public class IndicadorProducaoService {
     }
 
     public List<IndicadorValorDTO> indicadoresGerais() {
-        return List.of(
-                new IndicadorValorDTO("Total de demandas", demandaRepository.countBy()),
-                new IndicadorValorDTO("Demandas abertas", demandaRepository.countByStatus(StatusDemanda.ABERTA)),
-                new IndicadorValorDTO("Demandas em andamento", demandaRepository.countByStatus(StatusDemanda.EM_ANDAMENTO)),
-                new IndicadorValorDTO("Demandas finalizadas", demandaRepository.countByStatus(StatusDemanda.FINALIZADA))
+        List<IndicadorValorDTO> lista = new ArrayList<>(
+                demandaRepository.agruparPorStatus()
+                        .stream()
+                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
+                        .toList()
         );
+
+        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countBy()));
+        return lista;
     }
 
     public List<IndicadorValorDTO> indicadoresPorUnidade(Long unidadeResponsavelId) {
-        return List.of(
-                new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeResponsavelId(unidadeResponsavelId)),
-                new IndicadorValorDTO("Demandas abertas", demandaRepository.countByStatusAndUnidadeResponsavelId(StatusDemanda.ABERTA, unidadeResponsavelId)),
-                new IndicadorValorDTO("Demandas em andamento", demandaRepository.countByStatusAndUnidadeResponsavelId(StatusDemanda.EM_ANDAMENTO, unidadeResponsavelId)),
-                new IndicadorValorDTO("Demandas finalizadas", demandaRepository.countByStatusAndUnidadeResponsavelId(StatusDemanda.FINALIZADA, unidadeResponsavelId))
+        List<IndicadorValorDTO> lista = new ArrayList<>(
+                demandaRepository.agruparPorStatusPorUnidade(unidadeResponsavelId)
+                        .stream()
+                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
+                        .toList()
         );
+
+        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeResponsavelId(unidadeResponsavelId)));
+        return lista;
     }
 
     public List<IndicadorValorDTO> indicadoresPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        return List.of(
-                new IndicadorValorDTO("Total de demandas no período", demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)),
-                new IndicadorValorDTO("Demandas abertas no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.ABERTA, inicio, fim)),
-                new IndicadorValorDTO("Demandas em andamento no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.EM_ANDAMENTO, inicio, fim)),
-                new IndicadorValorDTO("Demandas finalizadas que foram criadas no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, inicio, fim)),
-                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim))
+        List<IndicadorValorDTO> lista = new ArrayList<>(
+                demandaRepository.agruparPorStatusPorPeriodo(inicio, fim)
+                        .stream()
+                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
+                        .toList()
         );
+
+        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)));
+        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período", demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim)));
+
+        return lista;
     }
 
-    public List<IndicadorValorDTO> indicadoresPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
-        return List.of(
-                new IndicadorValorDTO("Total de demandas no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim)),
-                new IndicadorValorDTO("Demandas abertas no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.ABERTA, unidadeResponsavelId, inicio, fim)),
-                new IndicadorValorDTO("Demandas em andamento no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.EM_ANDAMENTO, unidadeResponsavelId, inicio, fim)),
-                new IndicadorValorDTO("Demandas finalizadas que foram criadas no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeResponsavelId, inicio, fim)),
-                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(unidadeResponsavelId, inicio, fim))
+    public List<IndicadorValorDTO> indicadoresPorUnidadeEPeriodo(Long unidadeResponsavelId,
+                                                                 LocalDateTime inicio,
+                                                                 LocalDateTime fim) {
+
+        List<IndicadorValorDTO> lista = new ArrayList<>(
+                demandaRepository.agruparPorStatusPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim)
+                        .stream()
+                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
+                        .toList()
         );
+
+        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim)));
+        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(unidadeResponsavelId, inicio, fim)));
+
+        return lista;
+    }
+
+    private String traduzirStatus(String status) {
+        return switch (status) {
+            case "ABERTA" -> "Demandas abertas";
+            case "EM_ANDAMENTO" -> "Demandas em andamento";
+            case "FINALIZADA" -> "Demandas finalizadas com data de criação no período";
+            default -> status;
+        };
     }
 }
