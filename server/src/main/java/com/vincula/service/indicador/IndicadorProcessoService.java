@@ -30,9 +30,9 @@ public class IndicadorProcessoService {
         return new IndicadorValorDTO("Percentual de demandas resolvidas (%)", arredondar(percentual));
     }
 
-    public IndicadorValorDTO percentualDemandasResolvidasPorUnidade(Long unidadeSaudeId) {
-        double total = demandaRepository.countByUnidadeSaudeId(unidadeSaudeId);
-        double finalizadas = demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.FINALIZADA, unidadeSaudeId);
+    public IndicadorValorDTO percentualDemandasResolvidasPorUnidade(Long unidadeResponsavelId) {
+        double total = demandaRepository.countByUnidadeResponsavelId(unidadeResponsavelId);
+        double finalizadas = demandaRepository.countByStatusAndUnidadeResponsavelId(StatusDemanda.FINALIZADA, unidadeResponsavelId);
         double percentual = total == 0 ? 0.0 : (finalizadas / total) * 100.0;
 
         return new IndicadorValorDTO("Percentual de demandas resolvidas (%)", arredondar(percentual));
@@ -46,9 +46,9 @@ public class IndicadorProcessoService {
         return new IndicadorValorDTO("Percentual de demandas resolvidas (%)", arredondar(percentual));
     }
 
-    public IndicadorValorDTO percentualDemandasResolvidasPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
-        double total = demandaRepository.countByUnidadeSaudeIdAndDataHoraCriacaoBetween(unidadeSaudeId, inicio, fim);
-        double finalizadas = demandaRepository.countByStatusAndUnidadeSaudeIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeSaudeId, inicio, fim);
+    public IndicadorValorDTO percentualDemandasResolvidasPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
+        double total = demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim);
+        double finalizadas = demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeResponsavelId, inicio, fim);
         double percentual = total == 0 ? 0.0 : (finalizadas / total) * 100.0;
 
         return new IndicadorValorDTO("Percentual de demandas resolvidas (%)", arredondar(percentual));
@@ -61,8 +61,8 @@ public class IndicadorProcessoService {
         return new IndicadorValorDTO("Tempo médio de resolução (horas)", arredondar(mediaHoras));
     }
 
-    public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidade(Long unidadeSaudeId) {
-        Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidade(unidadeSaudeId);
+    public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidade(Long unidadeResponsavelId) {
+        Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidade(unidadeResponsavelId);
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
         return new IndicadorValorDTO("Tempo médio de resolução (horas)", arredondar(mediaHoras));
@@ -75,8 +75,8 @@ public class IndicadorProcessoService {
         return new IndicadorValorDTO("Tempo médio de resolução (horas)", arredondar(mediaHoras));
     }
 
-    public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
-        Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
+    public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
+        Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim);
         double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
         return new IndicadorValorDTO("Tempo médio de resolução (horas)", arredondar(mediaHoras));
@@ -87,8 +87,8 @@ public class IndicadorProcessoService {
         return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", arredondar(valor == null ? 0.0 : valor));
     }
 
-    public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidade(Long unidadeSaudeId) {
-        Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(unidadeSaudeId);
+    public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidade(Long unidadeResponsavelId) {
+        Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(unidadeResponsavelId);
         return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", arredondar(valor == null ? 0.0 : valor));
     }
 
@@ -97,8 +97,8 @@ public class IndicadorProcessoService {
         return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", arredondar(valor == null ? 0.0 : valor));
     }
 
-    public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
-        Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
+    public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
+        Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim);
         return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", arredondar(valor == null ? 0.0 : valor));
     }
 
@@ -107,8 +107,8 @@ public class IndicadorProcessoService {
         return new IndicadorValorDTO("Média de tentativas por demanda", arredondar(valor == null ? 0.0 : valor));
     }
 
-    public IndicadorValorDTO mediaTentativasPorDemandaPorUnidade(Long unidadeSaudeId) {
-        Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidade(unidadeSaudeId);
+    public IndicadorValorDTO mediaTentativasPorDemandaPorUnidade(Long unidadeResponsavelId) {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidade(unidadeResponsavelId);
         return new IndicadorValorDTO("Média de tentativas por demanda", arredondar(valor == null ? 0.0 : valor));
     }
 
@@ -117,8 +117,8 @@ public class IndicadorProcessoService {
         return new IndicadorValorDTO("Média de tentativas por demanda", arredondar(valor == null ? 0.0 : valor));
     }
 
-    public IndicadorValorDTO mediaTentativasPorDemandaPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
-        Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
+    public IndicadorValorDTO mediaTentativasPorDemandaPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
+        Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim);
         return new IndicadorValorDTO("Média de tentativas por demanda", arredondar(valor == null ? 0.0 : valor));
     }
 

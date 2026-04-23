@@ -6,6 +6,7 @@ import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.DesfechoDemanda;
+import com.vincula.enums.MotivoBuscaAtiva;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
@@ -50,17 +51,20 @@ public class DemandaService {
             throw new BusinessException("Não é possível alterar uma demanda finalizada");
         }
 
-        UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
+        UnidadeSaude unidadeResponsavel = buscarUnidadeSaudePorId(dto.getUnidadeResponsavelId());
 
-        entity.setMotivo(dto.getMotivo());
-        entity.setUnidadeSaude(unidadeSaude);
+        validarMotivoBusca(dto);
+
+        entity.setUnidadeResponsavel(unidadeResponsavel);
+        entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
+        entity.setDescricaoBusca(dto.getDescricaoBusca());
+        entity.setPrazoDemanda(dto.getPrazoDemanda());
 
         Demanda atualizado = demandaRepository.save(entity);
         return toDTO(atualizado);
     }
 
     public DemandaDTO encerrar(Long id, DesfechoDemanda desfecho, String descricao) {
-
         Demanda entity = buscarDemandaPorId(id);
 
         if (entity.getStatus() == StatusDemanda.FINALIZADA) {
@@ -71,8 +75,9 @@ public class DemandaService {
             throw new BusinessException("Desfecho é obrigatório");
         }
 
-        if (descricao == null || descricao.isBlank()) {
-            throw new BusinessException("Descrição é obrigatória para desfecho");
+        if (desfecho == DesfechoDemanda.OUTRO &&
+                (descricao == null || descricao.isBlank())) {
+            throw new BusinessException("Descrição do desfecho é obrigatória quando o desfecho for OUTRO");
         }
 
         Usuario usuario = usuarioService.buscarUsuarioAutenticado();
@@ -107,8 +112,8 @@ public class DemandaService {
                 .toList();
     }
 
-    public List<DemandaDTO> listarPorUnidadeSaude(Long unidadeSaudeId) {
-        return demandaRepository.findByUnidadeSaudeId(unidadeSaudeId)
+    public List<DemandaDTO> listarPorUnidadeSaude(Long unidadeResponsavelId) {
+        return demandaRepository.findByUnidadeResponsavelId(unidadeResponsavelId)
                 .stream()
                 .map(this::toDTO)
                 .toList();
@@ -128,8 +133,8 @@ public class DemandaService {
                 .toList();
     }
 
-    public List<DemandaDTO> listarPorUnidadeSaudeEStatus(Long unidadeSaudeId, StatusDemanda status) {
-        return demandaRepository.findByUnidadeSaudeIdAndStatus(unidadeSaudeId, status)
+    public List<DemandaDTO> listarPorUnidadeSaudeEStatus(Long unidadeResponsavelId, StatusDemanda status) {
+        return demandaRepository.findByUnidadeResponsavelIdAndStatus(unidadeResponsavelId, status)
                 .stream()
                 .map(this::toDTO)
                 .toList();
@@ -163,21 +168,32 @@ public class DemandaService {
                 .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
     }
 
+    private void validarMotivoBusca(DemandaDTO dto) {
+        if (dto.getMotivoBuscaAtiva() == MotivoBuscaAtiva.OUTRO &&
+                (dto.getDescricaoBusca() == null || dto.getDescricaoBusca().isBlank())) {
+            throw new BusinessException("Descrição da busca é obrigatória quando o motivo for OUTRO");
+        }
+    }
+
     private Demanda toEntity(DemandaDTO dto) {
         Paciente paciente = buscarPacientePorId(dto.getPacienteId());
 
-        UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
+        UnidadeSaude unidadeResponsavel = buscarUnidadeSaudePorId(dto.getUnidadeResponsavelId());
 
         Usuario usuarioCriador = usuarioService.buscarUsuarioAutenticado();
 
+        validarMotivoBusca(dto);
+
         Demanda entity = new Demanda();
         entity.setPaciente(paciente);
-        entity.setUnidadeSaude(unidadeSaude);
         entity.setUsuarioCriador(usuarioCriador);
-        entity.setMotivo(dto.getMotivo());
+        entity.setUnidadeSolicitante(usuarioCriador.getUnidadeSaude());
+        entity.setUnidadeResponsavel(unidadeResponsavel);
+        entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
+        entity.setDescricaoBusca(dto.getDescricaoBusca());
+        entity.setPrazoDemanda(dto.getPrazoDemanda());
         entity.setStatus(StatusDemanda.ABERTA);
         entity.setDataHoraCriacao(LocalDateTime.now());
-        entity.setPaciente(paciente);
 
         return entity;
     }
@@ -187,9 +203,17 @@ public class DemandaService {
 
         dto.setId(entity.getId());
         dto.setPacienteId(entity.getPaciente().getId());
-        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
-        dto.setMotivo(entity.getMotivo());
+
+        if (entity.getUnidadeSolicitante() != null) {
+            dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
+        }
+
+        dto.setUnidadeResponsavelId(entity.getUnidadeResponsavel().getId());
+        dto.setMotivoBuscaAtiva(entity.getMotivoBuscaAtiva());
+        dto.setDescricaoBusca(entity.getDescricaoBusca());
+        dto.setPrazoDemanda(entity.getPrazoDemanda());
         dto.setStatus(entity.getStatus());
+
         dto.setDataHoraCriacao(entity.getDataHoraCriacao());
         dto.setUsuarioCriadorId(entity.getUsuarioCriador().getId());
         dto.setUsuarioCriadorNome(entity.getUsuarioCriador().getNome());

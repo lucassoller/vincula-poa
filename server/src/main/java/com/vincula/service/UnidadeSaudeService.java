@@ -123,9 +123,9 @@ public class UnidadeSaudeService {
         PacienteDTO dto = new PacienteDTO();
 
         dto.setId(entity.getId());
-        dto.setNome(entity.getNome());
-        dto.setSobrenome(entity.getSobrenome());
+        dto.setNomeCompleto(entity.getNomeCompleto());
         dto.setTelefone(entity.getTelefone());
+        dto.setDataNascimento(entity.getDataNascimento());
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));

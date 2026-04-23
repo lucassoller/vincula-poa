@@ -1,6 +1,8 @@
 package com.vincula.entity;
 
 import com.vincula.enums.DesfechoDemanda;
+import com.vincula.enums.MotivoBuscaAtiva;
+import com.vincula.enums.PrazoDemanda;
 import com.vincula.enums.StatusDemanda;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,8 +18,16 @@ public class Demanda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 500)
-    private String motivo;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 14)
+    private MotivoBuscaAtiva motivoBuscaAtiva;
+
+    @Column(length = 500)
+    private String descricaoBusca;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PrazoDemanda prazoDemanda;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 12)
@@ -39,9 +49,13 @@ public class Demanda {
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unidade_solicitante_id")
+    private UnidadeSaude unidadeSolicitante;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "unidade_saude_id", nullable = false)
-    private UnidadeSaude unidadeSaude;
+    @JoinColumn(name = "unidade_responsavel_id", nullable = false)
+    private UnidadeSaude unidadeResponsavel;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_criador_id", nullable = false)

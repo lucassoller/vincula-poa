@@ -1,8 +1,11 @@
 package com.vincula.enums;
 
 public enum DesfechoDemanda {
-    ENCONTRADO,
-    NAO_ENCONTRADO,
+    ENCONTRADO_VINCULADO,
+    ENCONTRADO_RECUSOU,
+    NAO_LOCALIZADO,
+    ENDERECO_INCORRETO,
+    MUDOU_TERRITORIO,
     OBITO,
-    FORA_DO_TERRITORIO
+    OUTRO
 }

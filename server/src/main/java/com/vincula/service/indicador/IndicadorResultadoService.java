@@ -25,9 +25,9 @@ public class IndicadorResultadoService {
         return montarPercentuaisGerais(totalFinalizadas, null, null);
     }
 
-    public List<IndicadorValorDTO> percentualPorDesfechoPorUnidade(Long unidadeSaudeId) {
-        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSaudeId(StatusDemanda.FINALIZADA, unidadeSaudeId);
-        return montarPercentuaisUnidade(totalFinalizadas, unidadeSaudeId, null, null);
+    public List<IndicadorValorDTO> percentualPorDesfechoPorUnidade(Long unidadeResponsavelId) {
+        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeResponsavelId(StatusDemanda.FINALIZADA, unidadeResponsavelId);
+        return montarPercentuaisUnidade(totalFinalizadas, unidadeResponsavelId, null, null);
     }
 
     public List<IndicadorValorDTO> percentualPorDesfechoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
@@ -35,9 +35,9 @@ public class IndicadorResultadoService {
         return montarPercentuaisGerais(totalFinalizadas, inicio, fim);
     }
 
-    public List<IndicadorValorDTO> percentualPorDesfechoPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
-        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSaudeIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeSaudeId, inicio, fim);
-        return montarPercentuaisUnidade(totalFinalizadas, unidadeSaudeId, inicio, fim);
+    public List<IndicadorValorDTO> percentualPorDesfechoPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
+        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeResponsavelId, inicio, fim);
+        return montarPercentuaisUnidade(totalFinalizadas, unidadeResponsavelId, inicio, fim);
     }
 
     private List<IndicadorValorDTO> montarPercentuaisGerais(double totalFinalizadas, LocalDateTime inicio, LocalDateTime fim) {
@@ -47,15 +47,15 @@ public class IndicadorResultadoService {
         double foraDoTerritorio;
 
         if (inicio == null || fim == null) {
-            encontrado = percentual(totalFinalizadas, demandaRepository.countByDesfecho(DesfechoDemanda.ENCONTRADO));
-            naoEncontrado = percentual(totalFinalizadas, demandaRepository.countByDesfecho(DesfechoDemanda.NAO_ENCONTRADO));
+            encontrado = percentual(totalFinalizadas, demandaRepository.countByDesfecho(DesfechoDemanda.OBITO));
+            naoEncontrado = percentual(totalFinalizadas, demandaRepository.countByDesfecho(DesfechoDemanda.OBITO));
             obito = percentual(totalFinalizadas, demandaRepository.countByDesfecho(DesfechoDemanda.OBITO));
-            foraDoTerritorio = percentual(totalFinalizadas, demandaRepository.countByDesfecho(DesfechoDemanda.FORA_DO_TERRITORIO));
+            foraDoTerritorio = percentual(totalFinalizadas, demandaRepository.countByDesfecho(DesfechoDemanda.OBITO));
         } else {
-            encontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda.ENCONTRADO, inicio, fim));
-            naoEncontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda.NAO_ENCONTRADO, inicio, fim));
+            encontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, inicio, fim));
+            naoEncontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, inicio, fim));
             obito = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, inicio, fim));
-            foraDoTerritorio = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda.FORA_DO_TERRITORIO, inicio, fim));
+            foraDoTerritorio = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, inicio, fim));
         }
 
         return List.of(
@@ -66,22 +66,22 @@ public class IndicadorResultadoService {
         );
     }
 
-    private List<IndicadorValorDTO> montarPercentuaisUnidade(double totalFinalizadas, Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+    private List<IndicadorValorDTO> montarPercentuaisUnidade(double totalFinalizadas, Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
         double encontrado;
         double naoEncontrado;
         double obito;
         double foraDoTerritorio;
 
         if (inicio == null || fim == null) {
-            encontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.ENCONTRADO, unidadeSaudeId));
-            naoEncontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.NAO_ENCONTRADO, unidadeSaudeId));
-            obito = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.OBITO, unidadeSaudeId));
-            foraDoTerritorio = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeSaudeId(DesfechoDemanda.FORA_DO_TERRITORIO, unidadeSaudeId));
+            encontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeResponsavelId(DesfechoDemanda.OBITO, unidadeResponsavelId));
+            naoEncontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeResponsavelId(DesfechoDemanda.OBITO, unidadeResponsavelId));
+            obito = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeResponsavelId(DesfechoDemanda.OBITO, unidadeResponsavelId));
+            foraDoTerritorio = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeResponsavelId(DesfechoDemanda.OBITO, unidadeResponsavelId));
         } else {
-            encontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeSaudeIdAndDataHoraCriacaoBetween(DesfechoDemanda.ENCONTRADO, unidadeSaudeId, inicio, fim));
-            naoEncontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeSaudeIdAndDataHoraCriacaoBetween(DesfechoDemanda.NAO_ENCONTRADO, unidadeSaudeId, inicio, fim));
-            obito = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeSaudeIdAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, unidadeSaudeId, inicio, fim));
-            foraDoTerritorio = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeSaudeIdAndDataHoraCriacaoBetween(DesfechoDemanda.FORA_DO_TERRITORIO, unidadeSaudeId, inicio, fim));
+            encontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, unidadeResponsavelId, inicio, fim));
+            naoEncontrado = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, unidadeResponsavelId, inicio, fim));
+            obito = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, unidadeResponsavelId, inicio, fim));
+            foraDoTerritorio = percentual(totalFinalizadas, demandaRepository.countByDesfechoAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(DesfechoDemanda.OBITO, unidadeResponsavelId, inicio, fim));
         }
 
         return List.of(
