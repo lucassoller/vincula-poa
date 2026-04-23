@@ -8,5 +8,5 @@ import lombok.Data;
 public class IndicadorValorDTO {
 
     private String indicador;
-    private Double valor;
+    private Object valor;
 }

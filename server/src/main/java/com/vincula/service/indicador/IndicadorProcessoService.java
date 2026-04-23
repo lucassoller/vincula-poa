@@ -56,50 +56,46 @@ public class IndicadorProcessoService {
 
     public IndicadorValorDTO tempoMedioResolucaoEmHoras() {
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundos();
-        double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
-        return new IndicadorValorDTO("Tempo médio de resolução (horas)", arredondar(mediaHoras));
+        return new IndicadorValorDTO("Tempo médio de resolução (horas)", formatarTempo(mediaSegundos));
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidade(Long unidadeResponsavelId) {
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidade(unidadeResponsavelId);
-        double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
-        return new IndicadorValorDTO("Tempo médio de resolução (horas)", arredondar(mediaHoras));
+        return new IndicadorValorDTO("Tempo médio de resolução (horas)", formatarTempo(mediaSegundos));
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorPeriodo(inicio, fim);
-        double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
-        return new IndicadorValorDTO("Tempo médio de resolução (horas)", arredondar(mediaHoras));
+        return new IndicadorValorDTO("Tempo médio de resolução (horas)", formatarTempo(mediaSegundos));
     }
 
     public IndicadorValorDTO tempoMedioResolucaoEmHorasPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
         Double mediaSegundos = demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim);
-        double mediaHoras = mediaSegundos == null ? 0.0 : mediaSegundos / 3600.0;
 
-        return new IndicadorValorDTO("Tempo médio de resolução (horas)", arredondar(mediaHoras));
+        return new IndicadorValorDTO("Tempo médio de resolução (horas)", formatarTempo(mediaSegundos));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativa() {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHoras();
-        return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", formatarTempo(valor));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidade(Long unidadeResponsavelId) {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(unidadeResponsavelId);
-        return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", formatarTempo(valor));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorPeriodo(inicio, fim);
-        return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)",formatarTempo(valor));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim);
-        return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Tempo até a primeira tentativa (horas)", formatarTempo(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemanda() {
@@ -190,5 +186,19 @@ public class IndicadorProcessoService {
         return BigDecimal.valueOf(valor)
                 .setScale(2, RoundingMode.HALF_UP)
                 .doubleValue();
+    }
+
+    private String formatarTempo(Double totalSegundos) {
+        if (totalSegundos == null || totalSegundos <= 0) {
+            return "0h 0m 0s";
+        }
+
+        long segundosTotais = Math.round(totalSegundos);
+
+        long horas = segundosTotais / 3600;
+        long minutos = (segundosTotais % 3600) / 60;
+        long segundos = segundosTotais % 60;
+
+        return horas + "h " + minutos + "m " + segundos + "s";
     }
 }

@@ -15,7 +15,7 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
     boolean existsByDemandaId(Long demandaId);
 
     @Query(value = """
-    SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)) / 3600.0)
+    SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
     FROM (
         SELECT d.data_hora_criacao,
                MIN(t.data_hora) AS primeira_tentativa
@@ -27,7 +27,7 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
     Double calcularTempoMedioAtePrimeiraTentativaEmHoras();
 
     @Query(value = """
-    SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)) / 3600.0)
+    SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
     FROM (
         SELECT d.data_hora_criacao,
                MIN(t.data_hora) AS primeira_tentativa
@@ -40,7 +40,7 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
     Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
 
     @Query(value = """
-        SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)) / 3600.0)
+        SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
         FROM (
             SELECT d.data_hora_criacao,
                    MIN(t.data_hora) AS primeira_tentativa
@@ -54,7 +54,7 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
                                                                    @Param("fim") LocalDateTime fim);
 
     @Query(value = """
-        SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)) / 3600.0)
+        SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
         FROM (
             SELECT d.data_hora_criacao,
                    MIN(t.data_hora) AS primeira_tentativa
