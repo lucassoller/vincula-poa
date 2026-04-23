@@ -5,6 +5,7 @@ import com.vincula.entity.Demanda;
 import com.vincula.entity.TentativaContato;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.StatusDemanda;
+import com.vincula.enums.TipoTentativaContato;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.DemandaRepository;
@@ -58,7 +59,14 @@ public class TentativaContatoService {
             throw new BusinessException("Não é possível registrar tentativa de contato em uma demanda finalizada");
         }
 
+        if (dto.getTipo() == TipoTentativaContato.OUTRO &&
+                (dto.getDescricao() == null || dto.getDescricao().isBlank())) {
+            throw new BusinessException("Descrição obrigatória para tipo OUTRO");
+        }
+
         Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+
+        boolean primeiraTentativa = !tentativaRepository.existsByDemandaId(demanda.getId());
 
         TentativaContato entity = new TentativaContato();
         entity.setDemanda(demanda);
@@ -66,6 +74,12 @@ public class TentativaContatoService {
         entity.setTipo(dto.getTipo());
         entity.setDescricao(dto.getDescricao());
         entity.setDataHora(LocalDateTime.now());
+
+        if (primeiraTentativa && demanda.getStatus() == StatusDemanda.ABERTA) {
+            demanda.setStatus(StatusDemanda.EM_ANDAMENTO);
+            demandaRepository.save(demanda);
+        }
+
         return entity;
     }
 

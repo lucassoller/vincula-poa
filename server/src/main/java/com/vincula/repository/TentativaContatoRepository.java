@@ -12,6 +12,7 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
 
     List<TentativaContato> findByDemandaId(Long demandaId);
     List<TentativaContato> findByUsuario(Long usuarioId);
+    boolean existsByDemandaId(Long demandaId);
 
     @Query(value = """
     SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)) / 3600.0)
