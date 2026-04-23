@@ -55,4 +55,14 @@ public class DemandaDTO {
 
     private Long usuarioEncerramentoId;
     private String usuarioEncerramentoNome;
+
+    private Boolean foiRedirecionada;
+    private Long unidadeResponsavelAnteriorId;
+
+    @Size(max = 500, message = "Motivo do redirecionamento da demanda deve ter no máximo 500 caracteres")
+    private String motivoRedirecionamento;
+    private LocalDateTime dataHoraRedirecionamento;
+
+    private Long usuarioRedirecionamentoId;
+    private String usuarioRedirecionamentoNome;
 }

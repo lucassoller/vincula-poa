@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.DemandaDTO;
+import com.vincula.dto.RedirecionarDemandaDTO;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.service.DemandaService;
@@ -83,6 +84,13 @@ public class DemandaController {
         }
 
         return ResponseEntity.ok(demandaService.listarPorUsuarioCriador(usuarioId));
+    }
+
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
+    @PatchMapping("/{id}/redirecionar")
+    public ResponseEntity<DemandaDTO> redirecionar(@PathVariable Long id,
+                                                   @Valid @RequestBody RedirecionarDemandaDTO dto) {
+        return ResponseEntity.ok(demandaService.redirecionar(id, dto));
     }
 
     @PreAuthorize("hasRole('EXECUTOR_APS')")

@@ -39,7 +39,8 @@ public class IndicadorProducaoService {
                 new IndicadorValorDTO("Total de demandas no período", demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)),
                 new IndicadorValorDTO("Demandas abertas no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.ABERTA, inicio, fim)),
                 new IndicadorValorDTO("Demandas em andamento no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.EM_ANDAMENTO, inicio, fim)),
-                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, inicio, fim))
+                new IndicadorValorDTO("Demandas finalizadas que foram criadas no período", demandaRepository.countByStatusAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, inicio, fim)),
+                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim))
         );
     }
 
@@ -48,7 +49,8 @@ public class IndicadorProducaoService {
                 new IndicadorValorDTO("Total de demandas no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim)),
                 new IndicadorValorDTO("Demandas abertas no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.ABERTA, unidadeResponsavelId, inicio, fim)),
                 new IndicadorValorDTO("Demandas em andamento no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.EM_ANDAMENTO, unidadeResponsavelId, inicio, fim)),
-                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeResponsavelId, inicio, fim))
+                new IndicadorValorDTO("Demandas finalizadas que foram criadas no período", demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda.FINALIZADA, unidadeResponsavelId, inicio, fim)),
+                new IndicadorValorDTO("Demandas finalizadas no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(unidadeResponsavelId, inicio, fim))
         );
     }
 }

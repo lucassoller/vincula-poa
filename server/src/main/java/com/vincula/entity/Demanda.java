@@ -38,12 +38,20 @@ public class Demanda {
 
     private LocalDateTime dataHoraFinalizacao;
 
+    private LocalDateTime dataHoraRedirecionamento;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private DesfechoDemanda desfecho;
 
     @Column(length = 500)
     private String descricaoDesfecho;
+
+    @Column(nullable = true)
+    private Boolean foiRedirecionada = false;
+
+    @Column(length = 500)
+    private String motivoRedirecionamento;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paciente_id", nullable = false)
@@ -57,6 +65,10 @@ public class Demanda {
     @JoinColumn(name = "unidade_responsavel_id", nullable = false)
     private UnidadeSaude unidadeResponsavel;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unidade_responsavel_anterior_id")
+    private UnidadeSaude unidadeResponsavelAnterior;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_criador_id", nullable = false)
     private Usuario usuarioCriador;
@@ -64,5 +76,9 @@ public class Demanda {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_encerramento_id")
     private Usuario usuarioEncerramento;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_redirecionamento_id")
+    private Usuario usuarioRedirecionamento;
 
 }

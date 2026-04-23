@@ -1,6 +1,7 @@
 package com.vincula.service;
 
 import com.vincula.dto.DemandaDTO;
+import com.vincula.dto.RedirecionarDemandaDTO;
 import com.vincula.entity.Demanda;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
@@ -44,18 +45,14 @@ public class DemandaService {
     }
 
     public DemandaDTO atualizar(Long id, DemandaDTO dto) {
-
         Demanda entity = buscarDemandaPorId(id);
 
         if (entity.getStatus() == StatusDemanda.FINALIZADA) {
             throw new BusinessException("Não é possível alterar uma demanda finalizada");
         }
 
-        UnidadeSaude unidadeResponsavel = buscarUnidadeSaudePorId(dto.getUnidadeResponsavelId());
-
         validarMotivoBusca(dto);
 
-        entity.setUnidadeResponsavel(unidadeResponsavel);
         entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
         entity.setDescricaoBusca(dto.getDescricaoBusca());
         entity.setPrazoDemanda(dto.getPrazoDemanda());
@@ -90,6 +87,32 @@ public class DemandaService {
 
         Demanda atualizado = demandaRepository.save(entity);
         return toDTO(atualizado);
+    }
+
+    public DemandaDTO redirecionar(Long id, RedirecionarDemandaDTO dto) {
+        Demanda demanda = buscarDemandaPorId(id);
+
+        if (demanda.getStatus() == StatusDemanda.FINALIZADA) {
+            throw new BusinessException("Não é possível redirecionar uma demanda finalizada");
+        }
+
+        UnidadeSaude novaUnidade = buscarUnidadeSaudePorId(dto.getNovaUnidadeResponsavelId());
+
+        if (demanda.getUnidadeResponsavel().getId().equals(novaUnidade.getId())) {
+            throw new BusinessException("A nova unidade responsável deve ser diferente da atual");
+        }
+
+        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+
+        demanda.setUnidadeResponsavelAnterior(demanda.getUnidadeResponsavel());
+        demanda.setUnidadeResponsavel(novaUnidade);
+        demanda.setFoiRedirecionada(true);
+        demanda.setMotivoRedirecionamento(dto.getMotivoRedirecionamento());
+        demanda.setDataHoraRedirecionamento(LocalDateTime.now());
+        demanda.setUsuarioRedirecionamento(usuario);
+
+        Demanda atualizada = demandaRepository.save(demanda);
+        return toDTO(atualizada);
     }
 
     public List<DemandaDTO> listarTodas() {
@@ -225,6 +248,20 @@ public class DemandaService {
         if (entity.getUsuarioEncerramento() != null) {
             dto.setUsuarioEncerramentoId(entity.getUsuarioEncerramento().getId());
             dto.setUsuarioEncerramentoNome(entity.getUsuarioEncerramento().getNome());
+        }
+
+        dto.setFoiRedirecionada(entity.getFoiRedirecionada());
+
+        if (entity.getUnidadeResponsavelAnterior() != null) {
+            dto.setUnidadeResponsavelAnteriorId(entity.getUnidadeResponsavelAnterior().getId());
+        }
+
+        dto.setMotivoRedirecionamento(entity.getMotivoRedirecionamento());
+        dto.setDataHoraRedirecionamento(entity.getDataHoraRedirecionamento());
+
+        if (entity.getUsuarioRedirecionamento() != null) {
+            dto.setUsuarioRedirecionamentoId(entity.getUsuarioRedirecionamento().getId());
+            dto.setUsuarioRedirecionamentoNome(entity.getUsuarioRedirecionamento().getNome());
         }
 
         return dto;
