@@ -16,6 +16,9 @@ public class UnidadeSaude {
     @Column(nullable = false, length = 100)
     private String nome;
 
+    @Column(length = 11)
+    private String telefone;
+
     @Column(nullable = false, unique = true, length = 7)
     private String cnes;
 

@@ -2,8 +2,10 @@ package com.vincula.service;
 
 import com.vincula.dto.EnderecoDTO;
 import com.vincula.entity.Endereco;
+import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.EnderecoRepository;
+import com.vincula.util.AuditoriaDescricaoUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,14 +14,24 @@ import java.util.List;
 public class EnderecoService {
 
     private final EnderecoRepository enderecoRepository;
+    private final AuditoriaService auditoriaService;
 
-    public EnderecoService(EnderecoRepository enderecoRepository) {
+    public EnderecoService(EnderecoRepository enderecoRepository, AuditoriaService auditoriaService) {
         this.enderecoRepository = enderecoRepository;
+        this.auditoriaService = auditoriaService;
     }
 
     public EnderecoDTO criar(EnderecoDTO dto) {
         Endereco entity = toEntity(dto);
         Endereco salvo = enderecoRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.ENDERECO_CRIADO,
+                "Endereco",
+                salvo.getId(),
+                "Endereço criado"
+        );
+
         return toDTO(salvo);
     }
 
@@ -36,15 +48,34 @@ public class EnderecoService {
 
     public EnderecoDTO atualizar(Long id, EnderecoDTO dto) {
         Endereco entity = buscarEnderecoPorId(id);
+        String descricaoLog = AuditoriaDescricaoUtil.enderecoAtualizado(entity, dto);
+
         preencherEndereco(entity, dto);
 
         Endereco atualizado = enderecoRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.ENDERECO_ATUALIZADO,
+                "Endereco",
+                atualizado.getId(),
+                descricaoLog
+        );
+
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
         Endereco entity = buscarEnderecoPorId(id);
+        Long enderecoId = entity.getId();
+
         enderecoRepository.delete(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.ENDERECO_DELETADO,
+                "Endereco",
+                enderecoId,
+                "Endereço deletado"
+        );
     }
 
     private Endereco buscarEnderecoPorId(Long id) {

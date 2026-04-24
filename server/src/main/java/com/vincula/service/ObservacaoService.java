@@ -4,9 +4,11 @@ import com.vincula.dto.ObservacaoDTO;
 import com.vincula.entity.Observacao;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.Usuario;
+import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.ObservacaoRepository;
 import com.vincula.repository.PacienteRepository;
+import com.vincula.util.AuditoriaDescricaoUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,13 +20,15 @@ public class ObservacaoService {
     private final ObservacaoRepository observacaoRepository;
     private final PacienteRepository pacienteRepository;
     private final UsuarioService usuarioService;
+    private final AuditoriaService auditoriaService;
 
     public ObservacaoService(ObservacaoRepository observacaoRepository,
                              PacienteRepository pacienteRepository,
-                             UsuarioService usuarioService) {
+                             UsuarioService usuarioService, AuditoriaService auditoriaService) {
         this.observacaoRepository = observacaoRepository;
         this.pacienteRepository = pacienteRepository;
         this.usuarioService = usuarioService;
+        this.auditoriaService = auditoriaService;
     }
 
     public ObservacaoDTO criar(ObservacaoDTO dto) {
@@ -32,6 +36,14 @@ public class ObservacaoService {
         Observacao entity = toEntity(dto);
 
         Observacao salvo = observacaoRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.OBSERVACAO_CRIADA,
+                "Observacao",
+                salvo.getId(),
+                "Observação criada para paciente ID " + salvo.getPaciente().getId()
+        );
+
         return toDTO(salvo);
     }
 
@@ -67,17 +79,36 @@ public class ObservacaoService {
 
         Paciente paciente = buscarPacientePorId(dto.getPacienteId());
 
+        String descricaoLog = AuditoriaDescricaoUtil.observacaoAtualizada(entity, dto);
+
         entity.setDescricao(dto.getDescricao());
         entity.setPaciente(paciente);
 
         Observacao atualizado = observacaoRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.OBSERVACAO_ATUALIZADA,
+                "Observacao",
+                atualizado.getId(),
+                descricaoLog
+        );
+
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
         Observacao entity = buscarObservacaoPorId(id);
 
+        Long observacaoId = entity.getId();
+
         observacaoRepository.delete(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.OBSERVACAO_DELETADA,
+                "Observacao",
+                observacaoId,
+                "Observação deletada"
+        );
     }
 
     private Observacao buscarObservacaoPorId(Long id) {

@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -21,12 +24,12 @@ public class PacienteDTO {
     @Pattern(regexp = "\\d{10,11}")
     private String telefone;
 
-    private LocalDateTime dataNascimento;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate dataNascimento;
 
     @Size(max = 50, message = "Email deve ter no máximo 50 caracteres")
     private String email;
 
-    @Size(max = 13, message = "Sexo deve ter no máximo 13 caracteres")
     private Sexo sexo;
 
     @Pattern(regexp = "\\d{11}", message = "CPF inválido")

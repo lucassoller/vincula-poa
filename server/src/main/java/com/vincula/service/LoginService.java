@@ -3,6 +3,7 @@ package com.vincula.service;
 import com.vincula.dto.LoginRequestDTO;
 import com.vincula.dto.LoginResponseDTO;
 import com.vincula.entity.Usuario;
+import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.UsuarioRepository;
@@ -21,15 +22,17 @@ public class LoginService {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
     private final UsuarioRepository usuarioRepository;
+    private final AuditoriaService auditoriaService;
 
     public LoginService(AuthenticationManager authenticationManager,
                         JwtService jwtService,
                         CustomUserDetailsService customUserDetailsService,
-                        UsuarioRepository usuarioRepository) {
+                        UsuarioRepository usuarioRepository, AuditoriaService auditoriaService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
         this.usuarioRepository = usuarioRepository;
+        this.auditoriaService = auditoriaService;
     }
 
     public LoginResponseDTO login(LoginRequestDTO dto) {
@@ -41,8 +44,10 @@ public class LoginService {
                     )
             );
         } catch (DisabledException ex) {
+            falhaLogin(dto);
             throw new BusinessException("Usuário inativo");
         } catch (AuthenticationException ex) {
+            falhaLogin(dto);
             throw new BusinessException("Login ou senha inválidos");
         }
 
@@ -50,6 +55,14 @@ public class LoginService {
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(usuario.getLogin());
         String token = jwtService.generateToken(userDetails);
+
+        auditoriaService.registrarComUsuario(
+                usuario,
+                TipoAcaoAuditoria.LOGIN_REALIZADO,
+                "Usuario",
+                usuario.getId(),
+                "Login realizado pelo usuário " + usuario.getLogin()
+        );
 
         return new LoginResponseDTO(
                 token,
@@ -64,5 +77,15 @@ public class LoginService {
     private Usuario buscarUsuarioPorLogin(String login){
         return usuarioRepository.findByLogin(login)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+    }
+
+    private void falhaLogin(LoginRequestDTO dto){
+        auditoriaService.registrarComUsuario(
+                null,
+                TipoAcaoAuditoria.LOGIN_FALHOU,
+                "Usuario",
+                0L,
+                "Tentativa de login falhou para: " + dto.getLogin()
+        );
     }
 }

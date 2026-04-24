@@ -17,7 +17,6 @@ public class TentativaContatoDTO {
     private Long demandaId;
 
     @NotNull(message = "Tipo é obrigatório")
-    @Size(max = 8, message = "Tipo deve ter no máximo 8 caracteres")
     private TipoTentativaContato tipo;
 
     @NotBlank(message = "Descrição é obrigatória")

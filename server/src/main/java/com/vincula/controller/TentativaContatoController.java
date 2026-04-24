@@ -25,6 +25,13 @@ public class TentativaContatoController {
         return ResponseEntity.ok(tentativaService.criar(dto));
     }
 
+    @PreAuthorize("hasRole('EXECUTOR_APS')")
+    @PutMapping("/{id}")
+    public ResponseEntity<TentativaContatoDTO> atualizar(@PathVariable Long id,
+                                                         @Valid @RequestBody TentativaContatoDTO dto) {
+        return ResponseEntity.ok(tentativaService.atualizar(id, dto));
+    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/demanda/{demandaId}")
     public ResponseEntity<List<TentativaContatoDTO>> listarPorDemanda(@PathVariable Long demandaId) {
@@ -35,5 +42,12 @@ public class TentativaContatoController {
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<TentativaContatoDTO>> listarPorUsuario(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(tentativaService.listarPorUsuario(usuarioId));
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        tentativaService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

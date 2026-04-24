@@ -5,15 +5,18 @@ import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.enums.Sexo;
+import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.util.AuditoriaDescricaoUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.List;
 
@@ -24,11 +27,13 @@ public class PacienteService {
     private final PacienteRepository pacienteRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final EnderecoMapper enderecoMapper;
+    private final AuditoriaService auditoriaService;
 
-    public PacienteService(PacienteRepository pacienteRepository, UnidadeSaudeRepository unidadeSaudeRepository, EnderecoMapper enderecoMapper) {
+    public PacienteService(PacienteRepository pacienteRepository, UnidadeSaudeRepository unidadeSaudeRepository, EnderecoMapper enderecoMapper, AuditoriaService auditoriaService) {
         this.pacienteRepository = pacienteRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.enderecoMapper = enderecoMapper;
+        this.auditoriaService = auditoriaService;
     }
 
     public PacienteDTO criar(PacienteDTO dto) {
@@ -37,6 +42,13 @@ public class PacienteService {
         Paciente entity = toEntity(dto);
 
         Paciente salvo = pacienteRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.PACIENTE_CRIADO,
+                "Paciente",
+                salvo.getId(),
+                "Paciente criado: " + salvo.getNomeCompleto()
+        );
         return toDTO(salvo);
     }
 
@@ -74,9 +86,11 @@ public class PacienteService {
 
         UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
 
-        if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDateTime.from(LocalDate.now()))) {
+        if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
             throw new BusinessException("Data de nascimento não pode ser futura");
         }
+
+        String descricaoLog = AuditoriaDescricaoUtil.pacienteAtualizado(paciente, dto);
 
         paciente.setUnidadeSaude(unidadeSaude);
         paciente.setNomeCompleto(dto.getNomeCompleto());
@@ -91,13 +105,29 @@ public class PacienteService {
 
         Paciente atualizado = pacienteRepository.save(paciente);
 
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.PACIENTE_ATUALIZADO,
+                "Paciente",
+                atualizado.getId(),
+                descricaoLog
+        );
+
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
         Paciente paciente = buscarPacientePorId(id);
 
+        Long pacienteId = paciente.getId();
+
         pacienteRepository.delete(paciente);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.PACIENTE_DELETADO,
+                "Paciente",
+                pacienteId,
+                "Paciente deletado"
+        );
     }
 
     private void validarCpfECnsCreate(PacienteDTO dto) {
@@ -145,7 +175,7 @@ public class PacienteService {
 
         UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
 
-        if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDateTime.from(LocalDate.now()))) {
+        if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
             throw new BusinessException("Data de nascimento não pode ser futura");
         }
 

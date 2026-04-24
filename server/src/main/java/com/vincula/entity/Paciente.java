@@ -4,6 +4,7 @@ import com.vincula.enums.Sexo;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Paciente {
     private String telefone;
 
     @Column()
-    private LocalDateTime dataNascimento;
+    private LocalDate dataNascimento;
 
     @Column(length = 50)
     private String email;

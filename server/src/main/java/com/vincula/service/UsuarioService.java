@@ -4,11 +4,13 @@ import com.vincula.dto.UsuarioDTO;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilUsuario;
+import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.repository.UsuarioRepository;
+import com.vincula.util.AuditoriaDescricaoUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +22,15 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditoriaService auditoriaService;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                           UnidadeSaudeRepository unidadeSaudeRepository,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder, AuditoriaService auditoriaService) {
         this.usuarioRepository = usuarioRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditoriaService = auditoriaService;
     }
 
     public UsuarioDTO criar(UsuarioDTO dto) {
@@ -35,6 +39,13 @@ public class UsuarioService {
 
         Usuario entity = toEntity(dto);
         Usuario salvo = usuarioRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.USUARIO_CRIADO,
+                "Usuario",
+                salvo.getId(),
+                "Usuário criado: " + salvo.getLogin()
+        );
 
         return toDTO(salvo);
     }
@@ -72,6 +83,8 @@ public class UsuarioService {
         validarDuplicidadeUpdate(dto, id);
         validarPerfilEUnidade(dto);
 
+        String descricaoLog = AuditoriaDescricaoUtil.usuarioAtualizado(entity, dto);
+
         entity.setNome(dto.getNome());
         entity.setEmail(dto.getEmail());
         entity.setLogin(dto.getLogin());
@@ -84,13 +97,30 @@ public class UsuarioService {
         }
 
         Usuario atualizado = usuarioRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.USUARIO_ATUALIZADO,
+                "Usuario",
+                atualizado.getId(),
+                descricaoLog
+        );
+
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
         Usuario entity = buscarUsuarioPorId(id);
 
+        Long usuarioId = entity.getId();
+
         usuarioRepository.delete(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.USUARIO_DELETADO,
+                "Usuario",
+                usuarioId,
+                "Usuário deletado"
+        );
     }
 
     private void validarDuplicidadeCreate(UsuarioDTO dto) {

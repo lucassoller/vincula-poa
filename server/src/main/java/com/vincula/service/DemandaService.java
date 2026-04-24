@@ -9,11 +9,13 @@ import com.vincula.entity.Usuario;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.MotivoBuscaAtiva;
 import com.vincula.enums.StatusDemanda;
+import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.util.AuditoriaDescricaoUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,21 +28,30 @@ public class DemandaService {
     private final PacienteRepository pacienteRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final UsuarioService usuarioService;
+    private final AuditoriaService auditoriaService;
 
     public DemandaService(DemandaRepository demandaRepository,
                           PacienteRepository pacienteRepository,
                           UnidadeSaudeRepository unidadeSaudeRepository,
-                          UsuarioService usuarioService) {
+                          UsuarioService usuarioService, AuditoriaService auditoriaService) {
         this.demandaRepository = demandaRepository;
         this.pacienteRepository = pacienteRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.usuarioService = usuarioService;
+        this.auditoriaService = auditoriaService;
     }
 
     public DemandaDTO criar(DemandaDTO dto) {
         Demanda entity = toEntity(dto);
 
         Demanda salvo = demandaRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.DEMANDA_CRIADA,
+                "Demanda",
+                salvo.getId(),
+                "Demanda criada para o paciente ID " + salvo.getPaciente().getId()
+        );
         return toDTO(salvo);
     }
 
@@ -53,11 +64,20 @@ public class DemandaService {
 
         validarMotivoBusca(dto);
 
+        String descricaoLog = AuditoriaDescricaoUtil.demandaAtualizada(entity, dto);
+
         entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
         entity.setDescricaoBusca(dto.getDescricaoBusca());
         entity.setPrazoDemanda(dto.getPrazoDemanda());
 
         Demanda atualizado = demandaRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.DEMANDA_ATUALIZADA,
+                "Demanda",
+                atualizado.getId(),
+                descricaoLog
+        );
         return toDTO(atualizado);
     }
 
@@ -77,6 +97,8 @@ public class DemandaService {
             throw new BusinessException("Descrição do desfecho é obrigatória quando o desfecho for OUTRO");
         }
 
+        String descricaoLog = AuditoriaDescricaoUtil.demandaEncerrada(entity);
+
         Usuario usuario = usuarioService.buscarUsuarioAutenticado();
 
         entity.setStatus(StatusDemanda.FINALIZADA);
@@ -86,6 +108,12 @@ public class DemandaService {
         entity.setUsuarioEncerramento(usuario);
 
         Demanda atualizado = demandaRepository.save(entity);
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.DEMANDA_ENCERRADA,
+                "Demanda",
+                atualizado.getId(),
+                descricaoLog
+        );
         return toDTO(atualizado);
     }
 
@@ -112,6 +140,15 @@ public class DemandaService {
         demanda.setUsuarioRedirecionamento(usuario);
 
         Demanda atualizada = demandaRepository.save(demanda);
+
+        String descricaoLog = AuditoriaDescricaoUtil.demandaRedirecionada(atualizada);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.DEMANDA_REDIRECIONADA,
+                "Demanda",
+                atualizada.getId(),
+                descricaoLog
+        );
         return toDTO(atualizada);
     }
 

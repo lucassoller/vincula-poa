@@ -5,10 +5,12 @@ import com.vincula.dto.UnidadeSaudeDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
+import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.util.AuditoriaDescricaoUtil;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -17,10 +19,12 @@ public class UnidadeSaudeService {
 
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final EnderecoMapper enderecoMapper;
+    private final AuditoriaService auditoriaService;
 
-    public UnidadeSaudeService(UnidadeSaudeRepository unidadeSaudeRepository, EnderecoMapper enderecoMapper) {
+    public UnidadeSaudeService(UnidadeSaudeRepository unidadeSaudeRepository, EnderecoMapper enderecoMapper, AuditoriaService auditoriaService) {
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.enderecoMapper = enderecoMapper;
+        this.auditoriaService = auditoriaService;
     }
 
     public UnidadeSaudeDTO criar(UnidadeSaudeDTO dto) {
@@ -29,6 +33,14 @@ public class UnidadeSaudeService {
         UnidadeSaude entity = toEntity(dto);
 
         UnidadeSaude salvo = unidadeSaudeRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.UNIDADE_SAUDE_CRIADA,
+                "UnidadeSaude",
+                salvo.getId(),
+                "Unidade de saúde criada: " + salvo.getNome()
+        );
+
         return toDTO(salvo);
     }
 
@@ -66,12 +78,22 @@ public class UnidadeSaudeService {
 
         validarCnesUpdate(dto, id);
 
+        String descricaoLog = AuditoriaDescricaoUtil.unidadeSaudeAtualizada(entity, dto);
+
         entity.setNome(dto.getNome());
         entity.setCnes(dto.getCnes());
+        entity.setTelefone(dto.getTelefone());
 
         enderecoMapper.updateEntityFromDto(dto.getEndereco(), entity.getEndereco());
 
         UnidadeSaude atualizado = unidadeSaudeRepository.save(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.UNIDADE_SAUDE_ATUALIZADA,
+                "UnidadeSaude",
+                atualizado.getId(),
+                descricaoLog
+        );
 
         return toDTO(atualizado);
     }
@@ -79,7 +101,16 @@ public class UnidadeSaudeService {
     public void deletar(Long id) {
         UnidadeSaude entity = buscarUnidadeSaudePorId(id);
 
+        Long unidadeId = entity.getId();
+
         unidadeSaudeRepository.delete(entity);
+
+        auditoriaService.registrar(
+                TipoAcaoAuditoria.UNIDADE_SAUDE_DELETADA,
+                "UnidadeSaude",
+                unidadeId,
+                "Unidade de saúde deletada"
+        );
     }
 
     private void validarCnesCreate(UnidadeSaudeDTO dto) {
@@ -105,6 +136,7 @@ public class UnidadeSaudeService {
         UnidadeSaude entity = new UnidadeSaude();
         entity.setNome(dto.getNome());
         entity.setCnes(dto.getCnes());
+        entity.setTelefone(dto.getTelefone());
         entity.setEndereco(endereco);
 
         return entity;
@@ -115,6 +147,7 @@ public class UnidadeSaudeService {
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
         dto.setCnes(entity.getCnes());
+        dto.setTelefone(entity.getTelefone());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         return dto;
     }
