@@ -8,6 +8,7 @@ import com.vincula.export.DashboardIndicadoresExporter;
 import com.vincula.service.UsuarioService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DashboardIndicadorService {
@@ -18,18 +19,20 @@ public class DashboardIndicadorService {
     private final IndicadorInsucessoService indicadorInsucessoService;
     private final UsuarioService usuarioService;
     private final DashboardIndicadoresExporter csvExporter;
+    private final IndicadorRankingService indicadorRankingService;
 
     public DashboardIndicadorService(IndicadorProducaoService indicadorProducaoService,
                                      IndicadorProcessoService indicadorProcessoService,
                                      IndicadorResultadoService indicadorResultadoService,
                                      IndicadorInsucessoService indicadorInsucessoService,
-                                     UsuarioService usuarioService, DashboardIndicadoresExporter csvExporter) {
+                                     UsuarioService usuarioService, DashboardIndicadoresExporter csvExporter, IndicadorRankingService indicadorRankingService) {
         this.indicadorProducaoService = indicadorProducaoService;
         this.indicadorProcessoService = indicadorProcessoService;
         this.indicadorResultadoService = indicadorResultadoService;
         this.indicadorInsucessoService = indicadorInsucessoService;
         this.usuarioService = usuarioService;
         this.csvExporter = csvExporter;
+        this.indicadorRankingService = indicadorRankingService;
     }
 
     public DashboardIndicadoresDTO dashboardGeral() {
@@ -39,7 +42,12 @@ public class DashboardIndicadorService {
                 indicadorProducaoService.indicadoresGerais(),
                 indicadorProcessoService.montarProcessoGeral(),
                 indicadorResultadoService.percentualPorDesfecho(),
-                indicadorInsucessoService.principaisMotivosInsucesso()
+                indicadorInsucessoService.principaisMotivosInsucesso(),
+                indicadorRankingService.rankingPorTotalDemandas(),
+                indicadorRankingService.rankingPorPercentualResolucao(),
+                indicadorRankingService.rankingPorTempoMedioResolucao(),
+                indicadorRankingService.rankingPorTempoAtePrimeiraTentativa()
+
         );
     }
 
@@ -50,7 +58,11 @@ public class DashboardIndicadorService {
                 indicadorProducaoService.indicadoresPorUnidade(unidadeSaudeId),
                 indicadorProcessoService.montarProcessoPorUnidade(unidadeSaudeId),
                 indicadorResultadoService.percentualPorDesfechoPorUnidade(unidadeSaudeId),
-                indicadorInsucessoService.principaisMotivosInsucessoPorUnidade(unidadeSaudeId)
+                indicadorInsucessoService.principaisMotivosInsucessoPorUnidade(unidadeSaudeId),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of()
         );
     }
 
@@ -61,7 +73,11 @@ public class DashboardIndicadorService {
                 indicadorProducaoService.indicadoresPorPeriodo(inicio, fim),
                 indicadorProcessoService.montarProcessoPorPeriodo(inicio, fim),
                 indicadorResultadoService.percentualPorDesfechoPorPeriodo(inicio, fim),
-                indicadorInsucessoService.principaisMotivosInsucessoPorPeriodo(inicio, fim)
+                indicadorInsucessoService.principaisMotivosInsucessoPorPeriodo(inicio, fim),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of()
         );
     }
 
@@ -72,7 +88,11 @@ public class DashboardIndicadorService {
                 indicadorProducaoService.indicadoresPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorProcessoService.montarProcessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorResultadoService.percentualPorDesfechoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
-                indicadorInsucessoService.principaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
+                indicadorInsucessoService.principaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of()
         );
     }
 

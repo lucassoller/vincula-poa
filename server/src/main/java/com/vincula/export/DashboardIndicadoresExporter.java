@@ -1,8 +1,6 @@
 package com.vincula.export;
 
-import com.vincula.dto.DashboardIndicadoresDTO;
-import com.vincula.dto.IndicadorValorDTO;
-import com.vincula.dto.MotivoQuantidadeDTO;
+import com.vincula.dto.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,13 +18,15 @@ public class DashboardIndicadoresExporter {
         adicionarIndicadores(sb, "resultado", dashboard.getResultado());
         adicionarMotivos(sb, dashboard.getPrincipaisMotivosInsucesso());
 
-        return "\uFEFF" + sb.toString();
+        adicionarRanking(sb, "ranking_total_demandas", dashboard.getRankingTotalDemandas());
+        adicionarRanking(sb, "ranking_percentual_resolucao", dashboard.getRankingPercentualResolucao());
+        adicionarRanking(sb, "ranking_tempo_medio_resolucao", dashboard.getRankingTempoMedioResolucao());
+        adicionarRanking(sb, "ranking_tempo_primeira_tentativa", dashboard.getRankingTempoPrimeiraTentativa());
+
+        return "\uFEFF" + sb;
     }
 
-    private void adicionarIndicadores(StringBuilder sb,
-                                      String categoria,
-                                      List<IndicadorValorDTO> indicadores) {
-
+    private void adicionarIndicadores(StringBuilder sb, String categoria, List<IndicadorValorDTO> indicadores) {
         for (IndicadorValorDTO item : indicadores) {
             sb.append(categoria).append(",")
                     .append(escapar(item.getIndicador())).append(",")
@@ -34,13 +34,19 @@ public class DashboardIndicadoresExporter {
         }
     }
 
-    private void adicionarMotivos(StringBuilder sb,
-                                  List<MotivoQuantidadeDTO> motivos) {
-
+    private void adicionarMotivos(StringBuilder sb, List<MotivoQuantidadeDTO> motivos) {
         for (MotivoQuantidadeDTO item : motivos) {
             sb.append("motivo_insucesso,")
                     .append(escapar(item.getMotivo())).append(",")
                     .append(item.getQuantidade()).append("\n");
+        }
+    }
+
+    private void adicionarRanking(StringBuilder sb, String categoria, List<IndicadorRankingDTO> ranking) {
+        for (IndicadorRankingDTO item : ranking) {
+            sb.append(categoria).append(",")
+                    .append(escapar(item.getUnidadeSaudeNome())).append(",")
+                    .append(item.getValor()).append("\n");
         }
     }
 

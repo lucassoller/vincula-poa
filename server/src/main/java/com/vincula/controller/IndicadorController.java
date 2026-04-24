@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.DashboardIndicadoresDTO;
+import com.vincula.dto.IndicadorRankingDTO;
 import com.vincula.dto.IndicadorValorDTO;
 import com.vincula.dto.MotivoQuantidadeDTO;
 import com.vincula.service.indicador.*;
@@ -23,13 +24,15 @@ public class IndicadorController {
     private final IndicadorProcessoService indicadorProcessoService;
     private final IndicadorProducaoService indicadorProducaoService;
     private final IndicadorResultadoService indicadorResultadoService;
+    private final IndicadorRankingService indicadorRankingService;
 
-    public IndicadorController(DashboardIndicadorService dashboardIndicadorService, IndicadorInsucessoService indicadorInsucessoService, IndicadorProcessoService indicadorProcessoService, IndicadorProducaoService indicadorProducaoService, IndicadorResultadoService indicadorResultadoService) {
+    public IndicadorController(DashboardIndicadorService dashboardIndicadorService, IndicadorInsucessoService indicadorInsucessoService, IndicadorProcessoService indicadorProcessoService, IndicadorProducaoService indicadorProducaoService, IndicadorResultadoService indicadorResultadoService, IndicadorRankingService indicadorRankingService) {
         this.dashboardIndicadorService = dashboardIndicadorService;
         this.indicadorInsucessoService = indicadorInsucessoService;
         this.indicadorProcessoService = indicadorProcessoService;
         this.indicadorProducaoService = indicadorProducaoService;
         this.indicadorResultadoService = indicadorResultadoService;
+        this.indicadorRankingService = indicadorRankingService;
     }
 
     // =========================
@@ -84,6 +87,25 @@ public class IndicadorController {
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/demandas/percentual-resolvidas/periodo")
+    public ResponseEntity<IndicadorValorDTO> percentualResolvidasPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorProcessoService.percentualDemandasResolvidasPorPeriodo(inicio, fim));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/percentual-resolvidas/unidade/{unidadeSaudeId}/periodo")
+    public ResponseEntity<IndicadorValorDTO> percentualResolvidasPorUnidadeEPeriodo(
+            @PathVariable Long unidadeSaudeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorProcessoService.percentualDemandasResolvidasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim));
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping("/demandas/tempo-medio-resolucao")
     public ResponseEntity<IndicadorValorDTO> tempoResolucao() {
         return ResponseEntity.ok(indicadorProcessoService.tempoMedioResolucaoEmHoras());
@@ -96,6 +118,25 @@ public class IndicadorController {
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/demandas/tempo-medio-resolucao/periodo")
+    public ResponseEntity<IndicadorValorDTO> tempoResolucaoPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorProcessoService.tempoMedioResolucaoEmHorasPorPeriodo(inicio, fim));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/tempo-medio-resolucao/unidade/{unidadeSaudeId}/periodo")
+    public ResponseEntity<IndicadorValorDTO> tempoResolucaoPorUnidadeEPeriodo(
+            @PathVariable Long unidadeSaudeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorProcessoService.tempoMedioResolucaoEmHorasPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim));
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping("/demandas/tempo-primeira-tentativa")
     public ResponseEntity<IndicadorValorDTO> tempoPrimeiraTentativa() {
         return ResponseEntity.ok(indicadorProcessoService.tempoMedioAtePrimeiraTentativa());
@@ -105,6 +146,25 @@ public class IndicadorController {
     @GetMapping("/demandas/tempo-primeira-tentativa/unidade/{unidadeSaudeId}")
     public ResponseEntity<IndicadorValorDTO> tempoPrimeiraTentativaPorUnidade(@PathVariable Long unidadeSaudeId) {
         return ResponseEntity.ok(indicadorProcessoService.tempoMedioAtePrimeiraTentativaPorUnidade(unidadeSaudeId));
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/demandas/tempo-primeira-tentativa/periodo")
+    public ResponseEntity<IndicadorValorDTO> tempoPrimeiraTentativaPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorProcessoService.tempoMedioAtePrimeiraTentativaPorPeriodo(inicio, fim));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/tempo-primeira-tentativa/unidade/{unidadeSaudeId}/periodo")
+    public ResponseEntity<IndicadorValorDTO> tempoPrimeiraTentativaPorUnidadeEPeriodo(
+            @PathVariable Long unidadeSaudeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorProcessoService.tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim));
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
@@ -154,6 +214,55 @@ public class IndicadorController {
         return ResponseEntity.ok(indicadorResultadoService.percentualPorDesfechoPorUnidade(unidadeSaudeId));
     }
 
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/demandas/percentual-desfecho/periodo")
+    public ResponseEntity<List<IndicadorValorDTO>> percentualDesfechoPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorResultadoService.percentualPorDesfechoPorPeriodo(inicio, fim));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/percentual-desfecho/unidade/{unidadeSaudeId}/periodo")
+    public ResponseEntity<List<IndicadorValorDTO>> percentualDesfechoPorUnidadeEPeriodo(
+            @PathVariable Long unidadeSaudeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(
+                indicadorResultadoService.percentualPorDesfechoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
+        );
+    }
+
+    // =========================
+    // RANKINGS
+    // =========================
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/rankings/unidades/total-demandas")
+    public ResponseEntity<List<IndicadorRankingDTO>> rankingPorTotalDemandas() {
+        return ResponseEntity.ok(indicadorRankingService.rankingPorTotalDemandas());
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/rankings/unidades/percentual-resolucao")
+    public ResponseEntity<List<IndicadorRankingDTO>> rankingPorPercentualResolucao() {
+        return ResponseEntity.ok(indicadorRankingService.rankingPorPercentualResolucao());
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/rankings/unidades/tempo-medio-resolucao")
+    public ResponseEntity<List<IndicadorRankingDTO>> rankingPorTempoMedioResolucao() {
+        return ResponseEntity.ok(indicadorRankingService.rankingPorTempoMedioResolucao());
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/rankings/unidades//tempo-primeira-tentativa")
+    public ResponseEntity<List<IndicadorRankingDTO>> rankingPorTempoAtePrimeiraTentativa() {
+        return ResponseEntity.ok(indicadorRankingService.rankingPorTempoAtePrimeiraTentativa());
+    }
+
     // =========================
     // MOTIVOS
     // =========================
@@ -170,12 +279,33 @@ public class IndicadorController {
         return ResponseEntity.ok(indicadorInsucessoService.principaisMotivosInsucessoPorUnidade(unidadeSaudeId));
     }
 
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/demandas/motivos-insucesso/periodo")
+    public ResponseEntity<List<MotivoQuantidadeDTO>> motivosInsucessoPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(indicadorInsucessoService.principaisMotivosInsucessoPorPeriodo(inicio, fim));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/motivos-insucesso/unidade/{unidadeSaudeId}/periodo")
+    public ResponseEntity<List<MotivoQuantidadeDTO>> motivosInsucessoPorUnidadeEPeriodo(
+            @PathVariable Long unidadeSaudeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+    ) {
+        return ResponseEntity.ok(
+                indicadorInsucessoService.principaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
+        );
+    }
+
     // =========================
     // DASHBOARD
     // =========================
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
-    @GetMapping("/dashboard")
+    @GetMapping("/dashboard/geral")
     public ResponseEntity<DashboardIndicadoresDTO> dashboardGeral() {
         return ResponseEntity.ok(dashboardIndicadorService.dashboardGeral());
     }
@@ -231,7 +361,7 @@ public class IndicadorController {
                 .body(csv);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping(value = "/dashboard/periodo/exportar", produces = "text/csv")
     public ResponseEntity<String> exportarDashboardPorPeriodoCsv(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,

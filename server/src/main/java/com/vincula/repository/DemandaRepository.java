@@ -1,8 +1,6 @@
 package com.vincula.repository;
 
-import com.vincula.dto.projection.DesfechoQuantidadeProjection;
-import com.vincula.dto.projection.MotivoQuantidadeProjection;
-import com.vincula.dto.projection.StatusQuantidadeProjection;
+import com.vincula.dto.projection.*;
 import com.vincula.entity.Demanda;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
@@ -199,4 +197,44 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     List<StatusQuantidadeProjection> agruparPorStatusPorUnidadeEPeriodo(Long unidadeResponsavelId,
                                                                         LocalDateTime inicio,
                                                                         LocalDateTime fim);
+
+    @Query(value = """
+    SELECT 
+        u.id AS unidadeSaudeId,
+        u.nome AS unidadeSaudeNome,
+        COUNT(d.id) AS valor
+    FROM unidade_saude u
+    LEFT JOIN demanda d ON d.unidade_responsavel_id = u.id
+    GROUP BY u.id, u.nome
+    ORDER BY valor DESC, u.nome ASC
+    """, nativeQuery = true)
+    List<RankingQuantidadeProjection> rankingUnidadesPorTotalDemandas();
+
+    @Query(value = """
+    SELECT
+        u.id AS unidadeSaudeId,
+        u.nome AS unidadeSaudeNome,
+        CASE 
+            WHEN COUNT(d.id) = 0 THEN 0
+            ELSE COUNT(d.id) FILTER (WHERE d.status = 'FINALIZADA') * 100.0 / COUNT(d.id)
+        END AS valor
+    FROM unidade_saude u
+    LEFT JOIN demanda d ON d.unidade_responsavel_id = u.id
+    GROUP BY u.id, u.nome
+    ORDER BY valor DESC, u.nome ASC
+    """, nativeQuery = true)
+    List<RankingValorProjection> rankingUnidadesPorPercentualResolucao();
+
+    @Query(value = """
+    SELECT
+        u.id AS unidadeSaudeId,
+        u.nome AS unidadeSaudeNome,
+        AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao))) AS valor
+    FROM unidade_saude u
+    JOIN demanda d ON d.unidade_responsavel_id = u.id
+    WHERE d.data_hora_finalizacao IS NOT NULL
+    GROUP BY u.id, u.nome
+    ORDER BY valor ASC, u.nome ASC
+    """, nativeQuery = true)
+    List<RankingValorProjection> rankingUnidadesPorTempoMedioResolucao();
 }

@@ -1,5 +1,6 @@
 package com.vincula.repository;
 
+import com.vincula.dto.projection.RankingValorProjection;
 import com.vincula.entity.TentativaContato;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -168,4 +169,27 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
     Double calcularMediaTentativasPorUsuarioPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
                                                                @Param("inicio") LocalDateTime inicio,
                                                                @Param("fim") LocalDateTime fim);
+
+
+    @Query(value = """
+    SELECT
+        sub.unidade_responsavel_id AS unidadeSaudeId,
+        sub.unidade_saude_nome AS unidadeSaudeNome,
+        AVG(EXTRACT(EPOCH FROM (sub.primeira_tentativa - sub.data_hora_criacao))) AS valor
+    FROM (
+        SELECT
+            d.id,
+            d.unidade_responsavel_id,
+            u.nome AS unidade_saude_nome,
+            d.data_hora_criacao,
+            MIN(t.data_hora) AS primeira_tentativa
+        FROM demanda d
+        JOIN unidade_saude u ON u.id = d.unidade_responsavel_id
+        JOIN tentativa_contato t ON t.demanda_id = d.id
+        GROUP BY d.id, d.unidade_responsavel_id, u.nome, d.data_hora_criacao
+    ) sub
+    GROUP BY sub.unidade_responsavel_id, sub.unidade_saude_nome
+    ORDER BY valor ASC, sub.unidade_saude_nome ASC
+    """, nativeQuery = true)
+    List<RankingValorProjection> rankingUnidadesPorTempoAtePrimeiraTentativa();
 }
