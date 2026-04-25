@@ -9,13 +9,13 @@ import com.vincula.entity.Usuario;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.MotivoBuscaAtiva;
 import com.vincula.enums.StatusDemanda;
-import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,17 +28,18 @@ public class DemandaService {
     private final PacienteRepository pacienteRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final UsuarioService usuarioService;
-    private final AuditoriaService auditoriaService;
+    private final AuditoriaFacade auditoriaFacade;
 
     public DemandaService(DemandaRepository demandaRepository,
                           PacienteRepository pacienteRepository,
                           UnidadeSaudeRepository unidadeSaudeRepository,
-                          UsuarioService usuarioService, AuditoriaService auditoriaService) {
+                          UsuarioService usuarioService,
+                          AuditoriaFacade auditoriaFacade) {
         this.demandaRepository = demandaRepository;
         this.pacienteRepository = pacienteRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.usuarioService = usuarioService;
-        this.auditoriaService = auditoriaService;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public DemandaDTO criar(DemandaDTO dto) {
@@ -46,12 +47,8 @@ public class DemandaService {
 
         Demanda salvo = demandaRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.DEMANDA_CRIADA,
-                "Demanda",
-                salvo.getId(),
-                "Demanda criada para o paciente ID " + salvo.getPaciente().getId()
-        );
+        auditoriaFacade.demandaCriada(salvo.getId(), salvo.getPaciente().getId());
+
         return toDTO(salvo);
     }
 
@@ -72,12 +69,8 @@ public class DemandaService {
 
         Demanda atualizado = demandaRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.DEMANDA_ATUALIZADA,
-                "Demanda",
-                atualizado.getId(),
-                descricaoLog
-        );
+        auditoriaFacade.demandaAtualizada(atualizado.getId(), descricaoLog);
+
         return toDTO(atualizado);
     }
 
@@ -108,12 +101,9 @@ public class DemandaService {
         entity.setUsuarioEncerramento(usuario);
 
         Demanda atualizado = demandaRepository.save(entity);
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.DEMANDA_ENCERRADA,
-                "Demanda",
-                atualizado.getId(),
-                descricaoLog
-        );
+
+        auditoriaFacade.demandaEncerrada(atualizado.getId(), descricaoLog);
+
         return toDTO(atualizado);
     }
 
@@ -143,16 +133,13 @@ public class DemandaService {
 
         String descricaoLog = AuditoriaDescricaoUtil.demandaRedirecionada(atualizada);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.DEMANDA_REDIRECIONADA,
-                "Demanda",
-                atualizada.getId(),
-                descricaoLog
-        );
+        auditoriaFacade.demandaRedirecionada(atualizada.getId(), descricaoLog);
+
         return toDTO(atualizada);
     }
 
     public List<DemandaDTO> listarTodas() {
+        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findAll()
                 .stream()
                 .map(this::toDTO)
@@ -162,10 +149,13 @@ public class DemandaService {
     public DemandaDTO buscarPorId(Long id) {
         Demanda entity = buscarDemandaPorId(id);
 
+        auditoriaFacade.demandaVisualizada(entity.getId());
+
         return toDTO(entity);
     }
 
     public List<DemandaDTO> listarPorPaciente(Long pacienteId) {
+        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByPacienteId(pacienteId)
                 .stream()
                 .map(this::toDTO)
@@ -173,6 +163,7 @@ public class DemandaService {
     }
 
     public List<DemandaDTO> listarPorUnidadeSaude(Long unidadeResponsavelId) {
+        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUnidadeResponsavelId(unidadeResponsavelId)
                 .stream()
                 .map(this::toDTO)
@@ -180,6 +171,7 @@ public class DemandaService {
     }
 
     public List<DemandaDTO> listarPorUsuarioCriador(Long usuarioId) {
+        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUsuarioCriadorId(usuarioId)
                 .stream()
                 .map(this::toDTO)
@@ -187,6 +179,7 @@ public class DemandaService {
     }
 
     public List<DemandaDTO> listarPorPacienteEStatus(Long pacienteId, StatusDemanda status) {
+        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByPacienteIdAndStatus(pacienteId, status)
                 .stream()
                 .map(this::toDTO)
@@ -194,6 +187,7 @@ public class DemandaService {
     }
 
     public List<DemandaDTO> listarPorUnidadeSaudeEStatus(Long unidadeResponsavelId, StatusDemanda status) {
+        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUnidadeResponsavelIdAndStatus(unidadeResponsavelId, status)
                 .stream()
                 .map(this::toDTO)
@@ -201,6 +195,7 @@ public class DemandaService {
     }
 
     public List<DemandaDTO> listarPorUsuarioCriadorEStatus(Long usuarioId, StatusDemanda status) {
+        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUsuarioCriadorIdAndStatus(usuarioId, status)
                 .stream()
                 .map(this::toDTO)
@@ -210,7 +205,10 @@ public class DemandaService {
     public void deletar(Long id) {
         Demanda entity = buscarDemandaPorId(id);
 
+        Long demandaId = entity.getId();
+
         demandaRepository.delete(entity);
+        auditoriaFacade.demandaDeletada(demandaId);
     }
 
     private Demanda buscarDemandaPorId(Long id) {

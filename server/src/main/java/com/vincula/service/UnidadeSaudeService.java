@@ -5,12 +5,12 @@ import com.vincula.dto.UnidadeSaudeDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
-import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -19,12 +19,14 @@ public class UnidadeSaudeService {
 
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final EnderecoMapper enderecoMapper;
-    private final AuditoriaService auditoriaService;
+    private final AuditoriaFacade auditoriaFacade;
 
-    public UnidadeSaudeService(UnidadeSaudeRepository unidadeSaudeRepository, EnderecoMapper enderecoMapper, AuditoriaService auditoriaService) {
+    public UnidadeSaudeService(UnidadeSaudeRepository unidadeSaudeRepository,
+                               EnderecoMapper enderecoMapper,
+                               AuditoriaFacade auditoriaFacade) {
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.enderecoMapper = enderecoMapper;
-        this.auditoriaService = auditoriaService;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public UnidadeSaudeDTO criar(UnidadeSaudeDTO dto) {
@@ -34,17 +36,13 @@ public class UnidadeSaudeService {
 
         UnidadeSaude salvo = unidadeSaudeRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.UNIDADE_SAUDE_CRIADA,
-                "UnidadeSaude",
-                salvo.getId(),
-                "Unidade de saúde criada: " + salvo.getNome()
-        );
+        auditoriaFacade.unidadeSaudeCriada(salvo.getId());
 
         return toDTO(salvo);
     }
 
     public List<UnidadeSaudeDTO> listarTodos() {
+        auditoriaFacade.unidadeSaudeVisualizada(0L);
         return unidadeSaudeRepository.findAll()
                 .stream()
                 .map(this::toDTO)
@@ -52,9 +50,10 @@ public class UnidadeSaudeService {
     }
 
     public List<PacienteDTO> listarPacientesPorUnidade(Long unidadeSaudeId) {
-        List<Paciente> pacientes = unidadeSaudeRepository.findPacientesByUnidadeSaudeId(unidadeSaudeId);
+        auditoriaFacade.unidadeSaudeVisualizada(0L);
 
-        return pacientes.stream()
+        return unidadeSaudeRepository.findPacientesByUnidadeSaudeId(unidadeSaudeId)
+                .stream()
                 .map(this::toPacienteDTO)
                 .toList();
     }
@@ -62,12 +61,15 @@ public class UnidadeSaudeService {
     public UnidadeSaudeDTO buscarPorId(Long id) {
         UnidadeSaude entity = buscarUnidadeSaudePorId(id);
 
+        auditoriaFacade.unidadeSaudeVisualizada(entity.getId());
+
         return toDTO(entity);
     }
 
     public UnidadeSaudeDTO buscarPorCnes(String cnes) {
-        UnidadeSaude entity = unidadeSaudeRepository.findByCnes(cnes)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+        UnidadeSaude entity = buscarUnidadeSaudePorCnes(cnes);
+
+        auditoriaFacade.unidadeSaudeVisualizada(entity.getId());
 
         return toDTO(entity);
     }
@@ -88,12 +90,7 @@ public class UnidadeSaudeService {
 
         UnidadeSaude atualizado = unidadeSaudeRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.UNIDADE_SAUDE_ATUALIZADA,
-                "UnidadeSaude",
-                atualizado.getId(),
-                descricaoLog
-        );
+        auditoriaFacade.unidadeSaudeAtualizada(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);
     }
@@ -105,12 +102,7 @@ public class UnidadeSaudeService {
 
         unidadeSaudeRepository.delete(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.UNIDADE_SAUDE_DELETADA,
-                "UnidadeSaude",
-                unidadeId,
-                "Unidade de saúde deletada"
-        );
+        auditoriaFacade.unidadeSaudeDeletada(unidadeId);
     }
 
     private void validarCnesCreate(UnidadeSaudeDTO dto) {
@@ -127,6 +119,11 @@ public class UnidadeSaudeService {
 
     private UnidadeSaude buscarUnidadeSaudePorId(Long id) {
         return unidadeSaudeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+    }
+
+    private UnidadeSaude buscarUnidadeSaudePorCnes(String cnes){
+        return unidadeSaudeRepository.findByCnes(cnes)
                 .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
     }
 

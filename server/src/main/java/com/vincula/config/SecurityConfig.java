@@ -1,9 +1,6 @@
 package com.vincula.config;
 
-import com.vincula.security.CustomAccessDeniedHandler;
-import com.vincula.security.CustomAuthenticationEntryPoint;
-import com.vincula.security.CustomUserDetailsService;
-import com.vincula.security.JwtAuthenticationFilter;
+import com.vincula.security.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,15 +19,18 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomLogoutHandler logoutHandler;
 
     public SecurityConfig(CustomUserDetailsService customUserDetailsService,
                           CustomAccessDeniedHandler customAccessDeniedHandler,
                           CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-                          JwtAuthenticationFilter jwtAuthenticationFilter) {
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                          CustomLogoutHandler logoutHandler) {
         this.customUserDetailsService = customUserDetailsService;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.logoutHandler = logoutHandler;
     }
 
     @Bean
@@ -59,8 +59,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(
-                                org.springframework.security.config.http.SessionCreationPolicy.STATELESS)
+                                org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler((req, res, auth) -> res.setStatus(200))
                 );
         return http.build();
+
     }
 }

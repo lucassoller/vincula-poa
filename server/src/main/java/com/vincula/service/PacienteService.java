@@ -5,7 +5,6 @@ import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.enums.Sexo;
-import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
@@ -13,13 +12,11 @@ import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.List;
-
 
 @Service
 public class PacienteService {
@@ -27,13 +24,16 @@ public class PacienteService {
     private final PacienteRepository pacienteRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final EnderecoMapper enderecoMapper;
-    private final AuditoriaService auditoriaService;
+    private final AuditoriaFacade auditoriaFacade;
 
-    public PacienteService(PacienteRepository pacienteRepository, UnidadeSaudeRepository unidadeSaudeRepository, EnderecoMapper enderecoMapper, AuditoriaService auditoriaService) {
+    public PacienteService(PacienteRepository pacienteRepository,
+                           UnidadeSaudeRepository unidadeSaudeRepository,
+                           EnderecoMapper enderecoMapper,
+                           AuditoriaFacade auditoriaFacade) {
         this.pacienteRepository = pacienteRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.enderecoMapper = enderecoMapper;
-        this.auditoriaService = auditoriaService;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public PacienteDTO criar(PacienteDTO dto) {
@@ -43,12 +43,8 @@ public class PacienteService {
 
         Paciente salvo = pacienteRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.PACIENTE_CRIADO,
-                "Paciente",
-                salvo.getId(),
-                "Paciente criado: " + salvo.getNomeCompleto()
-        );
+        auditoriaFacade.pacienteCriado(salvo.getId());
+
         return toDTO(salvo);
     }
 
@@ -62,6 +58,8 @@ public class PacienteService {
     public PacienteDTO buscarPorId(Long id) {
         Paciente paciente = buscarPacientePorId(id);
 
+        auditoriaFacade.pacienteVisualizado(paciente.getId());
+
         return toDTO(paciente);
     }
 
@@ -69,12 +67,16 @@ public class PacienteService {
         Paciente paciente = pacienteRepository.findByCpf(cpf)
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
+        auditoriaFacade.pacienteVisualizado(paciente.getId());
+
         return toDTO(paciente);
     }
 
     public PacienteDTO buscarPorCns(String cns) {
         Paciente paciente = pacienteRepository.findByCns(cns)
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
+
+        auditoriaFacade.pacienteVisualizado(paciente.getId());
 
         return toDTO(paciente);
     }
@@ -105,12 +107,7 @@ public class PacienteService {
 
         Paciente atualizado = pacienteRepository.save(paciente);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.PACIENTE_ATUALIZADO,
-                "Paciente",
-                atualizado.getId(),
-                descricaoLog
-        );
+        auditoriaFacade.pacienteAtualizado(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);
     }
@@ -122,12 +119,7 @@ public class PacienteService {
 
         pacienteRepository.delete(paciente);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.PACIENTE_DELETADO,
-                "Paciente",
-                pacienteId,
-                "Paciente deletado"
-        );
+        auditoriaFacade.pacienteDeletado(pacienteId);
     }
 
     private void validarCpfECnsCreate(PacienteDTO dto) {

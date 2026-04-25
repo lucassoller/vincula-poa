@@ -6,6 +6,7 @@ import com.vincula.enums.PerfilUsuario;
 import com.vincula.exception.BusinessException;
 import com.vincula.export.DashboardIndicadoresExporter;
 import com.vincula.service.UsuarioService;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,12 +21,16 @@ public class DashboardIndicadorService {
     private final UsuarioService usuarioService;
     private final DashboardIndicadoresExporter csvExporter;
     private final IndicadorRankingService indicadorRankingService;
+    private final AuditoriaFacade auditoriaFacade;
 
     public DashboardIndicadorService(IndicadorProducaoService indicadorProducaoService,
                                      IndicadorProcessoService indicadorProcessoService,
                                      IndicadorResultadoService indicadorResultadoService,
                                      IndicadorInsucessoService indicadorInsucessoService,
-                                     UsuarioService usuarioService, DashboardIndicadoresExporter csvExporter, IndicadorRankingService indicadorRankingService) {
+                                     UsuarioService usuarioService,
+                                     DashboardIndicadoresExporter csvExporter,
+                                     IndicadorRankingService indicadorRankingService,
+                                     AuditoriaFacade auditoriaFacade) {
         this.indicadorProducaoService = indicadorProducaoService;
         this.indicadorProcessoService = indicadorProcessoService;
         this.indicadorResultadoService = indicadorResultadoService;
@@ -33,10 +38,13 @@ public class DashboardIndicadorService {
         this.usuarioService = usuarioService;
         this.csvExporter = csvExporter;
         this.indicadorRankingService = indicadorRankingService;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public DashboardIndicadoresDTO dashboardGeral() {
         validarAcessoDashboardGeral();
+
+        auditoriaFacade.dashboardAcessado("Dashboard geral acessado");
 
         return new DashboardIndicadoresDTO(
                 indicadorProducaoService.indicadoresGerais(),
@@ -54,6 +62,8 @@ public class DashboardIndicadorService {
     public DashboardIndicadoresDTO dashboardPorUnidade(Long unidadeSaudeId) {
         validarAcessoUnidade(unidadeSaudeId);
 
+        auditoriaFacade.dashboardAcessado("Dashboard da unidade ID " + unidadeSaudeId + " acessado");
+
         return new DashboardIndicadoresDTO(
                 indicadorProducaoService.indicadoresPorUnidade(unidadeSaudeId),
                 indicadorProcessoService.montarProcessoPorUnidade(unidadeSaudeId),
@@ -68,6 +78,8 @@ public class DashboardIndicadorService {
 
     public DashboardIndicadoresDTO dashboardPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         validarAcessoDashboardGeral();
+
+        auditoriaFacade.dashboardAcessado("Dashboard de "+ inicio + " até "+ fim +" acessado");
 
         return new DashboardIndicadoresDTO(
                 indicadorProducaoService.indicadoresPorPeriodo(inicio, fim),
@@ -84,6 +96,9 @@ public class DashboardIndicadorService {
     public DashboardIndicadoresDTO dashboardPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
         validarAcessoUnidade(unidadeSaudeId);
 
+        auditoriaFacade.dashboardAcessado("Dashboard da unidade ID " +
+                unidadeSaudeId + "de "+ inicio + " até "+ fim +" acessado");
+
         return new DashboardIndicadoresDTO(
                 indicadorProducaoService.indicadoresPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorProcessoService.montarProcessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
@@ -97,18 +112,23 @@ public class DashboardIndicadorService {
     }
 
     public String exportarDashboardGeralCsv() {
+        auditoriaFacade.exportacaoCsvRealizada("Dashboard geral exportado");
         return csvExporter.exportar(dashboardGeral());
     }
 
     public String exportarDashboardPorUnidadeCsv(Long unidadeSaudeId) {
+        auditoriaFacade.exportacaoCsvRealizada("Dashboard da unidade ID " + unidadeSaudeId + " exportado");
         return csvExporter.exportar(dashboardPorUnidade(unidadeSaudeId));
     }
 
     public String exportarDashboardPorPeriodoCsv(LocalDateTime inicio, LocalDateTime fim) {
+        auditoriaFacade.exportacaoCsvRealizada("Dashboard de "+ inicio + " até "+ fim +" exportado");
         return csvExporter.exportar(dashboardPorPeriodo(inicio, fim));
     }
 
     public String exportarDashboardPorUnidadeEPeriodoCsv(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        auditoriaFacade.exportacaoCsvRealizada("Dashboard da unidade ID " +
+                unidadeSaudeId + "de "+ inicio + " até "+ fim +" exportado");
         return csvExporter.exportar(dashboardPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim));
     }
 

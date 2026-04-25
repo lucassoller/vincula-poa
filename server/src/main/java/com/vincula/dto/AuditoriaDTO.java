@@ -19,4 +19,7 @@ public class AuditoriaDTO {
 
     private Long usuarioId;
     private String usuarioNome;
+
+    private String ip;
+    private String userAgent;
 }

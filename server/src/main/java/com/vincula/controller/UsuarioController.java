@@ -1,5 +1,6 @@
 package com.vincula.controller;
 
+import com.vincula.dto.MudancaSenhaDTO;
 import com.vincula.dto.UsuarioDTO;
 import com.vincula.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -63,6 +64,15 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody UsuarioDTO dto) {
         return ResponseEntity.ok(usuarioService.atualizar(id, dto));
+    }
+
+    @PutMapping("/usuarios/{id}/senha")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> alterarSenha(@PathVariable Long id,
+                                             @RequestBody MudancaSenhaDTO dto) {
+
+        usuarioService.alterarSenha(id, dto);
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")

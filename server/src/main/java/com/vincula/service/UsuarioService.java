@@ -1,16 +1,17 @@
 package com.vincula.service;
 
+import com.vincula.dto.MudancaSenhaDTO;
 import com.vincula.dto.UsuarioDTO;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilUsuario;
-import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.repository.UsuarioRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +23,16 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuditoriaService auditoriaService;
+    private final AuditoriaFacade auditoriaFacade;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                           UnidadeSaudeRepository unidadeSaudeRepository,
-                          PasswordEncoder passwordEncoder, AuditoriaService auditoriaService) {
+                          PasswordEncoder passwordEncoder,
+                          AuditoriaFacade auditoriaFacade) {
         this.usuarioRepository = usuarioRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.passwordEncoder = passwordEncoder;
-        this.auditoriaService = auditoriaService;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public UsuarioDTO criar(UsuarioDTO dto) {
@@ -40,17 +42,13 @@ public class UsuarioService {
         Usuario entity = toEntity(dto);
         Usuario salvo = usuarioRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.USUARIO_CRIADO,
-                "Usuario",
-                salvo.getId(),
-                "Usuário criado: " + salvo.getLogin()
-        );
+        auditoriaFacade.usuarioCriado(salvo.getId());
 
         return toDTO(salvo);
     }
 
     public List<UsuarioDTO> listarTodos() {
+        auditoriaFacade.usuarioVisualizado(0L);
         return usuarioRepository.findAll()
                 .stream()
                 .map(this::toDTO)
@@ -60,6 +58,8 @@ public class UsuarioService {
     public UsuarioDTO buscarPorId(Long id) {
         Usuario entity = buscarUsuarioPorId(id);
 
+        auditoriaFacade.usuarioVisualizado(entity.getId());
+
         return toDTO(entity);
     }
 
@@ -67,12 +67,16 @@ public class UsuarioService {
         Usuario entity = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
 
+        auditoriaFacade.usuarioVisualizado(entity.getId());
+
         return toDTO(entity);
     }
 
     public UsuarioDTO buscarPorLogin(String login) {
         Usuario entity = usuarioRepository.findByLogin(login)
                 .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
+
+        auditoriaFacade.usuarioVisualizado(entity.getId());
 
         return toDTO(entity);
     }
@@ -98,14 +102,25 @@ public class UsuarioService {
 
         Usuario atualizado = usuarioRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.USUARIO_ATUALIZADO,
-                "Usuario",
-                atualizado.getId(),
-                descricaoLog
-        );
+        auditoriaFacade.usuarioAtualizado(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);
+    }
+
+    public void alterarSenha(Long usuarioId, MudancaSenhaDTO dto) {
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new NotFoundException("Usuário nãzo encontrado"));
+
+        if (!passwordEncoder.matches(dto.getSenhaAtual(), usuario.getSenhaHash())) {
+            throw new BusinessException("Senha atual inválida");
+        }
+
+        usuario.setSenhaHash(passwordEncoder.encode(dto.getNovaSenha()));
+
+        Usuario atualizado = usuarioRepository.save(usuario);
+
+        auditoriaFacade.usuarioSenhaAlteradaLogado(atualizado.getId());
     }
 
     public void deletar(Long id) {
@@ -115,12 +130,7 @@ public class UsuarioService {
 
         usuarioRepository.delete(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.USUARIO_DELETADO,
-                "Usuario",
-                usuarioId,
-                "Usuário deletado"
-        );
+        auditoriaFacade.usuarioDeletado(usuarioId);
     }
 
     private void validarDuplicidadeCreate(UsuarioDTO dto) {

@@ -4,11 +4,11 @@ import com.vincula.dto.ObservacaoDTO;
 import com.vincula.entity.Observacao;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.Usuario;
-import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.ObservacaoRepository;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,15 +20,16 @@ public class ObservacaoService {
     private final ObservacaoRepository observacaoRepository;
     private final PacienteRepository pacienteRepository;
     private final UsuarioService usuarioService;
-    private final AuditoriaService auditoriaService;
+    private final AuditoriaFacade auditoriaFacade;
 
     public ObservacaoService(ObservacaoRepository observacaoRepository,
                              PacienteRepository pacienteRepository,
-                             UsuarioService usuarioService, AuditoriaService auditoriaService) {
+                             UsuarioService usuarioService,
+                             AuditoriaFacade auditoriaFacade) {
         this.observacaoRepository = observacaoRepository;
         this.pacienteRepository = pacienteRepository;
         this.usuarioService = usuarioService;
-        this.auditoriaService = auditoriaService;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public ObservacaoDTO criar(ObservacaoDTO dto) {
@@ -37,17 +38,13 @@ public class ObservacaoService {
 
         Observacao salvo = observacaoRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.OBSERVACAO_CRIADA,
-                "Observacao",
-                salvo.getId(),
-                "Observação criada para paciente ID " + salvo.getPaciente().getId()
-        );
+        auditoriaFacade.observacaoCriada(salvo.getId(), salvo.getPaciente().getId());
 
         return toDTO(salvo);
     }
 
     public List<ObservacaoDTO> listarTodas() {
+        auditoriaFacade.observacaoVisualizada(0L);
         return observacaoRepository.findAll()
                 .stream()
                 .map(this::toDTO)
@@ -55,6 +52,7 @@ public class ObservacaoService {
     }
 
     public List<ObservacaoDTO> listarPorPaciente(Long pacienteId) {
+        auditoriaFacade.observacaoVisualizada(0L);
         return observacaoRepository.findByPacienteId(pacienteId)
                 .stream()
                 .map(this::toDTO)
@@ -62,6 +60,7 @@ public class ObservacaoService {
     }
 
     public List<ObservacaoDTO> listarPorUsuario(Long usuarioId) {
+        auditoriaFacade.observacaoVisualizada(0L);
         return observacaoRepository.findByUsuarioId(usuarioId)
                 .stream()
                 .map(this::toDTO)
@@ -70,6 +69,8 @@ public class ObservacaoService {
 
     public ObservacaoDTO buscarPorId(Long id) {
         Observacao entity = buscarObservacaoPorId(id);
+
+        auditoriaFacade.observacaoVisualizada(entity.getId());
 
         return toDTO(entity);
     }
@@ -86,12 +87,7 @@ public class ObservacaoService {
 
         Observacao atualizado = observacaoRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.OBSERVACAO_ATUALIZADA,
-                "Observacao",
-                atualizado.getId(),
-                descricaoLog
-        );
+        auditoriaFacade.observacaoAtualizada(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);
     }
@@ -103,12 +99,7 @@ public class ObservacaoService {
 
         observacaoRepository.delete(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.OBSERVACAO_DELETADA,
-                "Observacao",
-                observacaoId,
-                "Observação deletada"
-        );
+        auditoriaFacade.observacaoDeletada(observacaoId);
     }
 
     private Observacao buscarObservacaoPorId(Long id) {

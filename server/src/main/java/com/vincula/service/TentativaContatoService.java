@@ -5,13 +5,13 @@ import com.vincula.entity.Demanda;
 import com.vincula.entity.TentativaContato;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.StatusDemanda;
-import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.enums.TipoTentativaContato;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.TentativaContatoRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,15 +22,16 @@ public class TentativaContatoService {
     private final TentativaContatoRepository tentativaRepository;
     private final DemandaRepository demandaRepository;
     private final UsuarioService usuarioService;
-    private final AuditoriaService auditoriaService;
+    private final AuditoriaFacade auditoriaFacade;
 
     public TentativaContatoService(TentativaContatoRepository tentativaRepository,
                                    DemandaRepository demandaRepository,
-                                   UsuarioService usuarioService, AuditoriaService auditoriaService) {
+                                   UsuarioService usuarioService,
+                                   AuditoriaFacade auditoriaFacade) {
         this.tentativaRepository = tentativaRepository;
         this.demandaRepository = demandaRepository;
         this.usuarioService = usuarioService;
-        this.auditoriaService = auditoriaService;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public TentativaContatoDTO criar(TentativaContatoDTO dto) {
@@ -38,12 +39,9 @@ public class TentativaContatoService {
         TentativaContato entity = toEntity(dto);
 
         TentativaContato salvo = tentativaRepository.save(entity);
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.TENTATIVA_CONTATO_CRIADA,
-                "TentativaContato",
-                salvo.getId(),
-                "Tentativa de contato registrada para demanda ID " + salvo.getDemanda().getId()
-        );
+
+        auditoriaFacade.tentativaContatoCriada(salvo.getId(), salvo.getDemanda().getId());
+
         return toDTO(salvo);
     }
 
@@ -63,12 +61,7 @@ public class TentativaContatoService {
 
         TentativaContato atualizado = tentativaRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.TENTATIVA_CONTATO_ATUALIZADA,
-                "TentativaContato",
-                atualizado.getId(),
-                descricaoLog
-        );
+        auditoriaFacade.tentativaContatoAtualizada(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);
     }
@@ -79,15 +72,11 @@ public class TentativaContatoService {
 
         tentativaRepository.delete(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.ENDERECO_DELETADO,
-                "TentativaContato",
-                tentativaId,
-                "Tentativa de contato deletada"
-        );
+        auditoriaFacade.tentativaContatoDeletada(tentativaId);
     }
 
     public List<TentativaContatoDTO> listarPorDemanda(Long id) {
+        auditoriaFacade.tentativaContatoVisualizado(0L);
         return tentativaRepository.findByDemandaId(id)
                 .stream()
                 .map(this::toDTO)
@@ -95,6 +84,7 @@ public class TentativaContatoService {
     }
 
     public List<TentativaContatoDTO> listarPorUsuario(Long id) {
+        auditoriaFacade.tentativaContatoVisualizado(0L);
         return tentativaRepository.findByUsuario(id)
                 .stream()
                 .map(this::toDTO)
@@ -123,8 +113,12 @@ public class TentativaContatoService {
         entity.setDataHora(LocalDateTime.now());
 
         if (primeiraTentativa && demanda.getStatus() == StatusDemanda.ABERTA) {
+            StatusDemanda statusAnterior = demanda.getStatus();
+
             demanda.setStatus(StatusDemanda.EM_ANDAMENTO);
             demandaRepository.save(demanda);
+
+            auditoriaFacade.statusDemandaAlterado(demanda.getId(), "Status alterado automaticamente de [" + statusAnterior + "] para [" + demanda.getStatus() + "] após primeira tentativa de contato");
         }
 
         return entity;

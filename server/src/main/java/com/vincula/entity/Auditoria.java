@@ -28,6 +28,12 @@ public class Auditoria {
     @Column(length = 1000)
     private String descricao;
 
+    @Column(nullable = false, length = 20)
+    private String ip;
+
+    @Column(length = 200)
+    private String userAgent;
+
     @Column(nullable = false)
     private LocalDateTime dataHora;
 

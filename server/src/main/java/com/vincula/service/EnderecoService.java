@@ -2,10 +2,10 @@ package com.vincula.service;
 
 import com.vincula.dto.EnderecoDTO;
 import com.vincula.entity.Endereco;
-import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.EnderecoRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,28 +14,25 @@ import java.util.List;
 public class EnderecoService {
 
     private final EnderecoRepository enderecoRepository;
-    private final AuditoriaService auditoriaService;
+    private final AuditoriaFacade auditoriaFacade;
 
-    public EnderecoService(EnderecoRepository enderecoRepository, AuditoriaService auditoriaService) {
+    public EnderecoService(EnderecoRepository enderecoRepository,
+                           AuditoriaFacade auditoriaFacade) {
         this.enderecoRepository = enderecoRepository;
-        this.auditoriaService = auditoriaService;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public EnderecoDTO criar(EnderecoDTO dto) {
         Endereco entity = toEntity(dto);
         Endereco salvo = enderecoRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.ENDERECO_CRIADO,
-                "Endereco",
-                salvo.getId(),
-                "Endereço criado"
-        );
+        auditoriaFacade.enderecoCriado(salvo.getId());
 
         return toDTO(salvo);
     }
 
     public List<EnderecoDTO> listarTodos() {
+        auditoriaFacade.enderecoVisualizado(0L);
         return enderecoRepository.findAll()
                 .stream()
                 .map(this::toDTO)
@@ -43,7 +40,9 @@ public class EnderecoService {
     }
 
     public EnderecoDTO buscarPorId(Long id) {
-        return toDTO(buscarEnderecoPorId(id));
+        Endereco endereco = buscarEnderecoPorId(id);
+        auditoriaFacade.enderecoVisualizado(endereco.getId());
+        return toDTO(endereco);
     }
 
     public EnderecoDTO atualizar(Long id, EnderecoDTO dto) {
@@ -54,12 +53,7 @@ public class EnderecoService {
 
         Endereco atualizado = enderecoRepository.save(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.ENDERECO_ATUALIZADO,
-                "Endereco",
-                atualizado.getId(),
-                descricaoLog
-        );
+        auditoriaFacade.enderecoAtualizado(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);
     }
@@ -70,12 +64,7 @@ public class EnderecoService {
 
         enderecoRepository.delete(entity);
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.ENDERECO_DELETADO,
-                "Endereco",
-                enderecoId,
-                "Endereço deletado"
-        );
+        auditoriaFacade.enderecoDeletado(enderecoId);
     }
 
     private Endereco buscarEnderecoPorId(Long id) {

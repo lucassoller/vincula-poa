@@ -2,11 +2,11 @@ package com.vincula.service;
 
 import com.vincula.entity.Demanda;
 import com.vincula.entity.Paciente;
-import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.PacienteRepository;
+import com.vincula.util.AuditoriaFacade;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -15,15 +15,18 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-    private final AuditoriaService auditoriaService;
     private final DemandaRepository demandaRepository;
     private final PacienteRepository pacienteRepository;
+    private final AuditoriaFacade auditoriaFacade;
 
-    public EmailService(JavaMailSender mailSender, AuditoriaService auditoriaService, DemandaRepository demandaRepository, PacienteRepository pacienteRepository) {
+    public EmailService(JavaMailSender mailSender,
+                        DemandaRepository demandaRepository,
+                        PacienteRepository pacienteRepository,
+                        AuditoriaFacade auditoriaFacade) {
         this.mailSender = mailSender;
-        this.auditoriaService = auditoriaService;
         this.demandaRepository = demandaRepository;
         this.pacienteRepository = pacienteRepository;
+        this.auditoriaFacade = auditoriaFacade;
     }
 
     public void enviarEmailDemanda(Long demandaId, String assunto, String mensagem) {
@@ -33,15 +36,15 @@ public class EmailService {
 
         validarEmailPaciente(paciente);
 
-        enviarEmail(paciente.getEmail(), assunto, mensagem);
+        try {
+            enviarEmail(paciente.getEmail(), assunto, mensagem);
+        } catch (Exception e) {
+            auditoriaFacade.emailFalhou("Demanda", demanda.getId(), "Falha ao enviar email para paciente ID " + paciente.getId());
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.EMAIL_ENVIADO,
-                "Demanda",
-                demanda.getId(),
-                "Email enviado para paciente ID " + paciente.getId()
-                        + " referente à demanda ID " + demanda.getId()
-        );
+            throw e;
+        }
+
+        auditoriaFacade.emailEnviadoPorDemanda(demanda.getId(), paciente.getId());
     }
 
     public void enviarEmailPaciente(Long pacienteId, String assunto, String mensagem) {
@@ -50,14 +53,14 @@ public class EmailService {
 
         validarEmailPaciente(paciente);
 
-        enviarEmail(paciente.getEmail(), assunto, mensagem);
+        try {
+            enviarEmail(paciente.getEmail(), assunto, mensagem);
+        } catch (Exception e) {
+            auditoriaFacade.emailFalhou("Paciente", paciente.getId(), "Falha ao enviar email para paciente ID " + paciente.getId());
+            throw e;
+        }
 
-        auditoriaService.registrar(
-                TipoAcaoAuditoria.EMAIL_ENVIADO,
-                "Paciente",
-                paciente.getId(),
-                "Email enviado diretamente para paciente ID " + paciente.getId()
-        );
+        auditoriaFacade.emailEnviadoPorPaciente(paciente.getId());
     }
 
     public void enviarEmail(String para, String assunto, String mensagem) {
