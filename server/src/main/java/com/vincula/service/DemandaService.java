@@ -1,13 +1,15 @@
 package com.vincula.service;
 
-import com.vincula.dto.DemandaDTO;
-import com.vincula.dto.RedirecionarDemandaDTO;
+import com.vincula.dto.demanda.DemandaDTO;
+import com.vincula.dto.demanda.EncerrarDemandaDTO;
+import com.vincula.dto.demanda.RedirecionarDemandaDTO;
+import com.vincula.dto.demanda.DemandaResponseDTO;
 import com.vincula.entity.Demanda;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
-import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.MotivoBuscaAtiva;
+import com.vincula.enums.PrazoDemanda;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
@@ -42,7 +44,7 @@ public class DemandaService {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public DemandaDTO criar(DemandaDTO dto) {
+    public DemandaResponseDTO criar(DemandaDTO dto) {
         Demanda entity = toEntity(dto);
 
         Demanda salvo = demandaRepository.save(entity);
@@ -52,7 +54,7 @@ public class DemandaService {
         return toDTO(salvo);
     }
 
-    public DemandaDTO atualizar(Long id, DemandaDTO dto) {
+    public DemandaResponseDTO atualizar(Long id, DemandaDTO dto) {
         Demanda entity = buscarDemandaPorId(id);
 
         if (entity.getStatus() == StatusDemanda.FINALIZADA) {
@@ -66,6 +68,7 @@ public class DemandaService {
         entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
         entity.setDescricaoBusca(dto.getDescricaoBusca());
         entity.setPrazoDemanda(dto.getPrazoDemanda());
+        entity.setDataHoraLimite(calcularDataLimite(entity.getDataHoraCriacao(), dto.getPrazoDemanda()));
 
         Demanda atualizado = demandaRepository.save(entity);
 
@@ -74,20 +77,15 @@ public class DemandaService {
         return toDTO(atualizado);
     }
 
-    public DemandaDTO encerrar(Long id, DesfechoDemanda desfecho, String descricao) {
+    public DemandaResponseDTO encerrar(Long id, EncerrarDemandaDTO dto) {
         Demanda entity = buscarDemandaPorId(id);
 
         if (entity.getStatus() == StatusDemanda.FINALIZADA) {
             throw new BusinessException("Demanda já está finalizada");
         }
 
-        if (desfecho == null) {
+        if (dto.getDesfechoDemanda() == null) {
             throw new BusinessException("Desfecho é obrigatório");
-        }
-
-        if (desfecho == DesfechoDemanda.OUTRO &&
-                (descricao == null || descricao.isBlank())) {
-            throw new BusinessException("Descrição do desfecho é obrigatória quando o desfecho for OUTRO");
         }
 
         String descricaoLog = AuditoriaDescricaoUtil.demandaEncerrada(entity);
@@ -95,8 +93,8 @@ public class DemandaService {
         Usuario usuario = usuarioService.buscarUsuarioAutenticado();
 
         entity.setStatus(StatusDemanda.FINALIZADA);
-        entity.setDesfecho(desfecho);
-        entity.setDescricaoDesfecho(descricao);
+        entity.setDesfecho(dto.getDesfechoDemanda());
+        entity.setDescricaoDesfecho(dto.getDescricaoDesfecho());
         entity.setDataHoraFinalizacao(LocalDateTime.now());
         entity.setUsuarioEncerramento(usuario);
 
@@ -107,7 +105,7 @@ public class DemandaService {
         return toDTO(atualizado);
     }
 
-    public DemandaDTO redirecionar(Long id, RedirecionarDemandaDTO dto) {
+    public DemandaResponseDTO redirecionar(Long id, RedirecionarDemandaDTO dto) {
         Demanda demanda = buscarDemandaPorId(id);
 
         if (demanda.getStatus() == StatusDemanda.FINALIZADA) {
@@ -138,7 +136,7 @@ public class DemandaService {
         return toDTO(atualizada);
     }
 
-    public List<DemandaDTO> listarTodas() {
+    public List<DemandaResponseDTO> listarTodas() {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findAll()
                 .stream()
@@ -146,7 +144,7 @@ public class DemandaService {
                 .toList();
     }
 
-    public DemandaDTO buscarPorId(Long id) {
+    public DemandaResponseDTO buscarPorId(Long id) {
         Demanda entity = buscarDemandaPorId(id);
 
         auditoriaFacade.demandaVisualizada(entity.getId());
@@ -154,7 +152,7 @@ public class DemandaService {
         return toDTO(entity);
     }
 
-    public List<DemandaDTO> listarPorPaciente(Long pacienteId) {
+    public List<DemandaResponseDTO> listarPorPaciente(Long pacienteId) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByPacienteId(pacienteId)
                 .stream()
@@ -162,7 +160,7 @@ public class DemandaService {
                 .toList();
     }
 
-    public List<DemandaDTO> listarPorUnidadeSaude(Long unidadeResponsavelId) {
+    public List<DemandaResponseDTO> listarPorUnidadeSaude(Long unidadeResponsavelId) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUnidadeResponsavelId(unidadeResponsavelId)
                 .stream()
@@ -170,7 +168,7 @@ public class DemandaService {
                 .toList();
     }
 
-    public List<DemandaDTO> listarPorUsuarioCriador(Long usuarioId) {
+    public List<DemandaResponseDTO> listarPorUsuarioCriador(Long usuarioId) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUsuarioCriadorId(usuarioId)
                 .stream()
@@ -178,7 +176,7 @@ public class DemandaService {
                 .toList();
     }
 
-    public List<DemandaDTO> listarPorPacienteEStatus(Long pacienteId, StatusDemanda status) {
+    public List<DemandaResponseDTO> listarPorPacienteEStatus(Long pacienteId, StatusDemanda status) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByPacienteIdAndStatus(pacienteId, status)
                 .stream()
@@ -186,7 +184,7 @@ public class DemandaService {
                 .toList();
     }
 
-    public List<DemandaDTO> listarPorUnidadeSaudeEStatus(Long unidadeResponsavelId, StatusDemanda status) {
+    public List<DemandaResponseDTO> listarPorUnidadeSaudeEStatus(Long unidadeResponsavelId, StatusDemanda status) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUnidadeResponsavelIdAndStatus(unidadeResponsavelId, status)
                 .stream()
@@ -194,7 +192,7 @@ public class DemandaService {
                 .toList();
     }
 
-    public List<DemandaDTO> listarPorUsuarioCriadorEStatus(Long usuarioId, StatusDemanda status) {
+    public List<DemandaResponseDTO> listarPorUsuarioCriadorEStatus(Long usuarioId, StatusDemanda status) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUsuarioCriadorIdAndStatus(usuarioId, status)
                 .stream()
@@ -252,12 +250,13 @@ public class DemandaService {
         entity.setPrazoDemanda(dto.getPrazoDemanda());
         entity.setStatus(StatusDemanda.ABERTA);
         entity.setDataHoraCriacao(LocalDateTime.now());
+        entity.setDataHoraLimite(calcularDataLimite(entity.getDataHoraCriacao(), dto.getPrazoDemanda()));
 
         return entity;
     }
 
-    private DemandaDTO toDTO(Demanda entity) {
-        DemandaDTO dto = new DemandaDTO();
+    private DemandaResponseDTO toDTO(Demanda entity) {
+        DemandaResponseDTO dto = new DemandaResponseDTO();
 
         dto.setId(entity.getId());
         dto.setPacienteId(entity.getPaciente().getId());
@@ -300,5 +299,17 @@ public class DemandaService {
         }
 
         return dto;
+    }
+
+    private LocalDateTime calcularDataLimite(LocalDateTime inicio, PrazoDemanda prazo) {
+        return switch (prazo) {
+            case D1 -> inicio.plusDays(1);
+            case D2 -> inicio.plusDays(2);
+            case D3 -> inicio.plusDays(3);
+            case D7 -> inicio.plusDays(7);
+            case D15 -> inicio.plusDays(15);
+            case D20 -> inicio.plusDays(20);
+            case D30 -> inicio.plusDays(30);
+        };
     }
 }

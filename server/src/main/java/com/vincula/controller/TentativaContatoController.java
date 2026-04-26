@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
-import com.vincula.dto.TentativaContatoDTO;
+import com.vincula.dto.tentativaContato.TentativaContatoDTO;
+import com.vincula.dto.tentativaContato.TentativaContatoResponseDTO;
 import com.vincula.service.TentativaContatoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +22,26 @@ public class TentativaContatoController {
 
     @PreAuthorize("hasRole('EXECUTOR_APS')")
     @PostMapping
-    public ResponseEntity<TentativaContatoDTO> criar(@Valid @RequestBody TentativaContatoDTO dto) {
+    public ResponseEntity<TentativaContatoResponseDTO> criar(@Valid @RequestBody TentativaContatoDTO dto) {
         return ResponseEntity.ok(tentativaService.criar(dto));
     }
 
     @PreAuthorize("hasRole('EXECUTOR_APS')")
     @PutMapping("/{id}")
-    public ResponseEntity<TentativaContatoDTO> atualizar(@PathVariable Long id,
+    public ResponseEntity<TentativaContatoResponseDTO> atualizar(@PathVariable Long id,
                                                          @Valid @RequestBody TentativaContatoDTO dto) {
         return ResponseEntity.ok(tentativaService.atualizar(id, dto));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/demanda/{demandaId}")
-    public ResponseEntity<List<TentativaContatoDTO>> listarPorDemanda(@PathVariable Long demandaId) {
+    public ResponseEntity<List<TentativaContatoResponseDTO>> listarPorDemanda(@PathVariable Long demandaId) {
         return ResponseEntity.ok(tentativaService.listarPorDemanda(demandaId));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<TentativaContatoDTO>> listarPorUsuario(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<TentativaContatoResponseDTO>> listarPorUsuario(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(tentativaService.listarPorUsuario(usuarioId));
     }
 

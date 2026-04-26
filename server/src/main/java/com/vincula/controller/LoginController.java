@@ -1,7 +1,7 @@
 package com.vincula.controller;
 
-import com.vincula.dto.LoginRequestDTO;
-import com.vincula.dto.LoginResponseDTO;
+import com.vincula.dto.login.LoginRequestDTO;
+import com.vincula.dto.login.LoginResponseDTO;
 import com.vincula.service.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

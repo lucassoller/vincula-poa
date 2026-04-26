@@ -1,4 +1,4 @@
-package com.vincula.dto;
+package com.vincula.dto.demanda;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

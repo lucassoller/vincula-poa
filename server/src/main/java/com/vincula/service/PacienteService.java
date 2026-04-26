@@ -1,6 +1,7 @@
 package com.vincula.service;
 
-import com.vincula.dto.PacienteDTO;
+import com.vincula.dto.paciente.PacienteDTO;
+import com.vincula.dto.paciente.PacienteResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
@@ -36,7 +37,7 @@ public class PacienteService {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public PacienteDTO criar(PacienteDTO dto) {
+    public PacienteResponseDTO criar(PacienteDTO dto) {
         validarCpfECnsCreate(dto);
 
         Paciente entity = toEntity(dto);
@@ -48,14 +49,14 @@ public class PacienteService {
         return toDTO(salvo);
     }
 
-    public List<PacienteDTO> listarTodos() {
+    public List<PacienteResponseDTO> listarTodos() {
         return pacienteRepository.findAll()
                 .stream()
                 .map(this::toDTO)
                 .toList();
     }
 
-    public PacienteDTO buscarPorId(Long id) {
+    public PacienteResponseDTO buscarPorId(Long id) {
         Paciente paciente = buscarPacientePorId(id);
 
         auditoriaFacade.pacienteVisualizado(paciente.getId());
@@ -63,7 +64,7 @@ public class PacienteService {
         return toDTO(paciente);
     }
 
-    public PacienteDTO buscarPorCpf(String cpf) {
+    public PacienteResponseDTO buscarPorCpf(String cpf) {
         Paciente paciente = pacienteRepository.findByCpf(cpf)
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
@@ -72,7 +73,7 @@ public class PacienteService {
         return toDTO(paciente);
     }
 
-    public PacienteDTO buscarPorCns(String cns) {
+    public PacienteResponseDTO buscarPorCns(String cns) {
         Paciente paciente = pacienteRepository.findByCns(cns)
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
@@ -81,7 +82,7 @@ public class PacienteService {
         return toDTO(paciente);
     }
 
-    public PacienteDTO atualizar(Long id, PacienteDTO dto) {
+    public PacienteResponseDTO atualizar(Long id, PacienteDTO dto) {
         Paciente paciente = buscarPacientePorId(id);
 
         validarCpfECnsUpdate(id, dto);
@@ -185,9 +186,9 @@ public class PacienteService {
         return entity;
     }
 
-    private PacienteDTO toDTO(Paciente entity) {
+    private PacienteResponseDTO toDTO(Paciente entity) {
 
-        PacienteDTO dto = new PacienteDTO();
+        PacienteResponseDTO dto = new PacienteResponseDTO();
 
         dto.setId(entity.getId());
         dto.setNomeCompleto(entity.getNomeCompleto());

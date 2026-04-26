@@ -1,6 +1,7 @@
 package com.vincula.service;
 
-import com.vincula.dto.TentativaContatoDTO;
+import com.vincula.dto.tentativaContato.TentativaContatoDTO;
+import com.vincula.dto.tentativaContato.TentativaContatoResponseDTO;
 import com.vincula.entity.Demanda;
 import com.vincula.entity.TentativaContato;
 import com.vincula.entity.Usuario;
@@ -34,7 +35,7 @@ public class TentativaContatoService {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public TentativaContatoDTO criar(TentativaContatoDTO dto) {
+    public TentativaContatoResponseDTO criar(TentativaContatoDTO dto) {
 
         TentativaContato entity = toEntity(dto);
 
@@ -45,7 +46,7 @@ public class TentativaContatoService {
         return toDTO(salvo);
     }
 
-    public TentativaContatoDTO atualizar(Long id, TentativaContatoDTO dto) {
+    public TentativaContatoResponseDTO atualizar(Long id, TentativaContatoDTO dto) {
         TentativaContato entity = buscarTentativaPorId(id);
 
         if (entity.getDemanda().getStatus() == StatusDemanda.FINALIZADA) {
@@ -75,7 +76,7 @@ public class TentativaContatoService {
         auditoriaFacade.tentativaContatoDeletada(tentativaId);
     }
 
-    public List<TentativaContatoDTO> listarPorDemanda(Long id) {
+    public List<TentativaContatoResponseDTO> listarPorDemanda(Long id) {
         auditoriaFacade.tentativaContatoVisualizado(0L);
         return tentativaRepository.findByDemandaId(id)
                 .stream()
@@ -83,7 +84,7 @@ public class TentativaContatoService {
                 .toList();
     }
 
-    public List<TentativaContatoDTO> listarPorUsuario(Long id) {
+    public List<TentativaContatoResponseDTO> listarPorUsuario(Long id) {
         auditoriaFacade.tentativaContatoVisualizado(0L);
         return tentativaRepository.findByUsuario(id)
                 .stream()
@@ -141,8 +142,8 @@ public class TentativaContatoService {
                 .orElseThrow(() -> new NotFoundException("Demanda não encontrada"));
     }
 
-    private TentativaContatoDTO toDTO(TentativaContato entity) {
-        TentativaContatoDTO dto = new TentativaContatoDTO();
+    private TentativaContatoResponseDTO toDTO(TentativaContato entity) {
+        TentativaContatoResponseDTO dto = new TentativaContatoResponseDTO();
 
         dto.setId(entity.getId());
         dto.setDemandaId(entity.getDemanda().getId());

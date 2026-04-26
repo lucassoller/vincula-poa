@@ -1,4 +1,4 @@
-package com.vincula.dto;
+package com.vincula.dto.dashboard;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

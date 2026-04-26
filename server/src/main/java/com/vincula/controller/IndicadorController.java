@@ -1,9 +1,9 @@
 package com.vincula.controller;
 
-import com.vincula.dto.DashboardIndicadoresDTO;
-import com.vincula.dto.IndicadorRankingDTO;
-import com.vincula.dto.IndicadorValorDTO;
-import com.vincula.dto.MotivoQuantidadeDTO;
+import com.vincula.dto.dashboard.DashboardIndicadoresDTO;
+import com.vincula.dto.dashboard.IndicadorRankingDTO;
+import com.vincula.dto.dashboard.IndicadorValorDTO;
+import com.vincula.dto.dashboard.MotivoQuantidadeDTO;
 import com.vincula.service.indicador.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;

@@ -1,7 +1,9 @@
 package com.vincula.controller;
 
-import com.vincula.dto.DemandaDTO;
-import com.vincula.dto.RedirecionarDemandaDTO;
+import com.vincula.dto.demanda.DemandaDTO;
+import com.vincula.dto.demanda.EncerrarDemandaDTO;
+import com.vincula.dto.demanda.RedirecionarDemandaDTO;
+import com.vincula.dto.demanda.DemandaResponseDTO;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.service.DemandaService;
@@ -24,32 +26,32 @@ public class DemandaController {
 
     @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS')")
     @PostMapping
-    public ResponseEntity<DemandaDTO> criar(@Valid @RequestBody DemandaDTO dto) {
+    public ResponseEntity<DemandaResponseDTO> criar(@Valid @RequestBody DemandaDTO dto) {
         return ResponseEntity.ok(demandaService.criar(dto));
     }
 
     @PreAuthorize("hasRole('EXECUTOR_APS')")
     @PutMapping("/{id}")
-    public ResponseEntity<DemandaDTO> atualizar(@PathVariable Long id,
+    public ResponseEntity<DemandaResponseDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody DemandaDTO dto) {
         return ResponseEntity.ok(demandaService.atualizar(id, dto));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping
-    public ResponseEntity<List<DemandaDTO>> listarTodas() {
+    public ResponseEntity<List<DemandaResponseDTO>> listarTodas() {
         return ResponseEntity.ok(demandaService.listarTodas());
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
-    public ResponseEntity<DemandaDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<DemandaResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(demandaService.buscarPorId(id));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/paciente/{pacienteId}")
-    public ResponseEntity<List<DemandaDTO>> listarPorPacienteEStatus(
+    public ResponseEntity<List<DemandaResponseDTO>> listarPorPacienteEStatus(
             @PathVariable Long pacienteId,
             @RequestParam(required = false) StatusDemanda status
     ) {
@@ -62,7 +64,7 @@ public class DemandaController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/unidade/{unidadeSaudeId}")
-    public ResponseEntity<List<DemandaDTO>> listarPorUnidadeSaudeEStatus(
+    public ResponseEntity<List<DemandaResponseDTO>> listarPorUnidadeSaudeEStatus(
             @PathVariable Long unidadeSaudeId,
             @RequestParam(required = false) StatusDemanda status
     ) {
@@ -75,7 +77,7 @@ public class DemandaController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<DemandaDTO>> listarPorUsuarioCriadorEStatus(
+    public ResponseEntity<List<DemandaResponseDTO>> listarPorUsuarioCriadorEStatus(
             @PathVariable Long usuarioId,
             @RequestParam(required = false) StatusDemanda status
     ) {
@@ -88,18 +90,17 @@ public class DemandaController {
 
     @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/redirecionar")
-    public ResponseEntity<DemandaDTO> redirecionar(@PathVariable Long id,
+    public ResponseEntity<DemandaResponseDTO> redirecionar(@PathVariable Long id,
                                                    @Valid @RequestBody RedirecionarDemandaDTO dto) {
         return ResponseEntity.ok(demandaService.redirecionar(id, dto));
     }
 
     @PreAuthorize("hasRole('EXECUTOR_APS')")
     @PatchMapping("/{id}/encerrar")
-    public ResponseEntity<DemandaDTO> encerrar(@PathVariable Long id,
-                                               @RequestParam DesfechoDemanda desfecho,
-                                               @RequestParam(required = false) String descricao) {
+    public ResponseEntity<DemandaResponseDTO> encerrar(@PathVariable Long id,
+                                                       @Valid @RequestBody EncerrarDemandaDTO dto) {
 
-        return ResponseEntity.ok(demandaService.encerrar(id, desfecho, descricao));
+        return ResponseEntity.ok(demandaService.encerrar(id, dto));
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")

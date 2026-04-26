@@ -1,7 +1,8 @@
 package com.vincula.service;
 
 import com.vincula.dto.MudancaSenhaDTO;
-import com.vincula.dto.UsuarioDTO;
+import com.vincula.dto.usuario.UsuarioDTO;
+import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilUsuario;
@@ -35,7 +36,7 @@ public class UsuarioService {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public UsuarioDTO criar(UsuarioDTO dto) {
+    public UsuarioResponseDTO criar(UsuarioDTO dto) {
         validarDuplicidadeCreate(dto);
         validarPerfilEUnidade(dto);
 
@@ -47,7 +48,7 @@ public class UsuarioService {
         return toDTO(salvo);
     }
 
-    public List<UsuarioDTO> listarTodos() {
+    public List<UsuarioResponseDTO> listarTodos() {
         auditoriaFacade.usuarioVisualizado(0L);
         return usuarioRepository.findAll()
                 .stream()
@@ -55,7 +56,7 @@ public class UsuarioService {
                 .toList();
     }
 
-    public UsuarioDTO buscarPorId(Long id) {
+    public UsuarioResponseDTO buscarPorId(Long id) {
         Usuario entity = buscarUsuarioPorId(id);
 
         auditoriaFacade.usuarioVisualizado(entity.getId());
@@ -63,7 +64,7 @@ public class UsuarioService {
         return toDTO(entity);
     }
 
-    public UsuarioDTO buscarPorEmail(String email) {
+    public UsuarioResponseDTO buscarPorEmail(String email) {
         Usuario entity = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
 
@@ -72,7 +73,7 @@ public class UsuarioService {
         return toDTO(entity);
     }
 
-    public UsuarioDTO buscarPorLogin(String login) {
+    public UsuarioResponseDTO buscarPorLogin(String login) {
         Usuario entity = usuarioRepository.findByLogin(login)
                 .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
 
@@ -81,7 +82,7 @@ public class UsuarioService {
         return toDTO(entity);
     }
 
-    public UsuarioDTO atualizar(Long id, UsuarioDTO dto) {
+    public UsuarioResponseDTO atualizar(Long id, UsuarioDTO dto) {
         Usuario entity = buscarUsuarioPorId(id);
 
         validarDuplicidadeUpdate(dto, id);
@@ -199,7 +200,7 @@ public class UsuarioService {
         }
     }
 
-    public UsuarioDTO getUsuarioAutenticadoDTO() {
+    public UsuarioResponseDTO getUsuarioAutenticadoDTO() {
         Usuario usuario = buscarUsuarioAutenticado();
         return toDTO(usuario);
     }
@@ -218,14 +219,13 @@ public class UsuarioService {
         return entity;
     }
 
-    private UsuarioDTO toDTO(Usuario entity) {
-        UsuarioDTO dto = new UsuarioDTO();
+    private UsuarioResponseDTO toDTO(Usuario entity) {
+        UsuarioResponseDTO dto = new UsuarioResponseDTO();
 
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
         dto.setEmail(entity.getEmail());
         dto.setLogin(entity.getLogin());
-        dto.setSenha(null);
         dto.setPerfil(entity.getPerfil());
         dto.setAtivo(entity.getAtivo());
         if (entity.getUnidadeSaude() != null) {

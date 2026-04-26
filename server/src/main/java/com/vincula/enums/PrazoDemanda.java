@@ -1,8 +1,9 @@
 package com.vincula.enums;
 
 public enum PrazoDemanda {
-    H48,
-    H72,
+    D1,
+    D2,
+    D3,
     D7,
     D15,
     D20,

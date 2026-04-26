@@ -1,5 +1,6 @@
-package com.vincula.dto;
+package com.vincula.dto.paciente;
 
+import com.vincula.dto.endereco.EnderecoDTO;
 import com.vincula.enums.Sexo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -10,13 +11,9 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 public class PacienteDTO {
-
-    private Long id;
-
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
     private String nomeCompleto;

@@ -1,7 +1,9 @@
 package com.vincula.service;
 
-import com.vincula.dto.PacienteDTO;
-import com.vincula.dto.UnidadeSaudeDTO;
+import com.vincula.dto.paciente.PacienteDTO;
+import com.vincula.dto.paciente.PacienteResponseDTO;
+import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
+import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
@@ -29,7 +31,7 @@ public class UnidadeSaudeService {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public UnidadeSaudeDTO criar(UnidadeSaudeDTO dto) {
+    public UnidadeSaudeResponseDTO criar(UnidadeSaudeDTO dto) {
         validarCnesCreate(dto);
 
         UnidadeSaude entity = toEntity(dto);
@@ -41,7 +43,7 @@ public class UnidadeSaudeService {
         return toDTO(salvo);
     }
 
-    public List<UnidadeSaudeDTO> listarTodos() {
+    public List<UnidadeSaudeResponseDTO> listarTodos() {
         auditoriaFacade.unidadeSaudeVisualizada(0L);
         return unidadeSaudeRepository.findAll()
                 .stream()
@@ -49,7 +51,7 @@ public class UnidadeSaudeService {
                 .toList();
     }
 
-    public List<PacienteDTO> listarPacientesPorUnidade(Long unidadeSaudeId) {
+    public List<PacienteResponseDTO> listarPacientesPorUnidade(Long unidadeSaudeId) {
         auditoriaFacade.unidadeSaudeVisualizada(0L);
 
         return unidadeSaudeRepository.findPacientesByUnidadeSaudeId(unidadeSaudeId)
@@ -58,7 +60,7 @@ public class UnidadeSaudeService {
                 .toList();
     }
 
-    public UnidadeSaudeDTO buscarPorId(Long id) {
+    public UnidadeSaudeResponseDTO buscarPorId(Long id) {
         UnidadeSaude entity = buscarUnidadeSaudePorId(id);
 
         auditoriaFacade.unidadeSaudeVisualizada(entity.getId());
@@ -66,7 +68,7 @@ public class UnidadeSaudeService {
         return toDTO(entity);
     }
 
-    public UnidadeSaudeDTO buscarPorCnes(String cnes) {
+    public UnidadeSaudeResponseDTO buscarPorCnes(String cnes) {
         UnidadeSaude entity = buscarUnidadeSaudePorCnes(cnes);
 
         auditoriaFacade.unidadeSaudeVisualizada(entity.getId());
@@ -74,7 +76,7 @@ public class UnidadeSaudeService {
         return toDTO(entity);
     }
 
-    public UnidadeSaudeDTO atualizar(Long id, UnidadeSaudeDTO dto) {
+    public UnidadeSaudeResponseDTO atualizar(Long id, UnidadeSaudeDTO dto) {
 
         UnidadeSaude entity = buscarUnidadeSaudePorId(id);
 
@@ -139,8 +141,8 @@ public class UnidadeSaudeService {
         return entity;
     }
 
-    public UnidadeSaudeDTO toDTO(UnidadeSaude entity) {
-        UnidadeSaudeDTO dto = new UnidadeSaudeDTO();
+    public UnidadeSaudeResponseDTO toDTO(UnidadeSaude entity) {
+        UnidadeSaudeResponseDTO dto = new UnidadeSaudeResponseDTO();
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
         dto.setCnes(entity.getCnes());
@@ -149,8 +151,8 @@ public class UnidadeSaudeService {
         return dto;
     }
 
-    private PacienteDTO toPacienteDTO(Paciente entity) {
-        PacienteDTO dto = new PacienteDTO();
+    private PacienteResponseDTO toPacienteDTO(Paciente entity) {
+        PacienteResponseDTO dto = new PacienteResponseDTO();
 
         dto.setId(entity.getId());
         dto.setNomeCompleto(entity.getNomeCompleto());
@@ -159,6 +161,9 @@ public class UnidadeSaudeService {
         dto.setCpf(entity.getCpf());
         dto.setCns(entity.getCns());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
+        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+        dto.setEmail(entity.getEmail());
+        dto.setSexo(entity.getSexo());
 
         return dto;
     }

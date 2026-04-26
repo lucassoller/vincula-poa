@@ -1,6 +1,12 @@
 package com.vincula.util;
 
-import com.vincula.dto.*;
+import com.vincula.dto.demanda.DemandaDTO;
+import com.vincula.dto.endereco.EnderecoDTO;
+import com.vincula.dto.observacao.ObservacaoDTO;
+import com.vincula.dto.paciente.PacienteDTO;
+import com.vincula.dto.tentativaContato.TentativaContatoDTO;
+import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
+import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.entity.*;
 
 import java.util.Objects;

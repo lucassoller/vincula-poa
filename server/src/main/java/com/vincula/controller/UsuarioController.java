@@ -1,7 +1,8 @@
 package com.vincula.controller;
 
 import com.vincula.dto.MudancaSenhaDTO;
-import com.vincula.dto.UsuarioDTO;
+import com.vincula.dto.usuario.UsuarioDTO;
+import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,45 +24,45 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PostMapping
-    public ResponseEntity<UsuarioDTO> criar(@Valid @RequestBody UsuarioDTO dto) {
-        UsuarioDTO criado = usuarioService.criar(dto);
+    public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioDTO dto) {
+        UsuarioResponseDTO criado = usuarioService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>> listarTodos() {
+    public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/email/{email}")
-    public ResponseEntity<UsuarioDTO> buscarPorEmail(@PathVariable String email) {
+    public ResponseEntity<UsuarioResponseDTO> buscarPorEmail(@PathVariable String email) {
         return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/login/{login}")
-    public ResponseEntity<UsuarioDTO> buscarPorLogin(@PathVariable String login) {
+    public ResponseEntity<UsuarioResponseDTO> buscarPorLogin(@PathVariable String login) {
         return ResponseEntity.ok(usuarioService.buscarPorLogin(login));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    public ResponseEntity<UsuarioDTO> getUsuarioLogado() {
+    public ResponseEntity<UsuarioResponseDTO> getUsuarioLogado() {
         return ResponseEntity.ok(usuarioService.getUsuarioAutenticadoDTO());
     }
 
     // COMENTAR ROLE PARA CADASTRAR USUARIO
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id,
+    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody UsuarioDTO dto) {
         return ResponseEntity.ok(usuarioService.atualizar(id, dto));
     }

@@ -1,4 +1,4 @@
-package com.vincula.dto;
+package com.vincula.dto.login;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

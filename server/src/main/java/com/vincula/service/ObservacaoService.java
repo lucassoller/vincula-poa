@@ -1,6 +1,7 @@
 package com.vincula.service;
 
-import com.vincula.dto.ObservacaoDTO;
+import com.vincula.dto.observacao.ObservacaoDTO;
+import com.vincula.dto.observacao.ObservacaoResponseDTO;
 import com.vincula.entity.Observacao;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.Usuario;
@@ -32,7 +33,7 @@ public class ObservacaoService {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public ObservacaoDTO criar(ObservacaoDTO dto) {
+    public ObservacaoResponseDTO criar(ObservacaoDTO dto) {
 
         Observacao entity = toEntity(dto);
 
@@ -43,7 +44,7 @@ public class ObservacaoService {
         return toDTO(salvo);
     }
 
-    public List<ObservacaoDTO> listarTodas() {
+    public List<ObservacaoResponseDTO> listarTodas() {
         auditoriaFacade.observacaoVisualizada(0L);
         return observacaoRepository.findAll()
                 .stream()
@@ -51,7 +52,7 @@ public class ObservacaoService {
                 .toList();
     }
 
-    public List<ObservacaoDTO> listarPorPaciente(Long pacienteId) {
+    public List<ObservacaoResponseDTO> listarPorPaciente(Long pacienteId) {
         auditoriaFacade.observacaoVisualizada(0L);
         return observacaoRepository.findByPacienteId(pacienteId)
                 .stream()
@@ -59,7 +60,7 @@ public class ObservacaoService {
                 .toList();
     }
 
-    public List<ObservacaoDTO> listarPorUsuario(Long usuarioId) {
+    public List<ObservacaoResponseDTO> listarPorUsuario(Long usuarioId) {
         auditoriaFacade.observacaoVisualizada(0L);
         return observacaoRepository.findByUsuarioId(usuarioId)
                 .stream()
@@ -67,7 +68,7 @@ public class ObservacaoService {
                 .toList();
     }
 
-    public ObservacaoDTO buscarPorId(Long id) {
+    public ObservacaoResponseDTO buscarPorId(Long id) {
         Observacao entity = buscarObservacaoPorId(id);
 
         auditoriaFacade.observacaoVisualizada(entity.getId());
@@ -75,7 +76,7 @@ public class ObservacaoService {
         return toDTO(entity);
     }
 
-    public ObservacaoDTO atualizar(Long id, ObservacaoDTO dto) {
+    public ObservacaoResponseDTO atualizar(Long id, ObservacaoDTO dto) {
         Observacao entity = buscarObservacaoPorId(id);
 
         Paciente paciente = buscarPacientePorId(dto.getPacienteId());
@@ -125,8 +126,8 @@ public class ObservacaoService {
         return entity;
     }
 
-    private ObservacaoDTO toDTO(Observacao entity) {
-        ObservacaoDTO dto = new ObservacaoDTO();
+    private ObservacaoResponseDTO toDTO(Observacao entity) {
+        ObservacaoResponseDTO dto = new ObservacaoResponseDTO();
         dto.setId(entity.getId());
         dto.setDescricao(entity.getDescricao());
         dto.setDataHora(entity.getDataHora());

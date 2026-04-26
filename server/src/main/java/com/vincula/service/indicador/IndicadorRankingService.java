@@ -1,7 +1,7 @@
 package com.vincula.service.indicador;
 
 import com.vincula.dto.projection.RankingQuantidadeProjection;
-import com.vincula.dto.IndicadorRankingDTO;
+import com.vincula.dto.dashboard.IndicadorRankingDTO;
 import com.vincula.dto.projection.RankingValorProjection;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilUsuario;

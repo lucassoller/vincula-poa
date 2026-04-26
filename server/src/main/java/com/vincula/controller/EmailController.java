@@ -19,7 +19,7 @@ public class EmailController {
 
     @PostMapping("/enviar")
     public String enviar(@RequestBody EmailDTO dto) {
-        emailService.enviarEmail(dto.getPara(), dto.getAssunto(), dto.getMensagem());
+        emailService.enviarEmail(dto);
         return "E-mail enviado com sucesso!";
     }
 
@@ -28,7 +28,7 @@ public class EmailController {
             @PathVariable Long demandaId,
             @RequestBody EmailDTO dto
     ) {
-        emailService.enviarEmailDemanda(demandaId, dto.getAssunto(), dto.getMensagem());
+        emailService.enviarEmailDemanda(demandaId, dto);
         return ResponseEntity.ok().build();
     }
 
@@ -37,7 +37,7 @@ public class EmailController {
             @PathVariable Long pacienteId,
             @RequestBody EmailDTO dto
     ) {
-        emailService.enviarEmailPaciente(pacienteId, dto.getAssunto(), dto.getMensagem());
+        emailService.enviarEmailPaciente(pacienteId, dto);
         return ResponseEntity.ok().build();
     }
 }

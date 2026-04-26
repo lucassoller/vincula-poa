@@ -1,6 +1,6 @@
 package com.vincula.service;
 
-import com.vincula.dto.AuditoriaDTO;
+import com.vincula.dto.auditoria.AuditoriaDTO;
 import com.vincula.entity.Auditoria;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.TipoAcaoAuditoria;

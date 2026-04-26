@@ -1,7 +1,7 @@
 package com.vincula.service;
 
-import com.vincula.dto.LoginRequestDTO;
-import com.vincula.dto.LoginResponseDTO;
+import com.vincula.dto.login.LoginRequestDTO;
+import com.vincula.dto.login.LoginResponseDTO;
 import com.vincula.entity.Usuario;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;

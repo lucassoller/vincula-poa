@@ -1,4 +1,4 @@
-package com.vincula.dto;
+package com.vincula.dto.auditoria;
 
 import com.vincula.enums.TipoAcaoAuditoria;
 import lombok.AllArgsConstructor;

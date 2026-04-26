@@ -1,4 +1,4 @@
-package com.vincula.dto;
+package com.vincula.dto.usuario;
 
 import com.vincula.enums.PerfilUsuario;
 import jakarta.validation.constraints.Email;
@@ -9,8 +9,6 @@ import lombok.Data;
 
 @Data
 public class UsuarioDTO {
-
-    private Long id;
 
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")

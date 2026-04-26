@@ -1,6 +1,7 @@
 package com.vincula.mapper;
 
-import com.vincula.dto.EnderecoDTO;
+import com.vincula.dto.endereco.EnderecoDTO;
+import com.vincula.dto.endereco.EnderecoResponseDTO;
 import com.vincula.entity.Endereco;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +25,12 @@ public class EnderecoMapper {
         return entity;
     }
 
-    public EnderecoDTO toDTO(Endereco entity) {
+    public EnderecoResponseDTO toDTO(Endereco entity) {
         if (entity == null) {
             return null;
         }
 
-        EnderecoDTO dto = new EnderecoDTO();
+        EnderecoResponseDTO dto = new EnderecoResponseDTO();
         dto.setId(entity.getId());
         dto.setRua(entity.getRua());
         dto.setNumero(entity.getNumero());
@@ -37,8 +38,6 @@ public class EnderecoMapper {
         dto.setCidade(entity.getCidade());
         dto.setEstado(entity.getEstado());
         dto.setCep(entity.getCep());
-        dto.setLatitude(entity.getLatitude());
-        dto.setLongitude(entity.getLongitude());
         return dto;
     }
 

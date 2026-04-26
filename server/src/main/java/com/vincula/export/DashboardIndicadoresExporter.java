@@ -1,6 +1,9 @@
 package com.vincula.export;
 
-import com.vincula.dto.*;
+import com.vincula.dto.dashboard.DashboardIndicadoresDTO;
+import com.vincula.dto.dashboard.IndicadorRankingDTO;
+import com.vincula.dto.dashboard.IndicadorValorDTO;
+import com.vincula.dto.dashboard.MotivoQuantidadeDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

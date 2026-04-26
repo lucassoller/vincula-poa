@@ -1,6 +1,7 @@
 package com.vincula.service;
 
-import com.vincula.dto.EnderecoDTO;
+import com.vincula.dto.endereco.EnderecoDTO;
+import com.vincula.dto.endereco.EnderecoResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.EnderecoRepository;
@@ -22,7 +23,7 @@ public class EnderecoService {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public EnderecoDTO criar(EnderecoDTO dto) {
+    public EnderecoResponseDTO criar(EnderecoDTO dto) {
         Endereco entity = toEntity(dto);
         Endereco salvo = enderecoRepository.save(entity);
 
@@ -31,7 +32,7 @@ public class EnderecoService {
         return toDTO(salvo);
     }
 
-    public List<EnderecoDTO> listarTodos() {
+    public List<EnderecoResponseDTO> listarTodos() {
         auditoriaFacade.enderecoVisualizado(0L);
         return enderecoRepository.findAll()
                 .stream()
@@ -39,13 +40,13 @@ public class EnderecoService {
                 .toList();
     }
 
-    public EnderecoDTO buscarPorId(Long id) {
+    public EnderecoResponseDTO buscarPorId(Long id) {
         Endereco endereco = buscarEnderecoPorId(id);
         auditoriaFacade.enderecoVisualizado(endereco.getId());
         return toDTO(endereco);
     }
 
-    public EnderecoDTO atualizar(Long id, EnderecoDTO dto) {
+    public EnderecoResponseDTO atualizar(Long id, EnderecoDTO dto) {
         Endereco entity = buscarEnderecoPorId(id);
         String descricaoLog = AuditoriaDescricaoUtil.enderecoAtualizado(entity, dto);
 
@@ -78,18 +79,15 @@ public class EnderecoService {
         return entity;
     }
 
-    private EnderecoDTO toDTO(Endereco entity) {
-        EnderecoDTO dto = new EnderecoDTO();
+    private EnderecoResponseDTO toDTO(Endereco entity) {
+        EnderecoResponseDTO dto = new EnderecoResponseDTO();
 
-        dto.setId(entity.getId());
         dto.setRua(entity.getRua());
         dto.setNumero(entity.getNumero());
         dto.setBairro(entity.getBairro());
         dto.setCidade(entity.getCidade());
         dto.setEstado(entity.getEstado());
         dto.setCep(entity.getCep());
-        dto.setLatitude(entity.getLatitude());
-        dto.setLongitude(entity.getLongitude());
 
         return dto;
     }

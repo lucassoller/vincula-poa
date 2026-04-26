@@ -1,7 +1,8 @@
 package com.vincula.controller;
 
-import com.vincula.dto.PacienteDTO;
-import com.vincula.dto.UnidadeSaudeDTO;
+import com.vincula.dto.paciente.PacienteResponseDTO;
+import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
+import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.service.UnidadeSaudeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,38 +24,38 @@ public class UnidadeSaudeController {
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PostMapping
-    public ResponseEntity<UnidadeSaudeDTO> criar(@Valid @RequestBody UnidadeSaudeDTO dto) {
-        UnidadeSaudeDTO criada = unidadeSaudeService.criar(dto);
+    public ResponseEntity<UnidadeSaudeResponseDTO> criar(@Valid @RequestBody UnidadeSaudeDTO dto) {
+        UnidadeSaudeResponseDTO criada = unidadeSaudeService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(criada);
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping
-    public ResponseEntity<List<UnidadeSaudeDTO>> listarTodos() {
+    public ResponseEntity<List<UnidadeSaudeResponseDTO>> listarTodos() {
         return ResponseEntity.ok(unidadeSaudeService.listarTodos());
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
-    public ResponseEntity<UnidadeSaudeDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<UnidadeSaudeResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(unidadeSaudeService.buscarPorId(id));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}/pacientes")
-    public ResponseEntity<List<PacienteDTO>> listarPacientesPorUnidade(@PathVariable Long id) {
+    public ResponseEntity<List<PacienteResponseDTO>> listarPacientesPorUnidade(@PathVariable Long id) {
         return ResponseEntity.ok(unidadeSaudeService.listarPacientesPorUnidade(id));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/cnes/{cnes}")
-    public ResponseEntity<UnidadeSaudeDTO> buscarPorCnes(@PathVariable String cnes) {
+    public ResponseEntity<UnidadeSaudeResponseDTO> buscarPorCnes(@PathVariable String cnes) {
         return ResponseEntity.ok(unidadeSaudeService.buscarPorCnes(cnes));
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
-    public ResponseEntity<UnidadeSaudeDTO> atualizar(@PathVariable Long id,
+    public ResponseEntity<UnidadeSaudeResponseDTO> atualizar(@PathVariable Long id,
                                                      @Valid @RequestBody UnidadeSaudeDTO dto) {
         return ResponseEntity.ok(unidadeSaudeService.atualizar(id, dto));
     }

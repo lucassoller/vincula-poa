@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
-import com.vincula.dto.EnderecoDTO;
+import com.vincula.dto.endereco.EnderecoDTO;
+import com.vincula.dto.endereco.EnderecoResponseDTO;
 import com.vincula.service.EnderecoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,27 +23,27 @@ public class EnderecoController {
     }
 
     @PostMapping
-    public ResponseEntity<EnderecoDTO> criar(@Valid @RequestBody EnderecoDTO dto) {
-        EnderecoDTO enderecoCriado = enderecoService.criar(dto);
+    public ResponseEntity<EnderecoResponseDTO> criar(@Valid @RequestBody EnderecoDTO dto) {
+        EnderecoResponseDTO enderecoCriado = enderecoService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(enderecoCriado);
     }
 
     @GetMapping
-    public ResponseEntity<List<EnderecoDTO>> listarTodos() {
-        List<EnderecoDTO> enderecos = enderecoService.listarTodos();
+    public ResponseEntity<List<EnderecoResponseDTO>> listarTodos() {
+        List<EnderecoResponseDTO> enderecos = enderecoService.listarTodos();
         return ResponseEntity.ok(enderecos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EnderecoDTO> buscarPorId(@PathVariable Long id) {
-        EnderecoDTO endereco = enderecoService.buscarPorId(id);
+    public ResponseEntity<EnderecoResponseDTO> buscarPorId(@PathVariable Long id) {
+        EnderecoResponseDTO endereco = enderecoService.buscarPorId(id);
         return ResponseEntity.ok(endereco);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EnderecoDTO> atualizar(@PathVariable Long id,
+    public ResponseEntity<EnderecoResponseDTO> atualizar(@PathVariable Long id,
                                                  @Valid @RequestBody EnderecoDTO dto) {
-        EnderecoDTO enderecoAtualizado = enderecoService.atualizar(id, dto);
+        EnderecoResponseDTO enderecoAtualizado = enderecoService.atualizar(id, dto);
         return ResponseEntity.ok(enderecoAtualizado);
     }
 

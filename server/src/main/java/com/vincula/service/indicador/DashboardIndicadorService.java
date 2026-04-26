@@ -1,6 +1,6 @@
 package com.vincula.service.indicador;
 
-import com.vincula.dto.*;
+import com.vincula.dto.dashboard.DashboardIndicadoresDTO;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilUsuario;
 import com.vincula.exception.BusinessException;

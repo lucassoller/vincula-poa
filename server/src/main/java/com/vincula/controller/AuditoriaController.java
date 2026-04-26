@@ -1,6 +1,6 @@
 package com.vincula.controller;
 
-import com.vincula.dto.AuditoriaDTO;
+import com.vincula.dto.auditoria.AuditoriaDTO;
 import com.vincula.service.AuditoriaService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

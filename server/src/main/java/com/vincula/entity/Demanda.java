@@ -34,6 +34,9 @@ public class Demanda {
     private StatusDemanda status;
 
     @Column(nullable = false)
+    private LocalDateTime dataHoraLimite;
+
+    @Column(nullable = false)
     private LocalDateTime dataHoraCriacao;
 
     private LocalDateTime dataHoraFinalizacao;

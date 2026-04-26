@@ -1,5 +1,6 @@
 package com.vincula.service;
 
+import com.vincula.dto.EmailDTO;
 import com.vincula.entity.Demanda;
 import com.vincula.entity.Paciente;
 import com.vincula.exception.BusinessException;
@@ -29,15 +30,17 @@ public class EmailService {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public void enviarEmailDemanda(Long demandaId, String assunto, String mensagem) {
+    public void enviarEmailDemanda(Long demandaId, EmailDTO dto) {
         Demanda demanda = buscarDemandaPorId(demandaId);
 
         Paciente paciente = demanda.getPaciente();
 
         validarEmailPaciente(paciente);
 
+        dto.setPara(paciente.getEmail());
+
         try {
-            enviarEmail(paciente.getEmail(), assunto, mensagem);
+            enviarEmail(dto);
         } catch (Exception e) {
             auditoriaFacade.emailFalhou("Demanda", demanda.getId(), "Falha ao enviar email para paciente ID " + paciente.getId());
 
@@ -47,14 +50,15 @@ public class EmailService {
         auditoriaFacade.emailEnviadoPorDemanda(demanda.getId(), paciente.getId());
     }
 
-    public void enviarEmailPaciente(Long pacienteId, String assunto, String mensagem) {
+        public void enviarEmailPaciente(Long pacienteId, EmailDTO dto) {
 
         Paciente paciente = buscarPacientePorId(pacienteId);
 
         validarEmailPaciente(paciente);
+        dto.setPara(paciente.getEmail());
 
         try {
-            enviarEmail(paciente.getEmail(), assunto, mensagem);
+            enviarEmail(dto);
         } catch (Exception e) {
             auditoriaFacade.emailFalhou("Paciente", paciente.getId(), "Falha ao enviar email para paciente ID " + paciente.getId());
             throw e;
@@ -63,11 +67,11 @@ public class EmailService {
         auditoriaFacade.emailEnviadoPorPaciente(paciente.getId());
     }
 
-    public void enviarEmail(String para, String assunto, String mensagem) {
+    public void enviarEmail(EmailDTO dto) {
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(para);
-        email.setSubject(assunto);
-        email.setText(mensagem);
+        email.setTo(dto.getPara());
+        email.setSubject(dto.getAssunto());
+        email.setText(dto.getMensagem());
 
         mailSender.send(email);
     }

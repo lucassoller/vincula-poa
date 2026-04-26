@@ -1,6 +1,6 @@
 package com.vincula.service.indicador;
 
-import com.vincula.dto.IndicadorValorDTO;
+import com.vincula.dto.dashboard.IndicadorValorDTO;
 import com.vincula.dto.projection.DesfechoQuantidadeProjection;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;

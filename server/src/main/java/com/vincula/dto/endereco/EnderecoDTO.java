@@ -1,4 +1,4 @@
-package com.vincula.dto;
+package com.vincula.dto.endereco;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -7,8 +7,6 @@ import lombok.Data;
 
 @Data
 public class EnderecoDTO {
-
-    private Long id;
 
     @NotBlank(message = "Rua é obrigatória")
     @Size(max = 150, message = "Rua deve ter no máximo 150 caracteres")
