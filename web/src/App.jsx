@@ -1,4 +1,4 @@
-import { useState } from 'react'
+/*import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
@@ -120,3 +120,69 @@ function App() {
 }
 
 export default App
+*/
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Pacientes from "./pages/Pacientes";
+import Demandas from "./pages/Demandas";
+import Auditoria from "./pages/Auditoria";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
+
+
+function App() {
+  return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+
+          <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                    <Layout>
+                        <Dashboard />
+                    </Layout>
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/pacientes"
+              element={
+                <ProtectedRoute>
+                    <Layout>
+                        <Pacientes />
+                    </Layout>
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/demandas"
+              element={
+                <ProtectedRoute>
+                    <Layout>
+                        <Demandas />
+                    </Layout>
+                </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/auditoria"
+              element={
+                <ProtectedRoute>
+                    <Layout>
+                        <Auditoria />
+                    </Layout>
+                </ProtectedRoute>
+              }
+          />
+        </Routes>
+      </BrowserRouter>
+  );
+}
+
+export default App;
