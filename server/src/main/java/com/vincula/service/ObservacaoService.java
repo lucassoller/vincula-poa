@@ -79,12 +79,9 @@ public class ObservacaoService {
     public ObservacaoResponseDTO atualizar(Long id, ObservacaoDTO dto) {
         Observacao entity = buscarObservacaoPorId(id);
 
-        Paciente paciente = buscarPacientePorId(dto.getPacienteId());
-
         String descricaoLog = AuditoriaDescricaoUtil.observacaoAtualizada(entity, dto);
 
         entity.setDescricao(dto.getDescricao());
-        entity.setPaciente(paciente);
 
         Observacao atualizado = observacaoRepository.save(entity);
 

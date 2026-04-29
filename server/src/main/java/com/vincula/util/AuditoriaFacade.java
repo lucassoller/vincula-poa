@@ -196,8 +196,7 @@ public class AuditoriaFacade {
     }
 
     public void loginFalhou(String login) {
-        registrarComUsuario(
-                null,
+        registrar(
                 TipoAcaoAuditoria.LOGIN_FALHOU,
                 "Usuario",
                 0L,

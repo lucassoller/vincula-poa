@@ -4,7 +4,6 @@ import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.demanda.EncerrarDemandaDTO;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.demanda.DemandaResponseDTO;
-import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.service.DemandaService;
 import jakarta.validation.Valid;

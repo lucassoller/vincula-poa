@@ -1,7 +1,6 @@
 package com.vincula.security;
 
 import com.vincula.entity.Usuario;
-import com.vincula.exception.NotFoundException;
 import com.vincula.repository.UsuarioRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;

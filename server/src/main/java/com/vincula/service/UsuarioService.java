@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UsuarioService {
@@ -110,8 +111,10 @@ public class UsuarioService {
 
     public void alterarSenha(Long usuarioId, MudancaSenhaDTO dto) {
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new NotFoundException("Usuário nãzo encontrado"));
+        Usuario usuario = buscarUsuarioAutenticado();
+        if(!Objects.equals(usuario.getId(), usuarioId)){
+            throw new BusinessException("Não é possível alterar a senha de outro usuário");
+        }
 
         if (!passwordEncoder.matches(dto.getSenhaAtual(), usuario.getSenhaHash())) {
             throw new BusinessException("Senha atual inválida");
@@ -202,6 +205,7 @@ public class UsuarioService {
 
     public UsuarioResponseDTO getUsuarioAutenticadoDTO() {
         Usuario usuario = buscarUsuarioAutenticado();
+        auditoriaFacade.usuarioVisualizado(usuario.getId());
         return toDTO(usuario);
     }
 

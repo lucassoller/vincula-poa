@@ -88,8 +88,6 @@ public class DemandaService {
             throw new BusinessException("Desfecho é obrigatório");
         }
 
-        String descricaoLog = AuditoriaDescricaoUtil.demandaEncerrada(entity);
-
         Usuario usuario = usuarioService.buscarUsuarioAutenticado();
 
         entity.setStatus(StatusDemanda.FINALIZADA);
@@ -100,6 +98,7 @@ public class DemandaService {
 
         Demanda atualizado = demandaRepository.save(entity);
 
+        String descricaoLog = AuditoriaDescricaoUtil.demandaEncerrada(entity);
         auditoriaFacade.demandaEncerrada(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);

@@ -31,8 +31,4 @@ public class EnderecoDTO {
     @NotBlank(message = "CEP é obrigatório")
     @Pattern(regexp = "\\d{8}", message = "CEP inválido")
     private String cep;
-
-    private Double latitude;   // opcional
-
-    private Double longitude;  // opcional
 }

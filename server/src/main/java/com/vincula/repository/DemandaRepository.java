@@ -2,7 +2,6 @@ package com.vincula.repository;
 
 import com.vincula.dto.projection.*;
 import com.vincula.entity.Demanda;
-import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.StatusDemanda;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -237,4 +236,74 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     ORDER BY valor ASC, u.nome ASC
     """, nativeQuery = true)
     List<RankingValorProjection> rankingUnidadesPorTempoMedioResolucao();
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
+    """, nativeQuery = true)
+    long countDemandasDentroDoPrazo();
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE unidade_responsavel_id = :unidadeId
+      AND (
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
+      )
+    """, nativeQuery = true)
+    long countDentroPrazoPorUnidade(@Param("unidadeId") Long unidadeId);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
+    """, nativeQuery = true)
+    long countDemandasAtrasadas();
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE unidade_responsavel_id = :unidadeId
+      AND (
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
+      )
+    """, nativeQuery = true)
+    long countAtrasadasPorUnidade(@Param("unidadeId") Long unidadeId);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    long countDemandasFinalizadasComAtraso();
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE unidade_responsavel_id = :unidadeId
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    long countFinalizadasAtrasadasPorUnidade(@Param("unidadeId") Long unidadeId);
+
+    @Query(value = """
+    SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
+    FROM demanda
+    WHERE status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    Double tempoMedioAtrasoEmSegundos();
+
+    @Query(value = """
+    SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
+    FROM demanda
+    WHERE unidade_responsavel_id = :unidadeId
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    Double tempoMedioAtrasoPorUnidade(@Param("unidadeId") Long unidadeId);
 }

@@ -86,7 +86,7 @@ public class TentativaContatoService {
 
     public List<TentativaContatoResponseDTO> listarPorUsuario(Long id) {
         auditoriaFacade.tentativaContatoVisualizado(0L);
-        return tentativaRepository.findByUsuario(id)
+        return tentativaRepository.findByUsuarioId(id)
                 .stream()
                 .map(this::toDTO)
                 .toList();

@@ -12,7 +12,7 @@ import java.util.List;
 public interface TentativaContatoRepository extends JpaRepository<TentativaContato, Long> {
 
     List<TentativaContato> findByDemandaId(Long demandaId);
-    List<TentativaContato> findByUsuario(Long usuarioId);
+    List<TentativaContato> findByUsuarioId(Long usuarioId);
     boolean existsByDemandaId(Long demandaId);
 
     @Query(value = """

@@ -22,6 +22,7 @@ public class DashboardIndicadorService {
     private final DashboardIndicadoresExporter csvExporter;
     private final IndicadorRankingService indicadorRankingService;
     private final AuditoriaFacade auditoriaFacade;
+    private final IndicadorPrazoService indicadorPrazoService;
 
     public DashboardIndicadorService(IndicadorProducaoService indicadorProducaoService,
                                      IndicadorProcessoService indicadorProcessoService,
@@ -30,7 +31,7 @@ public class DashboardIndicadorService {
                                      UsuarioService usuarioService,
                                      DashboardIndicadoresExporter csvExporter,
                                      IndicadorRankingService indicadorRankingService,
-                                     AuditoriaFacade auditoriaFacade) {
+                                     AuditoriaFacade auditoriaFacade, IndicadorPrazoService indicadorPrazoService) {
         this.indicadorProducaoService = indicadorProducaoService;
         this.indicadorProcessoService = indicadorProcessoService;
         this.indicadorResultadoService = indicadorResultadoService;
@@ -39,6 +40,7 @@ public class DashboardIndicadorService {
         this.csvExporter = csvExporter;
         this.indicadorRankingService = indicadorRankingService;
         this.auditoriaFacade = auditoriaFacade;
+        this.indicadorPrazoService = indicadorPrazoService;
     }
 
     public DashboardIndicadoresDTO dashboardGeral() {
@@ -51,6 +53,7 @@ public class DashboardIndicadorService {
                 indicadorProcessoService.montarProcessoGeral(),
                 indicadorResultadoService.percentualPorDesfecho(),
                 indicadorInsucessoService.principaisMotivosInsucesso(),
+                indicadorPrazoService.indicadoresPrazo(),
                 indicadorRankingService.rankingPorTotalDemandas(),
                 indicadorRankingService.rankingPorPercentualResolucao(),
                 indicadorRankingService.rankingPorTempoMedioResolucao(),
@@ -69,6 +72,7 @@ public class DashboardIndicadorService {
                 indicadorProcessoService.montarProcessoPorUnidade(unidadeSaudeId),
                 indicadorResultadoService.percentualPorDesfechoPorUnidade(unidadeSaudeId),
                 indicadorInsucessoService.principaisMotivosInsucessoPorUnidade(unidadeSaudeId),
+                indicadorPrazoService.indicadoresPrazoPorUnidade(unidadeSaudeId),
                 List.of(),
                 List.of(),
                 List.of(),
@@ -89,6 +93,7 @@ public class DashboardIndicadorService {
                 List.of(),
                 List.of(),
                 List.of(),
+                List.of(),
                 List.of()
         );
     }
@@ -104,6 +109,7 @@ public class DashboardIndicadorService {
                 indicadorProcessoService.montarProcessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorResultadoService.percentualPorDesfechoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorInsucessoService.principaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
+                List.of(),
                 List.of(),
                 List.of(),
                 List.of(),

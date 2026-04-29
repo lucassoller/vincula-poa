@@ -25,14 +25,16 @@ public class IndicadorController {
     private final IndicadorProducaoService indicadorProducaoService;
     private final IndicadorResultadoService indicadorResultadoService;
     private final IndicadorRankingService indicadorRankingService;
+    private final IndicadorPrazoService indicadorPrazoService;
 
-    public IndicadorController(DashboardIndicadorService dashboardIndicadorService, IndicadorInsucessoService indicadorInsucessoService, IndicadorProcessoService indicadorProcessoService, IndicadorProducaoService indicadorProducaoService, IndicadorResultadoService indicadorResultadoService, IndicadorRankingService indicadorRankingService) {
+    public IndicadorController(DashboardIndicadorService dashboardIndicadorService, IndicadorInsucessoService indicadorInsucessoService, IndicadorProcessoService indicadorProcessoService, IndicadorProducaoService indicadorProducaoService, IndicadorResultadoService indicadorResultadoService, IndicadorRankingService indicadorRankingService, IndicadorPrazoService indicadorPrazoService) {
         this.dashboardIndicadorService = dashboardIndicadorService;
         this.indicadorInsucessoService = indicadorInsucessoService;
         this.indicadorProcessoService = indicadorProcessoService;
         this.indicadorProducaoService = indicadorProducaoService;
         this.indicadorResultadoService = indicadorResultadoService;
         this.indicadorRankingService = indicadorRankingService;
+        this.indicadorPrazoService = indicadorPrazoService;
     }
 
     // =========================
@@ -298,6 +300,24 @@ public class IndicadorController {
         return ResponseEntity.ok(
                 indicadorInsucessoService.principaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
         );
+    }
+
+    // =========================
+    // PRAZOS
+    // =========================
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/demandas/prazo")
+    public ResponseEntity<List<IndicadorValorDTO>> indicadoresPrazo() {
+        return ResponseEntity.ok(indicadorPrazoService.indicadoresPrazo());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/demandas/prazo/unidade/{unidadeId}")
+    public ResponseEntity<List<IndicadorValorDTO>> indicadoresPrazoPorUnidade(
+            @PathVariable Long unidadeId
+    ) {
+        return ResponseEntity.ok(indicadorPrazoService.indicadoresPrazoPorUnidade(unidadeId));
     }
 
     // =========================

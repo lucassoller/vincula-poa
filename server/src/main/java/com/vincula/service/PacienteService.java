@@ -50,6 +50,7 @@ public class PacienteService {
     }
 
     public List<PacienteResponseDTO> listarTodos() {
+        auditoriaFacade.pacienteVisualizado(0L);
         return pacienteRepository.findAll()
                 .stream()
                 .map(this::toDTO)

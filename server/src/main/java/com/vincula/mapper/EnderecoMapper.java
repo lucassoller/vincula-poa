@@ -20,8 +20,6 @@ public class EnderecoMapper {
         entity.setCidade(dto.getCidade());
         entity.setEstado(dto.getEstado());
         entity.setCep(dto.getCep());
-        entity.setLatitude(dto.getLatitude());
-        entity.setLongitude(dto.getLongitude());
         return entity;
     }
 
@@ -48,7 +46,5 @@ public class EnderecoMapper {
         entity.setCidade(dto.getCidade());
         entity.setEstado(dto.getEstado());
         entity.setCep(dto.getCep());
-        entity.setLatitude(dto.getLatitude());
-        entity.setLongitude(dto.getLongitude());
     }
 }

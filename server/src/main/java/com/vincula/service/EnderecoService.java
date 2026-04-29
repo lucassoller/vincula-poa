@@ -82,6 +82,7 @@ public class EnderecoService {
     private EnderecoResponseDTO toDTO(Endereco entity) {
         EnderecoResponseDTO dto = new EnderecoResponseDTO();
 
+        dto.setId(entity.getId());
         dto.setRua(entity.getRua());
         dto.setNumero(entity.getNumero());
         dto.setBairro(entity.getBairro());
@@ -99,7 +100,5 @@ public class EnderecoService {
         entity.setCidade(dto.getCidade());
         entity.setEstado(dto.getEstado());
         entity.setCep(dto.getCep());
-        entity.setLatitude(dto.getLatitude());
-        entity.setLongitude(dto.getLongitude());
     }
 }

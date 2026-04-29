@@ -15,6 +15,7 @@ public class DashboardIndicadoresDTO {
     private List<IndicadorValorDTO> processo;
     private List<IndicadorValorDTO> resultado;
     private List<MotivoQuantidadeDTO> principaisMotivosInsucesso;
+    private List<IndicadorValorDTO> prazos;
     private List<IndicadorRankingDTO> rankingTotalDemandas;
     private List<IndicadorRankingDTO> rankingPercentualResolucao;
     private List<IndicadorRankingDTO> rankingTempoMedioResolucao;
