@@ -1,0 +1,137 @@
+.container-login{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: row;
+    background: #00afc6;
+    font-family: "Segoe UI";
+}
+
+.image-body{
+    height: 100vh;
+    width: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-body{
+    background: white;
+    height: 100vh;
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-child{
+    background: #fff;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.image-card{
+    background: url('../../public/z.png');
+    background-size: 100%;
+    background-position: 0% 0%;
+    background-repeat: no-repeat;
+    width: 500px;
+    height: 500px;
+}
+
+.card-form{
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    justify-content: center;
+}
+
+.titulo{
+    margin: 0;
+    text-align: center;
+    color: #1f2937;
+}
+
+.subtitulo{
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 24px;
+}
+
+.label{
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #374151;
+    font-size: 20pt;
+}
+
+.input{
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+}
+
+.input-margin{
+    margin-bottom: 16px;
+}
+
+.login-senha{
+    cursor: pointer;
+    font-size: 13pt;
+    color: blue;
+    margin-bottom: 16px;
+}
+
+.login-senha:hover{
+    text-decoration: underline;
+    color: #1d4ed8;
+}
+
+.botao{
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.erro{
+    height: 0px;
+}
+
+.erro-alert{
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 16px;
+    text-align: center;
+}
+
+.close{
+    font-size: 15pt;
+    font-weight: normal;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.senha-input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.eye {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    color: black;
+}

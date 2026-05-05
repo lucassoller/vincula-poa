@@ -17,6 +17,9 @@ function Navbar() {
                 <Link to="/pacientes" style={styles.link}>Pacientes</Link>
                 <Link to="/demandas" style={styles.link}>Demandas</Link>
                 <Link to="/auditoria" style={styles.link}>Auditoria</Link>
+                <Link to="/pacientes/cadastro" style={styles.link}>Cadastrar Paciente</Link>
+                <Link to="/usuarios/cadastro" style={styles.link}>Cadastrar Usuário</Link>
+                <Link to="/unidades-saude/cadastro" style={styles.link}>Cadastrar UBS</Link>
             </div>
 
             <button onClick={logout} style={styles.botao}>

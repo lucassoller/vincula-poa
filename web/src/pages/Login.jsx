@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./login.css"
 import api from "../api/api";
 
 function Login() {
@@ -9,6 +10,7 @@ function Login() {
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
     const [carregando, setCarregando] = useState(false);
+    const [mostrarSenha, setMostrarSenha] = useState(false);
 
     async function entrar(e) {
         e.preventDefault();
@@ -35,94 +37,64 @@ function Login() {
     }
 
     return (
-        <div style={styles.container}>
-            <form onSubmit={entrar} style={styles.card}>
-                <h1 style={styles.titulo}>Vincula POA</h1>
-                <p style={styles.subtitulo}>Acesse o sistema</p>
+        <div className={"container-login"}>
+            <div className={"image-body"}>
+                <div className={"image-child"}>
+                    <div className={"image-card"}></div>
+                </div>
+            </div>
+            <div className={"login-body"}>
+                <form onSubmit={entrar} className={"card-form"}>
 
-                {erro && <div style={styles.erro}>{erro}</div>}
+                    <label className={"label"}>Login</label>
+                    <input
+                        className={"input input-margin"}
+                        value={login}
+                        onChange={(e) => setLogin(e.target.value)}
+                        placeholder="Digite seu login"
+                    />
 
-                <label style={styles.label}>Login</label>
-                <input
-                    style={styles.input}
-                    value={login}
-                    onChange={(e) => setLogin(e.target.value)}
-                    placeholder="Digite seu login"
-                />
+                    <label className={"label"}>Senha</label>
+                    <div className="input-wrapper">
+                        <input
+                            className={"input senha-input"}
+                            type={mostrarSenha ? "text" : "password"}
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
+                            placeholder="Digite sua senha"
+                        />
+                        <span
+                            className="eye"
+                            onClick={() => setMostrarSenha(!mostrarSenha)}
+                        >
+                             <img
+                                 src={mostrarSenha ? "/eye2.svg" : "/eye.svg"}
+                                 alt="mostrar senha"
+                                 width={20}
+                             />
+                        </span>
+                    </div>
 
-                <label style={styles.label}>Senha</label>
-                <input
-                    style={styles.input}
-                    type="password"
-                    value={senha}
-                    onChange={(e) => setSenha(e.target.value)}
-                    placeholder="Digite sua senha"
-                />
+                    <div className="login-senha">
+                        Esqueci minha senha
+                    </div>
 
-                <button style={styles.botao} disabled={carregando}>
-                    {carregando ? "Entrando..." : "Entrar"}
-                </button>
-            </form>
+
+                    <button className={"botao"} disabled={carregando}>
+                        {carregando ? "Entrando..." : "Entrar"}
+                    </button>
+                    {erro && (<div className={"erro"}>
+                        <div className={"erro-alert"}>{erro}
+                            <span className="close" onClick={() => setErro("")}>✖</span>
+                        </div>
+
+                    </div>)}
+
+                </form>
+
+            </div>
         </div>
     );
 }
-
-const styles = {
-    container: {
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#f3f4f6",
-    },
-    card: {
-        width: "360px",
-        background: "#fff",
-        padding: "32px",
-        borderRadius: "12px",
-        boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-        display: "flex",
-        flexDirection: "column",
-    },
-    titulo: {
-        margin: 0,
-        textAlign: "center",
-        color: "#1f2937",
-    },
-    subtitulo: {
-        textAlign: "center",
-        color: "#6b7280",
-        marginBottom: "24px",
-    },
-    label: {
-        marginBottom: "6px",
-        fontWeight: "600",
-        color: "#374151",
-    },
-    input: {
-        padding: "12px",
-        marginBottom: "16px",
-        borderRadius: "8px",
-        border: "1px solid #d1d5db",
-        fontSize: "14px",
-    },
-    botao: {
-        padding: "12px",
-        borderRadius: "8px",
-        border: "none",
-        background: "#2563eb",
-        color: "#fff",
-        fontWeight: "700",
-        cursor: "pointer",
-    },
-    erro: {
-        background: "#fee2e2",
-        color: "#991b1b",
-        padding: "10px",
-        borderRadius: "8px",
-        marginBottom: "16px",
-        textAlign: "center",
-    },
-};
 
 export default Login;
