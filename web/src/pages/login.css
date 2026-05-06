@@ -2,7 +2,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: row;
-    background: #00afc6;
+    background: #00B0C6;
     font-family: "Segoe UI";
 }
 
@@ -67,13 +67,6 @@
 }
 
 .input{
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
-}
-
-.input-margin{
     margin-bottom: 16px;
 }
 

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import api from "../api/api";
+import EnderecoForm from "../components/EnderecoForm";
+import "./pacienteCadastro.css";
 
 function PacienteCadastro() {
+    const [etapa, setEtapa] = useState(1);
+
     const [form, setForm] = useState({
         nomeCompleto: "",
         telefone: "",
@@ -9,7 +13,7 @@ function PacienteCadastro() {
         cpf: "",
         cns: "",
         dataNascimento: "",
-        observacao: "",
+        sexo: "",
         endereco: {
             rua: "",
             numero: "",
@@ -18,6 +22,7 @@ function PacienteCadastro() {
             estado: "RS",
             cep: "",
         },
+        unidadeSaudeId: 1
     });
 
     const [mensagem, setMensagem] = useState("");
@@ -67,7 +72,7 @@ function PacienteCadastro() {
                     cep,
                 },
             }));
-        } catch (error) {
+        } catch {
             setMensagem("Erro ao buscar CEP.");
         }
     }
@@ -85,43 +90,114 @@ function PacienteCadastro() {
     }
 
     return (
-        <div>
-            <h1>Cadastrar Paciente</h1>
+        <div className="p-container">
+            <div className="p-body">
+                <h1>Cadastrar Paciente</h1>
 
-            <form onSubmit={salvar} style={styles.form}>
-                <input name="nomeCompleto" placeholder="Nome completo" value={form.nomeCompleto} onChange={alterar} />
-                <input name="telefone" placeholder="Telefone" value={form.telefone} onChange={alterar} />
-                <input name="email" placeholder="Email" value={form.email} onChange={alterar} />
-                <input name="cpf" placeholder="CPF" value={form.cpf} onChange={alterar} />
-                <input name="cns" placeholder="CNS" value={form.cns} onChange={alterar} />
-                <input name="dataNascimento" type="date" value={form.dataNascimento} onChange={alterar} />
+                <div className="p-form">
+                    <form className={"p-form-child"} onSubmit={salvar}>
+                        {etapa === 1 && (
+                            <>
+                                <label className="label">Nome completo</label>
+                                <input
+                                    className="form-control"
+                                    name="nomeCompleto"
+                                    value={form.nomeCompleto}
+                                    onChange={alterar}
+                                />
 
-                <h3>Endereço</h3>
+                                <label className="label">Telefone</label>
+                                <input
+                                    className="form-control"
+                                    name="telefone"
+                                    placeholder="(xx)xxxxx-xxxx"
+                                    value={form.telefone}
+                                    onChange={alterar}
+                                />
 
-                <input name="cep" placeholder="CEP" value={form.endereco.cep} onChange={alterarCep} />
-                <input name="rua" placeholder="Rua" value={form.endereco.rua} onChange={alterarEndereco} />
-                <input name="numero" placeholder="Número" value={form.endereco.numero} onChange={alterarEndereco} />
-                <input name="bairro" placeholder="Bairro" value={form.endereco.bairro} onChange={alterarEndereco} />
-                <input name="cidade" placeholder="Cidade" value={form.endereco.cidade} onChange={alterarEndereco} />
-                <input name="estado" placeholder="Estado" value={form.endereco.estado} onChange={alterarEndereco} />
+                                <label className="label">Email</label>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    name="email"
+                                    placeholder="name@example.com"
+                                    value={form.email}
+                                    onChange={alterar}
+                                />
 
-                <textarea name="observacao" placeholder="Observação" value={form.observacao} onChange={alterar} />
+                                <label className="label">CPF</label>
+                                <input
+                                    className="form-control"
+                                    name="cpf"
+                                    value={form.cpf}
+                                    onChange={alterar}
+                                />
 
-                <button type="submit">Cadastrar</button>
-            </form>
+                                <label className="label">CNS</label>
+                                <input
+                                    className="form-control"
+                                    name="cns"
+                                    value={form.cns}
+                                    onChange={alterar}
+                                />
 
-            {mensagem && <p>{mensagem}</p>}
+                                <label className="label">Data de nascimento</label>
+                                <input
+                                    className="form-control"
+                                    name="dataNascimento"
+                                    type="date"
+                                    value={form.dataNascimento}
+                                    onChange={alterar}
+                                />
+
+                                <label className="label">Sexo</label>
+                                <select
+                                    className="form-control"
+                                    name="sexo"
+                                    value={form.sexo}
+                                    onChange={alterar}
+                                >
+                                    <option value="">Selecione</option>
+                                    <option value="FEMININO">Feminino</option>
+                                    <option value="MASCULINO">Masculino</option>
+                                    <option value="NAO_INFORMADO">Não informar</option>
+                                </select>
+
+                                <div>
+                                <button type="button" onClick={() => setEtapa(2)}>
+                                    Próximo
+                                </button>
+                                <button type="button" onClick={() => setEtapa(2)}>
+                                    Cancelar
+                                </button>
+                                </div>
+                            </>
+                        )}
+
+                        {etapa === 2 && (
+                            <>
+                                <EnderecoForm
+                                    endereco={form.endereco}
+                                    onChange={alterarEndereco}
+                                    onBuscarCep={alterarCep}
+                                />
+
+                                <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
+                                    <button type="button" onClick={() => setEtapa(1)}>
+                                        Voltar
+                                    </button>
+
+                                    <button type="submit">Cadastrar</button>
+                                </div>
+                            </>
+                        )}
+                    </form>
+
+                    {mensagem && <p>{mensagem}</p>}
+                </div>
+            </div>
         </div>
     );
 }
-
-const styles = {
-    form: {
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-        maxWidth: "500px",
-    },
-};
 
 export default PacienteCadastro;

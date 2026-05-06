@@ -48,20 +48,18 @@ function Login() {
 
                     <label className={"label"}>Login</label>
                     <input
-                        className={"input input-margin"}
+                        className={"form-control input"}
                         value={login}
                         onChange={(e) => setLogin(e.target.value)}
-                        placeholder="Digite seu login"
                     />
 
                     <label className={"label"}>Senha</label>
                     <div className="input-wrapper">
                         <input
-                            className={"input senha-input"}
+                            className={"form-control senha-input"}
                             type={mostrarSenha ? "text" : "password"}
                             value={senha}
                             onChange={(e) => setSenha(e.target.value)}
-                            placeholder="Digite sua senha"
                         />
                         <span
                             className="eye"

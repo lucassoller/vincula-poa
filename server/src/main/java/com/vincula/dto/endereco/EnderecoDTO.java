@@ -13,7 +13,7 @@ public class EnderecoDTO {
     private String rua;
 
     @NotBlank(message = "Número é obrigatório")
-    @Pattern(regexp = "\\d{10}", message = "Número deve ter no máximo 10 caracteres")
+    @Size(max = 10, message = "Número deve ter no máximo 10 caracteres")
     private String numero;
 
     @NotBlank(message = "Bairro é obrigatório")

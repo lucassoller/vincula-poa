@@ -2,13 +2,20 @@ import Navbar from "./Navbar";
 
 function Layout({ children }) {
   return (
-    <div>
+    <div style={styles.navbarcontainer}>
       <Navbar />
-      <div style={{ padding: "20px" }}>
         {children}
-      </div>
     </div>
   );
 }
 
 export default Layout;
+
+const styles = {
+    navbarcontainer: {
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        fontFamily: "Segoe UI",
+    }
+};

@@ -10,3 +10,4 @@ createRoot(document.getElementById('root')).render(
 )
 
 // #00b0c6
+// #003b69
