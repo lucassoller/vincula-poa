@@ -17,6 +17,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
             <Route path="/cadastro" element={ <Layout> <PacienteCadastro /> </Layout> }/>
+            <Route path="/cadastroo" element={ <Layout> <UnidadeSaudeCadastro /> </Layout> }/>
+            <Route path="/cadastrooo" element={ <Layout> <UsuarioCadastro /> </Layout> }/>
           <Route
               path="/dashboard"
               element={

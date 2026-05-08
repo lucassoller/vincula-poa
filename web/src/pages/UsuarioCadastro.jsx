@@ -2,14 +2,16 @@ import { useState } from "react";
 import api from "../api/api";
 
 function UsuarioCadastro() {
+    const [erros, setErros] = useState({});
+
     const [form, setForm] = useState({
         nome: "",
         email: "",
         login: "",
         senha: "",
-        perfil: "SOLICITANTE",
-        unidadeSaudeId: "",
-        observacao: "",
+        confirmarSenha: "",
+        perfil: undefined,
+        unidadeSaudeId: 1
     });
 
     const [mensagem, setMensagem] = useState("");
@@ -22,54 +24,106 @@ function UsuarioCadastro() {
         e.preventDefault();
         setMensagem("");
 
-        const payload = {
-            ...form,
-            unidadeSaudeId: form.unidadeSaudeId ? Number(form.unidadeSaudeId) : null,
-        };
-
         try {
-            await api.post("/usuarios", payload);
+            await api.post("/usuarios", form);
             setMensagem("Usuário cadastrado com sucesso!");
-        } catch {
-            setMensagem("Erro ao cadastrar usuário.");
+        }catch (error) {
+            if (error.response?.data?.errors) {
+                const errors = error.response.data.errors;
+                setErros(errors);
+                setMensagem(error.response.data.message || "Dados inválidos");
+            } else {
+                setMensagem(error.response.data.message);
+
+            }
         }
     }
 
     return (
-        <div>
-            <h1>Cadastrar Usuário</h1>
+        <div className="p-container">
+            <div className="p-body">
+                <h1>Cadastrar Usuário</h1>
+                {mensagem &&
+                    <div className="alert alert-warning alert-dismissible fade show" role="alert">
+                        <p>{mensagem}</p>
+                        <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => setMensagem("")}>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>}
 
-            <form onSubmit={salvar} style={styles.form}>
-                <input name="nome" placeholder="Nome" onChange={alterar} />
-                <input name="email" placeholder="Email" onChange={alterar} />
-                <input name="login" placeholder="Login" onChange={alterar} />
-                <input name="senha" type="password" placeholder="Senha" onChange={alterar} />
+                <div className="p-form">
+                    <form className={"p-form-child"} onSubmit={salvar}>
+                                <label className="label">Nome <span className="p-required">*</span></label>
+                                <input
+                                    className="form-control"
+                                    name="nome"
+                                    value={form.nome}
+                                    onChange={alterar}
+                                />
+                                {erros.nome && <span className="campo-erro">{erros.nome}</span>}
 
-                <select name="perfil" value={form.perfil} onChange={alterar}>
-                    <option value="SOLICITANTE">Solicitante</option>
-                    <option value="EXECUTOR_APS">Executor APS</option>
-                    <option value="GESTAO_MUNICIPAL">Gestão Municipal</option>
-                </select>
+                                <label className="label">Email <span className="p-required">*</span></label>
+                                <input
+                                    className="form-control"
+                                    name="email"
+                                    value={form.email}
+                                    onChange={alterar}
+                                />
+                                {erros.email && <span className="campo-erro">{erros.email}</span>}
 
-                <input name="unidadeSaudeId" placeholder="ID da unidade de saúde" onChange={alterar} />
+                                <label className="label">Login <span className="p-required">*</span></label>
+                                <input
+                                    className="form-control"
+                                    name="login"
+                                    value={form.login}
+                                    onChange={alterar}
+                                />
+                                {erros.login && <span className="campo-erro">{erros.login}</span>}
 
-                <textarea name="observacao" placeholder="Observação" onChange={alterar} />
+                                <label className="label">Senha <span className="p-required">*</span></label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    name="senha"
+                                    value={form.senha}
+                                    onChange={alterar}
+                                />
+                                {erros.senha && <span className="campo-erro">{erros.senha}</span>}
 
-                <button type="submit">Cadastrar</button>
-            </form>
+                                <label className="label">Confirmar senha <span className="p-required">*</span></label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    name="confirmarSenha"
+                                    value={form.confirmarSenha}
+                                    onChange={alterar}
+                                />
+                                {erros.confirmarSenha && <span className="campo-erro">{erros.confirmarSenha}</span>}
 
-            {mensagem && <p>{mensagem}</p>}
+                                <label className="label">Perfil <span className="p-required">*</span></label>
+                                <select
+                                    className="form-control"
+                                    name="perfil"
+                                    value={form.perfil}
+                                    onChange={alterar}
+                                >
+                                    <option value={""}>Selecionar</option>
+                                    <option value="SOLICITANTE">Solicitante</option>
+                                    <option value="EXECUTOR_APS">Executor APS</option>
+                                    <option value="GESTAO_MUNICIPAL">Gestão Municipal</option>
+                                </select>
+                                {erros.perfil && <span className="campo-erro">{erros.perfil}</span>}
+                                <label className="label">Unidade Básica de Saúde <span className="p-required">*</span></label>
+
+                                <div className={"div-button"}>
+                                    <button type="submit" className="btn btn-primary">Cadastrar </button>
+                                    <button type="button" className="btn btn-danger">Cancelar </button>
+                                </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 }
-
-const styles = {
-    form: {
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-        maxWidth: "500px",
-    },
-};
 
 export default UsuarioCadastro;

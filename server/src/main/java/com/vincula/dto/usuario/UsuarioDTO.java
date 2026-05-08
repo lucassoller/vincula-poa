@@ -27,6 +27,10 @@ public class UsuarioDTO {
     @Size(max = 255, message = "Senha deve ter no máximo 255 caracteres")
     private String senha;
 
+    @NotBlank(message = "Confirmar a senha é obrigatório")
+    @Size(max = 255, message = "Senha deve ter no máximo 255 caracteres")
+    private String confirmarSenha;
+
     @NotNull(message = "Perfil é obrigatório")
     private PerfilUsuario perfil;
 

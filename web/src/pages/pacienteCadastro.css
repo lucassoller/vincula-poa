@@ -21,10 +21,30 @@
     justify-content: center;
     align-items: center;
     width: 70%;
+    flex-direction: column;
 }
 
 .p-form-child{
     display: flex;
     flex-direction: column;
     width: 100%;
+}
+
+.div-button{
+    display: flex;
+    flex-direction: row;
+    margin-top: 16px;
+    gap: 12px;
+}
+
+.campo-erro {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.p-required{
+    color: #dc2626;
 }

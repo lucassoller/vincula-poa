@@ -210,6 +210,9 @@ public class UsuarioService {
     }
 
     private Usuario toEntity(UsuarioDTO dto) {
+        if(!Objects.equals(dto.getSenha(), dto.getConfirmarSenha())){
+            throw new BusinessException("As senhas não coincidem");
+        }
         Usuario entity = new Usuario();
 
         entity.setNome(dto.getNome());

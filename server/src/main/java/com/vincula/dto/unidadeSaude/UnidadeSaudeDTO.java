@@ -19,7 +19,7 @@ public class UnidadeSaudeDTO {
     @Pattern(regexp = "\\d{7}", message = "CNES inválido")
     private String cnes;
 
-    @Pattern(regexp = "\\d{10,11}")
+    @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
     private String telefone;
 
     @NotNull(message = "Endereço é obrigatório")

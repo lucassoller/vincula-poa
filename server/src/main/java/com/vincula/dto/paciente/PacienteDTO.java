@@ -18,7 +18,7 @@ public class PacienteDTO {
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
     private String nomeCompleto;
 
-    @Pattern(regexp = "\\d{10,11}")
+    @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
     private String telefone;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -29,10 +29,10 @@ public class PacienteDTO {
 
     private Sexo sexo;
 
-    @Pattern(regexp = "\\d{11}", message = "CPF inválido")
+    @Pattern(regexp = "^$|\\d{11}", message = "CPF inválido")
     private String cpf;
 
-    @Pattern(regexp = "\\d{15}", message = "CNS inválido")
+    @Pattern(regexp = "^$|\\d{15}", message = "CNS inválido")
     private String cns;
 
     @NotNull(message = "Endereço é obrigatório")
