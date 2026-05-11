@@ -36,6 +36,13 @@ public class PacienteController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/unidadeSaude/{id}")
+    public ResponseEntity<List<PacienteResponseDTO>> listarTodosPorUnidade(@PathVariable Long id) {
+        List<PacienteResponseDTO> pacientes = pacienteService.listarTodosPorUnidade(id);
+        return ResponseEntity.ok(pacientes);
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> buscarPorId(@PathVariable Long id) {
         PacienteResponseDTO paciente = pacienteService.buscarPorId(id);

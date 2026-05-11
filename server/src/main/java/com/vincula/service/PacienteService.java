@@ -57,6 +57,14 @@ public class PacienteService {
                 .toList();
     }
 
+    public List<PacienteResponseDTO> listarTodosPorUnidade(Long id) {
+        auditoriaFacade.pacienteVisualizado(0L);
+        return pacienteRepository.findAllByUnidadeSaudeId(id)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     public PacienteResponseDTO buscarPorId(Long id) {
         Paciente paciente = buscarPacientePorId(id);
 
@@ -199,6 +207,7 @@ public class PacienteService {
         dto.setCns(entity.getCns());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+        dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
         dto.setEmail(entity.getEmail());
         dto.setSexo(entity.getSexo());
 

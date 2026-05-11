@@ -1,50 +1,234 @@
-.p-container{
+.cadastro-container {
     display: flex;
     flex: 1;
     justify-content: center;
     background: #00b0c6;
-    font-family: "Segoe UI";
+    font-family: "Segoe UI", sans-serif;
 }
 
-.p-body{
-    width: 60%;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 10px;
-    padding-bottom: 20px;
-}
-
-.p-form{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.cadastro-page {
     width: 70%;
+    background: white;
+    padding: 36px;
+}
+
+.cadastro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.cadastro-header h1 {
+    margin: 0;
+    font-size: 36px;
+    color: #0f172a;
+}
+
+.cadastro-header p {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 16px;
+}
+
+.alert-card {
+    background: #fef3c7;
+    color: #92400e;
+    border-left: 5px solid #f59e0b;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-card button {
+    border: none;
+    background: transparent;
+    color: #92400e;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.step span {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.step.active {
+    color: #2563eb;
+}
+
+.step.active span {
+    background: #2563eb;
+    color: white;
+}
+
+.step-line {
+    height: 2px;
+    width: 90px;
+    background: #e2e8f0;
+    margin: 0 16px;
+}
+
+.cadastro-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.form-grid {
+    display: grid;
+    gap: 22px;
+    margin-bottom: 18px;
+}
+
+.form-grid.full {
+    grid-template-columns: 1fr;
+}
+
+.form-grid.two {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.form-group {
+    display: flex;
     flex-direction: column;
 }
 
-.p-form-child{
-    display: flex;
-    flex-direction: column;
+.form-group label {
+    color: #1e293b;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.form-group label span {
+    color: #dc2626;
+}
+
+.input-field {
     width: 100%;
+    padding: 13px 15px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    font-size: 15px;
+    transition: 0.2s;
 }
 
-.div-button{
+.input-field:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.form-group small {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.form-actions {
     display: flex;
-    flex-direction: row;
-    margin-top: 16px;
     gap: 12px;
+    margin-top: 26px;
+}
+
+.primary-btn,
+.secondary-btn,
+.danger-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.primary-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.primary-btn:hover {
+    background: #1d4ed8;
+}
+
+.secondary-btn {
+    background: #334155;
+    color: white;
+}
+
+.secondary-btn:hover {
+    background: #1e293b;
+}
+
+.danger-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.danger-btn:hover {
+    background: #b91c1c;
 }
 
 .campo-erro {
     color: #dc2626;
     font-size: 13px;
-    margin-top: 4px;
-    margin-bottom: 8px;
-    display: block;
+    margin-top: 6px;
 }
 
-.p-required{
-    color: #dc2626;
+@media (max-width: 900px) {
+    .cadastro-page {
+        width: 100%;
+        padding: 24px;
+    }
+
+    .form-grid.two {
+        grid-template-columns: 1fr;
+    }
+
+    .cadastro-header h1 {
+        font-size: 30px;
+    }
+}
+
+.endereco-header{
+    margin-bottom: 24px;
+}
+
+.endereco-header h2{
+    margin: 0;
+    font-size: 28px;
+    color: #0f172a;
+}
+
+.endereco-header p{
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 15px;
 }

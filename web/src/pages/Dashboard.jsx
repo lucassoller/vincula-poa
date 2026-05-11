@@ -7,22 +7,38 @@ function Dashboard() {
     const [carregando, setCarregando] = useState(true);
 
     useEffect(() => {
-        carregarDashboard();
-    }, []);
 
-    async function carregarDashboard() {
-        try {
-            setCarregando(true);
-            setErro("");
+        let ativo = true;
 
-            const response = await api.get("/indicadores/dashboard/geral");
-            setDashboard(response.data);
-        } catch (error) {
-            setErro("Erro ao carregar dashboard");
-        } finally {
-            setCarregando(false);
+        async function carregarDashboard() {
+            try {
+                if (ativo) {
+                    setCarregando(true);
+                    setErro("");
+                }
+                const response = await api.get("/indicadores/dashboard/geral");
+                if (ativo) {
+                    setDashboard(response.data);
+                }
+            } catch (error) {
+                if (ativo) {
+                    setErro("Erro ao carregar dashboard");
+                }
+            } finally {
+
+                if (ativo) {
+                    setCarregando(false);
+                }
+            }
         }
-    }
+
+        void carregarDashboard();
+
+        return () => {
+            ativo = false;
+        };
+
+    }, []);
 
     if (carregando) {
         return <p>Carregando dashboard...</p>;

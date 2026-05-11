@@ -23,4 +23,5 @@ public class PacienteResponseDTO {
     private EnderecoResponseDTO endereco;
 
     private Long unidadeSaudeId;
+    private String unidadeSaudeNome;
 }

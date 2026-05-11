@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./login.css"
+import "./login.css";
+import { useAuth } from "../context/AuthContext";
 import api from "../api/api";
 
 function Login() {
     const navigate = useNavigate();
+    const { login: realizarLogin } = useAuth();
 
-    const [login, setLogin] = useState("");
+    const [loginUsuario, setLoginUsuario] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
     const [carregando, setCarregando] = useState(false);
@@ -19,57 +21,59 @@ function Login() {
 
         try {
             const response = await api.post("/auth/login", {
-                login,
+                login: loginUsuario,
                 senha,
             });
 
-            localStorage.setItem("token", response.data.token);
+            realizarLogin(response.data, response.data.token);
 
             navigate("/dashboard");
         } catch (error) {
-            const e = error.response.data.message;
-            const login = error.response.data.errors?.login;
-            const senha = error.response.data.errors?.senha;
-            setErro(login || senha || e);
+            const mensagem = error.response?.data?.message;
+            const erroLogin = error.response?.data?.errors?.login;
+            const erroSenha = error.response?.data?.errors?.senha;
+
+            setErro(erroLogin || erroSenha || mensagem || "Erro ao realizar login");
         } finally {
             setCarregando(false);
         }
     }
 
     return (
-        <div className={"container-login"}>
-            <div className={"image-body"}>
-                <div className={"image-child"}>
-                    <div className={"image-card"}></div>
+        <div className="container-login">
+            <div className="image-body">
+                <div className="image-child">
+                    <div className="image-card"></div>
                 </div>
             </div>
-            <div className={"login-body"}>
-                <form onSubmit={entrar} className={"card-form"}>
 
-                    <label className={"label"}>Login</label>
+            <div className="login-body">
+                <form onSubmit={entrar} className="card-form">
+                    <label className="label">Login</label>
                     <input
-                        className={"form-control input"}
-                        value={login}
-                        onChange={(e) => setLogin(e.target.value)}
+                        className="form-control input"
+                        value={loginUsuario}
+                        onChange={(e) => setLoginUsuario(e.target.value)}
                     />
 
-                    <label className={"label"}>Senha</label>
+                    <label className="label">Senha</label>
                     <div className="input-wrapper">
                         <input
-                            className={"form-control senha-input"}
+                            className="form-control senha-input"
                             type={mostrarSenha ? "text" : "password"}
                             value={senha}
                             onChange={(e) => setSenha(e.target.value)}
                         />
+
                         <span
                             className="eye"
                             onClick={() => setMostrarSenha(!mostrarSenha)}
                         >
-                             <img
-                                 src={mostrarSenha ? "/eye2.svg" : "/eye.svg"}
-                                 alt="mostrar senha"
-                                 width={20}
-                             />
+                            <img
+                                src={mostrarSenha ? "/eye2.svg" : "/eye.svg"}
+                                alt="mostrar senha"
+                                width={20}
+                            />
                         </span>
                     </div>
 
@@ -77,19 +81,21 @@ function Login() {
                         Esqueci minha senha
                     </div>
 
-
-                    <button className={"botao"} disabled={carregando}>
+                    <button className="botao" disabled={carregando}>
                         {carregando ? "Entrando..." : "Entrar"}
                     </button>
-                    {erro && (<div className={"erro"}>
-                        <div className={"erro-alert"}>{erro}
-                            <span className="close" onClick={() => setErro("")}>✖</span>
+
+                    {erro && (
+                        <div className="erro">
+                            <div className="erro-alert">
+                                {erro}
+                                <span className="close" onClick={() => setErro("")}>
+                                    ✖
+                                </span>
+                            </div>
                         </div>
-
-                    </div>)}
-
+                    )}
                 </form>
-
             </div>
         </div>
     );

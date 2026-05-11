@@ -1,50 +1,82 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm";
 import "./pacienteCadastro.css";
-import {useNavigate} from "react-router-dom";
 
+const formInicial = {
+    nomeCompleto: "",
+    telefone: "",
+    email: "",
+    cpf: "",
+    cns: "",
+    dataNascimento: "",
+    sexo: "",
+    endereco: {
+        rua: "",
+        numero: "",
+        bairro: "",
+        cidade: "Porto Alegre",
+        estado: "RS",
+        cep: "",
+    },
+};
 
-function PacienteCadastro() {
-    const camposEtapa1 = ["nomeCompleto", "telefone", "email", "cpf", "cns", "dataNascimento", "sexo"];
-
-    const formInicial = {
-        nomeCompleto: "",
-        telefone: "",
-        email: "",
-        cpf: "",
-        cns: "",
-        dataNascimento: "",
-        sexo: undefined,
-        endereco: {
-            rua: "",
-            numero: "",
-            bairro: "",
-            cidade: "Porto Alegre",
-            estado: "RS",
-            cep: "",
-        },
-        unidadeSaudeId: 1
-    };
-
-    const [etapa, setEtapa] = useState(1);
-
-    const [erros, setErros] = useState({});
-
+function PacienteEditar() {
+    const { id } = useParams();
     const navigate = useNavigate();
 
+    const [etapa, setEtapa] = useState(1);
     const [form, setForm] = useState(formInicial);
-
+    const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [carregando, setCarregando] = useState(true);
+
+    useEffect(() => {
+        async function carregarPaciente() {
+            try {
+                const response = await api.get(`/pacientes/${id}`);
+                setForm(response.data);
+            } catch {
+                setMensagem("Erro ao carregar paciente.");
+            } finally {
+                setCarregando(false);
+            }
+        }
+
+        void carregarPaciente();
+    }, [id]);
 
     function alterar(e) {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        setForm({
+            ...form,
+            [name]: value,
+        });
+
+        setErros((prev) => {
+            const novos = { ...prev };
+            delete novos[name];
+            return novos;
+        });
     }
 
     function alterarEndereco(e) {
+        const { name, value } = e.target;
+
         setForm({
             ...form,
-            endereco: { ...form.endereco, [e.target.name]: e.target.value },
+            endereco: {
+                ...form.endereco,
+                [name]: value,
+            },
+        });
+
+        setErros((prev) => {
+            const novos = { ...prev };
+            delete novos[`endereco.${name}`];
+            return novos;
         });
     }
 
@@ -53,22 +85,15 @@ function PacienteCadastro() {
 
         setForm({
             ...form,
-            endereco: { ...form.endereco, cep },
+            endereco: {
+                ...form.endereco,
+                cep,
+            },
         });
 
         if (cep.length === 8) {
             buscarCep(cep);
         }
-    }
-
-    function voltarParaEtapaComErro(errors) {
-        const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
-        if (temErroEtapa1) {
-            setEtapa(1);
-        } else{
-            setEtapa(2);
-        }
-            setMensagem("Dados inválidos.");
     }
 
     async function buscarCep(cep) {
@@ -103,31 +128,30 @@ function PacienteCadastro() {
         setErros({});
 
         try {
-            await api.post("/pacientes", form);
-            setMensagem("Paciente cadastrado com sucesso!");
-            setForm(formInicial);
-            setErros({});
-        }catch (error) {
+            await api.put(`/pacientes/${id}`, form);
+            setMensagem("Paciente atualizado com sucesso!");
+            navigate(`/pacientes/${id}`);
+        } catch (error) {
             if (error.response?.data?.errors) {
-                const errors = error.response.data.errors;
-
-                setErros(errors);
+                setErros(error.response.data.errors);
                 setMensagem(error.response.data.message || "Dados inválidos");
-                voltarParaEtapaComErro(errors);
             } else {
-                setMensagem(error.response.data.message);
+                setMensagem("Erro ao atualizar paciente.");
             }
         }
+    }
+
+    if (carregando) {
+        return <p>Carregando paciente...</p>;
     }
 
     return (
         <div className="cadastro-container">
             <div className="cadastro-page">
-
                 <div className="cadastro-header">
                     <div>
-                        <h1>Novo paciente</h1>
-                        <p>Preencha os dados do paciente para iniciar o acompanhamento</p>
+                        <h1>Editar paciente</h1>
+                        <p>Atualize os dados cadastrais do paciente</p>
                     </div>
                 </div>
 
@@ -158,12 +182,7 @@ function PacienteCadastro() {
                             <div className="form-grid full">
                                 <div className="form-group">
                                     <label>Nome completo <span>*</span></label>
-                                    <input
-                                        className="input-field"
-                                        name="nomeCompleto"
-                                        value={form.nomeCompleto}
-                                        onChange={alterar}
-                                    />
+                                    <input className="input-field" name="nomeCompleto" value={form.nomeCompleto} onChange={alterar} />
                                     {erros.nomeCompleto && <small>{erros.nomeCompleto}</small>}
                                 </div>
                             </div>
@@ -171,26 +190,13 @@ function PacienteCadastro() {
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>Telefone</label>
-                                    <input
-                                        className="input-field"
-                                        name="telefone"
-                                        placeholder="(xx)xxxxx-xxxx"
-                                        value={form.telefone}
-                                        onChange={alterar}
-                                        type="text"
-                                    />
+                                    <input className="input-field" name="telefone" value={form.telefone || ""} onChange={alterar} />
                                     {erros.telefone && <small>{erros.telefone}</small>}
                                 </div>
 
                                 <div className="form-group">
                                     <label>Email</label>
-                                    <input
-                                        className="input-field"
-                                        name="email"
-                                        placeholder="name@example.com"
-                                        value={form.email}
-                                        onChange={alterar}
-                                    />
+                                    <input className="input-field" name="email" value={form.email || ""} onChange={alterar} />
                                     {erros.email && <small>{erros.email}</small>}
                                 </div>
                             </div>
@@ -198,25 +204,13 @@ function PacienteCadastro() {
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>CPF</label>
-                                    <input
-                                        className="input-field"
-                                        name="cpf"
-                                        value={form.cpf}
-                                        onChange={alterar}
-                                        type="text"
-                                    />
+                                    <input className="input-field" name="cpf" value={form.cpf || ""} onChange={alterar} />
                                     {erros.cpf && <small>{erros.cpf}</small>}
                                 </div>
 
                                 <div className="form-group">
                                     <label>CNS</label>
-                                    <input
-                                        className="input-field"
-                                        name="cns"
-                                        value={form.cns}
-                                        onChange={alterar}
-                                        type="text"
-                                    />
+                                    <input className="input-field" name="cns" value={form.cns || ""} onChange={alterar} />
                                     {erros.cns && <small>{erros.cns}</small>}
                                 </div>
                             </div>
@@ -224,24 +218,13 @@ function PacienteCadastro() {
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>Data de nascimento</label>
-                                    <input
-                                        className="input-field"
-                                        name="dataNascimento"
-                                        type="date"
-                                        value={form.dataNascimento}
-                                        onChange={alterar}
-                                    />
+                                    <input className="input-field" name="dataNascimento" type="date" value={form.dataNascimento || ""} onChange={alterar} />
                                     {erros.dataNascimento && <small>{erros.dataNascimento}</small>}
                                 </div>
 
                                 <div className="form-group">
                                     <label>Sexo</label>
-                                    <select
-                                        className="input-field"
-                                        name="sexo"
-                                        value={form.sexo}
-                                        onChange={alterar}
-                                    >
+                                    <select className="input-field" name="sexo" value={form.sexo || ""} onChange={alterar}>
                                         <option value="">Selecione</option>
                                         <option value="FEMININO">Feminino</option>
                                         <option value="MASCULINO">Masculino</option>
@@ -256,7 +239,7 @@ function PacienteCadastro() {
                                     Próximo
                                 </button>
 
-                                <button type="button" className="danger-btn" onClick={() => navigate("/dashboard")}>
+                                <button type="button" className="danger-btn" onClick={() => navigate("/pacientes")}>
                                     Cancelar
                                 </button>
                             </div>
@@ -274,7 +257,7 @@ function PacienteCadastro() {
 
                             <div className="form-actions">
                                 <button type="submit" className="primary-btn">
-                                    Cadastrar
+                                    Salvar alterações
                                 </button>
 
                                 <button type="button" className="secondary-btn" onClick={() => setEtapa(1)}>
@@ -289,4 +272,4 @@ function PacienteCadastro() {
     );
 }
 
-export default PacienteCadastro;
+export default PacienteEditar;

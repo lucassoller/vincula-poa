@@ -1,18 +1,25 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import api from "../api/api";
+import {useNavigate} from "react-router-dom";
 
 function UsuarioCadastro() {
-    const [erros, setErros] = useState({});
-
-    const [form, setForm] = useState({
+    const formInicial = {
         nome: "",
         email: "",
         login: "",
         senha: "",
         confirmarSenha: "",
         perfil: undefined,
-        unidadeSaudeId: 1
-    });
+        unidadeSaudeId: ""
+    };
+    
+    const [erros, setErros] = useState({});
+
+    const [unidades, setUnidades] = useState([]);
+
+    const [form, setForm] = useState(formInicial);
+
+    const navigate = useNavigate();
 
     const [mensagem, setMensagem] = useState("");
 
@@ -20,13 +27,36 @@ function UsuarioCadastro() {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
+    useEffect(() => {
+        async function carregarUnidades() {
+            try {
+                const response = await api.get("/unidades-saude");
+                setUnidades(response.data);
+                // eslint-disable-next-line no-unused-vars
+            } catch (error) {
+                console.error("Erro ao buscar unidades");
+            }
+        }
+
+        void carregarUnidades();
+    }, []);
+
     async function salvar(e) {
         e.preventDefault();
         setMensagem("");
 
         try {
-            await api.post("/usuarios", form);
+            const payload = {
+                ...form,
+
+                unidadeSaudeId: form.unidadeSaudeId
+                    ? Number(form.unidadeSaudeId)
+                    : null
+            };
+            await api.post("/usuarios", payload);
             setMensagem("Usuário cadastrado com sucesso!");
+            setForm(formInicial);
+            setErros({});
         }catch (error) {
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
@@ -34,93 +64,182 @@ function UsuarioCadastro() {
                 setMensagem(error.response.data.message || "Dados inválidos");
             } else {
                 setMensagem(error.response.data.message);
-
             }
         }
     }
 
     return (
-        <div className="p-container">
-            <div className="p-body">
-                <h1>Cadastrar Usuário</h1>
-                {mensagem &&
-                    <div className="alert alert-warning alert-dismissible fade show" role="alert">
-                        <p>{mensagem}</p>
-                        <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => setMensagem("")}>
-                            <span aria-hidden="true">&times;</span>
+        <div className="cadastro-container">
+            <div className="cadastro-page">
+                <div className="cadastro-header">
+                    <div>
+                        <h1>Novo usuário</h1>
+                        <p>
+                            Cadastre usuários para acesso ao sistema
+                        </p>
+                    </div>
+                </div>
+                {mensagem && (
+                    <div className="alert-card">
+                        <span>{mensagem}</span>
+                        <button
+                            type="button"
+                            onClick={() => setMensagem("")}
+                        >
+                            ✕
                         </button>
-                    </div>}
-
-                <div className="p-form">
-                    <form className={"p-form-child"} onSubmit={salvar}>
-                                <label className="label">Nome <span className="p-required">*</span></label>
-                                <input
-                                    className="form-control"
-                                    name="nome"
-                                    value={form.nome}
-                                    onChange={alterar}
-                                />
-                                {erros.nome && <span className="campo-erro">{erros.nome}</span>}
-
-                                <label className="label">Email <span className="p-required">*</span></label>
-                                <input
-                                    className="form-control"
-                                    name="email"
-                                    value={form.email}
-                                    onChange={alterar}
-                                />
-                                {erros.email && <span className="campo-erro">{erros.email}</span>}
-
-                                <label className="label">Login <span className="p-required">*</span></label>
-                                <input
-                                    className="form-control"
-                                    name="login"
-                                    value={form.login}
-                                    onChange={alterar}
-                                />
-                                {erros.login && <span className="campo-erro">{erros.login}</span>}
-
-                                <label className="label">Senha <span className="p-required">*</span></label>
-                                <input
-                                    type="password"
-                                    className="form-control"
-                                    name="senha"
-                                    value={form.senha}
-                                    onChange={alterar}
-                                />
-                                {erros.senha && <span className="campo-erro">{erros.senha}</span>}
-
-                                <label className="label">Confirmar senha <span className="p-required">*</span></label>
-                                <input
-                                    type="password"
-                                    className="form-control"
-                                    name="confirmarSenha"
-                                    value={form.confirmarSenha}
-                                    onChange={alterar}
-                                />
-                                {erros.confirmarSenha && <span className="campo-erro">{erros.confirmarSenha}</span>}
-
-                                <label className="label">Perfil <span className="p-required">*</span></label>
+                    </div>
+                )}
+                <form className="cadastro-card" onSubmit={salvar}>
+                    <div className="form-grid full">
+                        <div className="form-group">
+                            <label>
+                                Nome <span>*</span>
+                            </label>
+                            <input
+                                className="input-field"
+                                name="nome"
+                                value={form.nome}
+                                onChange={alterar}
+                            />
+                            {erros.nome && (
+                                <small>{erros.nome}</small>
+                            )}
+                        </div>
+                    </div>
+                    <div className="form-grid two">
+                        <div className="form-group">
+                            <label>
+                                Email <span>*</span>
+                            </label>
+                            <input
+                                className="input-field"
+                                name="email"
+                                value={form.email}
+                                onChange={alterar}
+                                placeholder="name@example.com"
+                            />
+                            {erros.email && (
+                                <small>{erros.email}</small>
+                            )}
+                        </div>
+                        <div className="form-group">
+                            <label>
+                                Login <span>*</span>
+                            </label>
+                            <input
+                                className="input-field"
+                                name="login"
+                                value={form.login}
+                                onChange={alterar}
+                            />
+                            {erros.login && (
+                                <small>{erros.login}</small>
+                            )}
+                        </div>
+                    </div>
+                    <div className="form-grid two">
+                        <div className="form-group">
+                            <label>
+                                Senha <span>*</span>
+                            </label>
+                            <input
+                                type="password"
+                                className="input-field"
+                                name="senha"
+                                value={form.senha}
+                                onChange={alterar}
+                            />
+                            {erros.senha && (
+                                <small>{erros.senha}</small>
+                            )}
+                        </div>
+                        <div className="form-group">
+                            <label>
+                                Confirmar senha <span>*</span>
+                            </label>
+                            <input
+                                type="password"
+                                className="input-field"
+                                name="confirmarSenha"
+                                value={form.confirmarSenha}
+                                onChange={alterar}
+                            />
+                            {erros.confirmarSenha && (
+                                <small>{erros.confirmarSenha}</small>
+                            )}
+                        </div>
+                    </div>
+                    <div className="form-grid two">
+                        <div className="form-group">
+                            <label>
+                                Perfil <span>*</span>
+                            </label>
+                            <select
+                                className="input-field"
+                                name="perfil"
+                                value={form.perfil}
+                                onChange={alterar}
+                            >
+                                <option value="">
+                                    Selecionar
+                                </option>
+                                <option value="SOLICITANTE">
+                                    Solicitante
+                                </option>
+                                <option value="EXECUTOR_APS">
+                                    Executor APS
+                                </option>
+                                <option value="GESTAO_MUNICIPAL">
+                                    Gestão Municipal
+                                </option>
+                            </select>
+                            {erros.perfil && (
+                                <small>{erros.perfil}</small>
+                            )}
+                        </div>
+                        {form.perfil === "EXECUTOR_APS" && (
+                            <div className="form-group">
+                                <label>
+                                    Unidade Básica de Saúde <span>*</span>
+                                </label>
                                 <select
-                                    className="form-control"
-                                    name="perfil"
-                                    value={form.perfil}
+                                    className="input-field"
+                                    name="unidadeSaudeId"
+                                    value={form.unidadeSaudeId}
                                     onChange={alterar}
                                 >
-                                    <option value={""}>Selecionar</option>
-                                    <option value="SOLICITANTE">Solicitante</option>
-                                    <option value="EXECUTOR_APS">Executor APS</option>
-                                    <option value="GESTAO_MUNICIPAL">Gestão Municipal</option>
+                                    <option value="">
+                                        Selecione
+                                    </option>
+                                    {unidades.map((u) => (
+                                        <option key={u.id} value={u.id}>
+                                            {u.nome}
+                                        </option>
+                                    ))}
                                 </select>
-                                {erros.perfil && <span className="campo-erro">{erros.perfil}</span>}
-                                <label className="label">Unidade Básica de Saúde <span className="p-required">*</span></label>
-
-                                <div className={"div-button"}>
-                                    <button type="submit" className="btn btn-primary">Cadastrar </button>
-                                    <button type="button" className="btn btn-danger">Cancelar </button>
-                                </div>
-                    </form>
-                </div>
+                                {erros.unidadeSaudeId && (
+                                    <small>{erros.unidadeSaudeId}</small>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    <div className="form-actions">
+                        <button
+                            type="submit"
+                            className="primary-btn"
+                        >
+                            Cadastrar
+                        </button>
+                        <button
+                            type="button"
+                            className="danger-btn"
+                            onClick={() => navigate("/dashboard")}
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );

@@ -65,7 +65,14 @@ public class LoginService {
                 usuario.getNome(),
                 usuario.getLogin(),
                 usuario.getPerfil(),
-                usuario.getAtivo()
+                usuario.getAtivo(),
+                usuario.getUnidadeSaude() != null
+                        ? usuario.getUnidadeSaude().getId()
+                        : null,
+
+                usuario.getUnidadeSaude() != null
+                        ? usuario.getUnidadeSaude().getNome()
+                        : null
         );
     }
 

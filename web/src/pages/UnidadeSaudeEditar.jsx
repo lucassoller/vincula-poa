@@ -1,44 +1,104 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/api";
-import EnderecoForm from "../components/EnderecoForm.jsx";
-import {useNavigate} from "react-router-dom";
+import EnderecoForm from "../components/EnderecoForm";
 
-function UnidadeSaudeCadastro() {
-    const [etapa, setEtapa] = useState(1);
+const formInicial = {
+    nome: "",
+    cnes: "",
+    telefone: "",
+    email: "",
+    endereco: {
+        cep: "",
+        rua: "",
+        numero: "",
+        bairro: "",
+        cidade: "Porto Alegre",
+        estado: "RS",
+    },
+};
 
-    const camposEtapa1 = ["nome", "cnes", "telefone", "email"];
-
-    const formInicial = {
-        nome: "",
-        cnes: "",
-        telefone: "",
-        email: "",
-        endereco: {
-            rua: "",
-            numero: "",
-            bairro: "",
-            cidade: "Porto Alegre",
-            estado: "RS",
-            cep: "",
-        }
-    };
-
-    const [erros, setErros] = useState({});
-
+function UnidadeSaudeEditar() {
+    const { id } = useParams();
     const navigate = useNavigate();
 
+    const [etapa, setEtapa] = useState(1);
     const [form, setForm] = useState(formInicial);
-
+    const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [carregando, setCarregando] = useState(true);
+
+    useEffect(() => {
+        let ativo = true;
+
+        async function carregarUnidade() {
+            try {
+                const response = await api.get(`/unidades-saude/${id}`);
+
+                if (ativo) {
+                    setForm({
+                        nome: response.data.nome || "",
+                        cnes: response.data.cnes || "",
+                        telefone: response.data.telefone || "",
+                        email: response.data.email || "",
+                        endereco: {
+                            cep: response.data.endereco?.cep || "",
+                            rua: response.data.endereco?.rua || "",
+                            numero: response.data.endereco?.numero || "",
+                            bairro: response.data.endereco?.bairro || "",
+                            cidade: response.data.endereco?.cidade || "Porto Alegre",
+                            estado: response.data.endereco?.estado || "RS",
+                        },
+                    });
+                }
+            } catch {
+                if (ativo) {
+                    setMensagem("Erro ao carregar unidade de saúde.");
+                }
+            } finally {
+                if (ativo) {
+                    setCarregando(false);
+                }
+            }
+        }
+
+        void carregarUnidade();
+
+        return () => {
+            ativo = false;
+        };
+    }, [id]);
 
     function alterar(e) {
-        setForm({...form, [e.target.name]: e.target.value});
+        const { name, value } = e.target;
+
+        setForm({
+            ...form,
+            [name]: value,
+        });
+
+        setErros((prev) => {
+            const novos = { ...prev };
+            delete novos[name];
+            return novos;
+        });
     }
 
     function alterarEndereco(e) {
+        const { name, value } = e.target;
+
         setForm({
             ...form,
-            endereco: {...form.endereco, [e.target.name]: e.target.value},
+            endereco: {
+                ...form.endereco,
+                [name]: value,
+            },
+        });
+
+        setErros((prev) => {
+            const novos = { ...prev };
+            delete novos[`endereco.${name}`];
+            return novos;
         });
     }
 
@@ -47,22 +107,15 @@ function UnidadeSaudeCadastro() {
 
         setForm({
             ...form,
-            endereco: {...form.endereco, cep},
+            endereco: {
+                ...form.endereco,
+                cep,
+            },
         });
 
         if (cep.length === 8) {
             buscarCep(cep);
         }
-    }
-
-    function voltarParaEtapaComErro(errors) {
-        const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
-        if (temErroEtapa1) {
-            setEtapa(1);
-        } else{
-            setEtapa(2);
-        }
-        setMensagem("Dados inválidos.");
     }
 
     async function buscarCep(cep) {
@@ -94,24 +147,30 @@ function UnidadeSaudeCadastro() {
     async function salvar(e) {
         e.preventDefault();
         setMensagem("");
+        setErros({});
 
         try {
-            await api.post("/unidades-saude", form);
-            setMensagem("Unidade de saúde cadastrada com sucesso!");
-            setForm(formInicial);
-            setErros({});
-        }catch (error) {
+            await api.put(`/unidades-saude/${id}`, form);
+
+            navigate("/pacientes");
+        } catch (error) {
             if (error.response?.data?.errors) {
-                const errors = error.response.data.errors;
-
-                setErros(errors);
+                setErros(error.response.data.errors);
                 setMensagem(error.response.data.message || "Dados inválidos");
-                voltarParaEtapaComErro(errors);
             } else {
-                setMensagem(error.response.data.message);
-
+                setMensagem("Erro ao atualizar unidade de saúde.");
             }
         }
+    }
+
+    if (carregando) {
+        return (
+            <div className="cadastro-container">
+                <div className="cadastro-page">
+                    <p>Carregando unidade de saúde...</p>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -119,9 +178,9 @@ function UnidadeSaudeCadastro() {
             <div className="cadastro-page">
                 <div className="cadastro-header">
                     <div>
-                        <h1>Nova Unidade Básica de Saúde</h1>
+                        <h1>Editar Unidade Básica de Saúde</h1>
                         <p>
-                            Cadastre uma unidade para vinculação de pacientes e equipes
+                            Atualize os dados cadastrais da unidade
                         </p>
                     </div>
                 </div>
@@ -174,10 +233,10 @@ function UnidadeSaudeCadastro() {
                                     <input
                                         className="input-field"
                                         name="cnes"
-                                        type="text"
                                         value={form.cnes}
                                         onChange={alterar}
                                     />
+
                                     {erros.cnes && (
                                         <small>{erros.cnes}</small>
                                     )}
@@ -191,7 +250,6 @@ function UnidadeSaudeCadastro() {
                                         name="telefone"
                                         placeholder="(xx)xxxxx-xxxx"
                                         value={form.telefone}
-                                        type="text"
                                         onChange={alterar}
                                     />
                                     {erros.telefone && (
@@ -227,7 +285,7 @@ function UnidadeSaudeCadastro() {
                                 <button
                                     type="button"
                                     className="danger-btn"
-                                    onClick={() => navigate("/dashboard")}
+                                    onClick={() => navigate("/pacientes")}
                                 >
                                     Cancelar
                                 </button>
@@ -247,7 +305,7 @@ function UnidadeSaudeCadastro() {
                                     type="submit"
                                     className="primary-btn"
                                 >
-                                    Cadastrar
+                                    Salvar alterações
                                 </button>
                                 <button
                                     type="button"
@@ -265,4 +323,4 @@ function UnidadeSaudeCadastro() {
     );
 }
 
-export default UnidadeSaudeCadastro;
+export default UnidadeSaudeEditar;

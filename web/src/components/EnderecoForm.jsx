@@ -1,33 +1,138 @@
 function EnderecoForm({ endereco, erros, onChange, onBuscarCep }) {
-  return (
-    <>
-      <h3>Endereço</h3>
+    return (
+        <>
+            <div className="endereco-header">
+                <h2>Endereço</h2>
+                <p>Informe os dados de localização do paciente</p>
+            </div>
 
-      <label className="label">CEP <span className="p-required">*</span></label>
-      <input className="form-control" type={"number"} name="cep" value={endereco.cep} onChange={onBuscarCep}/>
-        {erros["endereco.cep"] && <span className="campo-erro">{erros["endereco.cep"]}</span>}
+            <div className="form-grid two">
 
-      <label className="label">Rua <span className="p-required">*</span></label>
-      <input className="form-control" name="rua" value={endereco.rua} onChange={onChange}/>
-        {erros["endereco.rua"] && <span className="campo-erro">{erros["endereco.rua"]}</span>}
+                <div className="form-group">
+                    <label>
+                        CEP <span>*</span>
+                    </label>
 
-      <label className="label">Número <span className="p-required">*</span></label>
-      <input className="form-control" type={"number"} name="numero" value={endereco.numero} onChange={onChange}/>
-        {erros["endereco.numero"] && <span className="campo-erro">{erros["endereco.numero"]}</span>}
+                    <input
+                        className="input-field"
+                        type="text"
+                        name="cep"
+                        value={endereco.cep}
+                        onChange={onBuscarCep}
+                        placeholder="00000-000"
+                    />
 
-      <label className="label">Bairro <span className="p-required">*</span></label>
-      <input className="form-control" name="bairro" value={endereco.bairro} onChange={onChange}/>
-        {erros["endereco.bairro"] && <span className="campo-erro">{erros["endereco.bairro"]}</span>}
+                    {erros["endereco.cep"] && (
+                        <small>{erros["endereco.cep"]}</small>
+                    )}
+                </div>
 
-      <label className="label">Cidade <span className="p-required">*</span></label>
-      <input className="form-control" name="cidade" value={endereco.cidade} onChange={onChange}/>
-        {erros["endereco.cidade"] && <span className="campo-erro">{erros["endereco.cidade"]}</span>}
+                <div className="form-group">
+                    <label>
+                        Número <span>*</span>
+                    </label>
 
-      <label className="label">Estado <span className="p-required">*</span></label>
-      <input className="form-control" name="estado" value={endereco.estado} onChange={onChange}/>
-        {erros["endereco.estado"] && <span className="campo-erro">{erros["endereco.estado"]}</span>}
-    </>
-  );
+                    <input
+                        className="input-field"
+                        type="text"
+                        name="numero"
+                        value={endereco.numero}
+                        onChange={onChange}
+                        placeholder="Número"
+                    />
+
+                    {erros["endereco.numero"] && (
+                        <small>{erros["endereco.numero"]}</small>
+                    )}
+                </div>
+
+            </div>
+
+            <div className="form-grid full">
+
+                <div className="form-group">
+                    <label>
+                        Rua <span>*</span>
+                    </label>
+
+                    <input
+                        className="input-field"
+                        name="rua"
+                        value={endereco.rua}
+                        onChange={onChange}
+                        placeholder="Rua"
+                    />
+
+                    {erros["endereco.rua"] && (
+                        <small>{erros["endereco.rua"]}</small>
+                    )}
+                </div>
+
+            </div>
+
+            <div className="form-grid two">
+
+                <div className="form-group">
+                    <label>
+                        Bairro <span>*</span>
+                    </label>
+
+                    <input
+                        className="input-field"
+                        name="bairro"
+                        value={endereco.bairro}
+                        onChange={onChange}
+                        placeholder="Bairro"
+                    />
+
+                    {erros["endereco.bairro"] && (
+                        <small>{erros["endereco.bairro"]}</small>
+                    )}
+                </div>
+
+                <div className="form-group">
+                    <label>
+                        Cidade <span>*</span>
+                    </label>
+
+                    <input
+                        className="input-field"
+                        name="cidade"
+                        value={endereco.cidade}
+                        onChange={onChange}
+                        placeholder="Cidade"
+                    />
+
+                    {erros["endereco.cidade"] && (
+                        <small>{erros["endereco.cidade"]}</small>
+                    )}
+                </div>
+
+            </div>
+
+            <div className="form-grid two">
+
+                <div className="form-group">
+                    <label>
+                        Estado <span>*</span>
+                    </label>
+
+                    <input
+                        className="input-field"
+                        name="estado"
+                        value={endereco.estado}
+                        onChange={onChange}
+                        placeholder="Estado"
+                    />
+
+                    {erros["endereco.estado"] && (
+                        <small>{erros["endereco.estado"]}</small>
+                    )}
+                </div>
+
+            </div>
+        </>
+    );
 }
 
 export default EnderecoForm;

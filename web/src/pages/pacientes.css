@@ -1,0 +1,300 @@
+.pacientes-container{
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    background: #00b0c6;
+    font-family: "Segoe UI";
+}
+
+.pacientes-page{
+    width: 70%;
+    background: white;
+    padding: 32px;
+}
+
+.pacientes-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.pacientes-title{
+    font-size: 36px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.pacientes-subtitle{
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 16px;
+}
+
+.perfil-badge{
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.table-card{
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.table-topbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.paciente-search{
+    width: 320px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #dbe2ea;
+    font-size: 14px;
+}
+
+.paciente-search:focus{
+    outline: none;
+    border-color: #2563eb;
+}
+
+.novo-paciente-btn{
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.novo-paciente-btn:hover{
+    background: #1d4ed8;
+}
+
+.pacientes-table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pacientes-table thead{
+    background: #f8fafc;
+}
+
+.pacientes-table th{
+    text-align: left;
+    padding: 16px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.pacientes-table td{
+    padding: 18px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+}
+
+.pacientes-table tbody tr{
+    transition: 0.2s;
+}
+
+.pacientes-table tbody tr:hover{
+    background: #f8fafc;
+}
+
+.paciente-nome{
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.paciente-email{
+    color: #475569;
+}
+
+.ubs-badge{
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ubs-badge:hover{
+    background: #ceddf3;
+}
+
+.acoes-container{
+    display: flex;
+    gap: 10px;
+}
+
+.btn-visualizar{
+    border: none;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 600;
+}
+
+.btn-visualizar:hover{
+    background: #c4ddef;
+}
+
+.btn-editar{
+    border: none;
+    background: #ede9fe;
+    color: #6d28d9;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-editar:hover{
+    background: #d3cdec;
+}
+
+.empty-state{
+    padding: 32px;
+    text-align: center;
+    color: #64748b;
+}
+
+.alerta-geral{
+    background: #fef3c7;
+    color: #92400e;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.loading-container{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-card{
+    background: white;
+    padding: 24px 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.ubs-clickable {
+    border: none;
+    cursor: pointer;
+}
+
+.ubs-clickable:hover {
+    background: #bfdbfe;
+}
+
+.ubs-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    padding: 24px;
+}
+
+.ubs-card {
+    background: white;
+    width: 620px;
+    max-width: 95%;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.22);
+}
+
+.ubs-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.ubs-card-header h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 28px;
+}
+
+.ubs-card-header p {
+    margin-top: 6px;
+    color: #64748b;
+}
+
+.ubs-close {
+    border: none;
+    background: #f1f5f9;
+    color: #334155;
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.ubs-close:hover {
+    background: #e2e8f0;
+}
+
+.ubs-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.ubs-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ubs-campo span {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.ubs-campo strong {
+    color: #1e293b;
+    font-size: 16px;
+}
+
+.ubs-section {
+    margin-top: 28px;
+}
+
+.ubs-section h3 {
+    color: #0f172a;
+    margin-bottom: 16px;
+}
+
+.ubs-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 28px;
+}

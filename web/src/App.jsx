@@ -7,8 +7,11 @@ import Auditoria from "./pages/Auditoria";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import PacienteCadastro from "./pages/PacienteCadastro";
+import PacienteEditar from "./pages/PacienteEditar";
 import UsuarioCadastro from "./pages/UsuarioCadastro";
 import UnidadeSaudeCadastro from "./pages/UnidadeSaudeCadastro";
+import PacienteDetalhe from "./pages/PacienteDetalhe";
+import UnidadeSaudeEditar from "./pages/UnidadeSaudeEditar";
 
 
 function App() {
@@ -40,6 +43,26 @@ function App() {
                 </ProtectedRoute>
               }
           />
+        <Route
+            path="/pacientes/:id"
+            element={
+                <ProtectedRoute>
+                    <Layout>
+                        <PacienteDetalhe />
+                    </Layout>
+                </ProtectedRoute>
+            }
+        />
+        <Route
+            path="/pacientes/:id/editar"
+            element={
+                <ProtectedRoute>
+                    <Layout>
+                        <PacienteEditar />
+                    </Layout>
+                </ProtectedRoute>
+            }
+        />
 
           <Route
               path="/demandas"
@@ -90,6 +113,16 @@ function App() {
                     <ProtectedRoute>
                         <Layout>
                             <UnidadeSaudeCadastro />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/unidades-saude/:id/editar"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <UnidadeSaudeEditar />
                         </Layout>
                     </ProtectedRoute>
                 }
