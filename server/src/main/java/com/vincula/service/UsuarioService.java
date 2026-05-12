@@ -1,6 +1,7 @@
 package com.vincula.service;
 
 import com.vincula.dto.MudancaSenhaDTO;
+import com.vincula.dto.usuario.MeuPerfilDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.entity.UnidadeSaude;
@@ -39,7 +40,6 @@ public class UsuarioService {
 
     public UsuarioResponseDTO criar(UsuarioDTO dto) {
         validarDuplicidadeCreate(dto);
-        validarPerfilEUnidade(dto);
 
         Usuario entity = toEntity(dto);
         Usuario salvo = usuarioRepository.save(entity);
@@ -87,7 +87,6 @@ public class UsuarioService {
         Usuario entity = buscarUsuarioPorId(id);
 
         validarDuplicidadeUpdate(dto, id);
-        validarPerfilEUnidade(dto);
 
         String descricaoLog = AuditoriaDescricaoUtil.usuarioAtualizado(entity, dto);
 
@@ -101,6 +100,24 @@ public class UsuarioService {
         if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
             entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
         }
+
+        Usuario atualizado = usuarioRepository.save(entity);
+
+        auditoriaFacade.usuarioAtualizado(atualizado.getId(), descricaoLog);
+
+        return toDTO(atualizado);
+    }
+
+    public UsuarioResponseDTO atualizarMeuPerfil(MeuPerfilDTO dto) {
+        Usuario entity = buscarUsuarioPorId(dto.getId());
+
+        validarDuplicidadeUpdate(dto, dto.getId());
+
+        String descricaoLog = AuditoriaDescricaoUtil.usuarioAtualizado(entity, dto);
+
+        entity.setNome(dto.getNome());
+        entity.setEmail(dto.getEmail());
+        entity.setLogin(dto.getLogin());
 
         Usuario atualizado = usuarioRepository.save(entity);
 
@@ -157,11 +174,14 @@ public class UsuarioService {
         }
     }
 
-    private void validarPerfilEUnidade(UsuarioDTO dto) {
-        if (dto.getPerfil() == PerfilUsuario.EXECUTOR_APS) {
-            if (dto.getUnidadeSaudeId() == null) {
-                throw new BusinessException("Usuário executor APS deve estar vinculado a uma unidade de saúde");
-            }
+
+    private void validarDuplicidadeUpdate(MeuPerfilDTO dto, Long id) {
+        if (usuarioRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
+            throw new ConflictException("Email já cadastrado");
+        }
+
+        if (usuarioRepository.existsByLoginAndIdNot(dto.getLogin(), id)) {
+            throw new ConflictException("Login já cadastrado");
         }
     }
 

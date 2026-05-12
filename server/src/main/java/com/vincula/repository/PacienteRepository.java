@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
-    List<Paciente> findAllByUnidadeSaudeId(Long id);
+    List<Paciente> findAllByUnidadeSaudeIdOrderByNomeCompletoAsc(Long id);
 
     boolean existsByDocumento(String documento);
 

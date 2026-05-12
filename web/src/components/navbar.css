@@ -1,0 +1,147 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: #003b69;
+    color: #fff;
+}
+
+.navbar-logo {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.navbar-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.navbar-link:hover {
+    color: #93c5fd;
+    text-decoration: none;
+}
+
+.navbar-link:visited {
+    color: #fff;
+}
+
+.navbar-link:active {
+    color: #93c5fd;
+    text-decoration: none;
+    outline: none;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 10px;
+    outline: none;
+    box-shadow: none;
+}
+
+.user-button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.user-name {
+    max-width: 120px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.arrow {
+    font-size: 16px;
+    margin-top: -1px;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    background: #fff;
+    border-radius: 14px;
+    min-width: 220px;
+    padding: 10px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18);
+    z-index: 100;
+}
+
+.dropdown-item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 12px 14px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+    border-radius: 10px;
+    color: #0f172a;
+    transition: background 0.2s;
+    display: block;
+}
+
+.dropdown-item:hover {
+    background: #f1f5f9;
+}
+
+.dropdown-item:focus,
+.dropdown-item:active,
+.dropdown-item:visited {
+    outline: none;
+    box-shadow: none;
+    color: #0f172a;
+    text-decoration: none;
+}
+
+.logout-item {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.logout-item:hover {
+    background: #fef2f2;
+}
+
+.logout-item:focus,
+.logout-item:active {
+    color: #dc2626;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 6px 0;
+}

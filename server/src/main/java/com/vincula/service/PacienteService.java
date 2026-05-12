@@ -14,6 +14,7 @@ import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
@@ -51,7 +52,7 @@ public class PacienteService {
 
     public List<PacienteResponseDTO> listarTodos() {
         auditoriaFacade.pacienteVisualizado(0L);
-        return pacienteRepository.findAll()
+        return pacienteRepository.findAll(Sort.by("nomeCompleto"))
                 .stream()
                 .map(this::toDTO)
                 .toList();
@@ -59,7 +60,7 @@ public class PacienteService {
 
     public List<PacienteResponseDTO> listarTodosPorUnidade(Long id) {
         auditoriaFacade.pacienteVisualizado(0L);
-        return pacienteRepository.findAllByUnidadeSaudeId(id)
+        return pacienteRepository.findAllByUnidadeSaudeIdOrderByNomeCompletoAsc(id)
                 .stream()
                 .map(this::toDTO)
                 .toList();

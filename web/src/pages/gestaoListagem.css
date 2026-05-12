@@ -1,0 +1,71 @@
+.gestao-container {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    background: #00b0c6;
+    font-family: "Segoe UI", sans-serif;
+    min-height: calc(100vh - 52px);
+}
+
+.gestao-page {
+    width: 70%;
+    background: white;
+    padding: 36px;
+}
+
+.gestao-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.gestao-header h1 {
+    margin: 0;
+    font-size: 36px;
+    color: #0f172a;
+}
+
+.gestao-header p {
+    margin-top: 8px;
+    color: #64748b;
+}
+
+.gestao-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.gestao-filter-box {
+    margin-top: 24px;
+    padding: 22px;
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.gestao-filter-box h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    color: #0f172a;
+    font-size: 22px;
+}
+
+.gestao-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 26px;
+}
+
+.gestao-placeholder {
+    margin-top: 28px;
+    padding: 28px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    text-align: center;
+    color: #64748b;
+}

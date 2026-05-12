@@ -6,6 +6,7 @@ import com.vincula.dto.observacao.ObservacaoDTO;
 import com.vincula.dto.paciente.PacienteDTO;
 import com.vincula.dto.tentativaContato.TentativaContatoDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
+import com.vincula.dto.usuario.MeuPerfilDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.entity.*;
 
@@ -113,6 +114,16 @@ public class AuditoriaDescricaoUtil {
 
         Long unidadeAntes = entity.getUnidadeSaude() != null ? entity.getUnidadeSaude().getId() : null;
         adicionarAlteracao(sb, "Unidade de saúde", unidadeAntes, dto.getUnidadeSaudeId());
+
+        return sb.isEmpty() ? "Usuário atualizado sem alterações relevantes" : sb.toString();
+    }
+
+    public static String usuarioAtualizado(Usuario entity, MeuPerfilDTO dto) {
+        StringBuilder sb = new StringBuilder();
+
+        adicionarAlteracao(sb, "Nome", entity.getNome(), dto.getNome());
+        adicionarAlteracao(sb, "Email", entity.getEmail(), dto.getEmail());
+        adicionarAlteracao(sb, "Login", entity.getLogin(), dto.getLogin());
 
         return sb.isEmpty() ? "Usuário atualizado sem alterações relevantes" : sb.toString();
     }

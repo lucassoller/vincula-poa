@@ -12,6 +12,8 @@ import UsuarioCadastro from "./pages/UsuarioCadastro";
 import UnidadeSaudeCadastro from "./pages/UnidadeSaudeCadastro";
 import PacienteDetalhe from "./pages/PacienteDetalhe";
 import UnidadeSaudeEditar from "./pages/UnidadeSaudeEditar";
+import GestaoListagem from "./pages/GestaoListagem.jsx";
+import MeuPerfil from "./pages/MeuPerfil.jsx";
 
 
 function App() {
@@ -123,6 +125,26 @@ function App() {
                     <ProtectedRoute>
                         <Layout>
                             <UnidadeSaudeEditar />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/gestao/listar"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <GestaoListagem />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/meu-perfil"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <MeuPerfil />
                         </Layout>
                     </ProtectedRoute>
                 }

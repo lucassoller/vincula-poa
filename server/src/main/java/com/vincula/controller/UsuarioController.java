@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.MudancaSenhaDTO;
+import com.vincula.dto.usuario.MeuPerfilDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.service.UsuarioService;
@@ -65,6 +66,13 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody UsuarioDTO dto) {
         return ResponseEntity.ok(usuarioService.atualizar(id, dto));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> atualizarMeuPerfil(
+            @RequestBody MeuPerfilDTO dto
+    ) {
+        return ResponseEntity.ok(usuarioService.atualizarMeuPerfil(dto));
     }
 
     @PutMapping("/usuarios/{id}/senha")
