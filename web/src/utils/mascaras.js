@@ -2,15 +2,6 @@ export function somenteNumeros(valor) {
     return valor?.replace(/\D/g, "") || "";
 }
 
-export function mascaraCPF(valor) {
-    const numeros = somenteNumeros(valor).slice(0, 11);
-
-    return numeros
-        .replace(/(\d{3})(\d)/, "$1.$2")
-        .replace(/(\d{3})(\d)/, "$1.$2")
-        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-}
-
 export function mascaraTelefone(valor) {
     const numeros = somenteNumeros(valor).slice(0, 11);
 
@@ -25,12 +16,8 @@ export function mascaraTelefone(valor) {
         .replace(/(\d{5})(\d)/, "$1-$2");
 }
 
-export function mascaraCNS(valor) {
-    return somenteNumeros(valor)
-        .slice(0, 15)
-        .replace(/(\d{3})(\d)/, "$1 $2")
-        .replace(/(\d{4})(\d)/, "$1 $2")
-        .replace(/(\d{4})(\d)/, "$1 $2");
+export function mascaraCNES(valor) {
+    return somenteNumeros(valor).slice(0, 7);
 }
 
 export function mascaraCEP(valor) {
@@ -39,6 +26,20 @@ export function mascaraCEP(valor) {
         .replace(/(\d{5})(\d)/, "$1-$2");
 }
 
-export function mascaraCNES(valor) {
-    return somenteNumeros(valor).slice(0, 7);
+export function mascaraDocumento(valor) {
+    if(valor.length === 15){
+        return somenteNumeros(valor)
+            .slice(0, 15)
+            .replace(/(\d{3})(\d)/, "$1 $2")
+            .replace(/(\d{4})(\d)/, "$1 $2")
+            .replace(/(\d{4})(\d)/, "$1 $2");
+    }
+
+    const numeros = somenteNumeros(valor).slice(0, 11);
+
+    return numeros
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
 }

@@ -26,18 +26,12 @@ public class Paciente {
     @Column()
     private LocalDate dataNascimento;
 
-    @Column(length = 50)
-    private String email;
-    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 13)
     private Sexo sexo;
 
-    @Column(unique = true, length = 11)
-    private String cpf;
-
-    @Column(unique = true, length = 15)
-    private String cns;
+    @Column(nullable = false, unique = true, length = 15)
+    private String documento;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "endereco_id", nullable = false, unique = true)

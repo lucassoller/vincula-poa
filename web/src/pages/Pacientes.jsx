@@ -4,7 +4,7 @@ import api from "../api/api";
 import "./pacientes.css"
 import {useNavigate} from "react-router-dom";
 import {
-    mascaraCPF,
+    mascaraDocumento,
     mascaraTelefone
 } from "../utils/mascaras.js";
 
@@ -118,9 +118,8 @@ function Pacientes() {
                         <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>CPF</th>
+                            <th>Documento</th>
                             <th>Telefone</th>
-                            <th>Email</th>
                             <th>UBS</th>
                             <th>Ações</th>
                         </tr>
@@ -134,13 +133,10 @@ function Pacientes() {
                                     </div>
                                 </td>
                                 <td>
-                                    {mascaraCPF(paciente.cpf)}
+                                    {mascaraDocumento(paciente.documento)}
                                 </td>
                                 <td>
                                     {mascaraTelefone(paciente.telefone)}
-                                </td>
-                                <td className="paciente-email">
-                                    {paciente.email}
                                 </td>
                                 <td>
                                     <button

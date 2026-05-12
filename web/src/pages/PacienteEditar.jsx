@@ -7,9 +7,7 @@ import "./pacienteCadastro.css";
 const formInicial = {
     nomeCompleto: "",
     telefone: "",
-    email: "",
-    cpf: "",
-    cns: "",
+    documento: "",
     dataNascimento: "",
     sexo: "",
     endereco: {
@@ -21,6 +19,8 @@ const formInicial = {
         cep: "",
     },
 };
+
+const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 
 function PacienteEditar() {
     const { id } = useParams();
@@ -96,6 +96,16 @@ function PacienteEditar() {
         }
     }
 
+    function voltarParaEtapaComErro(errors) {
+        const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
+        if (temErroEtapa1) {
+            setEtapa(1);
+        } else{
+            setEtapa(2);
+        }
+        setMensagem("Dados inválidos.");
+    }
+
     async function buscarCep(cep) {
         try {
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -133,10 +143,12 @@ function PacienteEditar() {
             navigate(`/pacientes/${id}`);
         } catch (error) {
             if (error.response?.data?.errors) {
-                setErros(error.response.data.errors);
+                const errors = error.response.data.errors;
+                setErros(errors);
                 setMensagem(error.response.data.message || "Dados inválidos");
+                voltarParaEtapaComErro(errors);
             } else {
-                setMensagem("Erro ao atualizar paciente.");
+                setMensagem(error.response.data.message);
             }
         }
     }
@@ -189,29 +201,14 @@ function PacienteEditar() {
 
                             <div className="form-grid two">
                                 <div className="form-group">
+                                    <label>CPF/CNS <span>*</span></label>
+                                    <input placeholder="Digite CPF ou CNS" type={"number"} className="input-field" name="documento" value={form.documento} onChange={alterar} />
+                                    {erros.documento && <small>{erros.documento}</small>}
+                                </div>
+                                <div className="form-group">
                                     <label>Telefone</label>
-                                    <input className="input-field" name="telefone" value={form.telefone || ""} onChange={alterar} />
+                                    <input placeholder="(xx)xxxxx-xxxx" type={"number"} className="input-field" name="telefone" value={form.telefone || ""} onChange={alterar} />
                                     {erros.telefone && <small>{erros.telefone}</small>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Email</label>
-                                    <input className="input-field" name="email" value={form.email || ""} onChange={alterar} />
-                                    {erros.email && <small>{erros.email}</small>}
-                                </div>
-                            </div>
-
-                            <div className="form-grid two">
-                                <div className="form-group">
-                                    <label>CPF</label>
-                                    <input className="input-field" name="cpf" value={form.cpf || ""} onChange={alterar} />
-                                    {erros.cpf && <small>{erros.cpf}</small>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label>CNS</label>
-                                    <input className="input-field" name="cns" value={form.cns || ""} onChange={alterar} />
-                                    {erros.cns && <small>{erros.cns}</small>}
                                 </div>
                             </div>
 
@@ -228,6 +225,7 @@ function PacienteEditar() {
                                         <option value="">Selecione</option>
                                         <option value="FEMININO">Feminino</option>
                                         <option value="MASCULINO">Masculino</option>
+                                        <option value="OUTRO">Outro</option>
                                         <option value="NAO_INFORMADO">Não informar</option>
                                     </select>
                                     {erros.sexo && <small>{erros.sexo}</small>}

@@ -31,10 +31,9 @@ public class AuditoriaDescricaoUtil {
 
         adicionarAlteracao(sb, "Nome", entity.getNomeCompleto(), dto.getNomeCompleto());
         adicionarAlteracao(sb, "Telefone", entity.getTelefone(), dto.getTelefone());
-        adicionarAlteracao(sb, "Email", entity.getEmail(), dto.getEmail());
-        adicionarAlteracao(sb, "CPF", entity.getCpf(), dto.getCpf());
-        adicionarAlteracao(sb, "CNS", entity.getCns(), dto.getCns());
+        adicionarAlteracao(sb, "Documento", entity.getDocumento(), dto.getDocumento());
         adicionarAlteracao(sb, "Data de nascimento", entity.getDataNascimento(), dto.getDataNascimento());
+        adicionarAlteracao(sb, "Sexo", entity.getSexo(), dto.getSexo());
 
         if (entity.getEndereco() != null && dto.getEndereco() != null) {
             String enderecoAlteracao = alterarEndereco(entity.getEndereco(), dto.getEndereco());

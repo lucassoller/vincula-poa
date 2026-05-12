@@ -18,6 +18,8 @@ const formInicial = {
     },
 };
 
+const camposEtapa1 = ["nome", "cnes", "telefone", "email"];
+
 function UnidadeSaudeEditar() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -118,6 +120,16 @@ function UnidadeSaudeEditar() {
         }
     }
 
+    function voltarParaEtapaComErro(errors) {
+        const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
+        if (temErroEtapa1) {
+            setEtapa(1);
+        } else{
+            setEtapa(2);
+        }
+        setMensagem("Dados inválidos.");
+    }
+
     async function buscarCep(cep) {
         try {
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -155,10 +167,13 @@ function UnidadeSaudeEditar() {
             navigate("/pacientes");
         } catch (error) {
             if (error.response?.data?.errors) {
-                setErros(error.response.data.errors);
+                const errors = error.response.data.errors;
+
+                setErros(errors);
                 setMensagem(error.response.data.message || "Dados inválidos");
+                voltarParaEtapaComErro(errors);
             } else {
-                setMensagem("Erro ao atualizar unidade de saúde.");
+                setMensagem(error.response.data.message);
             }
         }
     }

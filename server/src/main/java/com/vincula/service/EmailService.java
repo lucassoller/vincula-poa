@@ -35,10 +35,6 @@ public class EmailService {
 
         Paciente paciente = demanda.getPaciente();
 
-        validarEmailPaciente(paciente);
-
-        dto.setPara(paciente.getEmail());
-
         try {
             enviarEmail(dto);
         } catch (Exception e) {
@@ -53,9 +49,6 @@ public class EmailService {
         public void enviarEmailPaciente(Long pacienteId, EmailDTO dto) {
 
         Paciente paciente = buscarPacientePorId(pacienteId);
-
-        validarEmailPaciente(paciente);
-        dto.setPara(paciente.getEmail());
 
         try {
             enviarEmail(dto);
@@ -84,12 +77,6 @@ public class EmailService {
     private Demanda buscarDemandaPorId(Long demandaId){
         return demandaRepository.findById(demandaId)
                 .orElseThrow(() -> new NotFoundException("Demanda não encontrada"));
-    }
-
-    private void validarEmailPaciente(Paciente paciente) {
-        if (paciente.getEmail() == null || paciente.getEmail().isBlank()) {
-            throw new BusinessException("Paciente não possui email cadastrado");
-        }
     }
 }
 

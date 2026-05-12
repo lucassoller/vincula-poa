@@ -4,29 +4,26 @@ import EnderecoForm from "../components/EnderecoForm";
 import "./pacienteCadastro.css";
 import {useNavigate} from "react-router-dom";
 
+const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
+
+const formInicial = {
+    nomeCompleto: "",
+    telefone: "",
+    documento: "",
+    dataNascimento: "",
+    sexo: undefined,
+    endereco: {
+        rua: "",
+        numero: "",
+        bairro: "",
+        cidade: "Porto Alegre",
+        estado: "RS",
+        cep: "",
+    },
+    unidadeSaudeId: 1
+};
 
 function PacienteCadastro() {
-    const camposEtapa1 = ["nomeCompleto", "telefone", "email", "cpf", "cns", "dataNascimento", "sexo"];
-
-    const formInicial = {
-        nomeCompleto: "",
-        telefone: "",
-        email: "",
-        cpf: "",
-        cns: "",
-        dataNascimento: "",
-        sexo: undefined,
-        endereco: {
-            rua: "",
-            numero: "",
-            bairro: "",
-            cidade: "Porto Alegre",
-            estado: "RS",
-            cep: "",
-        },
-        unidadeSaudeId: 1
-    };
-
     const [etapa, setEtapa] = useState(1);
 
     const [erros, setErros] = useState({});
@@ -170,6 +167,20 @@ function PacienteCadastro() {
 
                             <div className="form-grid two">
                                 <div className="form-group">
+                                    <label>CPF/CNS <span>*</span></label>
+
+                                    <input
+                                        className="input-field"
+                                        name="documento"
+                                        value={form.documento}
+                                        onChange={alterar}
+                                        type="number"
+                                        placeholder="Digite CPF ou CNS"
+                                    />
+
+                                    {erros.documento && <small>{erros.documento}</small>}
+                                </div>
+                                <div className="form-group">
                                     <label>Telefone</label>
                                     <input
                                         className="input-field"
@@ -180,44 +191,6 @@ function PacienteCadastro() {
                                         type="text"
                                     />
                                     {erros.telefone && <small>{erros.telefone}</small>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Email</label>
-                                    <input
-                                        className="input-field"
-                                        name="email"
-                                        placeholder="name@example.com"
-                                        value={form.email}
-                                        onChange={alterar}
-                                    />
-                                    {erros.email && <small>{erros.email}</small>}
-                                </div>
-                            </div>
-
-                            <div className="form-grid two">
-                                <div className="form-group">
-                                    <label>CPF</label>
-                                    <input
-                                        className="input-field"
-                                        name="cpf"
-                                        value={form.cpf}
-                                        onChange={alterar}
-                                        type="text"
-                                    />
-                                    {erros.cpf && <small>{erros.cpf}</small>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label>CNS</label>
-                                    <input
-                                        className="input-field"
-                                        name="cns"
-                                        value={form.cns}
-                                        onChange={alterar}
-                                        type="text"
-                                    />
-                                    {erros.cns && <small>{erros.cns}</small>}
                                 </div>
                             </div>
 
@@ -245,6 +218,7 @@ function PacienteCadastro() {
                                         <option value="">Selecione</option>
                                         <option value="FEMININO">Feminino</option>
                                         <option value="MASCULINO">Masculino</option>
+                                        <option value="OUTRO">Outro</option>
                                         <option value="NAO_INFORMADO">Não informar</option>
                                     </select>
                                     {erros.sexo && <small>{erros.sexo}</small>}

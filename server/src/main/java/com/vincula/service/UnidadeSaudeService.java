@@ -158,11 +158,9 @@ public class UnidadeSaudeService {
         dto.setNomeCompleto(entity.getNomeCompleto());
         dto.setTelefone(entity.getTelefone());
         dto.setDataNascimento(entity.getDataNascimento());
-        dto.setCpf(entity.getCpf());
-        dto.setCns(entity.getCns());
+        dto.setDocumento(entity.getDocumento());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
-        dto.setEmail(entity.getEmail());
         dto.setSexo(entity.getSexo());
 
         return dto;

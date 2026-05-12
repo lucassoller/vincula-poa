@@ -1,9 +1,7 @@
 package com.vincula.repository;
 
 import com.vincula.entity.Paciente;
-import com.vincula.entity.UnidadeSaude;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,16 +10,9 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     List<Paciente> findAllByUnidadeSaudeId(Long id);
 
-    boolean existsByCpf(String cpf);
+    boolean existsByDocumento(String documento);
 
-    boolean existsByCns(String cns);
+    boolean existsByDocumentoAndIdNot(String documento, Long id);
 
-    boolean existsByCpfAndIdNot(String cpf, Long id);
-
-    boolean existsByCnsAndIdNot(String cns, Long id);
-
-    Optional<Paciente> findByCpf(String cpf);
-
-    Optional<Paciente> findByCns(String cns);
-
+    Optional<Paciente> findByDocumento(String documento);
 }

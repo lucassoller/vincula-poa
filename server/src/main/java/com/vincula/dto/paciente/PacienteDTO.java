@@ -24,16 +24,11 @@ public class PacienteDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dataNascimento;
 
-    @Size(max = 50, message = "Email deve ter no máximo 50 caracteres")
-    private String email;
-
     private Sexo sexo;
 
-    @Pattern(regexp = "^$|\\d{11}", message = "CPF inválido")
-    private String cpf;
-
-    @Pattern(regexp = "^$|\\d{15}", message = "CNS inválido")
-    private String cns;
+    @NotBlank(message = "CPF ou CNS é obrigatório")
+    @Pattern(regexp = "\\d{11,15}", message = "CPF ou CNS inválido")
+    private String documento;
 
     @NotNull(message = "Endereço é obrigatório")
     @Valid

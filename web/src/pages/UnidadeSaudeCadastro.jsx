@@ -3,25 +3,25 @@ import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm.jsx";
 import {useNavigate} from "react-router-dom";
 
+const camposEtapa1 = ["nome", "cnes", "telefone", "email"];
+
+const formInicial = {
+    nome: "",
+    cnes: "",
+    telefone: "",
+    email: "",
+    endereco: {
+        rua: "",
+        numero: "",
+        bairro: "",
+        cidade: "Porto Alegre",
+        estado: "RS",
+        cep: "",
+    }
+};
+
 function UnidadeSaudeCadastro() {
     const [etapa, setEtapa] = useState(1);
-
-    const camposEtapa1 = ["nome", "cnes", "telefone", "email"];
-
-    const formInicial = {
-        nome: "",
-        cnes: "",
-        telefone: "",
-        email: "",
-        endereco: {
-            rua: "",
-            numero: "",
-            bairro: "",
-            cidade: "Porto Alegre",
-            estado: "RS",
-            cep: "",
-        }
-    };
 
     const [erros, setErros] = useState({});
 

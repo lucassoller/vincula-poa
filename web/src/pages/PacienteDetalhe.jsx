@@ -3,9 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import "./pacienteDetalhe.css";
 import {
-    mascaraCPF,
+    mascaraDocumento,
     mascaraTelefone,
-    mascaraCNS,
     mascaraCEP
 } from "../utils/mascaras";
 
@@ -88,11 +87,12 @@ function PacienteDetalhe() {
                     <h2>Dados pessoais</h2>
 
                     <div className="detalhe-grid">
-                        <Campo label="CPF" valor={mascaraCPF(paciente.cpf)} />
-                        <Campo label="CNS" valor={mascaraCNS(paciente.cns)} />
+                        <Campo label="CPF/CNS" valor={mascaraDocumento(paciente.documento)} />
                         <Campo label="Telefone" valor={mascaraTelefone(paciente.telefone)} />
-                        <Campo label="Email" valor={paciente.email} />
-                        <Campo label="Sexo" valor={paciente.sexo} />
+                        <Campo label="Sexo" valor={paciente.sexo === "MASCULINO" ? "Masculino"
+                                                : paciente.sexo === "FEMININO" ? "Feminino"
+                                                : paciente.sexo === "NAO_INFORMADO" ? "Não informado"
+                                                : paciente.sexo === "OUTRO" ? "Outro" : null} />
                         <Campo label="Data de nascimento" valor={paciente.dataNascimento
                             ?.split("-")
                             .reverse()

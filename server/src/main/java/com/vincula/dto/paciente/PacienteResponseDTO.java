@@ -16,10 +16,8 @@ public class PacienteResponseDTO {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dataNascimento;
-    private String email;
     private Sexo sexo;
-    private String cpf;
-    private String cns;
+    private String documento;
     private EnderecoResponseDTO endereco;
 
     private Long unidadeSaudeId;

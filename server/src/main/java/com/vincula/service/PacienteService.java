@@ -38,7 +38,7 @@ public class PacienteService {
     }
 
     public PacienteResponseDTO criar(PacienteDTO dto) {
-        validarCpfECnsCreate(dto);
+        validarDocumentoCreate(dto);
 
         Paciente entity = toEntity(dto);
 
@@ -73,17 +73,8 @@ public class PacienteService {
         return toDTO(paciente);
     }
 
-    public PacienteResponseDTO buscarPorCpf(String cpf) {
-        Paciente paciente = pacienteRepository.findByCpf(cpf)
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
-
-        auditoriaFacade.pacienteVisualizado(paciente.getId());
-
-        return toDTO(paciente);
-    }
-
-    public PacienteResponseDTO buscarPorCns(String cns) {
-        Paciente paciente = pacienteRepository.findByCns(cns)
+    public PacienteResponseDTO buscarPorDocumento(String documento) {
+        Paciente paciente = pacienteRepository.findByDocumento(documento)
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
 
         auditoriaFacade.pacienteVisualizado(paciente.getId());
@@ -94,7 +85,7 @@ public class PacienteService {
     public PacienteResponseDTO atualizar(Long id, PacienteDTO dto) {
         Paciente paciente = buscarPacientePorId(id);
 
-        validarCpfECnsUpdate(id, dto);
+        validarDocumentoUpdate(id, dto);
 
         UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
 
@@ -108,9 +99,7 @@ public class PacienteService {
         paciente.setNomeCompleto(dto.getNomeCompleto());
         paciente.setTelefone(dto.getTelefone());
         paciente.setDataNascimento(dto.getDataNascimento());
-        paciente.setCpf(dto.getCpf());
-        paciente.setCns(dto.getCns());
-        paciente.setEmail(dto.getEmail());
+        paciente.setDocumento(dto.getDocumento());
         paciente.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
 
         enderecoMapper.updateEntityFromDto(dto.getEndereco(), paciente.getEndereco());
@@ -132,33 +121,15 @@ public class PacienteService {
         auditoriaFacade.pacienteDeletado(pacienteId);
     }
 
-    private void validarCpfECnsCreate(PacienteDTO dto) {
-        if ((dto.getCpf() == null || dto.getCpf().isBlank()) &&
-                (dto.getCns() == null || dto.getCns().isBlank())) {
-            throw new BusinessException("Paciente deve informar CPF ou CNS");
-        }
-
-        if (pacienteRepository.existsByCpf(dto.getCpf())) {
+    private void validarDocumentoCreate(PacienteDTO dto) {
+        if (pacienteRepository.existsByDocumento(dto.getDocumento())) {
             throw new ConflictException("CPF já cadastrado");
-        }
-
-        if (pacienteRepository.existsByCns(dto.getCns())) {
-            throw new ConflictException("CNS já cadastrado");
         }
     }
 
-    private void validarCpfECnsUpdate(Long id, PacienteDTO dto) {
-        if ((dto.getCpf() == null || dto.getCpf().isBlank()) &&
-                (dto.getCns() == null || dto.getCns().isBlank())) {
-            throw new BusinessException("Paciente deve informar CPF ou CNS");
-        }
-
-        if (pacienteRepository.existsByCpfAndIdNot(dto.getCpf(), id)) {
+    private void validarDocumentoUpdate(Long id, PacienteDTO dto) {
+        if (pacienteRepository.existsByDocumentoAndIdNot(dto.getDocumento(), id)) {
             throw new ConflictException("CPF já cadastrado");
-        }
-
-        if (pacienteRepository.existsByCnsAndIdNot(dto.getCns(), id)) {
-            throw new ConflictException("CNS já cadastrado");
         }
     }
 
@@ -185,11 +156,9 @@ public class PacienteService {
         entity.setNomeCompleto(dto.getNomeCompleto());
         entity.setTelefone(dto.getTelefone());
         entity.setDataNascimento(dto.getDataNascimento());
-        entity.setCpf(dto.getCpf());
-        entity.setCns(dto.getCns());
+        entity.setDocumento(dto.getDocumento());
         entity.setEndereco(endereco);
         entity.setUnidadeSaude(unidadeSaude);
-        entity.setEmail(dto.getEmail());
         entity.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
 
         return entity;
@@ -203,12 +172,10 @@ public class PacienteService {
         dto.setNomeCompleto(entity.getNomeCompleto());
         dto.setTelefone(entity.getTelefone());
         dto.setDataNascimento(entity.getDataNascimento());
-        dto.setCpf(entity.getCpf());
-        dto.setCns(entity.getCns());
+        dto.setDocumento(entity.getDocumento());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
         dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
-        dto.setEmail(entity.getEmail());
         dto.setSexo(entity.getSexo());
 
         return dto;

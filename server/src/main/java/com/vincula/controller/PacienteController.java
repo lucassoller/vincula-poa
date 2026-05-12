@@ -50,16 +50,9 @@ public class PacienteController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<PacienteResponseDTO> buscarPorCpf(@PathVariable String cpf) {
-        PacienteResponseDTO paciente = pacienteService.buscarPorCpf(cpf);
-        return ResponseEntity.ok(paciente);
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/cns/{cns}")
-    public ResponseEntity<PacienteResponseDTO> buscarPorCns(@PathVariable String cns) {
-        PacienteResponseDTO paciente = pacienteService.buscarPorCns(cns);
+    @GetMapping("/documento/{documento}")
+    public ResponseEntity<PacienteResponseDTO> buscarPorDocumento(@PathVariable String documento) {
+        PacienteResponseDTO paciente = pacienteService.buscarPorDocumento(documento);
         return ResponseEntity.ok(paciente);
     }
 
