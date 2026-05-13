@@ -109,9 +109,9 @@ public class UsuarioService {
     }
 
     public UsuarioResponseDTO atualizarMeuPerfil(MeuPerfilDTO dto) {
-        Usuario entity = buscarUsuarioPorId(dto.getId());
+        Usuario entity = buscarUsuarioAutenticado();
 
-        validarDuplicidadeUpdate(dto, dto.getId());
+        validarDuplicidadeUpdate(dto, entity.getId());
 
         String descricaoLog = AuditoriaDescricaoUtil.usuarioAtualizado(entity, dto);
 
@@ -122,6 +122,26 @@ public class UsuarioService {
         Usuario atualizado = usuarioRepository.save(entity);
 
         auditoriaFacade.usuarioAtualizado(atualizado.getId(), descricaoLog);
+
+        return toDTO(atualizado);
+    }
+
+    public UsuarioResponseDTO atualizarMinhaSenha(MudancaSenhaDTO dto) {
+        Usuario entity = buscarUsuarioAutenticado();
+
+        if (!passwordEncoder.matches(dto.getSenhaAtual(), entity.getSenhaHash())) {
+            throw new BusinessException("Senha atual inválida");
+        }
+
+        if(!Objects.equals(dto.getNovaSenha(), dto.getConfirmarSenha())){
+            throw new BusinessException("As senhas não coincidem");
+        }
+
+        entity.setSenhaHash(passwordEncoder.encode(dto.getNovaSenha()));
+
+        Usuario atualizado = usuarioRepository.save(entity);
+
+        auditoriaFacade.usuarioAtualizado(atualizado.getId(), "Senha atualizada");
 
         return toDTO(atualizado);
     }

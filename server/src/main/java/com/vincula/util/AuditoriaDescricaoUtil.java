@@ -1,5 +1,6 @@
 package com.vincula.util;
 
+import com.vincula.dto.MudancaSenhaDTO;
 import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.endereco.EnderecoDTO;
 import com.vincula.dto.observacao.ObservacaoDTO;

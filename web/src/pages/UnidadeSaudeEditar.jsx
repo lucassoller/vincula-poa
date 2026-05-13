@@ -23,7 +23,6 @@ const camposEtapa1 = ["nome", "cnes", "telefone", "email"];
 function UnidadeSaudeEditar() {
     const { id } = useParams();
     const navigate = useNavigate();
-
     const [etapa, setEtapa] = useState(1);
     const [form, setForm] = useState(formInicial);
     const [erros, setErros] = useState({});

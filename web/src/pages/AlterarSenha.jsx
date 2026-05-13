@@ -1,18 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
 import api from "../api/api.js";
 
-function MeuPerfil() {
+function AlterarSenha() {
     const navigate = useNavigate();
-    const {usuario, setUsuario} = useAuth();
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
 
     const [form, setForm] = useState({
-        nome: usuario?.nome,
-        email: usuario?.email,
-        login: usuario?.login,
+        senhaAtual: "",
+        novaSenha: "",
+        confirmarSenha: "",
     });
 
     function alterar(e) {
@@ -26,19 +24,22 @@ function MeuPerfil() {
         e.preventDefault();
 
         try {
-            const response = await api.put("/usuarios/me", form);
+            await api.put("/usuarios/me/senha", form);
 
-            setUsuario(response.data);
-            localStorage.setItem("usuario", JSON.stringify(response.data));
+            setMensagem("Senha alterada com sucesso!");
 
-            setMensagem("Perfil atualizado com sucesso!");
+            setForm({
+                senhaAtual: "",
+                novaSenha: "",
+                confirmarSenha: "",
+            });
         } catch (error) {
-            const errors = error.response.data.errors;
-            setErros(errors);
+            const data = error.response?.data;
+            setErros(data?.errors || {});
             setMensagem(
-                error.response?.data?.message ||
-                error.response?.data ||
-                "Erro ao atualizar perfil"
+                typeof data === "string"
+                    ? data
+                    : data?.message || "Erro ao alterar senha"
             );
         }
     }
@@ -48,8 +49,8 @@ function MeuPerfil() {
             <div className="cadastro-page">
                 <div className="cadastro-header">
                     <div>
-                        <h1>Meu perfil</h1>
-                        <p>Atualize seus dados de acesso ao sistema</p>
+                        <h1>Alterar senha</h1>
+                        <p>Atualize sua senha de acesso ao sistema</p>
                     </div>
 
                     <button
@@ -73,51 +74,53 @@ function MeuPerfil() {
                 <form className="cadastro-card" onSubmit={salvar}>
                     <div className="form-grid full">
                         <div className="form-group">
-                            <label>Nome</label>
+                            <label>Senha atual</label>
                             <input
                                 className="input-field"
-                                name="nome"
-                                value={form.nome}
+                                name="senhaAtual"
+                                type="password"
+                                value={form.senhaAtual}
                                 onChange={alterar}
                             />
-                            {erros.nome && (
-                                <small>{erros.nome}</small>
+                            {erros.senhaAtual && (
+                                <small>{erros.senhaAtual}</small>
                             )}
                         </div>
                     </div>
 
                     <div className="form-grid two">
                         <div className="form-group">
-                            <label>Email</label>
+                            <label>Nova senha</label>
                             <input
                                 className="input-field"
-                                name="email"
-                                type="email"
-                                value={form.email}
+                                name="novaSenha"
+                                type="password"
+                                value={form.novaSenha}
                                 onChange={alterar}
                             />
-                            {erros.email && (
-                                <small>{erros.email}</small>
+                            {erros.novaSenha && (
+                                <small>{erros.novaSenha}</small>
                             )}
                         </div>
 
                         <div className="form-group">
-                            <label>Login</label>
+                            <label>Confirmar nova senha</label>
                             <input
                                 className="input-field"
-                                name="login"
-                                value={form.login}
+                                name="confirmarSenha"
+                                type="password"
+                                value={form.confirmarSenha}
                                 onChange={alterar}
                             />
-                            {erros.login && (
-                                <small>{erros.login}</small>
+                            {erros.confirmarSenha && (
+                                <small>{erros.confirmarSenha}</small>
                             )}
                         </div>
                     </div>
 
                     <div className="form-actions">
                         <button type="submit" className="primary-btn">
-                            Salvar alterações
+                            Alterar senha
                         </button>
 
                         <button
@@ -134,4 +137,4 @@ function MeuPerfil() {
     );
 }
 
-export default MeuPerfil;
+export default AlterarSenha;

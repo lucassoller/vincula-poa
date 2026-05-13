@@ -69,10 +69,18 @@ public class UsuarioController {
     }
 
     @PutMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsuarioResponseDTO> atualizarMeuPerfil(
-            @RequestBody MeuPerfilDTO dto
+            @Valid @RequestBody MeuPerfilDTO dto
     ) {
         return ResponseEntity.ok(usuarioService.atualizarMeuPerfil(dto));
+    }
+
+    @PutMapping("/me/senha")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UsuarioResponseDTO> alterarMinhaSenha(@Valid @RequestBody MudancaSenhaDTO dto)
+    {
+        return ResponseEntity.ok(usuarioService.atualizarMinhaSenha(dto));
     }
 
     @PutMapping("/usuarios/{id}/senha")

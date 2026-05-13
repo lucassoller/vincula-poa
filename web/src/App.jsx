@@ -14,6 +14,7 @@ import PacienteDetalhe from "./pages/PacienteDetalhe";
 import UnidadeSaudeEditar from "./pages/UnidadeSaudeEditar";
 import GestaoListagem from "./pages/GestaoListagem.jsx";
 import MeuPerfil from "./pages/MeuPerfil.jsx";
+import AlterarSenha from "./pages/AlterarSenha.jsx";
 
 
 function App() {
@@ -149,6 +150,14 @@ function App() {
                     </ProtectedRoute>
                 }
             />
+            <Route
+                path="/alterar-senha"
+                element={<ProtectedRoute>
+                <Layout>
+                    <AlterarSenha />
+                </Layout>
+            </ProtectedRoute>} />
+
         </Routes>
       </BrowserRouter>
   );
