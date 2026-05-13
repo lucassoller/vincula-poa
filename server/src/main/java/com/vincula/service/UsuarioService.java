@@ -277,8 +277,10 @@ public class UsuarioService {
         dto.setAtivo(entity.getAtivo());
         if (entity.getUnidadeSaude() != null) {
             dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+            dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
         } else {
             dto.setUnidadeSaudeId(null);
+            dto.setUnidadeSaudeNome(null);
         }
 
         return dto;

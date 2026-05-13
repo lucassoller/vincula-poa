@@ -3,7 +3,7 @@
     flex: 1;
     justify-content: center;
     background: #00b0c6;
-    font-family: "Segoe UI";
+    font-family: "Segoe UI", sans-serif;
 }
 
 .paciente-detalhe-page {

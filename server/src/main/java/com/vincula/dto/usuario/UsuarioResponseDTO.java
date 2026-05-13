@@ -12,5 +12,6 @@ public class UsuarioResponseDTO {
     private String login;
     private PerfilUsuario perfil;
     private Long unidadeSaudeId;
+    private String unidadeSaudeNome;
     private Boolean ativo;
 }

@@ -161,6 +161,7 @@ public class UnidadeSaudeService {
         dto.setDocumento(entity.getDocumento());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+        dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
         dto.setSexo(entity.getSexo());
 
         return dto;
