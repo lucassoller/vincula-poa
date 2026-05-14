@@ -259,12 +259,14 @@ public class DemandaService {
 
         dto.setId(entity.getId());
         dto.setPacienteId(entity.getPaciente().getId());
+        dto.setPacienteNome(entity.getPaciente().getNomeCompleto());
 
         if (entity.getUnidadeSolicitante() != null) {
             dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
         }
 
         dto.setUnidadeResponsavelId(entity.getUnidadeResponsavel().getId());
+        dto.setUnidadeResponsavelNome(entity.getUnidadeResponsavel().getNome());
         dto.setMotivoBuscaAtiva(entity.getMotivoBuscaAtiva());
         dto.setDescricaoBusca(entity.getDescricaoBusca());
         dto.setPrazoDemanda(entity.getPrazoDemanda());

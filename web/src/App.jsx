@@ -65,16 +65,16 @@ function App() {
             }
         />
 
-          <Route
-              path="/demandas"
-              element={
-                <ProtectedRoute>
-                    <Layout>
-                        <Demandas />
-                    </Layout>
-                </ProtectedRoute>
-              }
-          />
+            <Route
+                path="/demandas"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <Demandas />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
 
           <Route
               path="/auditoria"

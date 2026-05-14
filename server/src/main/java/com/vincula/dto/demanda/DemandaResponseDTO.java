@@ -22,8 +22,10 @@ public class DemandaResponseDTO {
     private LocalDateTime dataHoraLimite;
     private LocalDateTime dataHoraFinalizacao;
     private Long pacienteId;
+    private String pacienteNome;
     private Long unidadeSolicitanteId;
     private Long unidadeResponsavelId;
+    private String unidadeResponsavelNome;
     private Long usuarioCriadorId;
     private String usuarioCriadorNome;
     private Long usuarioEncerramentoId;
