@@ -138,7 +138,15 @@ function PacienteEditar() {
         setErros({});
 
         try {
-            await api.put(`/pacientes/${id}`, form);
+            const payload = {
+                ...form,
+                sexo: form.sexo || null,
+                unidadeSaudeId: form.unidadeSaudeId
+                    ? Number(form.unidadeSaudeId)
+                    : null,
+            };
+
+            await api.put(`/pacientes/${id}`, payload);
             setMensagem("Paciente atualizado com sucesso!");
             navigate(`/pacientes/${id}`);
         } catch (error) {

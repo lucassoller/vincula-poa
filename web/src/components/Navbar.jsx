@@ -42,6 +42,10 @@ function Navbar() {
                     Demandas
                 </Link>
 
+                <Link to="/demandas/cadastro" className="navbar-link">
+                    Criar Demanda
+                </Link>
+
                 <Link to="/auditoria" className="navbar-link">
                     Auditoria
                 </Link>

@@ -11,7 +11,7 @@ const formInicial = {
     telefone: "",
     documento: "",
     dataNascimento: "",
-    sexo: undefined,
+    sexo: "",
     endereco: {
         rua: "",
         numero: "",
@@ -100,7 +100,15 @@ function PacienteCadastro() {
         setErros({});
 
         try {
-            await api.post("/pacientes", form);
+            const payload = {
+                ...form,
+                sexo: form.sexo || null,
+                unidadeSaudeId: form.unidadeSaudeId
+                    ? Number(form.unidadeSaudeId)
+                    : null,
+            };
+
+            await api.post("/pacientes", payload);
             setMensagem("Paciente cadastrado com sucesso!");
             setForm(formInicial);
             setErros({});

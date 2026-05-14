@@ -49,6 +49,8 @@ function UsuarioCadastro() {
             const payload = {
                 ...form,
 
+                perfil: form.perfil || null,
+
                 unidadeSaudeId: form.unidadeSaudeId
                     ? Number(form.unidadeSaudeId)
                     : null

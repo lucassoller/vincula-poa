@@ -15,6 +15,7 @@ import UnidadeSaudeEditar from "./pages/UnidadeSaudeEditar";
 import GestaoListagem from "./pages/GestaoListagem.jsx";
 import MeuPerfil from "./pages/MeuPerfil.jsx";
 import AlterarSenha from "./pages/AlterarSenha.jsx";
+import DemandaCadastro from "./pages/DemandaCadastro.jsx";
 
 
 function App() {
@@ -22,9 +23,6 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
-            <Route path="/cadastro" element={ <Layout> <PacienteCadastro /> </Layout> }/>
-            <Route path="/cadastroo" element={ <Layout> <UnidadeSaudeCadastro /> </Layout> }/>
-            <Route path="/cadastrooo" element={ <Layout> <UsuarioCadastro /> </Layout> }/>
           <Route
               path="/dashboard"
               element={
@@ -152,11 +150,22 @@ function App() {
             />
             <Route
                 path="/alterar-senha"
-                element={<ProtectedRoute>
-                <Layout>
-                    <AlterarSenha />
-                </Layout>
-            </ProtectedRoute>} />
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <AlterarSenha />
+                        </Layout>
+                    </ProtectedRoute>} />
+            <Route
+                path="/demandas/cadastro"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <DemandaCadastro />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
 
         </Routes>
       </BrowserRouter>
