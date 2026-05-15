@@ -53,8 +53,6 @@ public class TentativaContatoService {
             throw new BusinessException("Não é possível alterar tentativa de contato de uma demanda finalizada");
         }
 
-        validarTipoOutro(dto);
-
         String descricaoLog = AuditoriaDescricaoUtil.tentativaContatoAtualizada(entity, dto);
 
         entity.setTipo(dto.getTipo());
@@ -100,8 +98,6 @@ public class TentativaContatoService {
             throw new BusinessException("Não é possível registrar tentativa de contato em uma demanda finalizada");
         }
 
-        validarTipoOutro(dto);
-
         Usuario usuario = usuarioService.buscarUsuarioAutenticado();
 
         boolean primeiraTentativa = !tentativaRepository.existsByDemandaId(demanda.getId());
@@ -128,13 +124,6 @@ public class TentativaContatoService {
     private TentativaContato buscarTentativaPorId(Long id) {
         return tentativaRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Tentativa de contato não encontrada"));
-    }
-
-    private void validarTipoOutro(TentativaContatoDTO dto) {
-        if (dto.getTipo() == TipoTentativaContato.OUTRO &&
-                (dto.getDescricao() == null || dto.getDescricao().isBlank())) {
-            throw new BusinessException("Descrição obrigatória para tipo OUTRO");
-        }
     }
 
     private Demanda buscarDemandaPorId(Long id){

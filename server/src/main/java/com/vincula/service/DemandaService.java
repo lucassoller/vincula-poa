@@ -4,13 +4,12 @@ import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.demanda.EncerrarDemandaDTO;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.demanda.DemandaResponseDTO;
+import com.vincula.dto.tentativaContato.TentativaContatoDTO;
 import com.vincula.entity.Demanda;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
-import com.vincula.enums.MotivoBuscaAtiva;
-import com.vincula.enums.PrazoDemanda;
-import com.vincula.enums.StatusDemanda;
+import com.vincula.enums.*;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.DemandaRepository;
@@ -60,8 +59,6 @@ public class DemandaService {
         if (entity.getStatus() == StatusDemanda.FINALIZADA) {
             throw new BusinessException("Não é possível alterar uma demanda finalizada");
         }
-
-        validarMotivoBusca(dto);
 
         String descricaoLog = AuditoriaDescricaoUtil.demandaAtualizada(entity, dto);
 
@@ -223,21 +220,12 @@ public class DemandaService {
                 .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
     }
 
-    private void validarMotivoBusca(DemandaDTO dto) {
-        if (dto.getMotivoBuscaAtiva() == MotivoBuscaAtiva.OUTRO &&
-                (dto.getDescricaoBusca() == null || dto.getDescricaoBusca().isBlank())) {
-            throw new BusinessException("Descrição da busca é obrigatória quando o motivo for OUTRO");
-        }
-    }
-
     private Demanda toEntity(DemandaDTO dto) {
         Paciente paciente = buscarPacientePorId(dto.getPacienteId());
 
         UnidadeSaude unidadeResponsavel = buscarUnidadeSaudePorId(dto.getUnidadeResponsavelId());
 
         Usuario usuarioCriador = usuarioService.buscarUsuarioAutenticado();
-
-        validarMotivoBusca(dto);
 
         Demanda entity = new Demanda();
         entity.setPaciente(paciente);

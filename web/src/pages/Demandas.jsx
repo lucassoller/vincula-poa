@@ -1,38 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback  } from "react";
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./demandas.css";
-
-const prazoLabel = {
-    "D1": "1 dia",
-    "D2": "2 dias",
-    "D3": "3 dias",
-    "D7": "7 dias",
-    "D15": "15 dias",
-    "D20": "20 dias",
-    "D30": "30 dias",
-};
-
-function formatarDataHora(data) {
-    if (!data) {
-        return "-";
-    }
-
-    const d = new Date(data);
-
-    const dia = String(d.getDate()).padStart(2, "0");
-    const mes = String(d.getMonth() + 1).padStart(2, "0");
-    const ano = d.getFullYear();
-
-    const hora = String(d.getHours()).padStart(2, "0");
-    const minuto = String(d.getMinutes()).padStart(2, "0");
-
-    return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
-}
+import { prazoLabel, formatarDataHora } from "../utils/demandaUtils";
+import ModalTentativaContato from "../components/ModalTentativaContato";
+import ModalRedirecionarDemanda from "../components/ModalRedirecionarDemanda";
+import ModalEncerrarDemanda from "../components/ModalEncerrarDemanda";
+import ModalDetalhesDemanda from "../components/ModalDetalhesDemanda";
 
 function Demandas() {
-
-
     const { usuario } = useAuth();
 
     const [demandas, setDemandas] = useState([]);
@@ -41,6 +17,8 @@ function Demandas() {
     const [acao, setAcao] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [erros, setErros] = useState({});
+    const [demandaDetalhada, setDemandaDetalhada] = useState(null);
+    const [tentativasContato, setTentativasContato] = useState([]);
 
     const [tentativa, setTentativa] = useState({
         tipo: "",
@@ -57,18 +35,16 @@ function Demandas() {
         descricaoDesfecho: "",
     });
 
-    useEffect(() => {
-        carregarDados();
-    }, [usuario]);
-
-    async function carregarDados() {
+    const carregarDados = useCallback(async () => {
         try {
             let demandasResponse;
 
             if (usuario?.perfil === "GESTAO_MUNICIPAL") {
                 demandasResponse = await api.get("/demandas");
             } else if (usuario?.perfil === "EXECUTOR_APS") {
-                demandasResponse = await api.get(`/demandas/unidade/${usuario.unidadeSaudeId}`);
+                demandasResponse = await api.get(
+                    `/demandas/unidade/${usuario.unidadeSaudeId}`
+                );
             } else {
                 demandasResponse = { data: [] };
             }
@@ -77,10 +53,19 @@ function Demandas() {
 
             setDemandas(demandasResponse.data);
             setUnidades(unidadesResponse.data);
+
         } catch {
             setMensagem("Erro ao carregar demandas.");
         }
-    }
+    }, [usuario]);
+
+    useEffect(() => {
+        const executar = async () => {
+            await carregarDados();
+        };
+
+        void executar();
+    }, [carregarDados]);
 
     function abrirAcao(demanda, tipoAcao) {
         setDemandaSelecionada(demanda);
@@ -111,7 +96,7 @@ function Demandas() {
             await api.post("/tentativas-contato", payload);
             setMensagem("Tentativa registrada com sucesso!");
             fecharModal();
-            carregarDados();
+            await carregarDados();
         } catch (error) {
             tratarErro(error);
         }
@@ -128,10 +113,10 @@ function Demandas() {
         };
 
         try {
-            await api.put(`/demandas/${demandaSelecionada.id}/redirecionar`, payload);
+            await api.patch(`/demandas/${demandaSelecionada.id}/redirecionar`, payload);
             setMensagem("Demanda redirecionada com sucesso!");
             fecharModal();
-            carregarDados();
+            await carregarDados();
         } catch (error) {
             tratarErro(error);
         }
@@ -146,12 +131,29 @@ function Demandas() {
         };
 
         try {
-            await api.put(`/demandas/${demandaSelecionada.id}/encerrar`, payload);
+            await api.patch(`/demandas/${demandaSelecionada.id}/encerrar`, payload);
             setMensagem("Demanda encerrada com sucesso!");
             fecharModal();
-            carregarDados();
+            await carregarDados();
         } catch (error) {
             tratarErro(error);
+        }
+    }
+
+    async function abrirDetalhes(d) {
+        try {
+            const response = await api.get(`/demandas/${d.id}`);
+
+            setDemandaDetalhada(response.data);
+
+            const tentativasResponse = await api.get(
+                `/tentativas-contato/demanda/${d.id}`
+            );
+
+            setTentativasContato(tentativasResponse.data);
+
+        } catch {
+            setMensagem("Erro ao carregar detalhes da demanda.");
         }
     }
 
@@ -216,8 +218,12 @@ function Demandas() {
                                     <div className="acoes-container">
                                         {d.status !== "FINALIZADA" && (
                                             <>
-                                                <button className="btn-visualizar" onClick={() => abrirAcao(d, "TENTATIVA")}>
-                                                    Tentativa
+                                                <button className="btn-visualizar" onClick={() => abrirDetalhes(d)}>
+                                                    Ver mais
+                                                </button>
+
+                                                <button className="btn-tentativa" onClick={() => abrirAcao(d, "TENTATIVA")}>
+                                                    Tentativa contato
                                                 </button>
 
                                                 <button className="btn-editar" onClick={() => abrirAcao(d, "REDIRECIONAR")}>
@@ -242,155 +248,50 @@ function Demandas() {
                 </div>
             </div>
 
-            {demandaSelecionada && (
-                <div className="modal-overlay">
-                    <div className="modal-card">
-                        <div className="modal-header">
-                            <div>
-                                <h2>{tituloModal(acao)}</h2>
-                                <p>Demanda #{demandaSelecionada.id}</p>
-                            </div>
-
-                            <button className="modal-close" onClick={fecharModal}>✕</button>
-                        </div>
-
-                        {acao === "TENTATIVA" && (
-                            <form onSubmit={salvarTentativa}>
-                                <div className="form-group">
-                                    <label>Tipo de tentativa <span>*</span></label>
-                                    <select
-                                        className="input-field"
-                                        value={tentativa.tipo}
-                                        onChange={(e) => setTentativa({ ...tentativa, tipo: e.target.value })}
-                                    >
-                                        <option value="">Selecione</option>
-                                        <option value="TELEFONE">Telefone</option>
-                                        <option value="WHATSAPP">WhatsApp</option>
-                                        <option value="EMAIL">Email</option>
-                                        <option value="VISITA_DOMICILIAR">Visita domiciliar</option>
-                                        <option value="OUTRO">Outro</option>
-                                    </select>
-                                    {erros.tipo && <small>{erros.tipo}</small>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Descrição</label>
-                                    <textarea
-                                        className="input-field textarea-field"
-                                        value={tentativa.descricao}
-                                        onChange={(e) => setTentativa({ ...tentativa, descricao: e.target.value })}
-                                    />
-                                    {erros.descricao && <small>{erros.descricao}</small>}
-                                </div>
-
-                                <AcoesModal texto="Registrar tentativa" fechar={fecharModal} />
-                            </form>
-                        )}
-
-                        {acao === "REDIRECIONAR" && (
-                            <form onSubmit={salvarRedirecionamento}>
-                                <div className="form-group">
-                                    <label>Nova unidade responsável <span>*</span></label>
-                                    <select
-                                        className="input-field"
-                                        value={redirecionamento.novaUnidadeResponsavelId}
-                                        onChange={(e) =>
-                                            setRedirecionamento({
-                                                ...redirecionamento,
-                                                novaUnidadeResponsavelId: e.target.value,
-                                            })
-                                        }
-                                    >
-                                        <option value="">Selecione</option>
-                                        {unidades.map((u) => (
-                                            <option key={u.id} value={u.id}>
-                                                {u.nome}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {erros.novaUnidadeResponsavelId && <small>{erros.novaUnidadeResponsavelId}</small>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Motivo do redirecionamento</label>
-                                    <textarea
-                                        className="input-field textarea-field"
-                                        value={redirecionamento.motivoRedirecionamento}
-                                        onChange={(e) =>
-                                            setRedirecionamento({
-                                                ...redirecionamento,
-                                                motivoRedirecionamento: e.target.value,
-                                            })
-                                        }
-                                    />
-                                </div>
-
-                                <AcoesModal texto="Redirecionar demanda" fechar={fecharModal} />
-                            </form>
-                        )}
-
-                        {acao === "ENCERRAR" && (
-                            <form onSubmit={salvarEncerramento}>
-                                <div className="form-group">
-                                    <label>Desfecho <span>*</span></label>
-                                    <select
-                                        className="input-field"
-                                        value={encerramento.desfechoDemanda}
-                                        onChange={(e) =>
-                                            setEncerramento({
-                                                ...encerramento,
-                                                desfechoDemanda: e.target.value,
-                                            })
-                                        }
-                                    >
-                                        <option value="">Selecione</option>
-                                        <option value="ENCONTRADO_VINCULADO">Encontrado e vinculado</option>
-                                        <option value="ENCONTRADO_RECUSOU">Encontrado e recusou</option>
-                                        <option value="NAO_LOCALIZADO">Não localizado</option>
-                                        <option value="ENDERECO_INCORRETO">Endereço incorreto</option>
-                                        <option value="MUDOU_TERRITORIO">Mudou de território</option>
-                                        <option value="OBITO">Óbito</option>
-                                        <option value="OUTRO">Outro</option>
-                                    </select>
-                                    {erros.desfechoDemanda && <small>{erros.desfechoDemanda}</small>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Descrição do desfecho</label>
-                                    <textarea
-                                        className="input-field textarea-field"
-                                        value={encerramento.descricaoDesfecho}
-                                        onChange={(e) =>
-                                            setEncerramento({
-                                                ...encerramento,
-                                                descricaoDesfecho: e.target.value,
-                                            })
-                                        }
-                                    />
-                                </div>
-
-                                <AcoesModal texto="Encerrar demanda" fechar={fecharModal} />
-                            </form>
-                        )}
-                    </div>
-                </div>
+            {demandaSelecionada && acao === "TENTATIVA" && (
+                <ModalTentativaContato
+                    demanda={demandaSelecionada}
+                    tentativa={tentativa}
+                    setTentativa={setTentativa}
+                    erros={erros}
+                    onSalvar={salvarTentativa}
+                    onFechar={fecharModal}
+                />
             )}
-        </div>
-    );
-}
 
-function tituloModal(acao) {
-    if (acao === "TENTATIVA") return "Registrar tentativa de contato";
-    if (acao === "REDIRECIONAR") return "Redirecionar demanda";
-    if (acao === "ENCERRAR") return "Encerrar demanda";
-    return "";
-}
+            {demandaSelecionada && acao === "REDIRECIONAR" && (
+                <ModalRedirecionarDemanda
+                    demanda={demandaSelecionada}
+                    unidades={unidades}
+                    redirecionamento={redirecionamento}
+                    setRedirecionamento={setRedirecionamento}
+                    erros={erros}
+                    onSalvar={salvarRedirecionamento}
+                    onFechar={fecharModal}
+                />
+            )}
 
-function AcoesModal({ texto, fechar }) {
-    return (
-        <div className="modal-actions">
-            <button type="submit" className="primary-btn">{texto}</button>
-            <button type="button" className="secondary-btn" onClick={fechar}>Cancelar</button>
+            {demandaSelecionada && acao === "ENCERRAR" && (
+                <ModalEncerrarDemanda
+                    demanda={demandaSelecionada}
+                    encerramento={encerramento}
+                    setEncerramento={setEncerramento}
+                    erros={erros}
+                    onSalvar={salvarEncerramento}
+                    onFechar={fecharModal}
+                />
+            )}
+
+            {demandaDetalhada && (
+                <ModalDetalhesDemanda
+                    demanda={demandaDetalhada}
+                    tentativasContato={tentativasContato}
+                    onFechar={() => {
+                        setDemandaDetalhada(null);
+                        setTentativasContato([]);
+                    }}
+                />
+            )}
         </div>
     );
 }

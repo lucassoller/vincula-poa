@@ -8,6 +8,8 @@ import {
     mascaraTelefone
 } from "../utils/mascaras.js";
 
+import ModalUbs from "../components/ModalUbs.jsx";
+
 function Pacientes() {
     const { usuario } = useAuth();
     const [pacientes, setPacientes] = useState([]);
@@ -169,52 +171,12 @@ function Pacientes() {
                     )}
                 </div>
             </div>
+
             {ubsSelecionada && (
-                <div className="ubs-overlay">
-                    <div className="ubs-card">
-
-                        <div className="ubs-card-header">
-                            <div>
-                                <h2>{ubsSelecionada.nome}</h2>
-                                <p>Informações da Unidade Básica de Saúde</p>
-                            </div>
-
-                            <button
-                                type="button"
-                                className="ubs-close"
-                                onClick={() => setUbsSelecionada(null)}
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="ubs-info-grid">
-                            <CampoUbs label="CNES" valor={ubsSelecionada.cnes} />
-                            <CampoUbs label="Telefone" valor={ubsSelecionada.telefone} />
-                            <CampoUbs label="Email" valor={ubsSelecionada.email} />
-                        </div>
-
-                        <div className="ubs-section">
-                            <h3>Endereço</h3>
-
-                            <div className="ubs-info-grid">
-                                <CampoUbs label="CEP" valor={ubsSelecionada.endereco?.cep} />
-                                <CampoUbs label="Rua" valor={ubsSelecionada.endereco?.rua} />
-                                <CampoUbs label="Número" valor={ubsSelecionada.endereco?.numero} />
-                                <CampoUbs label="Bairro" valor={ubsSelecionada.endereco?.bairro} />
-                                <CampoUbs label="Cidade" valor={ubsSelecionada.endereco?.cidade} />
-                                <CampoUbs label="Estado" valor={ubsSelecionada.endereco?.estado} />
-                            </div>
-                        </div>
-
-                        <div className="ubs-actions">
-                            <button type="button" className="btn-editar" onClick={() => navigate(`/unidades-saude/${ubsSelecionada.id}/editar`)}>
-                                Editar UBS
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
+                <ModalUbs
+                    ubsSelecionada={ubsSelecionada}
+                    setUbsSelecionada={setUbsSelecionada}
+                />
             )}
 
             {carregandoUbs && (
@@ -229,14 +191,4 @@ function Pacientes() {
 
     );
 }
-
-function CampoUbs({ label, valor }) {
-    return (
-        <div className="ubs-campo">
-            <span>{label}</span>
-            <strong>{valor || "-"}</strong>
-        </div>
-    );
-}
-
 export default Pacientes;
