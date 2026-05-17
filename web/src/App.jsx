@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import Indicador from "./pages/Indicador.jsx";
 import Pacientes from "./pages/Pacientes";
 import Demandas from "./pages/Demandas";
 import Auditoria from "./pages/Auditoria";
@@ -24,11 +24,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route
-              path="/dashboard"
+              path="/indicadores"
               element={
                 <ProtectedRoute>
                     <Layout>
-                        <Dashboard />
+                        <Indicador />
                     </Layout>
                 </ProtectedRoute>
               }

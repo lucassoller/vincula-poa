@@ -1,15 +1,14 @@
-package com.vincula.dto.dashboard;
+package com.vincula.dto.indicador;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DashboardIndicadoresDTO {
+public class IndicadorDTO {
 
     private List<IndicadorValorDTO> producao;
     private List<IndicadorValorDTO> processo;

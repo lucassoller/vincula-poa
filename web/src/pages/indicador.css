@@ -1,0 +1,243 @@
+.indicador-container {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    background: #00b0c6;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.indicador-page {
+    width: 70%;
+    background: white;
+    padding: 36px;
+}
+
+.indicador-header {
+    margin-bottom: 28px;
+}
+
+.indicador-header h1 {
+    margin: 0;
+    font-size: 38px;
+    color: #0f172a;
+}
+
+.indicador-header p {
+    margin-top: 8px;
+    color: #64748b;
+}
+
+.indicador-section {
+    margin-bottom: 34px;
+}
+
+.indicador-section h2,
+.chart-card h2,
+.ranking-card h2 {
+    color: #0f172a;
+    margin-bottom: 18px;
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.kpi-card span {
+    display: block;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.kpi-card strong {
+    font-size: 28px;
+    color: #2563eb;
+}
+
+.indicador-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin-bottom: 34px;
+}
+
+.chart-card,
+.ranking-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.donut-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.chart-legend {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.legend-item {
+    font-size: 14px;
+    color: #334155;
+}
+
+.legend-item span {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    margin-right: 8px;
+}
+
+.ranking-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: 14px;
+}
+
+.ranking-position {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.ranking-item strong {
+    color: #0f172a;
+}
+
+.ranking-item p {
+    margin: 4px 0 0;
+    color: #64748b;
+}
+
+.indicador-error {
+    color: #991b1b;
+    background: #fee2e2;
+    padding: 18px;
+    border-radius: 12px;
+    margin: 32px;
+}
+
+.prazo-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.prazo-card-item {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prazo-card-item span {
+    color: #475569;
+    font-weight: 600;
+}
+
+.prazo-card-item strong {
+    color: #2563eb;
+    font-size: 22px;
+}
+
+.export-btn {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.export-btn:hover {
+    background: #1d4ed8;
+}
+
+.indicador-filtros {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr auto;
+    gap: 12px;
+    margin-bottom: 28px;
+    align-items: center;
+}
+
+.input-field:disabled {
+    background: #f1f5f9;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.indicador-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.apply-btn {
+    border: none;
+    background: #0f766e;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.apply-btn:hover {
+    background: #115e59;
+}
+
+@media (max-width: 1000px) {
+    .indicador-page {
+        width: 100%;
+    }
+
+    .indicador-grid,
+    .ranking-grid {
+        grid-template-columns: 1fr;
+    }
+}

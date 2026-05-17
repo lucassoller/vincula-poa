@@ -227,7 +227,7 @@ function UnidadeSaudeCadastro() {
                                 <button
                                     type="button"
                                     className="danger-btn"
-                                    onClick={() => navigate("/dashboard")}
+                                    onClick={() => navigate("/indicadores")}
                                 >
                                     Cancelar
                                 </button>

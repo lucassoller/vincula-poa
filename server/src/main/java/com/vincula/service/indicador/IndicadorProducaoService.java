@@ -1,6 +1,6 @@
 package com.vincula.service.indicador;
 
-import com.vincula.dto.dashboard.IndicadorValorDTO;
+import com.vincula.dto.indicador.IndicadorValorDTO;
 import com.vincula.repository.DemandaRepository;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +50,7 @@ public class IndicadorProducaoService {
         );
 
         lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)));
-        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período", demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim)));
+        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período indicado", demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim)));
 
         return lista;
     }
@@ -67,7 +67,7 @@ public class IndicadorProducaoService {
         );
 
         lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim)));
-        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período", demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(unidadeResponsavelId, inicio, fim)));
+        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período indicado", demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(unidadeResponsavelId, inicio, fim)));
 
         return lista;
     }
@@ -76,7 +76,7 @@ public class IndicadorProducaoService {
         return switch (status) {
             case "ABERTA" -> "Demandas abertas";
             case "EM_ANDAMENTO" -> "Demandas em andamento";
-            case "FINALIZADA" -> "Demandas finalizadas com data de criação no período";
+            case "FINALIZADA" -> "Demandas finalizadas";
             default -> status;
         };
     }

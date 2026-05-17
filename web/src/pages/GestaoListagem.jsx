@@ -134,7 +134,7 @@ function GestaoListagem() {
                     <button
                         type="button"
                         className="secondary-btn"
-                        onClick={() => navigate("/dashboard")}
+                        onClick={() => navigate("/indicadores")}
                     >
                         Voltar
                     </button>

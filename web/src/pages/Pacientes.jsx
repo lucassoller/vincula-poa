@@ -11,13 +11,14 @@ import {
 import ModalUbs from "../components/ModalUbs.jsx";
 
 function Pacientes() {
+    const navigate = useNavigate();
     const { usuario } = useAuth();
     const [pacientes, setPacientes] = useState([]);
-    const navigate = useNavigate();
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [ubsSelecionada, setUbsSelecionada] = useState(null);
     const [carregandoUbs, setCarregandoUbs] = useState(false);
+    const [filtro, setFiltro] = useState("");
 
     useEffect(() => {
         let ativo = true;
@@ -85,6 +86,17 @@ function Pacientes() {
         }
     }
 
+    const pacientesFiltrados = pacientes.filter((paciente) => {
+        const busca = filtro.toLowerCase();
+
+        return (
+            paciente.nomeCompleto?.toLowerCase().includes(busca) ||
+            paciente.documento?.includes(busca) ||
+            paciente.telefone?.includes(busca) ||
+            paciente.unidadeSaudeNome?.toLowerCase().includes(busca)
+        );
+    });
+
     return (
         <div className="pacientes-container">
             <div className="pacientes-page">
@@ -111,6 +123,8 @@ function Pacientes() {
                         <input
                             className="paciente-search"
                             placeholder="Buscar paciente..."
+                            value={filtro}
+                            onChange={(e) => setFiltro(e.target.value)}
                         />
                         <button className="novo-paciente-btn" onClick={() => navigate("/pacientes/cadastro")}>
                             + Novo paciente
@@ -127,7 +141,7 @@ function Pacientes() {
                         </tr>
                         </thead>
                         <tbody>
-                        {pacientes.map((paciente) => (
+                        {pacientesFiltrados.map((paciente) => (
                             <tr key={paciente.id}>
                                 <td>
                                     <div className="paciente-nome">
@@ -138,7 +152,7 @@ function Pacientes() {
                                     {mascaraDocumento(paciente.documento)}
                                 </td>
                                 <td>
-                                    {mascaraTelefone(paciente.telefone)}
+                                    {mascaraTelefone(paciente.telefone) || "-"}
                                 </td>
                                 <td>
                                     <button
@@ -164,7 +178,7 @@ function Pacientes() {
                         ))}
                         </tbody>
                     </table>
-                    {pacientes.length === 0 && !mensagem && (
+                    {pacientesFiltrados.length === 0 && !mensagem && (
                         <div className="empty-state">
                             Nenhum paciente encontrado.
                         </div>
@@ -187,6 +201,8 @@ function Pacientes() {
                 </div>
             )}
         </div>
+
+
 
 
     );

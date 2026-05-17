@@ -260,6 +260,28 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
+    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+      AND (
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
+      )
+""", nativeQuery = true)
+    long countDentroPrazoPorPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+      AND (
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
+      )
+""", nativeQuery = true)
+    long countDentroPrazoPorUnidadeEPeriodo(@Param("unidadeId") Long unidadeId,
+                                            @Param("inicio") LocalDateTime inicio,
+                                            @Param("fim")LocalDateTime fim);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
     WHERE
         (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
     """, nativeQuery = true)
@@ -274,6 +296,26 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
       )
     """, nativeQuery = true)
     long countAtrasadasPorUnidade(@Param("unidadeId") Long unidadeId);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+        AND (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
+    """, nativeQuery = true)
+    long countDemandasAtrasadasPorPeriodo(@Param("inicio") LocalDateTime inicio,
+                                           @Param("fim")LocalDateTime fim);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+          AND unidade_responsavel_id = :unidadeId
+        AND (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
+    """, nativeQuery = true)
+    long countDemandasAtrasadasPorUnidadeEPeriodo(@Param("unidadeId") Long unidadeId,
+                                                  @Param("inicio") LocalDateTime inicio,
+                                                  @Param("fim")LocalDateTime fim);
 
     @Query(value = """
     SELECT COUNT(*)
@@ -293,6 +335,28 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     long countFinalizadasAtrasadasPorUnidade(@Param("unidadeId") Long unidadeId);
 
     @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    long countFinalizadasAtrasadasPorPeriodo(@Param("inicio") LocalDateTime inicio,
+                                             @Param("fim")LocalDateTime fim);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+          AND unidade_responsavel_id = :unidadeId
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    long countFinalizadasAtrasadasPorUnidadeEPeriodo(@Param("unidadeId") Long unidadeId,
+                                                     @Param("inicio") LocalDateTime inicio,
+                                                     @Param("fim")LocalDateTime fim);
+
+    @Query(value = """
     SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
     FROM demanda
     WHERE status = 'FINALIZADA'
@@ -308,4 +372,25 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
       AND data_hora_finalizacao > data_hora_limite
     """, nativeQuery = true)
     Double tempoMedioAtrasoPorUnidade(@Param("unidadeId") Long unidadeId);
+
+    @Query(value = """
+    SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
+    FROM demanda
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+""", nativeQuery = true)
+    Double tempoMedioAtrasoEmSegundosPorPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+    SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
+    FROM demanda
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
+      AND unidade_responsavel_id = :unidadeId
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+""", nativeQuery = true)
+    Double tempoMedioAtrasoEmSegundosPorUnidadeEPeriodo(@Param("unidadeId") Long unidadeId,
+                                                        @Param("inicio") LocalDateTime inicio,
+                                                        @Param("fim") LocalDateTime fim);
 }

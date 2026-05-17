@@ -226,11 +226,11 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.EMAIL_FALHOU, entidade, entidadeId, descricao);
     }
 
-    public void dashboardAcessado(String descricao) {
-        registrar(TipoAcaoAuditoria.DASHBOARD_ACESSADO, "Dashboard", 0L, descricao);
+    public void indicadorAcessado(String descricao) {
+        registrar(TipoAcaoAuditoria.DASHBOARD_ACESSADO, "Indicador", 0L, descricao);
     }
 
     public void exportacaoCsvRealizada(String descricao) {
-        registrar(TipoAcaoAuditoria.EXPORTACAO_CSV_REALIZADA, "Dashboard", 0L, descricao);
+        registrar(TipoAcaoAuditoria.EXPORTACAO_CSV_REALIZADA, "Indicador", 0L, descricao);
     }
 }

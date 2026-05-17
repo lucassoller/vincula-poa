@@ -27,7 +27,7 @@ function Login() {
 
             realizarLogin(response.data, response.data.token);
 
-            navigate("/dashboard");
+            navigate("/indicadores");
         } catch (error) {
             const mensagem = error.response?.data?.message;
             const erroLogin = error.response?.data?.errors?.login;

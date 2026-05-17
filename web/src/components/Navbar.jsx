@@ -30,8 +30,8 @@ function Navbar() {
             <div className="navbar-logo">Vincula POA</div>
 
             <div className="navbar-links">
-                <Link to="/dashboard" className="navbar-link">
-                    Dashboard
+                <Link to="/indicadores" className="navbar-link">
+                    Indicadores
                 </Link>
 
                 <Link to="/pacientes" className="navbar-link">

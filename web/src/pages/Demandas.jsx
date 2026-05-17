@@ -7,10 +7,11 @@ import ModalTentativaContato from "../components/ModalTentativaContato";
 import ModalRedirecionarDemanda from "../components/ModalRedirecionarDemanda";
 import ModalEncerrarDemanda from "../components/ModalEncerrarDemanda";
 import ModalDetalhesDemanda from "../components/ModalDetalhesDemanda";
+import {useNavigate} from "react-router-dom";
 
 function Demandas() {
+    const navigate = useNavigate();
     const { usuario } = useAuth();
-
     const [demandas, setDemandas] = useState([]);
     const [unidades, setUnidades] = useState([]);
     const [demandaSelecionada, setDemandaSelecionada] = useState(null);
@@ -19,6 +20,8 @@ function Demandas() {
     const [erros, setErros] = useState({});
     const [demandaDetalhada, setDemandaDetalhada] = useState(null);
     const [tentativasContato, setTentativasContato] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [filtro, setFiltro] = useState("");
 
     const [tentativa, setTentativa] = useState({
         tipo: "",
@@ -37,6 +40,8 @@ function Demandas() {
 
     const carregarDados = useCallback(async () => {
         try {
+            setCarregando(true);
+
             let demandasResponse;
 
             if (usuario?.perfil === "GESTAO_MUNICIPAL") {
@@ -56,6 +61,8 @@ function Demandas() {
 
         } catch {
             setMensagem("Erro ao carregar demandas.");
+        } finally {
+            setCarregando(false);
         }
     }, [usuario]);
 
@@ -166,6 +173,28 @@ function Demandas() {
         }
     }
 
+    const demandasFiltradas = demandas.filter((d) => {
+        const busca = filtro.toLowerCase();
+
+        return (
+            d.pacienteNome?.toLowerCase().includes(busca) ||
+            d.motivoBuscaAtiva?.toLowerCase().includes(busca) ||
+            d.status?.toLowerCase().includes(busca) ||
+            d.unidadeResponsavelNome?.toLowerCase().includes(busca) ||
+            prazoLabel[d.prazoDemanda]?.toLowerCase().includes(busca)
+        );
+    });
+
+    if (carregando) {
+        return (
+            <div className="loading-container">
+                <div className="loading-card">
+                    Carregando demandas...
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="demandas-container">
             <div className="demandas-page">
@@ -186,6 +215,21 @@ function Demandas() {
                 )}
 
                 <div className="table-card">
+                    <div className="table-topbar">
+                        <input
+                            className="paciente-search"
+                            placeholder="Buscar demanda..."
+                            value={filtro}
+                            onChange={(e) => setFiltro(e.target.value)}
+                        />
+
+                        <button
+                            className="novo-paciente-btn"
+                            onClick={() => navigate("/demandas/cadastro")}
+                        >
+                            + Nova demanda
+                        </button>
+                    </div>
                     <table className="demandas-table">
                         <thead>
                         <tr>
@@ -201,9 +245,9 @@ function Demandas() {
                         </thead>
 
                         <tbody>
-                        {demandas.map((d) => (
+                        {demandasFiltradas.map((d) => (
                             <tr key={d.id}>
-                                <td>{d.pacienteNome || d.pacienteId}</td>
+                                <td><b>{d.pacienteNome || d.pacienteId}</b></td>
                                 <td>{d.motivoBuscaAtiva}</td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
                                 <td>{formatarDataHora(d.dataHoraFinalizacao) || "-" }</td>
@@ -241,7 +285,7 @@ function Demandas() {
                         </tbody>
                     </table>
 
-                    {demandas.length === 0 && (
+                    {demandasFiltradas.length === 0 && (
                         <div className="empty-state">Nenhuma demanda encontrada.</div>
                     )}
                 </div>

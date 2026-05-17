@@ -56,7 +56,7 @@ function AlterarSenha() {
                     <button
                         type="button"
                         className="secondary-btn"
-                        onClick={() => navigate("/dashboard")}
+                        onClick={() => navigate("/indicadores")}
                     >
                         Voltar
                     </button>
@@ -126,7 +126,7 @@ function AlterarSenha() {
                         <button
                             type="button"
                             className="danger-btn"
-                            onClick={() => navigate("/dashboard")}
+                            onClick={() => navigate("/indicadores")}
                         >
                             Cancelar
                         </button>

@@ -238,7 +238,7 @@ function PacienteCadastro() {
                                     Próximo
                                 </button>
 
-                                <button type="button" className="danger-btn" onClick={() => navigate("/dashboard")}>
+                                <button type="button" className="danger-btn" onClick={() => navigate("/indicadores")}>
                                     Cancelar
                                 </button>
                             </div>

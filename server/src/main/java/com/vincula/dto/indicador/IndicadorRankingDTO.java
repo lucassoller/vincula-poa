@@ -1,4 +1,4 @@
-package com.vincula.dto.dashboard;
+package com.vincula.dto.indicador;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

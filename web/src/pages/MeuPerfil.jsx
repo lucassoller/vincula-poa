@@ -55,7 +55,7 @@ function MeuPerfil() {
                     <button
                         type="button"
                         className="secondary-btn"
-                        onClick={() => navigate("/dashboard")}
+                        onClick={() => navigate("/indicadores")}
                     >
                         Voltar
                     </button>
@@ -123,7 +123,7 @@ function MeuPerfil() {
                         <button
                             type="button"
                             className="danger-btn"
-                            onClick={() => navigate("/dashboard")}
+                            onClick={() => navigate("/indicadores")}
                         >
                             Cancelar
                         </button>

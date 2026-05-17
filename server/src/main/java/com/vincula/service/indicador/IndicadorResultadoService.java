@@ -1,6 +1,6 @@
 package com.vincula.service.indicador;
 
-import com.vincula.dto.dashboard.IndicadorValorDTO;
+import com.vincula.dto.indicador.IndicadorValorDTO;
 import com.vincula.dto.projection.DesfechoQuantidadeProjection;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
@@ -79,13 +79,13 @@ public class IndicadorResultadoService {
 
     private String traduzirDesfecho(String desfecho) {
         return switch (desfecho) {
-            case "ENCONTRADO_VINCULADO" -> "Encontrado e vinculado à APS (%)";
-            case "ENCONTRADO_RECUSOU" -> "Encontrado e recusou atendimento (%)";
-            case "NAO_LOCALIZADO" -> "Não localizado (%)";
-            case "ENDERECO_INCORRETO" -> "Endereço incorreto (%)";
-            case "MUDOU_TERRITORIO" -> "Mudou de território (%)";
-            case "OBITO" -> "Óbito (%)";
-            case "OUTRO" -> "Outro (%)";
+            case "ENCONTRADO_VINCULADO" -> "Encontrado e vinculado à APS";
+            case "ENCONTRADO_RECUSOU" -> "Encontrado e recusou atendimento";
+            case "NAO_LOCALIZADO" -> "Não localizado";
+            case "ENDERECO_INCORRETO" -> "Endereço incorreto";
+            case "MUDOU_TERRITORIO" -> "Mudou de território";
+            case "OBITO" -> "Óbito";
+            case "OUTRO" -> "Outro";
             default -> desfecho;
         };
     }
