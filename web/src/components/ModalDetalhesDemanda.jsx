@@ -20,7 +20,7 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
 
                     <div className="detalhe-grid">
                         <CampoDetalhe label="Paciente" valor={demanda.pacienteNome} />
-                        <CampoDetalhe label="Motivo" valor={demanda.motivoBuscaAtiva} />
+                        <CampoDetalhe label="Motivo da busca" valor={demanda.motivoBuscaAtiva} />
                         <CampoDetalhe label="Status" valor={demanda.status} />
                         <CampoDetalhe label="Prazo" valor={prazoLabel[demanda.prazoDemanda]} />
                         <CampoDetalhe label="Criada em" valor={formatarDataHora(demanda.dataHoraCriacao)} />

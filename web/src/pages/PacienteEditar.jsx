@@ -25,18 +25,21 @@ const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento",
 function PacienteEditar() {
     const { id } = useParams();
     const navigate = useNavigate();
-
     const [etapa, setEtapa] = useState(1);
     const [form, setForm] = useState(formInicial);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
+    const [unidadeOriginalId, setUnidadeOriginalId] = useState(null);
+    const [mostrarConfirmacaoRedirecionamento, setMostrarConfirmacaoRedirecionamento] = useState(false);
+    const [pacienteAtualizado, setPacienteAtualizado] = useState(null);
 
     useEffect(() => {
         async function carregarPaciente() {
             try {
                 const response = await api.get(`/pacientes/${id}`);
                 setForm(response.data);
+                setUnidadeOriginalId(response.data.unidadeSaudeId);
             } catch {
                 setMensagem("Erro ao carregar paciente.");
             } finally {
@@ -146,9 +149,24 @@ function PacienteEditar() {
                     : null,
             };
 
-            await api.put(`/pacientes/${id}`, payload);
+            const response = await api.put(`/pacientes/${id}`, payload);
+
+            setPacienteAtualizado(response.data);
+
+            const mudouUnidade =
+                unidadeOriginalId &&
+                response.data.unidadeSaudeId &&
+                Number(unidadeOriginalId) !== Number(response.data.unidadeSaudeId);
+
+            if (mudouUnidade) {
+                setMostrarConfirmacaoRedirecionamento(true);
+                setMensagem("Paciente atualizado. A UBS vinculada mudou.");
+                return;
+            }
+
             setMensagem("Paciente atualizado com sucesso!");
             navigate(`/pacientes/${id}`);
+
         } catch (error) {
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
@@ -159,6 +177,27 @@ function PacienteEditar() {
                 setMensagem(error.response.data.message);
             }
         }
+    }
+
+    async function confirmarRedirecionamentoDemandas() {
+        try {
+            await api.patch(`/pacientes/${id}/redirecionar-abertas`, {
+                novaUnidadeResponsavelId: pacienteAtualizado.unidadeResponsavel.id,
+                motivoRedirecionamento: "Atualização de endereço/território",
+            });
+
+            setMensagem("Paciente atualizado e demandas abertas redirecionadas com sucesso!");
+            navigate(`/pacientes/${id}`);
+        } catch (error) {
+            setMensagem(
+                error.response?.data?.message ||
+                "Erro ao redirecionar demandas abertas."
+            );
+        }
+    }
+
+    function negarRedirecionamentoDemandas() {
+        navigate(`/pacientes/${id}`);
     }
 
     if (carregando) {
@@ -274,6 +313,39 @@ function PacienteEditar() {
                     )}
                 </form>
             </div>
+            {mostrarConfirmacaoRedirecionamento && (
+                <div className="modal-overlay">
+                    <div className="modal-card">
+                        <div className="modal-header">
+                            <div>
+                                <h2>Redirecionar demandas abertas?</h2>
+                                <p>
+                                    A UBS vinculada ao paciente mudou. Deseja redirecionar as demandas abertas
+                                    e em andamento para a nova UBS?
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="modal-actions">
+                            <button
+                                type="button"
+                                className="primary-btn"
+                                onClick={confirmarRedirecionamentoDemandas}
+                            >
+                                Sim, redirecionar
+                            </button>
+
+                            <button
+                                type="button"
+                                className="secondary-btn"
+                                onClick={negarRedirecionamentoDemandas}
+                            >
+                                Não, apenas salvar paciente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

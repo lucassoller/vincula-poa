@@ -216,12 +216,11 @@ function Demandas() {
                                 <td>{d.unidadeResponsavelNome || d.unidadeResponsavelId}</td>
                                 <td>
                                     <div className="acoes-container">
+                                        <button className="btn-visualizar" onClick={() => abrirDetalhes(d)}>
+                                            Ver mais
+                                        </button>
                                         {d.status !== "FINALIZADA" && (
                                             <>
-                                                <button className="btn-visualizar" onClick={() => abrirDetalhes(d)}>
-                                                    Ver mais
-                                                </button>
-
                                                 <button className="btn-tentativa" onClick={() => abrirAcao(d, "TENTATIVA")}>
                                                     Tentativa contato
                                                 </button>

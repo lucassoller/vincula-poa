@@ -24,6 +24,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
 
     List<Demanda> findByUsuarioCriadorIdAndStatus(Long usuarioCriadorId, StatusDemanda status);
 
+    List<Demanda> findByPacienteIdAndStatusIn(Long pacienteId, List<StatusDemanda> status);
+
     double countBy();
 
     double countByStatus(StatusDemanda status);

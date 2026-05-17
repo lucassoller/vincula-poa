@@ -1,7 +1,9 @@
 package com.vincula.controller;
 
+import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.paciente.PacienteDTO;
 import com.vincula.dto.paciente.PacienteResponseDTO;
+import com.vincula.service.DemandaService;
 import com.vincula.service.PacienteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -16,9 +18,11 @@ import java.util.List;
 public class PacienteController {
 
     private final PacienteService pacienteService;
+    private final DemandaService demandaService;
 
-    public PacienteController(PacienteService pacienteService) {
+    public PacienteController(PacienteService pacienteService, DemandaService demandaService) {
         this.pacienteService = pacienteService;
+        this.demandaService = demandaService;
     }
 
     @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS')")
@@ -61,6 +65,16 @@ public class PacienteController {
     public ResponseEntity<PacienteResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteAtualizado = pacienteService.atualizar(id, dto);
         return ResponseEntity.ok(pacienteAtualizado);
+    }
+
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
+    @PatchMapping("/{id}/redirecionar-abertas")
+    public ResponseEntity<Void> redirecionarDemandasAbertas(
+            @PathVariable Long id,
+            @Valid @RequestBody RedirecionarDemandaDTO dto
+    ) {
+        demandaService.redirecionarDemandasAbertasDoPaciente(id, dto);
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")

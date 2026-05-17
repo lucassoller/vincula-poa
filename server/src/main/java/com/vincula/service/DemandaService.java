@@ -132,6 +132,31 @@ public class DemandaService {
         return toDTO(atualizada);
     }
 
+    public void redirecionarDemandasAbertasDoPaciente(Long pacienteId, RedirecionarDemandaDTO dto) {
+        Paciente paciente = buscarPacientePorId(pacienteId);
+
+        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+
+        List<Demanda> demandas = demandaRepository
+                .findByPacienteIdAndStatusIn(
+                        pacienteId,
+                        List.of(StatusDemanda.ABERTA, StatusDemanda.EM_ANDAMENTO)
+                );
+
+        for (Demanda demanda : demandas) {
+            if (!demanda.getUnidadeResponsavel().getId().equals(paciente.getUnidadeSaude().getId())) {
+                demanda.setUnidadeResponsavelAnterior(demanda.getUnidadeResponsavel());
+                demanda.setUnidadeResponsavel(paciente.getUnidadeSaude());
+                demanda.setFoiRedirecionada(true);
+                demanda.setMotivoRedirecionamento(dto.getMotivoRedirecionamento());
+                demanda.setUsuarioRedirecionamento(usuario);
+                demanda.setDataHoraRedirecionamento(LocalDateTime.now());
+            }
+        }
+
+        demandaRepository.saveAll(demandas);
+    }
+
     public List<DemandaResponseDTO> listarTodas() {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findAll()
@@ -251,16 +276,19 @@ public class DemandaService {
 
         if (entity.getUnidadeSolicitante() != null) {
             dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
+            dto.setUnidadeSolicitanteNome(entity.getUnidadeSolicitante().getNome());
         }
 
         dto.setUnidadeResponsavelId(entity.getUnidadeResponsavel().getId());
         dto.setUnidadeResponsavelNome(entity.getUnidadeResponsavel().getNome());
+
         dto.setMotivoBuscaAtiva(entity.getMotivoBuscaAtiva());
         dto.setDescricaoBusca(entity.getDescricaoBusca());
         dto.setPrazoDemanda(entity.getPrazoDemanda());
         dto.setStatus(entity.getStatus());
 
         dto.setDataHoraCriacao(entity.getDataHoraCriacao());
+
         dto.setUsuarioCriadorId(entity.getUsuarioCriador().getId());
         dto.setUsuarioCriadorNome(entity.getUsuarioCriador().getNome());
 
@@ -277,6 +305,7 @@ public class DemandaService {
 
         if (entity.getUnidadeResponsavelAnterior() != null) {
             dto.setUnidadeResponsavelAnteriorId(entity.getUnidadeResponsavelAnterior().getId());
+            dto.setUnidadeResponsavelAnteriorNome(entity.getUnidadeResponsavelAnterior().getNome());
         }
 
         dto.setMotivoRedirecionamento(entity.getMotivoRedirecionamento());

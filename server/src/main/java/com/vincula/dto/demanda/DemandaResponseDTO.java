@@ -12,28 +12,42 @@ import java.time.LocalDateTime;
 public class DemandaResponseDTO {
 
     private Long id;
+
     private MotivoBuscaAtiva motivoBuscaAtiva;
     private String descricaoBusca;
+
     private PrazoDemanda prazoDemanda;
     private StatusDemanda status;
+
     private DesfechoDemanda desfecho;
     private String descricaoDesfecho;
+
     private LocalDateTime dataHoraCriacao;
     private LocalDateTime dataHoraLimite;
     private LocalDateTime dataHoraFinalizacao;
+
     private Long pacienteId;
     private String pacienteNome;
+
     private Long unidadeSolicitanteId;
+    private String unidadeSolicitanteNome;
+
     private Long unidadeResponsavelId;
     private String unidadeResponsavelNome;
+
     private Long usuarioCriadorId;
     private String usuarioCriadorNome;
+
     private Long usuarioEncerramentoId;
     private String usuarioEncerramentoNome;
-    private Boolean foiRedirecionada;
+
     private Long unidadeResponsavelAnteriorId;
+    private String unidadeResponsavelAnteriorNome;
+
+    private Boolean foiRedirecionada;
     private String motivoRedirecionamento;
     private LocalDateTime dataHoraRedirecionamento;
+
     private Long usuarioRedirecionamentoId;
     private String usuarioRedirecionamentoNome;
 }
