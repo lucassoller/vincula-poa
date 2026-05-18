@@ -264,7 +264,7 @@ function SecaoCardsInterna({ dados }) {
             {dados?.map((item, index) => (
                 <div key={index} className="prazo-card-item">
                     <span>{item.indicador}</span>
-                    <strong>{item.valor}</strong>
+                    <strong>{formatarValorIndicador(item)}</strong>
                 </div>
             ))}
         </div>
@@ -280,7 +280,7 @@ function SecaoCards({ titulo, dados }) {
                 {dados?.map((item, index) => (
                     <div key={index} className="kpi-card">
                         <span>{item.indicador}</span>
-                        <strong>{item.valor}</strong>
+                        <strong>{formatarValorIndicador(item)}</strong>
                     </div>
                 ))}
             </div>
@@ -385,6 +385,23 @@ function Ranking({ titulo, dados }) {
             </div>
         </div>
     );
+}
+
+function formatarValorIndicador(item) {
+    const nome = item.indicador.toLowerCase();
+
+    const ehPercentual =
+        nome.includes("percentual") ||
+        nome.includes("(%)") ||
+        nome.includes("dentro do prazo") ||
+        nome.includes("atrasadas") ||
+        nome.includes("finalizadas com atraso");
+
+    if (ehPercentual && typeof item.valor === "number") {
+        return `${item.valor} %`;
+    }
+
+    return item.valor;
 }
 
 export default Indicador;
