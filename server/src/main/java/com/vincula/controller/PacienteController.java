@@ -6,6 +6,8 @@ import com.vincula.dto.paciente.PacienteResponseDTO;
 import com.vincula.service.DemandaService;
 import com.vincula.service.PacienteService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +34,7 @@ public class PacienteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pacienteCriado);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    /*@PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<List<PacienteResponseDTO>> listarTodos() {
         List<PacienteResponseDTO> pacientes = pacienteService.listarTodos();
@@ -44,6 +46,24 @@ public class PacienteController {
     public ResponseEntity<List<PacienteResponseDTO>> listarTodosPorUnidade(@PathVariable Long id) {
         List<PacienteResponseDTO> pacientes = pacienteService.listarTodosPorUnidade(id);
         return ResponseEntity.ok(pacientes);
+    }*/
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping
+    public ResponseEntity<Page<PacienteResponseDTO>> listarTodos(Pageable pageable) {
+        return ResponseEntity.ok(pacienteService.listarTodos(pageable));
+    }
+
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/unidadeSaude/{unidadeSaudeId}")
+    public ResponseEntity<Page<PacienteResponseDTO>> listarPorUnidade(
+            @PathVariable Long unidadeSaudeId,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                pacienteService.listarTodosPorUnidade(unidadeSaudeId, pageable)
+        );
     }
 
     @PreAuthorize("isAuthenticated()")

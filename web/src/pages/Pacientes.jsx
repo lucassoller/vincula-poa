@@ -30,10 +30,10 @@ function Pacientes() {
                 let pacientesResponse;
                 
                 if (usuario?.perfil === "GESTAO_MUNICIPAL") {
-                    pacientesResponse = await api.get("/pacientes");
+                    pacientesResponse = await api.get("/pacientes?page=0&size=10");
                 } else if (usuario?.perfil === "EXECUTOR_APS") {
                     pacientesResponse = await api.get(
-                        `/pacientes/unidadeSaude/${usuario.unidadeSaudeId}`
+                        `/pacientes/unidadeSaude/${usuario.unidadeSaudeId}?page=0&size=10`
                     );
                 } else {
                     setMensagem("Seu perfil não possui acesso à lista de pacientes.");
@@ -42,7 +42,7 @@ function Pacientes() {
                 }
 
                 if (ativo) {
-                    setPacientes(pacientesResponse.data);
+                    setPacientes(pacientesResponse.data.content);
                 }
             } catch {
                 if (ativo) {

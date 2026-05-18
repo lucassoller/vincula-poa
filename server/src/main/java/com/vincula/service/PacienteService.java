@@ -14,11 +14,11 @@ import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
-import java.util.List;
 
 @Service
 public class PacienteService {
@@ -50,20 +50,14 @@ public class PacienteService {
         return toDTO(salvo);
     }
 
-    public List<PacienteResponseDTO> listarTodos() {
-        auditoriaFacade.pacienteVisualizado(0L);
-        return pacienteRepository.findAll(Sort.by("nomeCompleto"))
-                .stream()
-                .map(this::toDTO)
-                .toList();
+    public Page<PacienteResponseDTO> listarTodos(Pageable pageable) {
+        return pacienteRepository.findAllByOrderByNomeCompletoAsc(pageable)
+                .map(this::toDTO);
     }
 
-    public List<PacienteResponseDTO> listarTodosPorUnidade(Long id) {
-        auditoriaFacade.pacienteVisualizado(0L);
-        return pacienteRepository.findAllByUnidadeSaudeIdOrderByNomeCompletoAsc(id)
-                .stream()
-                .map(this::toDTO)
-                .toList();
+    public Page<PacienteResponseDTO> listarTodosPorUnidade(Long unidadeSaudeId, Pageable pageable) {
+        return pacienteRepository.findByUnidadeSaudeIdOrderByNomeCompletoAsc(unidadeSaudeId, pageable)
+                .map(this::toDTO);
     }
 
     public PacienteResponseDTO buscarPorId(Long id) {

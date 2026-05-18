@@ -3,26 +3,49 @@ package com.vincula.repository;
 import com.vincula.dto.projection.*;
 import com.vincula.entity.Demanda;
 import com.vincula.enums.StatusDemanda;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DemandaRepository extends JpaRepository<Demanda, Long> {
 
-    List<Demanda> findByPacienteId(Long pacienteId);
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    ORDER BY p.nomeCompleto ASC
+""")
+    Page<Demanda> findAllOrderByPacienteNome(Pageable pageable);
 
-    List<Demanda> findByUnidadeResponsavelId(Long unidadeRespondavelId);
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.unidadeResponsavel.id = :unidadeSaudeId
+    ORDER BY p.nomeCompleto ASC
+""")
+    Page<Demanda> findByUnidadeOrderByPacienteNome(@Param("unidadeSaudeId") Long unidadeSaudeId, Pageable pageable);
 
-    List<Demanda> findByUsuarioCriadorId(Long usuarioCriadorId);
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.paciente.id = :pacienteId
+""")
+    Page<Demanda> findByPaciente(@Param("pacienteId") Long pacienteId, Pageable pageable);
 
-    List<Demanda> findByPacienteIdAndStatus(Long pacienteId, StatusDemanda status);
-
-    List<Demanda> findByUnidadeResponsavelIdAndStatus(Long unidadeRespondavelId, StatusDemanda status);
-
-    List<Demanda> findByUsuarioCriadorIdAndStatus(Long usuarioCriadorId, StatusDemanda status);
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.usuarioCriador.id = :usuarioCriadorId
+    ORDER BY p.nomeCompleto ASC
+""")
+    Page<Demanda> findByUsuarioOrderByPacienteNome(@Param("usuarioCriadorId") Long usuarioCriadorId, Pageable pageable);
 
     List<Demanda> findByPacienteIdAndStatusIn(Long pacienteId, List<StatusDemanda> status);
 

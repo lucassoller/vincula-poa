@@ -1,6 +1,5 @@
 package com.vincula.service;
 
-import com.vincula.dto.paciente.PacienteDTO;
 import com.vincula.dto.paciente.PacienteResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
@@ -13,6 +12,8 @@ import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -43,9 +44,15 @@ public class UnidadeSaudeService {
         return toDTO(salvo);
     }
 
+    public Page<UnidadeSaudeResponseDTO> listarTodos(Pageable pageable) {
+        auditoriaFacade.unidadeSaudeVisualizada(0L);
+        return unidadeSaudeRepository.findAllByOrderByNomeAsc(pageable)
+                .map(this::toDTO);
+    }
+
     public List<UnidadeSaudeResponseDTO> listarTodos() {
         auditoriaFacade.unidadeSaudeVisualizada(0L);
-        return unidadeSaudeRepository.findAll()
+        return unidadeSaudeRepository.findAllByOrderByNomeAsc()
                 .stream()
                 .map(this::toDTO)
                 .toList();

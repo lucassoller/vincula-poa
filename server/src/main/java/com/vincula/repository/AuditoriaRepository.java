@@ -1,19 +1,22 @@
 package com.vincula.repository;
 
 import com.vincula.entity.Auditoria;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface AuditoriaRepository extends JpaRepository<Auditoria, Long> {
-    List<Auditoria> findByUsuarioIdOrderByDataHoraDesc(Long usuarioId);
+    Page<Auditoria> findAllByOrderByDataHoraDesc(Pageable pageable);
 
-    List<Auditoria> findByDataHoraBetweenOrderByDataHoraDesc(LocalDateTime inicio, LocalDateTime fim);
+    Page<Auditoria> findByUsuarioIdOrderByDataHoraDesc(Long usuarioId, Pageable pageable);
 
-    List<Auditoria> findByUsuarioIdAndDataHoraBetweenOrderByDataHoraDesc(
+    Page<Auditoria> findByDataHoraBetweenOrderByDataHoraDesc(LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
+
+    Page<Auditoria> findByUsuarioIdAndDataHoraBetweenOrderByDataHoraDesc(
             Long usuarioId,
             LocalDateTime inicio,
-            LocalDateTime fim
+            LocalDateTime fim,
+            Pageable pageable
     );
 }

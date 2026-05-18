@@ -2,13 +2,18 @@ package com.vincula.repository;
 
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
 import java.util.Optional;
 
 public interface UnidadeSaudeRepository extends JpaRepository<UnidadeSaude, Long> {
+
+    Page<UnidadeSaude> findAllByOrderByNomeAsc(Pageable pageable);
+
+    List<UnidadeSaude> findAllByOrderByNomeAsc();
 
     boolean existsByCnes(String cnes);
 

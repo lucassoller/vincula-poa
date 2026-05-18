@@ -17,6 +17,8 @@ import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -52,6 +54,31 @@ public class DemandaService {
 
         return toDTO(salvo);
     }
+
+    public Page<DemandaResponseDTO> listarTodas(Pageable pageable) {
+        auditoriaFacade.demandaVisualizada(0L);
+        return demandaRepository.findAllOrderByPacienteNome(pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<DemandaResponseDTO> listarPorPaciente(Long pacienteId, Pageable pageable) {
+        auditoriaFacade.demandaVisualizada(0L);
+        return demandaRepository.findByPaciente(pacienteId, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<DemandaResponseDTO> listarPorUnidadeSaude(Long unidadeResponsavelId, Pageable pageable) {
+        auditoriaFacade.demandaVisualizada(0L);
+        return demandaRepository.findByUnidadeOrderByPacienteNome(unidadeResponsavelId, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<DemandaResponseDTO> listarPorUsuarioCriador(Long usuarioId, Pageable pageable) {
+        auditoriaFacade.demandaVisualizada(0L);
+        return demandaRepository.findByUsuarioOrderByPacienteNome(usuarioId, pageable)
+                .map(this::toDTO);
+    }
+
 
     public DemandaResponseDTO atualizar(Long id, DemandaDTO dto) {
         Demanda entity = buscarDemandaPorId(id);
@@ -157,68 +184,12 @@ public class DemandaService {
         demandaRepository.saveAll(demandas);
     }
 
-    public List<DemandaResponseDTO> listarTodas() {
-        auditoriaFacade.demandaVisualizada(0L);
-        return demandaRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .toList();
-    }
-
     public DemandaResponseDTO buscarPorId(Long id) {
         Demanda entity = buscarDemandaPorId(id);
 
         auditoriaFacade.demandaVisualizada(entity.getId());
 
         return toDTO(entity);
-    }
-
-    public List<DemandaResponseDTO> listarPorPaciente(Long pacienteId) {
-        auditoriaFacade.demandaVisualizada(0L);
-        return demandaRepository.findByPacienteId(pacienteId)
-                .stream()
-                .map(this::toDTO)
-                .toList();
-    }
-
-    public List<DemandaResponseDTO> listarPorUnidadeSaude(Long unidadeResponsavelId) {
-        auditoriaFacade.demandaVisualizada(0L);
-        return demandaRepository.findByUnidadeResponsavelId(unidadeResponsavelId)
-                .stream()
-                .map(this::toDTO)
-                .toList();
-    }
-
-    public List<DemandaResponseDTO> listarPorUsuarioCriador(Long usuarioId) {
-        auditoriaFacade.demandaVisualizada(0L);
-        return demandaRepository.findByUsuarioCriadorId(usuarioId)
-                .stream()
-                .map(this::toDTO)
-                .toList();
-    }
-
-    public List<DemandaResponseDTO> listarPorPacienteEStatus(Long pacienteId, StatusDemanda status) {
-        auditoriaFacade.demandaVisualizada(0L);
-        return demandaRepository.findByPacienteIdAndStatus(pacienteId, status)
-                .stream()
-                .map(this::toDTO)
-                .toList();
-    }
-
-    public List<DemandaResponseDTO> listarPorUnidadeSaudeEStatus(Long unidadeResponsavelId, StatusDemanda status) {
-        auditoriaFacade.demandaVisualizada(0L);
-        return demandaRepository.findByUnidadeResponsavelIdAndStatus(unidadeResponsavelId, status)
-                .stream()
-                .map(this::toDTO)
-                .toList();
-    }
-
-    public List<DemandaResponseDTO> listarPorUsuarioCriadorEStatus(Long usuarioId, StatusDemanda status) {
-        auditoriaFacade.demandaVisualizada(0L);
-        return demandaRepository.findByUsuarioCriadorIdAndStatus(usuarioId, status)
-                .stream()
-                .map(this::toDTO)
-                .toList();
     }
 
     public void deletar(Long id) {

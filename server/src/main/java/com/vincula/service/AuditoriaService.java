@@ -7,6 +7,8 @@ import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.repository.AuditoriaRepository;
 import com.vincula.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -65,34 +67,27 @@ public class AuditoriaService {
         auditoriaRepository.save(log);
     }
 
-    public List<AuditoriaDTO> listarTodos() {
-        return auditoriaRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .toList();
+    public Page<AuditoriaDTO> listarTodos(Pageable pageable) {
+        return auditoriaRepository.findAll(pageable)
+                .map(this::toDTO);
     }
 
-    public List<AuditoriaDTO> listarPorUsuario(Long usuarioId) {
-        return auditoriaRepository.findByUsuarioIdOrderByDataHoraDesc(usuarioId)
-                .stream()
-                .map(this::toDTO)
-                .toList();
+    public Page<AuditoriaDTO> listarPorUsuario(Long usuarioId, Pageable pageable) {
+        return auditoriaRepository.findByUsuarioIdOrderByDataHoraDesc(usuarioId, pageable)
+                .map(this::toDTO);
     }
 
-    public List<AuditoriaDTO> listarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        return auditoriaRepository.findByDataHoraBetweenOrderByDataHoraDesc(inicio, fim)
-                .stream()
-                .map(this::toDTO)
-                .toList();
+    public Page<AuditoriaDTO> listarPorPeriodo(LocalDateTime inicio, LocalDateTime fim, Pageable pageable) {
+        return auditoriaRepository.findByDataHoraBetweenOrderByDataHoraDesc(inicio, fim, pageable)
+                .map(this::toDTO);
     }
 
-    public List<AuditoriaDTO> listarPorUsuarioEPeriodo(Long usuarioId,
-                                                          LocalDateTime inicio,
-                                                          LocalDateTime fim) {
-        return auditoriaRepository.findByUsuarioIdAndDataHoraBetweenOrderByDataHoraDesc(usuarioId, inicio, fim)
-                .stream()
-                .map(this::toDTO)
-                .toList();
+    public Page<AuditoriaDTO> listarPorUsuarioEPeriodo(Long usuarioId,
+                                                       LocalDateTime inicio,
+                                                       LocalDateTime fim,
+                                                       Pageable pageable) {
+        return auditoriaRepository.findByUsuarioIdAndDataHoraBetweenOrderByDataHoraDesc(usuarioId, inicio, fim, pageable)
+                .map(this::toDTO);
     }
 
     public AuditoriaDTO toDTO(Auditoria log) {

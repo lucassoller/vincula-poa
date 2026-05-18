@@ -2,12 +2,13 @@ package com.vincula.controller;
 
 import com.vincula.dto.auditoria.AuditoriaDTO;
 import com.vincula.service.AuditoriaService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
 @RestController
@@ -21,29 +22,31 @@ public class AuditoriaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AuditoriaDTO>> listarLogs() {
-        return ResponseEntity.ok(auditoriaService.listarTodos());
+    public ResponseEntity<Page<AuditoriaDTO>> listarLogs(Pageable pageable) {
+        return ResponseEntity.ok(auditoriaService.listarTodos(pageable));
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<AuditoriaDTO>> listarPorUsuario(@PathVariable Long usuarioId) {
-        return ResponseEntity.ok(auditoriaService.listarPorUsuario(usuarioId));
+    public ResponseEntity<Page<AuditoriaDTO>> listarPorUsuario(@PathVariable Long usuarioId, Pageable pageable) {
+        return ResponseEntity.ok(auditoriaService.listarPorUsuario(usuarioId, pageable));
     }
 
     @GetMapping("/periodo")
-    public ResponseEntity<List<AuditoriaDTO>> listarPorPeriodo(
+    public ResponseEntity<Page<AuditoriaDTO>> listarPorPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
+            Pageable pageable
     ) {
-        return ResponseEntity.ok(auditoriaService.listarPorPeriodo(inicio, fim));
+        return ResponseEntity.ok(auditoriaService.listarPorPeriodo(inicio, fim, pageable));
     }
 
     @GetMapping("/usuario/{usuarioId}/periodo")
-    public ResponseEntity<List<AuditoriaDTO>> listarPorUsuarioEPeriodo(
+    public ResponseEntity<Page<AuditoriaDTO>> listarPorUsuarioEPeriodo(
             @PathVariable Long usuarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
+            Pageable pageable
     ) {
-        return ResponseEntity.ok(auditoriaService.listarPorUsuarioEPeriodo(usuarioId, inicio, fim));
+        return ResponseEntity.ok(auditoriaService.listarPorUsuarioEPeriodo(usuarioId, inicio, fim, pageable));
     }
 }

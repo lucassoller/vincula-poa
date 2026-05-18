@@ -69,7 +69,7 @@ function Indicador() {
 
         async function carregarUnidades() {
             try {
-                const response = await api.get("/unidades-saude");
+                const response = await api.get("/unidades-saude/all");
 
                 if (ativo) {
                     setUnidades(response.data);

@@ -14,6 +14,8 @@ import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.repository.UsuarioRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,12 +51,10 @@ public class UsuarioService {
         return toDTO(salvo);
     }
 
-    public List<UsuarioResponseDTO> listarTodos() {
+    public Page<UsuarioResponseDTO> listarTodos(Pageable pageable) {
         auditoriaFacade.usuarioVisualizado(0L);
-        return usuarioRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .toList();
+        return usuarioRepository.findAllByOrderByNomeAsc(pageable)
+                .map(this::toDTO);
     }
 
     public UsuarioResponseDTO buscarPorId(Long id) {

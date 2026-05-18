@@ -5,6 +5,8 @@ import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.service.UnidadeSaudeService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +33,12 @@ public class UnidadeSaudeController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping
+    public ResponseEntity<Page<UnidadeSaudeResponseDTO>> listarTodos(Pageable pageable) {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodos(pageable));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/all")
     public ResponseEntity<List<UnidadeSaudeResponseDTO>> listarTodos() {
         return ResponseEntity.ok(unidadeSaudeService.listarTodos());
     }

@@ -6,12 +6,12 @@ import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -32,8 +32,8 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping
-    public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
-        return ResponseEntity.ok(usuarioService.listarTodos());
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarTodos(Pageable pageable) {
+        return ResponseEntity.ok(usuarioService.listarTodos(pageable));
     }
 
     @PreAuthorize("isAuthenticated()")

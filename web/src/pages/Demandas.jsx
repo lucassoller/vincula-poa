@@ -45,18 +45,18 @@ function Demandas() {
             let demandasResponse;
 
             if (usuario?.perfil === "GESTAO_MUNICIPAL") {
-                demandasResponse = await api.get("/demandas");
+                demandasResponse = await api.get("/demandas?page=0&size=10");
             } else if (usuario?.perfil === "EXECUTOR_APS") {
                 demandasResponse = await api.get(
-                    `/demandas/unidade/${usuario.unidadeSaudeId}`
+                    `/demandas/unidade/${usuario.unidadeSaudeId}?page=0&size=10`
                 );
             } else {
                 demandasResponse = { data: [] };
             }
 
-            const unidadesResponse = await api.get("/unidades-saude");
+            const unidadesResponse = await api.get("/unidades-saude/all");
 
-            setDemandas(demandasResponse.data);
+            setDemandas(demandasResponse.data.content);
             setUnidades(unidadesResponse.data);
 
         } catch {

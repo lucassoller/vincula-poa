@@ -14,6 +14,7 @@ function GestaoListagem() {
     const [filtroPerfil, setFiltroPerfil] = useState("");
     const [usuarios, setUsuarios] = useState([]);
     const [unidades, setUnidades] = useState([]);
+    const [unidadesSelect, setUnidadesSelect] = useState([]);
     const [pacientes, setPacientes] = useState([]);
     const [resultado, setResultado] = useState([]);
     const [filtroUbsPaciente, setFiltroUbsPaciente] = useState("");
@@ -21,15 +22,17 @@ function GestaoListagem() {
     useEffect(() => {
         async function carregarDados() {
             try {
-                const [usuariosRes, unidadesRes, pacientesRes] = await Promise.all([
-                    api.get("/usuarios"),
-                    api.get("/unidades-saude"),
-                    api.get("/pacientes")
+                const [usuariosRes, unidadesRes, unidadesSelectRes, pacientesRes] = await Promise.all([
+                    api.get("/usuarios?page=0&size=10"),
+                    api.get("/unidades-saude?page=0&size=10"),
+                    api.get("/unidades-saude/all"),
+                    api.get("/pacientes?page=0&size=10")
                 ]);
 
-                setUsuarios(usuariosRes.data);
-                setUnidades(unidadesRes.data);
-                setPacientes(pacientesRes.data);
+                setUsuarios(usuariosRes.data.content);
+                setUnidades(unidadesRes.data.content);
+                setUnidadesSelect(unidadesSelectRes.data)
+                setPacientes(pacientesRes.data.content);
             } catch {
                 console.error("Erro ao carregar dados da gestão");
             }
@@ -229,7 +232,7 @@ function GestaoListagem() {
                                         onChange={(e) => setFiltroUbs(e.target.value)}
                                     >
                                         <option value="">Todas as UBS</option>
-                                        {unidades.map((ubs) => (
+                                        {unidadesSelect.map((ubs) => (
                                             <option key={ubs.id} value={ubs.id}>
                                                 {ubs.nome}
                                             </option>
@@ -277,7 +280,7 @@ function GestaoListagem() {
                                     >
                                         <option value="">Todas as UBS</option>
 
-                                        {unidades.map((ubs) => (
+                                        {unidadesSelect.map((ubs) => (
                                             <option key={ubs.id} value={ubs.id}>
                                                 {ubs.nome}
                                             </option>

@@ -15,12 +15,12 @@ function Auditoria() {
         async function carregarInicial() {
             try {
                 const [logsResponse, usuariosResponse] = await Promise.all([
-                    api.get("/auditoria"),
-                    api.get("/usuarios"),
+                    api.get("/auditoria?page=0&size=10"),
+                    api.get("/usuarios?page=0&size=10"),
                 ]);
 
-                setLogs(logsResponse.data);
-                setUsuarios(usuariosResponse.data);
+                setLogs(logsResponse.data.content);
+                setUsuarios(usuariosResponse.data.content);
             } catch {
                 setMensagem("Erro ao carregar auditoria.");
             } finally {
@@ -44,18 +44,18 @@ function Auditoria() {
                 return;
             }
 
-            let url = "/auditoria";
+            let url = "/auditoria?page=0&size=10";
 
             if (temUsuario && temPeriodo) {
-                url = `/auditoria/usuario/${usuarioId}/periodo?inicio=${inicio}T00:00:00&fim=${fim}T23:59:59`;
+                url = `/auditoria/usuario/${usuarioId}/periodo?inicio=${inicio}T00:00:00&fim=${fim}T23:59:59&page=0&size=10`;
             } else if (temUsuario) {
-                url = `/auditoria/usuario/${usuarioId}`;
+                url = `/auditoria/usuario/${usuarioId}?page=0&size=10`;
             } else if (temPeriodo) {
-                url = `/auditoria/periodo?inicio=${inicio}T00:00:00&fim=${fim}T23:59:59`;
+                url = `/auditoria/periodo?inicio=${inicio}T00:00:00&fim=${fim}T23:59:59&page=0&size=10`;
             }
 
             const response = await api.get(url);
-            setLogs(response.data);
+            setLogs(response.data.content);
         } catch {
             setMensagem("Erro ao filtrar auditoria.");
         } finally {
@@ -73,8 +73,8 @@ function Auditoria() {
     async function aplicarTodos() {
         try {
             setCarregando(true);
-            const response = await api.get("/auditoria");
-            setLogs(response.data);
+            const response = await api.get("/auditoria?page=0&size=10");
+            setLogs(response.data.content);
         } catch {
             setMensagem("Erro ao carregar auditoria.");
         } finally {

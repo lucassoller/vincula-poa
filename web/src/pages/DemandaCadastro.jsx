@@ -26,11 +26,11 @@ function DemandaCadastro() {
         async function carregarDados() {
             try {
                 const [pacientesRes, unidadesRes] = await Promise.all([
-                    api.get("/pacientes"),
-                    api.get("/unidades-saude"),
+                    api.get("/pacientes?page=0&size=10"),
+                    api.get("/unidades-saude/all"),
                 ]);
 
-                setPacientes(pacientesRes.data);
+                setPacientes(pacientesRes.data.content);
                 setUnidades(unidadesRes.data);
 
                 if (usuario?.perfil === "EXECUTOR_APS") {

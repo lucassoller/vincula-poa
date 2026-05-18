@@ -7,6 +7,8 @@ import com.vincula.dto.demanda.DemandaResponseDTO;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.service.DemandaService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +40,8 @@ public class DemandaController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping
-    public ResponseEntity<List<DemandaResponseDTO>> listarTodas() {
-        return ResponseEntity.ok(demandaService.listarTodas());
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodas(Pageable pageable) {
+        return ResponseEntity.ok(demandaService.listarTodas(pageable));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -50,41 +52,29 @@ public class DemandaController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/paciente/{pacienteId}")
-    public ResponseEntity<List<DemandaResponseDTO>> listarPorPacienteEStatus(
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorPaciente(
             @PathVariable Long pacienteId,
-            @RequestParam(required = false) StatusDemanda status
+            Pageable pageable
     ) {
-        if (status != null) {
-            return ResponseEntity.ok(demandaService.listarPorPacienteEStatus(pacienteId, status));
-        }
-
-        return ResponseEntity.ok(demandaService.listarPorPaciente(pacienteId));
+        return ResponseEntity.ok(demandaService.listarPorPaciente(pacienteId, pageable));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/unidade/{unidadeSaudeId}")
-    public ResponseEntity<List<DemandaResponseDTO>> listarPorUnidadeSaudeEStatus(
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaude(
             @PathVariable Long unidadeSaudeId,
-            @RequestParam(required = false) StatusDemanda status
+            Pageable pageable
     ) {
-        if (status != null) {
-            return ResponseEntity.ok(demandaService.listarPorUnidadeSaudeEStatus(unidadeSaudeId, status));
-        }
-
-        return ResponseEntity.ok(demandaService.listarPorUnidadeSaude(unidadeSaudeId));
+        return ResponseEntity.ok(demandaService.listarPorUnidadeSaude(unidadeSaudeId, pageable));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<DemandaResponseDTO>> listarPorUsuarioCriadorEStatus(
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUsuarioCriador(
             @PathVariable Long usuarioId,
-            @RequestParam(required = false) StatusDemanda status
+            Pageable pageable
     ) {
-        if (status != null) {
-            return ResponseEntity.ok(demandaService.listarPorUsuarioCriadorEStatus(usuarioId, status));
-        }
-
-        return ResponseEntity.ok(demandaService.listarPorUsuarioCriador(usuarioId));
+        return ResponseEntity.ok(demandaService.listarPorUsuarioCriador(usuarioId, pageable));
     }
 
     @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
