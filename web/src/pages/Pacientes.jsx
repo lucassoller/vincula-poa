@@ -19,6 +19,9 @@ function Pacientes() {
     const [ubsSelecionada, setUbsSelecionada] = useState(null);
     const [carregandoUbs, setCarregandoUbs] = useState(false);
     const [filtro, setFiltro] = useState("");
+    const [pagina, setPagina] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
+    const tamanhoPagina = 10;
 
     useEffect(() => {
         let ativo = true;
@@ -28,12 +31,14 @@ function Pacientes() {
                 setCarregando(true);
 
                 let pacientesResponse;
-                
+
                 if (usuario?.perfil === "GESTAO_MUNICIPAL") {
-                    pacientesResponse = await api.get("/pacientes?page=0&size=10");
+                    pacientesResponse = await api.get(
+                        `/pacientes?page=${pagina}&size=${tamanhoPagina}&sort=nomeCompleto,asc`
+                    );
                 } else if (usuario?.perfil === "EXECUTOR_APS") {
                     pacientesResponse = await api.get(
-                        `/pacientes/unidadeSaude/${usuario.unidadeSaudeId}?page=0&size=10`
+                        `/pacientes/unidadeSaude/${usuario.unidadeSaudeId}?page=${pagina}&size=${tamanhoPagina}&sort=nomeCompleto,asc`
                     );
                 } else {
                     setMensagem("Seu perfil não possui acesso à lista de pacientes.");
@@ -43,6 +48,7 @@ function Pacientes() {
 
                 if (ativo) {
                     setPacientes(pacientesResponse.data.content);
+                    setTotalPaginas(pacientesResponse.data.page.totalPages);
                 }
             } catch {
                 if (ativo) {
@@ -60,7 +66,7 @@ function Pacientes() {
         return () => {
             ativo = false;
         };
-    }, [usuario]);
+    }, [usuario, pagina]);
 
     if (carregando) {
         return (
@@ -181,6 +187,51 @@ function Pacientes() {
                     {pacientesFiltrados.length === 0 && !mensagem && (
                         <div className="empty-state">
                             Nenhum paciente encontrado.
+                        </div>
+                    )}
+                    {totalPaginas > 1 && (
+                        <div className="pagination">
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={pagina === 0}
+                                onClick={() => setPagina(0)}
+                            >
+                                Primeira
+                            </button>
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={pagina === 0}
+                                onClick={() => setPagina((prev) => prev - 1)}
+                            >
+                                Anterior
+                            </button>
+
+                            <span className="pagination-info">
+                                Página {pagina + 1} de {totalPaginas}
+                            </span>
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={pagina + 1 >= totalPaginas}
+                                onClick={() => setPagina((prev) => prev + 1)}
+                            >
+                                Próxima
+                            </button>
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={pagina + 1 >= totalPaginas}
+                                onClick={() => setPagina(totalPaginas - 1)}
+                            >
+                                Última
+                            </button>
+
                         </div>
                     )}
                 </div>

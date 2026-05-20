@@ -62,6 +62,10 @@ function Navbar() {
                     Cadastrar UBS
                 </Link>
 
+                <Link to="/mapa" className="navbar-link">
+                    Mapa UBS
+                </Link>
+
                 {usuario?.perfil === "GESTAO_MUNICIPAL" && (
                     <Link to="/gestao/listar" className="navbar-link">
                         Listar tudo

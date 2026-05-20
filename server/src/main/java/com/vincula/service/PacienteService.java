@@ -27,15 +27,19 @@ public class PacienteService {
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final EnderecoMapper enderecoMapper;
     private final AuditoriaFacade auditoriaFacade;
+    private final TerritorializacaoService territorializacaoService;
+    private final GeocodingService geocodingService;
 
     public PacienteService(PacienteRepository pacienteRepository,
                            UnidadeSaudeRepository unidadeSaudeRepository,
                            EnderecoMapper enderecoMapper,
-                           AuditoriaFacade auditoriaFacade) {
+                           AuditoriaFacade auditoriaFacade, TerritorializacaoService territorializacaoService, GeocodingService geocodingService) {
         this.pacienteRepository = pacienteRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.enderecoMapper = enderecoMapper;
         this.auditoriaFacade = auditoriaFacade;
+        this.territorializacaoService = territorializacaoService;
+        this.geocodingService = geocodingService;
     }
 
     public PacienteResponseDTO criar(PacienteDTO dto) {
@@ -82,15 +86,12 @@ public class PacienteService {
 
         validarDocumentoUpdate(id, dto);
 
-        UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
-
         if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
             throw new BusinessException("Data de nascimento não pode ser futura");
         }
 
         String descricaoLog = AuditoriaDescricaoUtil.pacienteAtualizado(paciente, dto);
 
-        paciente.setUnidadeSaude(unidadeSaude);
         paciente.setNomeCompleto(dto.getNomeCompleto());
         paciente.setTelefone(dto.getTelefone());
         paciente.setDataNascimento(dto.getDataNascimento());
@@ -98,6 +99,22 @@ public class PacienteService {
         paciente.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
 
         enderecoMapper.updateEntityFromDto(dto.getEndereco(), paciente.getEndereco());
+
+        geocodingService.preencherCoordenadas(paciente.getEndereco());
+
+        if(paciente.getEndereco().getLatitude() == null || paciente.getEndereco().getLongitude() == null){
+            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+        }
+
+        UnidadeSaude unidade = territorializacaoService.buscarUbsPorCoordenada(
+                paciente.getEndereco().getLatitude(),
+                paciente.getEndereco().getLongitude());
+
+        if(unidade == null){
+            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+        }
+
+        paciente.setUnidadeSaude(unidade);
 
         Paciente atualizado = pacienteRepository.save(paciente);
 
@@ -133,15 +150,8 @@ public class PacienteService {
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
     }
 
-    private UnidadeSaude buscarUnidadeSaudePorId(Long id) {
-        return unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
-    }
-
     private Paciente toEntity(PacienteDTO dto) {
         Endereco endereco = enderecoMapper.toEntity(dto.getEndereco());
-
-        UnidadeSaude unidadeSaude = buscarUnidadeSaudePorId(dto.getUnidadeSaudeId());
 
         if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
             throw new BusinessException("Data de nascimento não pode ser futura");
@@ -152,9 +162,23 @@ public class PacienteService {
         entity.setTelefone(dto.getTelefone());
         entity.setDataNascimento(dto.getDataNascimento());
         entity.setDocumento(dto.getDocumento());
-        entity.setEndereco(endereco);
-        entity.setUnidadeSaude(unidadeSaude);
         entity.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
+        entity.setEndereco(endereco);
+
+        geocodingService.preencherCoordenadas(entity.getEndereco());
+
+        if(entity.getEndereco().getLatitude() == null || entity.getEndereco().getLongitude() == null){
+            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+        }
+
+        UnidadeSaude unidade = territorializacaoService.buscarUbsPorCoordenada(
+                entity.getEndereco().getLatitude(),
+                entity.getEndereco().getLongitude());
+
+        if(unidade == null){
+            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+        }
+        entity.setUnidadeSaude(unidade);
 
         return entity;
     }

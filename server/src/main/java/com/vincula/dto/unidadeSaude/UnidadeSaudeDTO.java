@@ -22,6 +22,9 @@ public class UnidadeSaudeDTO {
     @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
     private String telefone;
 
+    @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
+    private String telefone2;
+
     @NotNull(message = "Endereço é obrigatório")
     @Valid
     private EnderecoDTO endereco;

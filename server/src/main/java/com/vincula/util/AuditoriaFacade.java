@@ -150,27 +150,6 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.UNIDADE_SAUDE_VISUALIZADA, "UnidadeSaude", id, "Unidade de saúde visualizada");
     }
 
-    public void observacaoCriada(Long id, Long pacienteId) {
-        registrar(
-                TipoAcaoAuditoria.OBSERVACAO_CRIADA,
-                "Observacao",
-                id,
-                "Observação criada para paciente ID " + pacienteId
-        );
-    }
-
-    public void observacaoAtualizada(Long id, String descricao) {
-        registrar(TipoAcaoAuditoria.OBSERVACAO_ATUALIZADA, "Observacao", id, descricao);
-    }
-
-    public void observacaoDeletada(Long id) {
-        registrar(TipoAcaoAuditoria.OBSERVACAO_DELETADA, "Observacao", id, "Observação deletada");
-    }
-
-    public void observacaoVisualizada(Long id) {
-        registrar(TipoAcaoAuditoria.OBSERVACAO_VISUALIZADA, "Observacao", id, "Observação visualizada");
-    }
-
     public void loginRealizado(Usuario usuario) {
         registrarComUsuario(
                 usuario,

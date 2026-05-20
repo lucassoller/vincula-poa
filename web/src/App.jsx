@@ -16,6 +16,7 @@ import GestaoListagem from "./pages/GestaoListagem.jsx";
 import MeuPerfil from "./pages/MeuPerfil.jsx";
 import AlterarSenha from "./pages/AlterarSenha.jsx";
 import DemandaCadastro from "./pages/DemandaCadastro.jsx";
+import MapaTerritorios2 from "./pages/MapasTerritorio2.jsx";
 
 
 function App() {
@@ -23,6 +24,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
+            <Route path="/mapa" element={
+                <Layout>
+                    <MapaTerritorios2 />
+                </Layout>} />
           <Route
               path="/indicadores"
               element={

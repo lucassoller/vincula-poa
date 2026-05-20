@@ -6,7 +6,6 @@ import com.vincula.entity.Demanda;
 import com.vincula.entity.TentativaContato;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.StatusDemanda;
-import com.vincula.enums.TipoTentativaContato;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.DemandaRepository;

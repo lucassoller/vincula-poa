@@ -10,5 +10,6 @@ public class UnidadeSaudeResponseDTO {
     private String nome;
     private String cnes;
     private String telefone;
+    private String telefone2;
     private EnderecoResponseDTO endereco;
 }

@@ -19,6 +19,9 @@ public class UnidadeSaude {
     @Column(length = 11)
     private String telefone;
 
+    @Column(length = 11)
+    private String telefone2;
+
     @Column(nullable = false, unique = true, length = 7)
     private String cnes;
 
@@ -28,4 +31,7 @@ public class UnidadeSaude {
 
     @OneToMany(mappedBy = "unidadeSaude", fetch = FetchType.LAZY)
     private List<Paciente> pacientes;
+
+    @OneToMany(mappedBy = "unidadeSaude", fetch = FetchType.LAZY)
+    private List<TerritorioUbs> territorios;
 }

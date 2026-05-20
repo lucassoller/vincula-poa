@@ -1,9 +1,7 @@
 package com.vincula.util;
 
-import com.vincula.dto.MudancaSenhaDTO;
 import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.endereco.EnderecoDTO;
-import com.vincula.dto.observacao.ObservacaoDTO;
 import com.vincula.dto.paciente.PacienteDTO;
 import com.vincula.dto.tentativaContato.TentativaContatoDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
@@ -94,14 +92,6 @@ public class AuditoriaDescricaoUtil {
             return "Endereço atualizado sem alterações relevantes";
         }
         return enderecoAlteracao;
-    }
-
-    public static String observacaoAtualizada(Observacao entity, ObservacaoDTO dto) {
-        StringBuilder sb = new StringBuilder();
-
-        adicionarAlteracao(sb, "Descrição", entity.getDescricao(), dto.getDescricao());
-
-        return sb.isEmpty() ? "Observação atualizada sem alterações relevantes" : sb.toString();
     }
 
     public static String usuarioAtualizado(Usuario entity, UsuarioDTO dto) {

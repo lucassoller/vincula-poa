@@ -34,20 +34,6 @@ public class PacienteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pacienteCriado);
     }
 
-    /*@PreAuthorize("isAuthenticated()")
-    @GetMapping
-    public ResponseEntity<List<PacienteResponseDTO>> listarTodos() {
-        List<PacienteResponseDTO> pacientes = pacienteService.listarTodos();
-        return ResponseEntity.ok(pacientes);
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/unidadeSaude/{id}")
-    public ResponseEntity<List<PacienteResponseDTO>> listarTodosPorUnidade(@PathVariable Long id) {
-        List<PacienteResponseDTO> pacientes = pacienteService.listarTodosPorUnidade(id);
-        return ResponseEntity.ok(pacientes);
-    }*/
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<Page<PacienteResponseDTO>> listarTodos(Pageable pageable) {

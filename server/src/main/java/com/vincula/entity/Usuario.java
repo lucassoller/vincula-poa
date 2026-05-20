@@ -4,8 +4,6 @@ import com.vincula.enums.PerfilUsuario;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
-
 @Entity
 @Table(name = "usuario")
 @Data
@@ -37,7 +35,4 @@ public class Usuario {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unidade_saude_id")
     private UnidadeSaude unidadeSaude;
-
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
-    private List<Observacao> observacoes;
 }
