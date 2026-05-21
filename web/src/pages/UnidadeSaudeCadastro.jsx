@@ -3,13 +3,13 @@ import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm.jsx";
 import {useNavigate} from "react-router-dom";
 
-const camposEtapa1 = ["nome", "cnes", "telefone", "email"];
+const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2"];
 
 const formInicial = {
     nome: "",
     cnes: "",
     telefone: "",
-    email: "",
+    telefone2: "",
     endereco: {
         rua: "",
         numero: "",
@@ -166,7 +166,7 @@ function UnidadeSaudeCadastro() {
                                     )}
                                 </div>
                             </div>
-                            <div className="form-grid two">
+                            <div className="form-grid full">
                                 <div className="form-group">
                                     <label>
                                         CNES <span>*</span>
@@ -182,6 +182,8 @@ function UnidadeSaudeCadastro() {
                                         <small>{erros.cnes}</small>
                                     )}
                                 </div>
+                            </div>
+                            <div className="form-grid two">
                                 <div className="form-group">
                                     <label>
                                         Telefone
@@ -198,23 +200,23 @@ function UnidadeSaudeCadastro() {
                                         <small>{erros.telefone}</small>
                                     )}
                                 </div>
-                            </div>
-                            <div className="form-grid full">
                                 <div className="form-group">
                                     <label>
-                                        Email
+                                        Telefone adicional
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="email"
-                                        placeholder="name@example.com"
-                                        value={form.email}
+                                        name="telefone2"
+                                        placeholder="(xx)xxxxx-xxxx"
+                                        value={form.telefone2}
+                                        type="text"
                                         onChange={alterar}
                                     />
-                                    {erros.email && (
-                                        <small>{erros.email}</small>
+                                    {erros.telefone2 && (
+                                        <small>{erros.telefone2}</small>
                                     )}
                                 </div>
+
                             </div>
                             <div className="form-actions">
                                 <button

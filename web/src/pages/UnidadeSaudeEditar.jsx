@@ -7,7 +7,7 @@ const formInicial = {
     nome: "",
     cnes: "",
     telefone: "",
-    email: "",
+    telefone2: "",
     endereco: {
         cep: "",
         rua: "",
@@ -18,7 +18,7 @@ const formInicial = {
     },
 };
 
-const camposEtapa1 = ["nome", "cnes", "telefone", "email"];
+const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2"];
 
 function UnidadeSaudeEditar() {
     const { id } = useParams();
@@ -41,7 +41,6 @@ function UnidadeSaudeEditar() {
                         nome: response.data.nome || "",
                         cnes: response.data.cnes || "",
                         telefone: response.data.telefone || "",
-                        email: response.data.email || "",
                         endereco: {
                             cep: response.data.endereco?.cep || "",
                             rua: response.data.endereco?.rua || "",
@@ -239,7 +238,7 @@ function UnidadeSaudeEditar() {
                                     )}
                                 </div>
                             </div>
-                            <div className="form-grid two">
+                            <div className="form-grid full">
                                 <div className="form-group">
                                     <label>
                                         CNES <span>*</span>
@@ -255,6 +254,8 @@ function UnidadeSaudeEditar() {
                                         <small>{erros.cnes}</small>
                                     )}
                                 </div>
+                            </div>
+                            <div className="form-grid two">
                                 <div className="form-group">
                                     <label>
                                         Telefone
@@ -270,23 +271,22 @@ function UnidadeSaudeEditar() {
                                         <small>{erros.telefone}</small>
                                     )}
                                 </div>
-                            </div>
-                            <div className="form-grid full">
                                 <div className="form-group">
                                     <label>
-                                        Email
+                                        Telefone adicional
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="email"
-                                        placeholder="name@example.com"
-                                        value={form.email}
+                                        name="telefone2"
+                                        placeholder="(xx)xxxxx-xxxx"
+                                        value={form.telefone2}
                                         onChange={alterar}
                                     />
-                                    {erros.email && (
-                                        <small>{erros.email}</small>
+                                    {erros.telefone2 && (
+                                        <small>{erros.telefone2}</small>
                                     )}
                                 </div>
+
                             </div>
                             <div className="form-actions">
                                 <button

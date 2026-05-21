@@ -350,7 +350,7 @@ function GestaoListagem() {
                                             <th>Nome</th>
                                             <th>CNES</th>
                                             <th>Telefone</th>
-                                            <th>Email</th>
+                                            <th>Telefone adicional</th>
                                             <th>Bairro</th>
                                         </tr>
                                         </thead>
@@ -360,7 +360,7 @@ function GestaoListagem() {
                                                 <td>{u.nome}</td>
                                                 <td>{u.cnes}</td>
                                                 <td>{u.telefone || "-"}</td>
-                                                <td>{u.email || "-"}</td>
+                                                <td>{u.telefone2 || "-"}</td>
                                                 <td>{u.endereco?.bairro || "-"}</td>
                                             </tr>
                                         ))}

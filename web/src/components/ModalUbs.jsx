@@ -35,8 +35,8 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                     />
 
                     <CampoDetalhe
-                        label="Email"
-                        valor={ubsSelecionada.email}
+                        label="Telefone adicional"
+                        valor={ubsSelecionada.telefone2}
                     />
                 </div>
 
