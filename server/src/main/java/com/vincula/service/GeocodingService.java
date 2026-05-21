@@ -10,9 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 @Service
 public class GeocodingService {
 
@@ -31,56 +28,34 @@ public class GeocodingService {
 
         try {
 
-            String enderecoFormatado =
-                    String.format(
-                            "%s, %s, %s, %s",
-                            endereco.getRua(),
-                            endereco.getNumero(),
-                            endereco.getCidade(),
-                            endereco.getEstado()
-                    );
+            String enderecoFormatado = String.format("%s, %s, %s, %s",
+                    endereco.getRua(),
+                    endereco.getNumero(),
+                    endereco.getCidade(),
+                    endereco.getEstado()
+            );
 
-            String url =
-                    "https://nominatim.openstreetmap.org/search" +
-                            "?format=json" +
-                            "&limit=1" +
-                            "&q=" + enderecoFormatado;
+            String url = "https://nominatim.openstreetmap.org/search" +
+                    "?format=json" +
+                    "&limit=1" +
+                    "&q=" + enderecoFormatado;
 
             HttpHeaders headers = new HttpHeaders();
 
-            headers.set(
-                    "User-Agent",
-                    "VinculaPOA"
-            );
+            headers.set("User-Agent", "VinculaPOA");
 
-            HttpEntity<Void> entity =
-                    new HttpEntity<>(headers);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<String> response =
-                    restTemplate.exchange(
-                            url,
-                            HttpMethod.GET,
-                            entity,
-                            String.class
-                    );
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
-            JsonNode root =
-                    objectMapper.readTree(
-                            response.getBody()
-                    );
+            JsonNode root = objectMapper.readTree(response.getBody());
 
             if (root.isArray() && !root.isEmpty()) {
 
-                JsonNode primeiro =
-                        root.get(0);
+                JsonNode primeiro = root.get(0);
 
-                endereco.setLatitude(
-                        primeiro.get("lat").asDouble()
-                );
-
-                endereco.setLongitude(
-                        primeiro.get("lon").asDouble()
-                );
+                endereco.setLatitude(primeiro.get("lat").asDouble());
+                endereco.setLongitude(primeiro.get("lon").asDouble());
             }
 
         } catch (Exception ignored) {

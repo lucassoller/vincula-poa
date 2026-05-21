@@ -8,6 +8,26 @@ export const prazoLabel = {
     D30: "30 dias",
 };
 
+export const statusLabel = {
+    "ABERTA": "Aberto",
+    "EM_ANDAMENTO": "Em andamento",
+    "FINALIZADA": "Finalizado"
+};
+
+export const motivoBuscaLabel = {
+    "FALTOSO": "Faltoso",
+    "ABANDONO": "Abandono",
+    "CONDICAO_SAUDE": "Condição de saúde",
+    "OUTRO": "Outro",
+};
+
+export const tentativaContatoLabe = {
+    "LIGACAO": "Ligação",
+    "VISITA": "Visita",
+    "WHATSAPP": "WhatsApp",
+    "OUTRO": "Outro",
+};
+
 export function formatarDataHora(data) {
     if (!data) return "-";
 

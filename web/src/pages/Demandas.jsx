@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback  } from "react";
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./demandas.css";
-import { prazoLabel, formatarDataHora } from "../utils/demandaUtils";
+import {prazoLabel, formatarDataHora, statusLabel, motivoBuscaLabel} from "../utils/demandaUtils";
 import ModalTentativaContato from "../components/ModalTentativaContato";
 import ModalRedirecionarDemanda from "../components/ModalRedirecionarDemanda";
 import ModalEncerrarDemanda from "../components/ModalEncerrarDemanda";
@@ -248,12 +248,12 @@ function Demandas() {
                         {demandasFiltradas.map((d) => (
                             <tr key={d.id}>
                                 <td><b>{d.pacienteNome || d.pacienteId}</b></td>
-                                <td>{d.motivoBuscaAtiva}</td>
+                                <td>{motivoBuscaLabel[d.motivoBuscaAtiva]}</td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
                                 <td>{formatarDataHora(d.dataHoraFinalizacao) || "-" }</td>
                                 <td>
                                         <span className={`status-badge status-${d.status}`}>
-                                            {d.status}
+                                            {statusLabel[d.status]}
                                         </span>
                                 </td>
                                 <td>{prazoLabel[d.prazoDemanda] || "-"}</td>

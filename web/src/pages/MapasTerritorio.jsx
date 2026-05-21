@@ -8,24 +8,49 @@ import {
 } from "react-leaflet";
 
 import { useEffect, useState } from "react";
-import './mapasTerritorio.css'
+import api from "../api/api";
+import "./mapasTerritorio.css";
 
 function MapaTerritorios() {
 
-    const [territorios, setTerritorios] = useState(null);
-    const [pontos, setPontos] = useState(null);
+    const [territorios, setTerritorios] = useState([]);
+    const [geoJson, setGeoJson] = useState(null);
 
     useEffect(() => {
 
-        fetch("/territorios-ubs.geojson")
-            .then((res) => res.json())
-            .then(setTerritorios)
-            .catch(() => console.error("Erro ao carregar territórios"));
+        api.get("/territorios/mapa")
+            .then((response) => {
 
-        fetch("/unidades-pontos.geojson")
-            .then((res) => res.json())
-            .then(setPontos)
-            .catch(() => console.error("Erro ao carregar pontos"));
+                const territoriosApi = response.data || [];
+
+                setTerritorios(territoriosApi);
+
+                const featureCollection = {
+                    type: "FeatureCollection",
+                    features: territoriosApi.map((territorio) => ({
+
+                        type: "Feature",
+
+                        geometry:
+                            typeof territorio.geojson === "string"
+                                ? JSON.parse(territorio.geojson)
+                                : territorio.geojson,
+
+                        properties: {
+                            id: territorio.id,
+                            nome: territorio.nome,
+                            cnes: territorio.cnes,
+                            distrito: territorio.distrito,
+                            endereco: territorio.endereco,
+                        },
+                    })),
+                };
+
+                setGeoJson(featureCollection);
+            })
+            .catch(() => {
+                console.error("Erro ao carregar mapa");
+            });
 
     }, []);
 
@@ -39,7 +64,7 @@ function MapaTerritorios() {
             >
 
                 <TileLayer
-                    attribution='&copy; OpenStreetMap'
+                    attribution="&copy; OpenStreetMap"
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
@@ -47,105 +72,84 @@ function MapaTerritorios() {
                     name="territorios"
                     style={{
                         zIndex: 400,
-                        pointerEvents: "auto",
                     }}
                 >
 
-                    {territorios && (
+                    {geoJson && (
                         <GeoJSON
-                            data={territorios}
+                            data={geoJson}
                             pane="territorios"
                             style={() => ({
                                 color: "#0288d1",
                                 weight: 2,
                                 fillOpacity: 0.25,
                             })}
-                            interactive={true}
                             onEachFeature={(feature, layer) => {
 
                                 layer.bringToBack();
 
                                 const props = feature.properties || {};
 
-                                const cnes = String(
-                                    props.CNES || "-"
-                                ).replace(".0", "");
-
                                 layer.bindPopup(`
                                     <div style="min-width:240px">
-                
+
                                         <strong>
-                                            ${props.name || "Território"}
+                                            ${props.nome || "Território"}
                                         </strong>
-                
+
                                         <br/><br/>
-                
+
+
                                         <b>CNES:</b>
-                                        ${cnes}
+                                        ${props.cnes || "-"}
+
                                         <br/>
-                
+
                                         <b>Distrito:</b>
-                                        ${props.Distrito_S || "-"}
+                                        ${props.distrito || "-"}
+
                                         <br/>
-                
-                                        <b>Coordenadoria:</b>
-                                        ${props.Coordenado || "-"}
-                                        <br/>
+
                                     </div>
                                 `);
                             }}
-                        />)}
+                        />
+                    )}
+
                 </Pane>
 
-                <Pane name="pontos" style={{ zIndex: 650 }}>
+                <Pane
+                    name="pontos"
+                    style={{
+                        zIndex: 650,
+                    }}
+                >
 
-                    {pontos?.features?.map((feature, index) => {
-
-                        const props = feature.properties || {};
-
-                        const [lng, lat] = feature.geometry.coordinates;
-
-                        const cnes = String(
-                            props.CNES ||
-                            props.cnes ||
-                            "-"
-                        ).replace(".0", "");
-
-                        const nome =
-                            props["Unidade de Saúde"] ||
-                            props.UnidadeSaude ||
-                            props.unidade_saude ||
-                            props.name ||
-                            "Unidade";
-
-                        const distrito =
-                            props["Distrito Sanitário"] ||
-                            props.DistritoSanitario ||
-                            props.Distrito_S ||
-                            "-";
-
-                        const coordenadoria =
-                            props["Coordenadoria de Saúde"] ||
-                            props.CoordenadoriaSaude ||
-                            props.Coordenado ||
-                            "-";
+                    {territorios.map((territorio, index) => {
 
                         const endereco =
-                            props["Endereço"] ||
-                            props.Endereco ||
-                            props.endereco ||
-                            "-";
+                            territorio.endereco;
 
-                        const telefone =
-                            props["Telefones"] ||
-                            props.Telefone ||
-                            props.telefone ||
-                            "-";
+                        if (
+                            !endereco.latitude ||
+                            !endereco.longitude
+                        ) {
+                            return null;
+                        }
+
+                        const enderecoFormatado = `
+                            ${endereco.rua || ""}
+                            ${endereco.numero ? ", " + endereco.numero : ""}
+                            ${endereco.bairro ? " - " + endereco.bairro : ""}
+                        `;
 
                         return (
                             <CircleMarker
                                 key={index}
-                                center={[lat, lng]}
+                                center={[
+                                    endereco.latitude,
+                                    endereco.longitude
+                                ]}
                                 radius={8}
                                 pane="pontos"
                                 pathOptions={{
@@ -160,19 +164,36 @@ function MapaTerritorios() {
 
                                     <div style={{ minWidth: "260px" }}>
 
-                                        <strong>{nome}</strong>
+                                        <strong>
+                                            {territorio.nome}
+                                        </strong>
 
                                         <br /><br />
 
-                                        <b>CNES:</b> {cnes}<br />
+                                        <b>CNES:</b>
+                                        {" "}
+                                        {territorio.cnes || "-"}
+                                        <br />
 
-                                        <b>Distrito:</b> {distrito}<br />
+                                        <b>Distrito:</b>
+                                        {" "}
+                                        {territorio.distrito || "-"}
+                                        <br />
 
-                                        <b>Coordenadoria:</b> {coordenadoria}<br />
+                                        <b>Endereço:</b>
+                                        {" "}
+                                        {enderecoFormatado}
+                                        <br />
 
-                                        <b>Endereço:</b> {endereco}<br />
-
-                                        <b>Telefone:</b> {telefone}<br />
+                                        <b>Telefone:</b>{" "}
+                                        {
+                                            territorio.telefone && territorio.telefone2
+                                                ? `${territorio.telefone} - ${territorio.telefone2}`
+                                                : territorio.telefone
+                                                    ? territorio.telefone
+                                                    : "-"
+                                        }
+                                        <br />
 
                                     </div>
 

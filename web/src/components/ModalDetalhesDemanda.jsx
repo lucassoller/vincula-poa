@@ -1,5 +1,5 @@
 import CampoDetalhe from "./CampoDetalhe";
-import { formatarDataHora, prazoLabel } from "../utils/demandaUtils";
+import {formatarDataHora, motivoBuscaLabel, prazoLabel, statusLabel, tentativaContatoLabe} from "../utils/demandaUtils";
 
 function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
     return (
@@ -20,8 +20,8 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
 
                     <div className="detalhe-grid">
                         <CampoDetalhe label="Paciente" valor={demanda.pacienteNome} />
-                        <CampoDetalhe label="Motivo da busca" valor={demanda.motivoBuscaAtiva} />
-                        <CampoDetalhe label="Status" valor={demanda.status} />
+                        <CampoDetalhe label="Motivo da busca" valor={motivoBuscaLabel[demanda.motivoBuscaAtiva]} />
+                        <CampoDetalhe label="Status" valor={statusLabel[demanda.status]} />
                         <CampoDetalhe label="Prazo" valor={prazoLabel[demanda.prazoDemanda]} />
                         <CampoDetalhe label="Criada em" valor={formatarDataHora(demanda.dataHoraCriacao)} />
                         <CampoDetalhe label="Data limite" valor={formatarDataHora(demanda.dataHoraLimite)} />
@@ -85,7 +85,7 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                                         <span>{formatarDataHora(t.dataHora)}</span>
                                     </div>
 
-                                    <p>{t.descricao}</p>
+                                    <p>{tentativaContatoLabe[t.descricao]}</p>
 
                                     <small>
                                         Registrado por: {t.usuarioNome}
