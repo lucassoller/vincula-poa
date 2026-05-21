@@ -1,36 +1,30 @@
 package com.vincula.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.TerritorioUbsDTO;
 import com.vincula.service.ImportarTerritorioService;
-import com.vincula.service.ImportarUbsService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/territorios")
 public class ImportarMapaController {
 
     private final ImportarTerritorioService importarTerritorioService;
-    private final ImportarUbsService importarUbsService;
+    private final ObjectMapper objectMapper;
 
-    public ImportarMapaController(ImportarTerritorioService importarTerritorioService,
-                                  ImportarUbsService  importarUbsService) {
+    public ImportarMapaController(ImportarTerritorioService importarTerritorioService, ObjectMapper objectMapper) {
         this.importarTerritorioService = importarTerritorioService;
-        this.importarUbsService = importarUbsService;
+        this.objectMapper = objectMapper;
     }
 
     @PostMapping("/importar")
-    public ResponseEntity<Void> importar() {
-
-        importarUbsService.importar();
-        importarTerritorioService.importar();
-
-        return ResponseEntity.ok().build();
+    public void importar(@RequestBody Map<String, Object> geojson) {
+        JsonNode node = objectMapper.valueToTree(geojson);
+        importarTerritorioService.importar(node);
     }
 
     @GetMapping("/mapa")

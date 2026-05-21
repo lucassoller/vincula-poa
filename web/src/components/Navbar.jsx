@@ -66,6 +66,10 @@ function Navbar() {
                     Mapa UBS
                 </Link>
 
+                <Link to="/mapa/importar" className="navbar-link">
+                    Importar mapa
+                </Link>
+
                 {usuario?.perfil === "GESTAO_MUNICIPAL" && (
                     <Link to="/gestao/listar" className="navbar-link">
                         Listar tudo

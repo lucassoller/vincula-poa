@@ -23,31 +23,19 @@ public class TerritorializacaoService {
             Double longitude
     ) {
 
-        GeometryFactory geometryFactory =
-                new GeometryFactory();
+        GeometryFactory geometryFactory = new GeometryFactory();
 
-        Point point =
-                geometryFactory.createPoint(
-                        new Coordinate(longitude, latitude)
-                );
+        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
 
-        GeoJsonReader reader =
-                new GeoJsonReader();
+        GeoJsonReader reader = new GeoJsonReader();
 
-        List<TerritorioUbs> territorios =
-                repository.findAll();
+        List<TerritorioUbs> territorios = repository.findAll();
 
         for (TerritorioUbs territorio : territorios) {
-
             try {
-
-                Geometry geometry =
-                        reader.read(
-                                territorio.getGeojson()
-                        );
+                Geometry geometry = reader.read(territorio.getGeojson());
 
                 if (geometry.contains(point)) {
-
                     return territorio.getUnidadeSaude();
                 }
 

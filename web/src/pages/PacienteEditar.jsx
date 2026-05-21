@@ -164,7 +164,7 @@ function PacienteEditar() {
                 return;
             }
 
-            setMensagem("Paciente atualizado com sucesso!");
+            setMensagem("Paciente atualizado com sucesso e vinculado na Unidade " + response.data.unidadeSaudeNome);
             navigate(`/pacientes/${id}`);
 
         } catch (error) {

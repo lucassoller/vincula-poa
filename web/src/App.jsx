@@ -17,6 +17,7 @@ import MeuPerfil from "./pages/MeuPerfil.jsx";
 import AlterarSenha from "./pages/AlterarSenha.jsx";
 import DemandaCadastro from "./pages/DemandaCadastro.jsx";
 import MapaTerritorios2 from "./pages/MapasTerritorio2.jsx";
+import ImportarMapa from "./pages/ImportarMapa.jsx";
 
 
 function App() {
@@ -49,6 +50,16 @@ function App() {
                 </ProtectedRoute>
               }
           />
+            <Route
+                path="/mapa/importar"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <ImportarMapa />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
         <Route
             path="/pacientes/:id"
             element={
