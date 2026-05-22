@@ -53,6 +53,25 @@ public class PacienteController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtrados/{filtro}")
+    public ResponseEntity<Page<PacienteResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
+        return ResponseEntity.ok(pacienteService.listarTodosFiltrados(filtro, pageable));
+    }
+
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtrados/unidadeSaude/{unidadeSaudeId}/{filtro}")
+    public ResponseEntity<Page<PacienteResponseDTO>> listarPorUnidade(
+            @PathVariable Long unidadeSaudeId,
+            @PathVariable String filtro,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                pacienteService.listarTodosPorUnidadeFiltrados(unidadeSaudeId, filtro, pageable)
+        );
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> buscarPorId(@PathVariable Long id) {
         PacienteResponseDTO paciente = pacienteService.buscarPorId(id);

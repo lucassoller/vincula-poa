@@ -77,6 +77,22 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUsuarioCriador(usuarioId, pageable));
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtradas/{filtro}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas(@PathVariable String filtro, Pageable pageable) {
+        return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/unidade/{unidadeSaudeId}/{filtro}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaudeFiltradas(
+            @PathVariable Long unidadeSaudeId,
+            @PathVariable String filtro,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(demandaService.listarPorUnidadeSaudeFiltradas(unidadeSaudeId, filtro, pageable));
+    }
+
     @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/redirecionar")
     public ResponseEntity<DemandaResponseDTO> redirecionar(@PathVariable Long id,

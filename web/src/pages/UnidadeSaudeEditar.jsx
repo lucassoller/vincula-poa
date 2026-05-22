@@ -291,14 +291,14 @@ function UnidadeSaudeEditar() {
                             <div className="form-actions">
                                 <button
                                     type="button"
-                                    className="primary-btn"
+                                    className="buscar-btn"
                                     onClick={() => setEtapa(2)}
                                 >
                                     Próximo
                                 </button>
                                 <button
                                     type="button"
-                                    className="danger-btn"
+                                    className="limpar-btn"
                                     onClick={() => navigate("/pacientes")}
                                 >
                                     Cancelar
@@ -317,13 +317,13 @@ function UnidadeSaudeEditar() {
                             <div className="form-actions">
                                 <button
                                     type="submit"
-                                    className="primary-btn"
+                                    className="buscar-btn"
                                 >
                                     Salvar alterações
                                 </button>
                                 <button
                                     type="button"
-                                    className="secondary-btn"
+                                    className="limpar-btn"
                                     onClick={() => setEtapa(1)}
                                 >
                                     Voltar

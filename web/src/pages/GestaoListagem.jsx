@@ -133,14 +133,6 @@ function GestaoListagem() {
                         <h1>Central de Gestão</h1>
                         <p>Consulte usuários, unidades de saúde e pacientes do sistema</p>
                     </div>
-
-                    <button
-                        type="button"
-                        className="secondary-btn"
-                        onClick={() => navigate("/indicadores")}
-                    >
-                        Voltar
-                    </button>
                 </div>
 
                 <div className="gestao-card">
@@ -292,13 +284,13 @@ function GestaoListagem() {
                     )}
 
                     <div className="gestao-actions">
-                        <button type="button" className="primary-btn" onClick={listar}>
+                        <button type="button" className="buscar-btn" onClick={listar}>
                             Listar
                         </button>
 
                         <button
                             type="button"
-                            className="danger-btn"
+                            className="limpar-btn"
                             onClick={() => {
                                 setTipo("");
                                 setFiltroUsuario("");

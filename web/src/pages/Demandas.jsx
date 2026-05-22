@@ -1,27 +1,48 @@
-import { useEffect, useState, useCallback  } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./demandas.css";
-import {prazoLabel, formatarDataHora, statusLabel, motivoBuscaLabel} from "../utils/demandaUtils";
+import {
+    prazoLabel,
+    formatarDataHora,
+    statusLabel,
+    motivoBuscaLabel
+} from "../utils/demandaUtils";
+
 import ModalTentativaContato from "../components/ModalTentativaContato";
 import ModalRedirecionarDemanda from "../components/ModalRedirecionarDemanda";
 import ModalEncerrarDemanda from "../components/ModalEncerrarDemanda";
 import ModalDetalhesDemanda from "../components/ModalDetalhesDemanda";
-import {useNavigate} from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 
 function Demandas() {
+
     const navigate = useNavigate();
     const { usuario } = useAuth();
+
     const [demandas, setDemandas] = useState([]);
     const [unidades, setUnidades] = useState([]);
+
     const [demandaSelecionada, setDemandaSelecionada] = useState(null);
     const [acao, setAcao] = useState("");
+
     const [mensagem, setMensagem] = useState("");
     const [erros, setErros] = useState({});
+
     const [demandaDetalhada, setDemandaDetalhada] = useState(null);
     const [tentativasContato, setTentativasContato] = useState([]);
+
     const [carregando, setCarregando] = useState(true);
+
     const [filtro, setFiltro] = useState("");
+
+    const [pagina, setPagina] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
+
+    const [modoFiltrado, setModoFiltrado] = useState(false);
+
+    const tamanhoPagina = 10;
 
     const [tentativa, setTentativa] = useState({
         tipo: "",
@@ -38,59 +59,197 @@ function Demandas() {
         descricaoDesfecho: "",
     });
 
-    const carregarDados = useCallback(async () => {
+    const carregarDados = useCallback(async (paginaAtual = pagina) => {
+
         try {
+
             setCarregando(true);
 
             let demandasResponse;
 
             if (usuario?.perfil === "GESTAO_MUNICIPAL") {
-                demandasResponse = await api.get("/demandas?page=0&size=10");
-            } else if (usuario?.perfil === "EXECUTOR_APS") {
+
                 demandasResponse = await api.get(
-                    `/demandas/unidade/${usuario.unidadeSaudeId}?page=0&size=10`
+                    `/demandas?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
+
+            } else if (usuario?.perfil === "EXECUTOR_APS") {
+
+                demandasResponse = await api.get(
+                    `/demandas/unidade/${usuario.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
+                );
+
             } else {
-                demandasResponse = { data: [] };
+
+                demandasResponse = { data: { content: [], page: { totalPages: 0 } } };
+
             }
 
-            const unidadesResponse = await api.get("/unidades-saude/all");
+            setDemandas(demandasResponse.data.content);
+            setTotalPaginas(demandasResponse.data.page.totalPages);
+        } catch {
+
+            setMensagem("Erro ao carregar demandas.");
+
+        } finally {
+
+            setCarregando(false);
+
+        }
+
+    }, [usuario, pagina]);
+
+    const buscarDemandas = useCallback(async (paginaAtual = pagina) => {
+
+        if (!filtro.trim()) {
+            return;
+        }
+
+        try {
+
+            setCarregando(true);
+
+            let demandasResponse;
+
+            if (usuario?.perfil === "GESTAO_MUNICIPAL") {
+
+                demandasResponse = await api.get(
+                    `/demandas/filtradas/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
+                );
+
+            } else if (usuario?.perfil === "EXECUTOR_APS") {
+
+                demandasResponse = await api.get(
+                    `/demandas/filtradas/unidade/${usuario.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
+                );
+
+            } else {
+
+                demandasResponse = { data: { content: [], page: { totalPages: 0 } } };
+
+            }
 
             setDemandas(demandasResponse.data.content);
-            setUnidades(unidadesResponse.data);
+            setTotalPaginas(demandasResponse.data.page.totalPages);
 
         } catch {
-            setMensagem("Erro ao carregar demandas.");
+
+            setMensagem("Erro ao buscar demandas.");
+
         } finally {
+
             setCarregando(false);
+
         }
-    }, [usuario]);
+
+    }, [usuario, pagina, filtro]);
 
     useEffect(() => {
+
         const executar = async () => {
-            await carregarDados();
+
+            if (modoFiltrado) {
+
+                await buscarDemandas(pagina);
+
+            } else {
+
+                await carregarDados(pagina);
+
+            }
+
         };
 
         void executar();
-    }, [carregarDados]);
+
+    }, [pagina, modoFiltrado]);
+
+    useEffect(() => {
+        async function carregarUnidades() {
+            try {
+                const response = await api.get("/unidades-saude/all");
+                setUnidades(response.data);
+            } catch {
+                setMensagem("Erro ao carregar unidades.");
+            }
+        }
+
+        void carregarUnidades();
+    }, []);
+
+    async function executarBusca() {
+
+        if (!filtro.trim()) {
+            return;
+        }
+
+        setModoFiltrado(true);
+
+        if (pagina !== 0) {
+
+            setPagina(0);
+
+        } else {
+
+            await buscarDemandas(0);
+
+        }
+
+    }
+
+    async function limparFiltro() {
+
+        setFiltro("");
+        setModoFiltrado(false);
+
+        if (pagina !== 0) {
+
+            setPagina(0);
+
+        } else {
+
+            await carregarDados(0);
+
+        }
+
+    }
 
     function abrirAcao(demanda, tipoAcao) {
+
         setDemandaSelecionada(demanda);
         setAcao(tipoAcao);
+
         setMensagem("");
         setErros({});
+
     }
 
     function fecharModal() {
+
         setDemandaSelecionada(null);
         setAcao("");
+
         setErros({});
-        setTentativa({ tipo: "", descricao: "" });
-        setRedirecionamento({ novaUnidadeResponsavelId: "", motivoRedirecionamento: "" });
-        setEncerramento({ desfechoDemanda: "", descricaoDesfecho: "" });
+
+        setTentativa({
+            tipo: "",
+            descricao: "",
+        });
+
+        setRedirecionamento({
+            novaUnidadeResponsavelId: "",
+            motivoRedirecionamento: "",
+        });
+
+        setEncerramento({
+            desfechoDemanda: "",
+            descricaoDesfecho: "",
+        });
+
     }
 
     async function salvarTentativa(e) {
+
         e.preventDefault();
 
         const payload = {
@@ -100,16 +259,33 @@ function Demandas() {
         };
 
         try {
+
             await api.post("/tentativas-contato", payload);
+
             setMensagem("Tentativa registrada com sucesso!");
+
             fecharModal();
-            await carregarDados();
+
+            if (modoFiltrado) {
+
+                await buscarDemandas(pagina);
+
+            } else {
+
+                await carregarDados(pagina);
+
+            }
+
         } catch (error) {
+
             tratarErro(error);
+
         }
+
     }
 
     async function salvarRedirecionamento(e) {
+
         e.preventDefault();
 
         const payload = {
@@ -120,16 +296,36 @@ function Demandas() {
         };
 
         try {
-            await api.patch(`/demandas/${demandaSelecionada.id}/redirecionar`, payload);
+
+            await api.patch(
+                `/demandas/${demandaSelecionada.id}/redirecionar`,
+                payload
+            );
+
             setMensagem("Demanda redirecionada com sucesso!");
+
             fecharModal();
-            await carregarDados();
+
+            if (modoFiltrado) {
+
+                await buscarDemandas(pagina);
+
+            } else {
+
+                await carregarDados(pagina);
+
+            }
+
         } catch (error) {
+
             tratarErro(error);
+
         }
+
     }
 
     async function salvarEncerramento(e) {
+
         e.preventDefault();
 
         const payload = {
@@ -138,17 +334,38 @@ function Demandas() {
         };
 
         try {
-            await api.patch(`/demandas/${demandaSelecionada.id}/encerrar`, payload);
+
+            await api.patch(
+                `/demandas/${demandaSelecionada.id}/encerrar`,
+                payload
+            );
+
             setMensagem("Demanda encerrada com sucesso!");
+
             fecharModal();
-            await carregarDados();
+
+            if (modoFiltrado) {
+
+                await buscarDemandas(pagina);
+
+            } else {
+
+                await carregarDados(pagina);
+
+            }
+
         } catch (error) {
+
             tratarErro(error);
+
         }
+
     }
 
     async function abrirDetalhes(d) {
+
         try {
+
             const response = await api.get(`/demandas/${d.id}`);
 
             setDemandaDetalhada(response.data);
@@ -160,32 +377,35 @@ function Demandas() {
             setTentativasContato(tentativasResponse.data);
 
         } catch {
+
             setMensagem("Erro ao carregar detalhes da demanda.");
+
         }
+
     }
 
     function tratarErro(error) {
+
         if (error.response?.data?.errors) {
+
             setErros(error.response.data.errors);
-            setMensagem(error.response.data.message || "Dados inválidos.");
+
+            setMensagem(
+                error.response.data.message || "Dados inválidos."
+            );
+
         } else {
-            setMensagem(error.response?.data?.message || "Erro ao realizar ação.");
+
+            setMensagem(
+                error.response?.data?.message || "Erro ao realizar ação."
+            );
+
         }
+
     }
 
-    const demandasFiltradas = demandas.filter((d) => {
-        const busca = filtro.toLowerCase();
-
-        return (
-            d.pacienteNome?.toLowerCase().includes(busca) ||
-            d.motivoBuscaAtiva?.toLowerCase().includes(busca) ||
-            d.status?.toLowerCase().includes(busca) ||
-            d.unidadeResponsavelNome?.toLowerCase().includes(busca) ||
-            prazoLabel[d.prazoDemanda]?.toLowerCase().includes(busca)
-        );
-    });
-
     if (carregando) {
+
         return (
             <div className="loading-container">
                 <div className="loading-card">
@@ -193,35 +413,88 @@ function Demandas() {
                 </div>
             </div>
         );
+
     }
 
     return (
+
         <div className="demandas-container">
+
             <div className="demandas-page">
+
                 <div className="demandas-header">
+
                     <div>
+
                         <h1>Demandas</h1>
-                        <p>Gerencie buscas ativas, tentativas, redirecionamentos e encerramentos</p>
+
+                        <p>
+                            Gerencie buscas ativas, tentativas,
+                            redirecionamentos e encerramentos
+                        </p>
+
                     </div>
 
-                    <span className="perfil-badge">{usuario?.perfil}</span>
+                    <span className="perfil-badge">
+                        {usuario?.perfil}
+                    </span>
+
                 </div>
 
                 {mensagem && (
+
                     <div className="alert-card">
+
                         <span>{mensagem}</span>
-                        <button type="button" onClick={() => setMensagem("")}>✕</button>
+
+                        <button
+                            type="button"
+                            onClick={() => setMensagem("")}
+                        >
+                            ✕
+                        </button>
+
                     </div>
+
                 )}
 
                 <div className="table-card">
+
                     <div className="table-topbar">
-                        <input
-                            className="paciente-search"
-                            placeholder="Buscar demanda..."
-                            value={filtro}
-                            onChange={(e) => setFiltro(e.target.value)}
-                        />
+
+                        <div className="search-container">
+
+                            <input
+                                className="paciente-search"
+                                placeholder="Buscar demanda..."
+                                value={filtro}
+                                onChange={(e) => setFiltro(e.target.value)}
+                                onKeyDown={(e) => {
+
+                                    if (e.key === "Enter") {
+                                        executarBusca();
+                                    }
+
+                                }}
+                            />
+
+                            <button
+                                type="button"
+                                className="buscar-btn"
+                                onClick={executarBusca}
+                            >
+                                Buscar
+                            </button>
+
+                            <button
+                                type="button"
+                                className="limpar-btn"
+                                onClick={limparFiltro}
+                            >
+                                Limpar filtro
+                            </button>
+
+                        </div>
 
                         <button
                             className="novo-paciente-btn"
@@ -229,9 +502,13 @@ function Demandas() {
                         >
                             + Nova demanda
                         </button>
+
                     </div>
+
                     <table className="demandas-table">
+
                         <thead>
+
                         <tr>
                             <th>Paciente</th>
                             <th>Motivo</th>
@@ -242,56 +519,157 @@ function Demandas() {
                             <th>Unidade</th>
                             <th>Ações</th>
                         </tr>
+
                         </thead>
 
                         <tbody>
-                        {demandasFiltradas.map((d) => (
+
+                        {demandas.map((d) => (
+
                             <tr key={d.id}>
-                                <td><b>{d.pacienteNome || d.pacienteId}</b></td>
-                                <td>{motivoBuscaLabel[d.motivoBuscaAtiva]}</td>
-                                <td>{formatarDataHora(d.dataHoraCriacao)}</td>
-                                <td>{formatarDataHora(d.dataHoraFinalizacao) || "-" }</td>
+
                                 <td>
-                                        <span className={`status-badge status-${d.status}`}>
-                                            {statusLabel[d.status]}
-                                        </span>
+                                    <b>{d.pacienteNome || d.pacienteId}</b>
                                 </td>
-                                <td>{prazoLabel[d.prazoDemanda] || "-"}</td>
-                                <td>{d.unidadeResponsavelNome || d.unidadeResponsavelId}</td>
+
                                 <td>
+                                    {motivoBuscaLabel[d.motivoBuscaAtiva]}
+                                </td>
+
+                                <td>
+                                    {formatarDataHora(d.dataHoraCriacao)}
+                                </td>
+
+                                <td>
+                                    {formatarDataHora(d.dataHoraFinalizacao) || "-"}
+                                </td>
+
+                                <td>
+
+                                    <span className={`status-badge status-${d.status}`}>
+                                        {statusLabel[d.status]}
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    {prazoLabel[d.prazoDemanda] || "-"}
+                                </td>
+
+                                <td>
+                                    {d.unidadeResponsavelNome || d.unidadeResponsavelId}
+                                </td>
+
+                                <td>
+
                                     <div className="acoes-container">
-                                        <button className="btn-visualizar" onClick={() => abrirDetalhes(d)}>
+
+                                        <button
+                                            className="btn-visualizar"
+                                            onClick={() => abrirDetalhes(d)}
+                                        >
                                             Ver mais
                                         </button>
+
                                         {d.status !== "FINALIZADA" && (
                                             <>
-                                                <button className="btn-tentativa" onClick={() => abrirAcao(d, "TENTATIVA")}>
+
+                                                <button
+                                                    className="btn-tentativa"
+                                                    onClick={() => abrirAcao(d, "TENTATIVA")}
+                                                >
                                                     Tentativa contato
                                                 </button>
 
-                                                <button className="btn-editar" onClick={() => abrirAcao(d, "REDIRECIONAR")}>
+                                                <button
+                                                    className="btn-editar"
+                                                    onClick={() => abrirAcao(d, "REDIRECIONAR")}
+                                                >
                                                     Redirecionar
                                                 </button>
 
-                                                <button className="btn-encerrar" onClick={() => abrirAcao(d, "ENCERRAR")}>
+                                                <button
+                                                    className="btn-encerrar"
+                                                    onClick={() => abrirAcao(d, "ENCERRAR")}
+                                                >
                                                     Encerrar
                                                 </button>
+
                                             </>
                                         )}
+
                                     </div>
+
                                 </td>
+
                             </tr>
+
                         ))}
+
                         </tbody>
+
                     </table>
 
-                    {demandasFiltradas.length === 0 && (
-                        <div className="empty-state">Nenhuma demanda encontrada.</div>
+                    {demandas.length === 0 && (
+                        <div className="empty-state">
+                            Nenhuma demanda encontrada.
+                        </div>
                     )}
+
+                    {totalPaginas > 1 && (
+
+                        <div className="pagination">
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={pagina === 0}
+                                onClick={() => setPagina(0)}
+                            >
+                                Primeira
+                            </button>
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={pagina === 0}
+                                onClick={() => setPagina((prev) => prev - 1)}
+                            >
+                                Anterior
+                            </button>
+
+                            <span className="pagination-info">
+                                Página {pagina + 1} de {totalPaginas}
+                            </span>
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={pagina + 1 >= totalPaginas}
+                                onClick={() => setPagina((prev) => prev + 1)}
+                            >
+                                Próxima
+                            </button>
+
+                            <button
+                                type="button"
+                                className="pagination-btn"
+                                disabled={pagina + 1 >= totalPaginas}
+                                onClick={() => setPagina(totalPaginas - 1)}
+                            >
+                                Última
+                            </button>
+
+                        </div>
+
+                    )}
+
                 </div>
+
             </div>
 
             {demandaSelecionada && acao === "TENTATIVA" && (
+
                 <ModalTentativaContato
                     demanda={demandaSelecionada}
                     tentativa={tentativa}
@@ -300,9 +678,11 @@ function Demandas() {
                     onSalvar={salvarTentativa}
                     onFechar={fecharModal}
                 />
+
             )}
 
             {demandaSelecionada && acao === "REDIRECIONAR" && (
+
                 <ModalRedirecionarDemanda
                     demanda={demandaSelecionada}
                     unidades={unidades}
@@ -312,9 +692,11 @@ function Demandas() {
                     onSalvar={salvarRedirecionamento}
                     onFechar={fecharModal}
                 />
+
             )}
 
             {demandaSelecionada && acao === "ENCERRAR" && (
+
                 <ModalEncerrarDemanda
                     demanda={demandaSelecionada}
                     encerramento={encerramento}
@@ -323,9 +705,11 @@ function Demandas() {
                     onSalvar={salvarEncerramento}
                     onFechar={fecharModal}
                 />
+
             )}
 
             {demandaDetalhada && (
+
                 <ModalDetalhesDemanda
                     demanda={demandaDetalhada}
                     tentativasContato={tentativasContato}
@@ -334,9 +718,13 @@ function Demandas() {
                         setTentativasContato([]);
                     }}
                 />
+
             )}
+
         </div>
+
     );
+
 }
 
 export default Demandas;

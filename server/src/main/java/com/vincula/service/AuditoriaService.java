@@ -68,7 +68,7 @@ public class AuditoriaService {
     }
 
     public Page<AuditoriaDTO> listarTodos(Pageable pageable) {
-        return auditoriaRepository.findAll(pageable)
+        return auditoriaRepository.findAllByOrderByDataHoraDesc(pageable)
                 .map(this::toDTO);
     }
 

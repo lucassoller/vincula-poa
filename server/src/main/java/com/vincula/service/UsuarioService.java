@@ -57,6 +57,14 @@ public class UsuarioService {
                 .map(this::toDTO);
     }
 
+    public List<UsuarioResponseDTO> listarTodos() {
+        auditoriaFacade.usuarioVisualizado(0L);
+        return usuarioRepository.findAllByOrderByNomeAsc()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     public UsuarioResponseDTO buscarPorId(Long id) {
         Usuario entity = buscarUsuarioPorId(id);
 

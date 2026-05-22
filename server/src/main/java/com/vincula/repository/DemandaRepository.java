@@ -25,10 +25,44 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT d
     FROM Demanda d
     JOIN d.paciente p
+    WHERE (
+        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
+    )
+    ORDER BY p.nomeCompleto ASC
+""")
+    Page<Demanda> findFiltradas(@Param("filtro") String filtro, Pageable pageable);
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
     WHERE d.unidadeResponsavel.id = :unidadeSaudeId
     ORDER BY p.nomeCompleto ASC
 """)
     Page<Demanda> findByUnidadeOrderByPacienteNome(@Param("unidadeSaudeId") Long unidadeSaudeId, Pageable pageable);
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.unidadeResponsavel.id = :unidadeSaudeId
+    AND (
+        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
+    )
+    ORDER BY p.nomeCompleto ASC
+""")
+    Page<Demanda> findFiltradasByUnidade(@Param("unidadeSaudeId") Long unidadeSaudeId,
+                                         @Param("filtro") String filtro,
+                                         Pageable pageable
+    );
 
     @Query("""
     SELECT d

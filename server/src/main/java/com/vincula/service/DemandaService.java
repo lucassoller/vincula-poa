@@ -61,6 +61,12 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
+    public Page<DemandaResponseDTO> listarTodasFiltradas(String filtro, Pageable pageable) {
+        auditoriaFacade.demandaVisualizada(0L);
+        return demandaRepository.findFiltradas(filtro, pageable)
+                .map(this::toDTO);
+    }
+
     public Page<DemandaResponseDTO> listarPorPaciente(Long pacienteId, Pageable pageable) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByPaciente(pacienteId, pageable)
@@ -73,12 +79,17 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
+    public Page<DemandaResponseDTO> listarPorUnidadeSaudeFiltradas(Long unidadeResponsavelId, String filtro, Pageable pageable) {
+        auditoriaFacade.demandaVisualizada(0L);
+        return demandaRepository.findFiltradasByUnidade(unidadeResponsavelId, filtro, pageable)
+                .map(this::toDTO);
+    }
+
     public Page<DemandaResponseDTO> listarPorUsuarioCriador(Long usuarioId, Pageable pageable) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUsuarioOrderByPacienteNome(usuarioId, pageable)
                 .map(this::toDTO);
     }
-
 
     public DemandaResponseDTO atualizar(Long id, DemandaDTO dto) {
         Demanda entity = buscarDemandaPorId(id);

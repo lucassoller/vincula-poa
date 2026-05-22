@@ -51,14 +51,6 @@ function MeuPerfil() {
                         <h1>Meu perfil</h1>
                         <p>Atualize seus dados de acesso ao sistema</p>
                     </div>
-
-                    <button
-                        type="button"
-                        className="secondary-btn"
-                        onClick={() => navigate("/indicadores")}
-                    >
-                        Voltar
-                    </button>
                 </div>
 
                 {mensagem && (
@@ -116,13 +108,13 @@ function MeuPerfil() {
                     </div>
 
                     <div className="form-actions">
-                        <button type="submit" className="primary-btn">
+                        <button type="submit" className="buscar-btn">
                             Salvar alterações
                         </button>
 
                         <button
                             type="button"
-                            className="danger-btn"
+                            className="limpar-btn"
                             onClick={() => navigate("/indicadores")}
                         >
                             Cancelar

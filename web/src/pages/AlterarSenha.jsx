@@ -52,14 +52,6 @@ function AlterarSenha() {
                         <h1>Alterar senha</h1>
                         <p>Atualize sua senha de acesso ao sistema</p>
                     </div>
-
-                    <button
-                        type="button"
-                        className="secondary-btn"
-                        onClick={() => navigate("/indicadores")}
-                    >
-                        Voltar
-                    </button>
                 </div>
 
                 {mensagem && (
@@ -119,13 +111,13 @@ function AlterarSenha() {
                     </div>
 
                     <div className="form-actions">
-                        <button type="submit" className="primary-btn">
+                        <button type="submit" className="buscar-btn">
                             Alterar senha
                         </button>
 
                         <button
                             type="button"
-                            className="danger-btn"
+                            className="limpar-btn"
                             onClick={() => navigate("/indicadores")}
                         >
                             Cancelar

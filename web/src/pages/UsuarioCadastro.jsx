@@ -229,13 +229,13 @@ function UsuarioCadastro() {
                     <div className="form-actions">
                         <button
                             type="submit"
-                            className="primary-btn"
+                            className="buscar-btn"
                         >
                             Cadastrar
                         </button>
                         <button
                             type="button"
-                            className="danger-btn"
+                            className="limpar-btn"
                             onClick={() => navigate("/indicadores")}
                         >
                             Cancelar

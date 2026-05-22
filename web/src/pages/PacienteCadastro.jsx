@@ -234,11 +234,11 @@ function PacienteCadastro() {
                             </div>
 
                             <div className="form-actions">
-                                <button type="button" className="primary-btn" onClick={() => setEtapa(2)}>
+                                <button type="button" className="buscar-btn" onClick={() => setEtapa(2)}>
                                     Próximo
                                 </button>
 
-                                <button type="button" className="danger-btn" onClick={() => navigate("/indicadores")}>
+                                <button type="button" className="limpar-btn" onClick={() => navigate("/indicadores")}>
                                     Cancelar
                                 </button>
                             </div>
@@ -255,11 +255,11 @@ function PacienteCadastro() {
                             />
 
                             <div className="form-actions">
-                                <button type="submit" className="primary-btn">
+                                <button type="submit" className="buscar-btn">
                                     Cadastrar
                                 </button>
 
-                                <button type="button" className="secondary-btn" onClick={() => setEtapa(1)}>
+                                <button type="button" className="limpar-btn" onClick={() => setEtapa(1)}>
                                     Voltar
                                 </button>
                             </div>

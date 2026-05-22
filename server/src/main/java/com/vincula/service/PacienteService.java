@@ -11,7 +11,6 @@ import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.PacienteRepository;
-import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
 import org.springframework.data.domain.Page;
@@ -24,18 +23,17 @@ import java.time.chrono.ChronoLocalDate;
 public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
-    private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final EnderecoMapper enderecoMapper;
     private final AuditoriaFacade auditoriaFacade;
     private final TerritorializacaoService territorializacaoService;
     private final GeocodingService geocodingService;
 
     public PacienteService(PacienteRepository pacienteRepository,
-                           UnidadeSaudeRepository unidadeSaudeRepository,
                            EnderecoMapper enderecoMapper,
-                           AuditoriaFacade auditoriaFacade, TerritorializacaoService territorializacaoService, GeocodingService geocodingService) {
+                           AuditoriaFacade auditoriaFacade,
+                           TerritorializacaoService territorializacaoService,
+                           GeocodingService geocodingService) {
         this.pacienteRepository = pacienteRepository;
-        this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.enderecoMapper = enderecoMapper;
         this.auditoriaFacade = auditoriaFacade;
         this.territorializacaoService = territorializacaoService;
@@ -64,11 +62,19 @@ public class PacienteService {
                 .map(this::toDTO);
     }
 
+    public Page<PacienteResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
+        return pacienteRepository.findFiltrados(filtro, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<PacienteResponseDTO> listarTodosPorUnidadeFiltrados(Long unidadeSaudeId, String filtro, Pageable pageable) {
+        return pacienteRepository.findFiltradosByUnidade(unidadeSaudeId, filtro, pageable)
+                .map(this::toDTO);
+    }
+
     public PacienteResponseDTO buscarPorId(Long id) {
         Paciente paciente = buscarPacientePorId(id);
-
         auditoriaFacade.pacienteVisualizado(paciente.getId());
-
         return toDTO(paciente);
     }
 

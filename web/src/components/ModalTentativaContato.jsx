@@ -40,8 +40,8 @@ function ModalTentativaContato({ demanda, tentativa, setTentativa, erros, onSalv
                     </div>
 
                     <div className="modal-actions">
-                        <button type="submit" className="primary-btn">Registrar tentativa</button>
-                        <button type="button" className="secondary-btn" onClick={onFechar}>Cancelar</button>
+                        <button type="submit" className="buscar-btn">Registrar tentativa</button>
+                        <button type="button" className="limpar-btn" onClick={onFechar}>Cancelar</button>
                     </div>
                 </form>
             </div>

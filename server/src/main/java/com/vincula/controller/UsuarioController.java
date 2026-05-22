@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -34,6 +36,12 @@ public class UsuarioController {
     @GetMapping
     public ResponseEntity<Page<UsuarioResponseDTO>> listarTodos(Pageable pageable) {
         return ResponseEntity.ok(usuarioService.listarTodos(pageable));
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/all")
+    public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
+        return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
     @PreAuthorize("isAuthenticated()")

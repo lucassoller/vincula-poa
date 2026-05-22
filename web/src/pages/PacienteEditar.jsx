@@ -301,11 +301,11 @@ function PacienteEditar() {
                             />
 
                             <div className="form-actions">
-                                <button type="submit" className="primary-btn">
+                                <button type="submit" className="buscar-btn">
                                     Salvar alterações
                                 </button>
 
-                                <button type="button" className="secondary-btn" onClick={() => setEtapa(1)}>
+                                <button type="button" className="limpar-btn" onClick={() => setEtapa(1)}>
                                     Voltar
                                 </button>
                             </div>
@@ -329,7 +329,7 @@ function PacienteEditar() {
                         <div className="modal-actions">
                             <button
                                 type="button"
-                                className="primary-btn"
+                                className="buscar-btn"
                                 onClick={confirmarRedirecionamentoDemandas}
                             >
                                 Sim, redirecionar
@@ -337,7 +337,7 @@ function PacienteEditar() {
 
                             <button
                                 type="button"
-                                className="secondary-btn"
+                                className="limpar-btn"
                                 onClick={negarRedirecionamentoDemandas}
                             >
                                 Não, apenas salvar paciente

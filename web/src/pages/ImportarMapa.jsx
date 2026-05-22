@@ -101,7 +101,7 @@ function ImportarMapa() {
 
                         <button
                             type="submit"
-                            className="primary-btn"
+                            className="buscar-btn"
                             disabled={loading}
                         >
                             {loading
