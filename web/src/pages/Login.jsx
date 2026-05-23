@@ -81,7 +81,7 @@ function Login() {
                         Esqueci minha senha
                     </div>
 
-                    <button className="botao" disabled={carregando}>
+                    <button className="buscar-btn" disabled={carregando}>
                         {carregando ? "Entrando..." : "Entrar"}
                     </button>
 

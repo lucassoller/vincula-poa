@@ -3,6 +3,7 @@ package com.vincula.controller;
 import com.vincula.dto.paciente.PacienteResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
+import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
 import com.vincula.service.UnidadeSaudeService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -39,7 +40,7 @@ public class UnidadeSaudeController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/all")
-    public ResponseEntity<List<UnidadeSaudeResponseDTO>> listarTodos() {
+    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodos() {
         return ResponseEntity.ok(unidadeSaudeService.listarTodos());
     }
 

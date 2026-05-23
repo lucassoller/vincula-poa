@@ -57,7 +57,7 @@ function ModalEncerrarDemanda({ demanda, encerramento, setEncerramento, erros, o
 
                     <div className="modal-actions">
                         <button type="submit" className="buscar-btn">Encerrar demanda</button>
-                        <button type="button" className="limpar-btn" onClick={onFechar}>Cancelar</button>
+                        <button type="button" className="buscar-btn" onClick={onFechar}>Cancelar</button>
                     </div>
                 </form>
             </div>

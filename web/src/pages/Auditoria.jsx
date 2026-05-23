@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
 import "./auditoria.css";
+import Pagination from "../components/Paginations.jsx";
 
 function Auditoria() {
 
@@ -234,7 +235,7 @@ function Auditoria() {
                     </button>
 
                     <button
-                        className="limpar-btn"
+                        className="buscar-btn"
                         onClick={limparFiltros}
                     >
                         Limpar
@@ -306,51 +307,11 @@ function Auditoria() {
                         </div>
                     )}
 
-                    {totalPaginas > 1 && (
-                        <div className="pagination">
-
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={pagina === 0}
-                                onClick={() => setPagina(0)}
-                            >
-                                Primeira
-                            </button>
-
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={pagina === 0}
-                                onClick={() => setPagina((prev) => prev - 1)}
-                            >
-                                Anterior
-                            </button>
-
-                            <span className="pagination-info">
-                                Página {pagina + 1} de {totalPaginas}
-                            </span>
-
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={pagina + 1 >= totalPaginas}
-                                onClick={() => setPagina((prev) => prev + 1)}
-                            >
-                                Próxima
-                            </button>
-
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={pagina + 1 >= totalPaginas}
-                                onClick={() => setPagina(totalPaginas - 1)}
-                            >
-                                Última
-                            </button>
-
-                        </div>
-                    )}
+                    <Pagination
+                        pagina={pagina}
+                        totalPaginas={totalPaginas}
+                        onChangePagina={setPagina}
+                    />
 
                 </div>
             </div>

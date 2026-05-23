@@ -1,6 +1,7 @@
 package com.vincula.repository;
 
 import com.vincula.entity.Usuario;
+import com.vincula.enums.PerfilUsuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Page<Usuario> findAllByOrderByNomeAsc(Pageable pageable);
 
     List<Usuario> findAllByOrderByNomeAsc();
+
+    Page<Usuario> findByPerfilOrderByNomeAsc(PerfilUsuario perfil, Pageable pageable);
 
     boolean existsByEmail(String email);
 

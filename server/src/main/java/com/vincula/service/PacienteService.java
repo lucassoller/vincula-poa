@@ -2,6 +2,7 @@ package com.vincula.service;
 
 import com.vincula.dto.paciente.PacienteDTO;
 import com.vincula.dto.paciente.PacienteResponseDTO;
+import com.vincula.dto.paciente.PacienteShortResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
+import java.util.List;
 
 @Service
 public class PacienteService {
@@ -55,6 +57,13 @@ public class PacienteService {
     public Page<PacienteResponseDTO> listarTodos(Pageable pageable) {
         return pacienteRepository.findAllByOrderByNomeCompletoAsc(pageable)
                 .map(this::toDTO);
+    }
+
+    public List<PacienteShortResponseDTO> listarTodos() {
+        return pacienteRepository.findAllByOrderByNomeCompletoAsc()
+                .stream()
+                .map(this::toShortDTO)
+                .toList();
     }
 
     public Page<PacienteResponseDTO> listarTodosPorUnidade(Long unidadeSaudeId, Pageable pageable) {
@@ -202,6 +211,17 @@ public class PacienteService {
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
         dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
         dto.setSexo(entity.getSexo());
+
+        return dto;
+    }
+
+    private PacienteShortResponseDTO toShortDTO(Paciente entity) {
+
+        PacienteShortResponseDTO dto = new PacienteShortResponseDTO();
+
+        dto.setId(entity.getId());
+        dto.setNomeCompleto(entity.getNomeCompleto());
+        dto.setDocumento(entity.getDocumento());
 
         return dto;
     }

@@ -298,7 +298,7 @@ function UnidadeSaudeEditar() {
                                 </button>
                                 <button
                                     type="button"
-                                    className="limpar-btn"
+                                    className="buscar-btn"
                                     onClick={() => navigate("/pacientes")}
                                 >
                                     Cancelar
@@ -323,7 +323,7 @@ function UnidadeSaudeEditar() {
                                 </button>
                                 <button
                                     type="button"
-                                    className="limpar-btn"
+                                    className="buscar-btn"
                                     onClick={() => setEtapa(1)}
                                 >
                                     Voltar

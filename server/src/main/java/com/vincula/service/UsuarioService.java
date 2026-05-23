@@ -4,6 +4,7 @@ import com.vincula.dto.MudancaSenhaDTO;
 import com.vincula.dto.usuario.MeuPerfilDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
+import com.vincula.dto.usuario.UsuarioShortResponseDTO;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilUsuario;
@@ -57,12 +58,18 @@ public class UsuarioService {
                 .map(this::toDTO);
     }
 
-    public List<UsuarioResponseDTO> listarTodos() {
+    public List<UsuarioShortResponseDTO> listarTodos() {
         auditoriaFacade.usuarioVisualizado(0L);
         return usuarioRepository.findAllByOrderByNomeAsc()
                 .stream()
-                .map(this::toDTO)
+                .map(this::toShortDTO)
                 .toList();
+    }
+
+    public Page<UsuarioResponseDTO> listarTodosPorPerfil(PerfilUsuario perfil, Pageable pageable) {
+        auditoriaFacade.usuarioVisualizado(0L);
+        return usuarioRepository.findByPerfilOrderByNomeAsc(perfil, pageable)
+                .map(this::toDTO);
     }
 
     public UsuarioResponseDTO buscarPorId(Long id) {
@@ -290,6 +297,15 @@ public class UsuarioService {
             dto.setUnidadeSaudeId(null);
             dto.setUnidadeSaudeNome(null);
         }
+
+        return dto;
+    }
+
+    private UsuarioShortResponseDTO toShortDTO(Usuario entity) {
+        UsuarioShortResponseDTO dto = new UsuarioShortResponseDTO();
+
+        dto.setId(entity.getId());
+        dto.setNome(entity.getNome());
 
         return dto;
     }

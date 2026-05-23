@@ -3,6 +3,7 @@ package com.vincula.controller;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.paciente.PacienteDTO;
 import com.vincula.dto.paciente.PacienteResponseDTO;
+import com.vincula.dto.paciente.PacienteShortResponseDTO;
 import com.vincula.service.DemandaService;
 import com.vincula.service.PacienteService;
 import jakarta.validation.Valid;
@@ -40,6 +41,11 @@ public class PacienteController {
         return ResponseEntity.ok(pacienteService.listarTodos(pageable));
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/all")
+    public ResponseEntity<List<PacienteShortResponseDTO>> listarTodos() {
+        return ResponseEntity.ok(pacienteService.listarTodos());
+    }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/unidadeSaude/{unidadeSaudeId}")

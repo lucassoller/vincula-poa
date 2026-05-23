@@ -117,7 +117,7 @@ function AlterarSenha() {
 
                         <button
                             type="button"
-                            className="limpar-btn"
+                            className="buscar-btn"
                             onClick={() => navigate("/indicadores")}
                         >
                             Cancelar

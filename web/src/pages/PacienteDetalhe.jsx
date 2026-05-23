@@ -78,7 +78,7 @@ function PacienteDetalhe() {
                         <p>Detalhes do paciente cadastrado</p>
                     </div>
 
-                    <button className="btn-voltar" onClick={() => navigate("/pacientes")}>
+                    <button className="buscar-btns" onClick={() => navigate("/pacientes")}>
                         Voltar
                     </button>
                 </div>

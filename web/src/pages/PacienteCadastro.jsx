@@ -238,7 +238,7 @@ function PacienteCadastro() {
                                     Próximo
                                 </button>
 
-                                <button type="button" className="limpar-btn" onClick={() => navigate("/indicadores")}>
+                                <button type="button" className="buscar-btn" onClick={() => navigate("/indicadores")}>
                                     Cancelar
                                 </button>
                             </div>
@@ -259,7 +259,7 @@ function PacienteCadastro() {
                                     Cadastrar
                                 </button>
 
-                                <button type="button" className="limpar-btn" onClick={() => setEtapa(1)}>
+                                <button type="button" className="buscar-btn" onClick={() => setEtapa(1)}>
                                     Voltar
                                 </button>
                             </div>

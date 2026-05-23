@@ -15,6 +15,7 @@ import ModalEncerrarDemanda from "../components/ModalEncerrarDemanda";
 import ModalDetalhesDemanda from "../components/ModalDetalhesDemanda";
 
 import { useNavigate } from "react-router-dom";
+import Pagination from "../components/Paginations.jsx";
 
 function Demandas() {
 
@@ -404,6 +405,83 @@ function Demandas() {
 
     }
 
+    async function exportarCsv() {
+        try {
+
+            let response;
+            if (modoFiltrado && filtro.trim()) {
+                if (usuario?.perfil === "GESTAO_MUNICIPAL") {
+                    response = await api.get(
+                        `/demandas/exportar/filtradas/${filtro}`,
+                        {
+                            responseType: "blob",
+                        }
+                    );
+                } else if (usuario?.perfil === "EXECUTOR_APS") {
+                    response = await api.get(
+                        `/demandas/exportar/filtradas/unidade/${usuario.unidadeSaudeId}/${filtro}`,
+                        {
+                            responseType: "blob",
+                        }
+                    );
+                }
+            } else {
+                if (usuario?.perfil === "GESTAO_MUNICIPAL") {
+                    response = await api.get(
+                        "/demandas/exportar",
+                        {
+                            responseType: "blob",
+                        }
+                    );
+                } else if (usuario?.perfil === "EXECUTOR_APS") {
+
+                    response = await api.get(
+                        `/demandas/exportar/unidade/${usuario.unidadeSaudeId}`,
+                        {
+                            responseType: "blob",
+                        }
+                    );
+                }
+            }
+            const blob = new Blob(
+                [response.data],
+                {
+                    type: "text/csv;charset=utf-8;",
+                }
+            );
+
+            const agora = new Date();
+
+            const dataHora = agora
+                .toLocaleString("pt-BR")
+                .replaceAll("/", "-")
+                .replaceAll(":", "-")
+                .replaceAll(", ", "_");
+
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+
+            link.href = url;
+
+            link.setAttribute(
+                "download",
+                `demandas-vincula-poa-${dataHora}.csv`
+            );
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+
+        } catch {
+            setMensagem("Erro ao exportar CSV.");
+        }
+    }
+
     if (carregando) {
 
         return (
@@ -488,16 +566,24 @@ function Demandas() {
 
                             <button
                                 type="button"
-                                className="limpar-btn"
+                                className="buscar-btn"
                                 onClick={limparFiltro}
                             >
                                 Limpar filtro
                             </button>
 
+                            <button
+                                type="button"
+                                className="buscar-btn"
+                                onClick={exportarCsv}
+                            >
+                                Exportar CSV
+                            </button>
+
                         </div>
 
                         <button
-                            className="novo-paciente-btn"
+                            className="buscar-btn"
                             onClick={() => navigate("/demandas/cadastro")}
                         >
                             + Nova demanda
@@ -616,53 +702,11 @@ function Demandas() {
                         </div>
                     )}
 
-                    {totalPaginas > 1 && (
-
-                        <div className="pagination">
-
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={pagina === 0}
-                                onClick={() => setPagina(0)}
-                            >
-                                Primeira
-                            </button>
-
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={pagina === 0}
-                                onClick={() => setPagina((prev) => prev - 1)}
-                            >
-                                Anterior
-                            </button>
-
-                            <span className="pagination-info">
-                                Página {pagina + 1} de {totalPaginas}
-                            </span>
-
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={pagina + 1 >= totalPaginas}
-                                onClick={() => setPagina((prev) => prev + 1)}
-                            >
-                                Próxima
-                            </button>
-
-                            <button
-                                type="button"
-                                className="pagination-btn"
-                                disabled={pagina + 1 >= totalPaginas}
-                                onClick={() => setPagina(totalPaginas - 1)}
-                            >
-                                Última
-                            </button>
-
-                        </div>
-
-                    )}
+                    <Pagination
+                        pagina={pagina}
+                        totalPaginas={totalPaginas}
+                        onChangePagina={setPagina}
+                    />
 
                 </div>
 

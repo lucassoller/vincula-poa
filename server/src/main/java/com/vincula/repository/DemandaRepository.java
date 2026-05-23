@@ -2,6 +2,7 @@ package com.vincula.repository;
 
 import com.vincula.dto.projection.*;
 import com.vincula.entity.Demanda;
+import com.vincula.entity.Paciente;
 import com.vincula.enums.StatusDemanda;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,14 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT d
     FROM Demanda d
     JOIN d.paciente p
+    ORDER BY p.nomeCompleto ASC
+""")
+    List<Demanda> findAllOrderByPacienteNome();
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
     WHERE (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -40,10 +49,34 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT d
     FROM Demanda d
     JOIN d.paciente p
+    WHERE (
+        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
+    )
+    ORDER BY p.nomeCompleto ASC
+""")
+    List<Demanda> findFiltradas(@Param("filtro") String filtro);
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
     WHERE d.unidadeResponsavel.id = :unidadeSaudeId
     ORDER BY p.nomeCompleto ASC
 """)
     Page<Demanda> findByUnidadeOrderByPacienteNome(@Param("unidadeSaudeId") Long unidadeSaudeId, Pageable pageable);
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.unidadeResponsavel.id = :unidadeSaudeId
+    ORDER BY p.nomeCompleto ASC
+""")
+    List<Demanda> findByUnidadeOrderByPacienteNome(@Param("unidadeSaudeId") Long unidadeSaudeId);
 
     @Query("""
     SELECT d
@@ -61,16 +94,24 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
 """)
     Page<Demanda> findFiltradasByUnidade(@Param("unidadeSaudeId") Long unidadeSaudeId,
                                          @Param("filtro") String filtro,
-                                         Pageable pageable
-    );
+                                         Pageable pageable);
 
     @Query("""
     SELECT d
     FROM Demanda d
     JOIN d.paciente p
-    WHERE d.paciente.id = :pacienteId
+    WHERE d.unidadeResponsavel.id = :unidadeSaudeId
+    AND (
+        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
+    )
+    ORDER BY p.nomeCompleto ASC
 """)
-    Page<Demanda> findByPaciente(@Param("pacienteId") Long pacienteId, Pageable pageable);
+    List<Demanda> findFiltradasByUnidade(@Param("unidadeSaudeId") Long unidadeSaudeId,
+                                         @Param("filtro") String filtro);
 
     @Query("""
     SELECT d
@@ -80,6 +121,25 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     ORDER BY p.nomeCompleto ASC
 """)
     Page<Demanda> findByUsuarioOrderByPacienteNome(@Param("usuarioCriadorId") Long usuarioCriadorId, Pageable pageable);
+
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.paciente.id = :pacienteId
+    ORDER BY p.nomeCompleto ASC
+""")
+    Page<Demanda> findByPacienteOrderByPacienteNome(@Param("pacienteId") Long pacienteId, Pageable pageable);
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.status = :status
+    ORDER BY p.nomeCompleto ASC
+""")
+    Page<Demanda> findByStatusOrderByPacienteNome(@Param("status") StatusDemanda status, Pageable pageable);
 
     List<Demanda> findByPacienteIdAndStatusIn(Long pacienteId, List<StatusDemanda> status);
 

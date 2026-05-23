@@ -3,6 +3,7 @@ package com.vincula.service;
 import com.vincula.dto.paciente.PacienteResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
+import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
@@ -50,11 +51,11 @@ public class UnidadeSaudeService {
                 .map(this::toDTO);
     }
 
-    public List<UnidadeSaudeResponseDTO> listarTodos() {
+    public List<UnidadeSaudeShortResponseDTO> listarTodos() {
         auditoriaFacade.unidadeSaudeVisualizada(0L);
         return unidadeSaudeRepository.findAllByOrderByNomeAsc()
                 .stream()
-                .map(this::toDTO)
+                .map(this::toShortDTO)
                 .toList();
     }
 
@@ -155,6 +156,15 @@ public class UnidadeSaudeService {
         dto.setCnes(entity.getCnes());
         dto.setTelefone(entity.getTelefone());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
+        return dto;
+    }
+
+
+    public UnidadeSaudeShortResponseDTO toShortDTO(UnidadeSaude entity) {
+        UnidadeSaudeShortResponseDTO dto = new UnidadeSaudeShortResponseDTO();
+        dto.setId(entity.getId());
+        dto.setNome(entity.getNome());
+        dto.setCnes(entity.getCnes());
         return dto;
     }
 

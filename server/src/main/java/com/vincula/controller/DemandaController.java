@@ -9,10 +9,15 @@ import com.vincula.service.DemandaService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -78,6 +83,15 @@ public class DemandaController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/status/{status}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorStatus(
+            @PathVariable StatusDemanda status,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(demandaService.listarPorStatus(status, pageable));
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/filtradas/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas(@PathVariable String filtro, Pageable pageable) {
         return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));
@@ -113,5 +127,63 @@ public class DemandaController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         demandaService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/exportar", produces = "text/csv")
+    public ResponseEntity<String> exportarDemandasCsv() {
+
+        String csv = demandaService.exportarDemandasCsv();
+
+        return gerarRespostaCsv(csv);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/exportar/unidade/{unidadeId}", produces = "text/csv")
+    public ResponseEntity<String> exportarDemandasPorUnidadeCsv(
+            @PathVariable Long unidadeId
+    ) {
+
+        String csv = demandaService.exportarDemandasPorUnidadeCsv(unidadeId);
+
+        return gerarRespostaCsv(csv);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/exportar/filtradas/{filtro}", produces = "text/csv")
+    public ResponseEntity<String> exportarDemandasFiltradasCsv(
+            @PathVariable String filtro
+    ) {
+
+        String csv = demandaService.exportarDemandasFiltradasCsv(filtro);
+
+        return gerarRespostaCsv(csv);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(
+            value = "/exportar/filtradas/unidade/{unidadeId}/{filtro}",
+            produces = "text/csv"
+    )
+    public ResponseEntity<String> exportarDemandasFiltradasPorUnidadeCsv(
+            @PathVariable Long unidadeId,
+            @PathVariable String filtro
+    ) {
+
+        String csv = demandaService
+                .exportarDemandasFiltradasPorUnidadeCsv(unidadeId, filtro);
+
+        return gerarRespostaCsv(csv);
+    }
+
+    private ResponseEntity<String> gerarRespostaCsv(String csv) {
+
+        String dataHora = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm"));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=demandas-vincula-poa-"+dataHora+".csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(csv);
     }
 }

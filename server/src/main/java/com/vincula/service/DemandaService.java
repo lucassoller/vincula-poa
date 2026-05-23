@@ -4,7 +4,6 @@ import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.demanda.EncerrarDemandaDTO;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.demanda.DemandaResponseDTO;
-import com.vincula.dto.tentativaContato.TentativaContatoDTO;
 import com.vincula.entity.Demanda;
 import com.vincula.entity.Paciente;
 import com.vincula.entity.UnidadeSaude;
@@ -12,6 +11,7 @@ import com.vincula.entity.Usuario;
 import com.vincula.enums.*;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
+import com.vincula.export.DemandaExporter;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.PacienteRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
@@ -32,17 +32,19 @@ public class DemandaService {
     private final UnidadeSaudeRepository unidadeSaudeRepository;
     private final UsuarioService usuarioService;
     private final AuditoriaFacade auditoriaFacade;
+    private final DemandaExporter demandaExporter;
 
     public DemandaService(DemandaRepository demandaRepository,
                           PacienteRepository pacienteRepository,
                           UnidadeSaudeRepository unidadeSaudeRepository,
                           UsuarioService usuarioService,
-                          AuditoriaFacade auditoriaFacade) {
+                          AuditoriaFacade auditoriaFacade, DemandaExporter demandaExporter) {
         this.demandaRepository = demandaRepository;
         this.pacienteRepository = pacienteRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
         this.usuarioService = usuarioService;
         this.auditoriaFacade = auditoriaFacade;
+        this.demandaExporter = demandaExporter;
     }
 
     public DemandaResponseDTO criar(DemandaDTO dto) {
@@ -69,7 +71,7 @@ public class DemandaService {
 
     public Page<DemandaResponseDTO> listarPorPaciente(Long pacienteId, Pageable pageable) {
         auditoriaFacade.demandaVisualizada(0L);
-        return demandaRepository.findByPaciente(pacienteId, pageable)
+        return demandaRepository.findByPacienteOrderByPacienteNome(pacienteId, pageable)
                 .map(this::toDTO);
     }
 
@@ -88,6 +90,12 @@ public class DemandaService {
     public Page<DemandaResponseDTO> listarPorUsuarioCriador(Long usuarioId, Pageable pageable) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUsuarioOrderByPacienteNome(usuarioId, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<DemandaResponseDTO> listarPorStatus(StatusDemanda status, Pageable pageable) {
+        auditoriaFacade.demandaVisualizada(0L);
+        return demandaRepository.findByStatusOrderByPacienteNome(status, pageable)
                 .map(this::toDTO);
     }
 
@@ -210,6 +218,26 @@ public class DemandaService {
 
         demandaRepository.delete(entity);
         auditoriaFacade.demandaDeletada(demandaId);
+    }
+
+    public String exportarDemandasCsv(){
+        List<Demanda> demandas = demandaRepository.findAllOrderByPacienteNome();
+        return demandaExporter.exportar(demandas);
+    }
+
+    public String exportarDemandasPorUnidadeCsv(Long unidadeId){
+        List<Demanda> demandas = demandaRepository.findByUnidadeOrderByPacienteNome(unidadeId);
+        return demandaExporter.exportar(demandas);
+    }
+
+    public String exportarDemandasFiltradasCsv(String filtro){
+        List<Demanda> demandas = demandaRepository.findFiltradas(filtro);
+        return demandaExporter.exportar(demandas);
+    }
+
+    public String exportarDemandasFiltradasPorUnidadeCsv(Long unidadeId, String filtro){
+        List<Demanda> demandas = demandaRepository.findFiltradasByUnidade(unidadeId, filtro);
+        return demandaExporter.exportar(demandas);
     }
 
     private Demanda buscarDemandaPorId(Long id) {

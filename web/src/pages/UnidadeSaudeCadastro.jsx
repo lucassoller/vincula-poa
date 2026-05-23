@@ -228,7 +228,7 @@ function UnidadeSaudeCadastro() {
                                 </button>
                                 <button
                                     type="button"
-                                    className="limpar-btn"
+                                    className="buscar-btn"
                                     onClick={() => navigate("/indicadores")}
                                 >
                                     Cancelar
@@ -253,7 +253,7 @@ function UnidadeSaudeCadastro() {
                                 </button>
                                 <button
                                     type="button"
-                                    className="limpar-btn"
+                                    className="buscar-btn"
                                     onClick={() => setEtapa(1)}
                                 >
                                     Voltar

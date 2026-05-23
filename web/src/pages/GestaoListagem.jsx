@@ -1,137 +1,247 @@
-import {useEffect, useState} from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "./gestaoListagem.css";
 import api from "../api/api.js";
+import {formatarDataHora} from "../utils/demandaUtils.js";
+import Pagination from "../components/Paginations.jsx";
 
 function GestaoListagem() {
-    const navigate = useNavigate();
 
     const [tipo, setTipo] = useState("");
+
     const [filtroUsuario, setFiltroUsuario] = useState("");
     const [filtroUbs, setFiltroUbs] = useState("");
     const [filtroPaciente, setFiltroPaciente] = useState("");
-    const [filtroGeral, setFiltroGeral] = useState("");
     const [filtroPerfil, setFiltroPerfil] = useState("");
-    const [usuarios, setUsuarios] = useState([]);
-    const [unidades, setUnidades] = useState([]);
-    const [unidadesSelect, setUnidadesSelect] = useState([]);
-    const [pacientes, setPacientes] = useState([]);
-    const [resultado, setResultado] = useState([]);
     const [filtroUbsPaciente, setFiltroUbsPaciente] = useState("");
+    const [filtroStatus, setFiltroStatus] = useState("");
+
+    const [usuariosSelect, setUsuariosSelect] = useState([]);
+    const [unidadesSelect, setUnidadesSelect] = useState([]);
+    const [pacientesSelect, setPacientesSelect] = useState([]);
+
+    const [resultado, setResultado] = useState([]);
+
+    const [pagina, setPagina] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
+
+    const [carregando, setCarregando] = useState(false);
+
+    const tamanhoPagina = 10;
 
     useEffect(() => {
+
         async function carregarDados() {
+
             try {
-                const [usuariosRes, unidadesRes, unidadesSelectRes, pacientesRes] = await Promise.all([
-                    api.get("/usuarios?page=0&size=10"),
-                    api.get("/unidades-saude?page=0&size=10"),
+
+                const [
+                    usuariosSelectRes,
+                    unidadesSelectRes,
+                    pacientesSelectRes
+                ] = await Promise.all([
+                    api.get("/usuarios/all"),
                     api.get("/unidades-saude/all"),
-                    api.get("/pacientes?page=0&size=10")
+                    api.get("/pacientes/all")
                 ]);
 
-                setUsuarios(usuariosRes.data.content);
-                setUnidades(unidadesRes.data.content);
-                setUnidadesSelect(unidadesSelectRes.data)
-                setPacientes(pacientesRes.data.content);
+                setUsuariosSelect(usuariosSelectRes.data);
+                setUnidadesSelect(unidadesSelectRes.data);
+                setPacientesSelect(pacientesSelectRes.data);
+
             } catch {
-                console.error("Erro ao carregar dados da gestão");
+
+                console.error("Erro ao carregar dados");
             }
         }
 
         void carregarDados();
+
     }, []);
 
-    function normalizar(valor) {
-        return String(valor || "")
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+    useEffect(() => {
+
+        if (tipo) {
+            void listar(pagina);
+        }
+
+    }, [pagina]);
+
+    async function listar(paginaAtual = 0) {
+
+        try {
+
+            setCarregando(true);
+
+            let response;
+
+
+            if (tipo === "PACIENTES") {
+
+                if (filtroPaciente) {
+
+                    response = await api.get(
+                        `/pacientes/${filtroPaciente}`
+                    );
+
+                    setResultado([response.data]);
+                    setPagina(0);
+                    setTotalPaginas(1);
+
+                    return;
+                }
+
+                if (filtroUbsPaciente) {
+
+                    response = await api.get(
+                        `/pacientes/unidadeSaude/${filtroUbsPaciente}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+
+                } else {
+
+                    response = await api.get(
+                        `/pacientes?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+                }
+
+                setResultado(response.data.content);
+                setTotalPaginas(response.data.page.totalPages);
+                setPagina(paginaAtual);
+            }
+
+            if (tipo === "USUARIOS") {
+
+                if (filtroUsuario) {
+
+                    response = await api.get(
+                        `/usuarios/${filtroUsuario}`
+                    );
+
+                    setResultado([response.data]);
+                    setPagina(0);
+                    setTotalPaginas(1);
+
+                    return;
+                }
+
+                if (filtroPerfil) {
+
+                    response = await api.get(
+                        `/usuarios/perfil/${filtroPerfil}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+
+                } else {
+
+                    response = await api.get(
+                        `/usuarios?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+                }
+
+                setResultado(response.data.content);
+                setTotalPaginas(response.data.page.totalPages);
+                setPagina(paginaAtual);
+            }
+
+            if (tipo === "UBS") {
+
+                if (filtroUbs) {
+
+                    response = await api.get(
+                        `/unidades-saude/${filtroUbs}`
+                    );
+
+                    setResultado([response.data]);
+                    setPagina(0);
+                    setTotalPaginas(1);
+
+                    return;
+                }
+
+                response = await api.get(
+                    `/unidades-saude?page=${paginaAtual}&size=${tamanhoPagina}`
+                );
+
+                setResultado(response.data.content);
+                setTotalPaginas(response.data.page.totalPages);
+                setPagina(paginaAtual);
+            }
+
+            if (tipo === "DEMANDAS") {
+
+                if (filtroPaciente) {
+
+                    response = await api.get(
+                        `/demandas/paciente/${filtroPaciente}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+
+                } else if (filtroUbsPaciente) {
+
+                    response = await api.get(
+                        `/demandas/unidade/${filtroUbsPaciente}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+
+                } else if (filtroUsuario) {
+
+                    response = await api.get(
+                        `/demandas/usuario/${filtroUsuario}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+
+                } else if (filtroStatus) {
+
+                    response = await api.get(
+                        `/demandas/status/${filtroStatus}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+
+                } else {
+
+                    response = await api.get(
+                        `/demandas?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+                }
+
+                setResultado(response.data.content);
+                setTotalPaginas(response.data.page.totalPages);
+                setPagina(paginaAtual);
+            }
+
+        } catch (error) {
+
+            console.error("Erro ao listar:", error);
+
+        } finally {
+
+            setCarregando(false);
+        }
     }
 
-    function listar() {
-        let dados = [];
+    function limparFiltros() {
 
-        if (tipo === "USUARIOS") {
-            dados = [...usuarios];
+        setTipo("");
 
-            if (filtroGeral.trim()) {
-                const busca = normalizar(filtroGeral);
+        setFiltroUsuario("");
+        setFiltroUbs("");
+        setFiltroPaciente("");
+        setFiltroPerfil("");
+        setFiltroUbsPaciente("");
+        setFiltroStatus("");
 
-                dados = dados.filter((u) =>
-                    normalizar(u.nome).includes(busca) ||
-                    normalizar(u.email).includes(busca) ||
-                    normalizar(u.login).includes(busca) ||
-                    normalizar(u.perfil).includes(busca) ||
-                    normalizar(u.unidadeSaudeNome).includes(busca)
-                );
-            }
+        setResultado([]);
 
-            if (filtroUsuario) {
-                dados = dados.filter((u) => String(u.id) === String(filtroUsuario));
-            }
-
-            if (filtroPerfil) {
-                dados = dados.filter((u) => u.perfil === filtroPerfil);
-            }
-        }
-
-        if (tipo === "UBS") {
-            dados = [...unidades];
-
-            if (filtroGeral.trim()) {
-                const busca = normalizar(filtroGeral);
-
-                dados = dados.filter((u) =>
-                    normalizar(u.nome).includes(busca) ||
-                    normalizar(u.cnes).includes(busca) ||
-                    normalizar(u.telefone).includes(busca) ||
-                    normalizar(u.email).includes(busca) ||
-                    normalizar(u.endereco?.bairro).includes(busca)
-                );
-            }
-
-            if (filtroUbs) {
-                dados = dados.filter((u) => String(u.id) === String(filtroUbs));
-            }
-        }
-
-        if (tipo === "PACIENTES") {
-            dados = [...pacientes];
-
-            if (filtroGeral.trim()) {
-                const busca = normalizar(filtroGeral);
-
-                dados = dados.filter((p) =>
-                    normalizar(p.nomeCompleto).includes(busca) ||
-                    normalizar(p.documento).includes(busca) ||
-                    normalizar(p.telefone).includes(busca) ||
-                    normalizar(p.email).includes(busca) ||
-                    normalizar(p.unidadeSaudeNome).includes(busca)
-                );
-            }
-
-            if (filtroPaciente) {
-                dados = dados.filter((p) => String(p.id) === String(filtroPaciente));
-            }
-
-            if (filtroUbsPaciente) {
-                dados = dados.filter((p) =>
-                    String(p.unidadeSaudeId) === String(filtroUbsPaciente)
-                );
-            }
-        }
-
-        setResultado(dados);
+        setPagina(0);
+        setTotalPaginas(0);
     }
 
     return (
         <div className="gestao-container">
+
             <div className="gestao-page">
 
                 <div className="gestao-header">
                     <div>
                         <h1>Central de Gestão</h1>
-                        <p>Consulte usuários, unidades de saúde e pacientes do sistema</p>
+
+                        <p>
+                            Consulte usuários, unidades de saúde e pacientes
+                        </p>
                     </div>
                 </div>
 
@@ -140,143 +250,398 @@ function GestaoListagem() {
                     <div className="form-grid two">
 
                         <div className="form-group">
-                            <label>Tipo de listagem</label>
+
+                            <label>
+                                Tipo de listagem
+                            </label>
+
                             <select
                                 className="input-field"
                                 value={tipo}
                                 onChange={(e) => {
+
                                     setTipo(e.target.value);
+
                                     setFiltroUsuario("");
                                     setFiltroUbs("");
                                     setFiltroPaciente("");
-                                    setFiltroGeral("");
                                     setFiltroPerfil("");
                                     setFiltroUbsPaciente("");
+                                    setFiltroStatus("");
+
                                     setResultado([]);
+
+                                    setPagina(0);
+                                    setTotalPaginas(0);
                                 }}
                             >
-                                <option value="">Selecione</option>
-                                <option value="USUARIOS">Usuários</option>
-                                <option value="UBS">Unidades Básicas de Saúde</option>
-                                <option value="PACIENTES">Pacientes</option>
-                            </select>
-                        </div>
 
-                        <div className="form-group">
-                            <label>Filtro geral</label>
-                            <input
-                                className="input-field"
-                                placeholder="Digite para buscar..."
-                                disabled={!tipo}
-                                value={filtroGeral}
-                                onChange={(e) => setFiltroGeral(e.target.value)}
-                            />
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <option value="USUARIOS">
+                                    Usuários
+                                </option>
+
+                                <option value="UBS">
+                                    Unidades Básicas de Saúde
+                                </option>
+
+                                <option value="PACIENTES">
+                                    Pacientes
+                                </option>
+
+                                <option value="DEMANDAS">
+                                    Demandas
+                                </option>
+
+                            </select>
+
                         </div>
 
                     </div>
 
                     {tipo === "USUARIOS" && (
                         <div className="gestao-filter-box">
-                            <h2>Filtros de usuários</h2>
+
+                            <h2>
+                                Filtros de usuários
+                            </h2>
 
                             <div className="form-grid two">
+
                                 <div className="form-group">
-                                    <label>Usuário</label>
+
+                                    <label>
+                                        Usuário
+                                    </label>
+
                                     <select
                                         className="input-field"
                                         value={filtroUsuario}
-                                        onChange={(e) => setFiltroUsuario(e.target.value)}
+                                        disabled={!!filtroPerfil}
+                                        onChange={(e) =>
+                                            setFiltroUsuario(e.target.value)
+                                        }
                                     >
-                                        <option value="">Todos os usuários</option>
-                                        {usuarios.map((usuario) => (
-                                            <option key={usuario.id} value={usuario.id}>
+
+                                        <option value="">
+                                            Todos os usuários
+                                        </option>
+
+                                        {usuariosSelect.map((usuario) => (
+                                            <option
+                                                key={usuario.id}
+                                                value={usuario.id}
+                                            >
                                                 {usuario.nome}
                                             </option>
                                         ))}
+
                                     </select>
+
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Perfil</label>
-                                    <select className="input-field"
-                                            value={filtroPerfil}
-                                            onChange={(e) => setFiltroPerfil(e.target.value)}>
-                                        <option value="">Todos os perfis</option>
-                                        <option value="SOLICITANTE">Solicitante</option>
-                                        <option value="EXECUTOR_APS">Executor APS</option>
-                                        <option value="GESTAO_MUNICIPAL">Gestão Municipal</option>
+
+                                    <label>
+                                        Perfil
+                                    </label>
+
+                                    <select
+                                        className="input-field"
+                                        value={filtroPerfil}
+                                        disabled={!!filtroUsuario}
+                                        onChange={(e) =>
+                                            setFiltroPerfil(e.target.value)
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Todos os perfis
+                                        </option>
+
+                                        <option value="SOLICITANTE">
+                                            Solicitante
+                                        </option>
+
+                                        <option value="EXECUTOR_APS">
+                                            Executor APS
+                                        </option>
+
+                                        <option value="GESTAO_MUNICIPAL">
+                                            Gestão Municipal
+                                        </option>
+
                                     </select>
+
                                 </div>
+
                             </div>
+
                         </div>
                     )}
 
                     {tipo === "UBS" && (
                         <div className="gestao-filter-box">
-                            <h2>Filtros de UBS</h2>
+
+                            <h2>
+                                Filtros de UBS
+                            </h2>
 
                             <div className="form-grid two">
+
                                 <div className="form-group">
-                                    <label>Unidade Básica de Saúde</label>
+
+                                    <label>
+                                        Unidade Básica de Saúde
+                                    </label>
+
                                     <select
                                         className="input-field"
                                         value={filtroUbs}
-                                        onChange={(e) => setFiltroUbs(e.target.value)}
+                                        onChange={(e) =>
+                                            setFiltroUbs(e.target.value)
+                                        }
                                     >
-                                        <option value="">Todas as UBS</option>
+
+                                        <option value="">
+                                            Todas as UBS
+                                        </option>
+
                                         {unidadesSelect.map((ubs) => (
-                                            <option key={ubs.id} value={ubs.id}>
+                                            <option
+                                                key={ubs.id}
+                                                value={ubs.id}
+                                            >
                                                 {ubs.nome}
                                             </option>
                                         ))}
+
                                     </select>
+
                                 </div>
 
-                                <div className="form-group">
-                                    <label>Bairro</label>
-                                    <select className="input-field">
-                                        <option value="">Todos os bairros</option>
-                                    </select>
-                                </div>
                             </div>
+
                         </div>
                     )}
 
                     {tipo === "PACIENTES" && (
                         <div className="gestao-filter-box">
-                            <h2>Filtros de pacientes</h2>
+
+                            <h2>
+                                Filtros de pacientes
+                            </h2>
 
                             <div className="form-grid two">
+
                                 <div className="form-group">
-                                    <label>Paciente</label>
+
+                                    <label>
+                                        Paciente
+                                    </label>
+
                                     <select
                                         className="input-field"
                                         value={filtroPaciente}
-                                        onChange={(e) => setFiltroPaciente(e.target.value)}
+                                        disabled={!!filtroUbsPaciente}
+                                        onChange={(e) =>
+                                            setFiltroPaciente(e.target.value)
+                                        }
                                     >
-                                        <option value="">Todos os pacientes</option>
-                                        {pacientes.map((paciente) => (
-                                            <option key={paciente.id} value={paciente.id}>
+
+                                        <option value="">
+                                            Todos os pacientes
+                                        </option>
+
+                                        {pacientesSelect.map((paciente) => (
+                                            <option
+                                                key={paciente.id}
+                                                value={paciente.id}
+                                            >
                                                 {paciente.nomeCompleto}
                                             </option>
                                         ))}
+
                                     </select>
+
                                 </div>
 
                                 <div className="form-group">
-                                    <label>UBS vinculada</label>
+
+                                    <label>
+                                        UBS vinculada
+                                    </label>
+
                                     <select
                                         className="input-field"
                                         value={filtroUbsPaciente}
-                                        onChange={(e) => setFiltroUbsPaciente(e.target.value)}
+                                        disabled={!!filtroPaciente}
+                                        onChange={(e) =>
+                                            setFiltroUbsPaciente(e.target.value)
+                                        }
                                     >
-                                        <option value="">Todas as UBS</option>
+
+                                        <option value="">
+                                            Todas as UBS
+                                        </option>
 
                                         {unidadesSelect.map((ubs) => (
-                                            <option key={ubs.id} value={ubs.id}>
+                                            <option
+                                                key={ubs.id}
+                                                value={ubs.id}
+                                            >
                                                 {ubs.nome}
                                             </option>
                                         ))}
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    )}
+
+                    {tipo === "DEMANDAS" && (
+                        <div className="gestao-filter-box">
+
+                            <h2>
+                                Filtros de demandas
+                            </h2>
+
+                            <div className="form-grid two">
+
+                                <div className="form-group">
+
+                                    <label>
+                                        Paciente
+                                    </label>
+
+                                    <select
+                                        className="input-field"
+                                        value={filtroPaciente}
+                                        disabled={!!filtroUbsPaciente || !!filtroUsuario || !!filtroStatus}
+                                        onChange={(e) =>
+                                            setFiltroPaciente(e.target.value)
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Todos os pacientes
+                                        </option>
+
+                                        {pacientesSelect.map((paciente) => (
+                                            <option
+                                                key={paciente.id}
+                                                value={paciente.id}
+                                            >
+                                                {paciente.nomeCompleto}
+                                            </option>
+                                        ))}
+
+                                    </select>
+
+                                </div>
+
+                                <div className="form-group">
+
+                                    <label>
+                                        Unidade de Saúde
+                                    </label>
+
+                                    <select
+                                        className="input-field"
+                                        value={filtroUbsPaciente}
+                                        disabled={!!filtroPaciente || !!filtroUsuario || !!filtroStatus}
+                                        onChange={(e) =>
+                                            setFiltroUbsPaciente(e.target.value)
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Todas as UBS
+                                        </option>
+
+                                        {unidadesSelect.map((ubs) => (
+                                            <option
+                                                key={ubs.id}
+                                                value={ubs.id}
+                                            >
+                                                {ubs.nome}
+                                            </option>
+                                        ))}
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+                            <div className="form-grid two">
+
+                                <div className="form-group">
+
+                                    <label>
+                                        Usuário responsável
+                                    </label>
+
+                                    <select
+                                        className="input-field"
+                                        value={filtroUsuario}
+                                        disabled={!!filtroUbsPaciente || !!filtroPaciente || !!filtroStatus}
+                                        onChange={(e) =>
+                                            setFiltroUsuario(e.target.value)
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Todos os usuários
+                                        </option>
+
+                                        {usuariosSelect.map((usuario) => (
+                                            <option
+                                                key={usuario.id}
+                                                value={usuario.id}
+                                            >
+                                                {usuario.nome}
+                                            </option>
+                                        ))}
+
+                                    </select>
+
+                                </div>
+                                <div className="form-group">
+
+                                    <label>
+                                        Status
+                                    </label>
+
+                                    <select
+                                        className="input-field"
+                                        value={filtroStatus}
+                                        disabled={!!filtroUbsPaciente || !!filtroPaciente || !!filtroUsuario}
+                                        onChange={(e) =>
+                                            setFiltroStatus(e.target.value)
+                                        }
+                                    >
+
+                                        <option value="">
+                                            Todos os status
+                                        </option>
+                                        <option value="ABERTA">
+                                            Aberta
+                                        </option>
+
+                                        <option value="EM_ANDAMENTO">
+                                            Em andamento
+                                        </option>
+
+                                        <option value="FINALIZADA">
+                                            Finalizada
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -284,34 +649,89 @@ function GestaoListagem() {
                     )}
 
                     <div className="gestao-actions">
-                        <button type="button" className="buscar-btn" onClick={listar}>
+
+                        <button
+                            type="button"
+                            className="buscar-btn"
+                            onClick={() => listar(0)}
+                        >
                             Listar
                         </button>
 
                         <button
                             type="button"
-                            className="limpar-btn"
-                            onClick={() => {
-                                setTipo("");
-                                setFiltroUsuario("");
-                                setFiltroUbs("");
-                                setFiltroPaciente("");
-                                setFiltroGeral("");
-                                setFiltroPerfil("");
-                                setFiltroUbsPaciente("");
-                                setResultado([]);
-                            }}
+                            className="buscar-btn"
+                            onClick={limparFiltros}
                         >
                             Limpar filtros
                         </button>
+
                     </div>
 
                     <div className="gestao-placeholder">
-                        {resultado.length === 0 && (<p>Selecione uma listagem e clique em “Listar”.</p>)}
-                        {resultado.length > 0 && (
+
+                        {carregando && (
+                            <p>
+                                Carregando...
+                            </p>
+                        )}
+
+                        {!carregando && resultado.length === 0 && (
+                            <p>
+                                Selecione uma listagem e clique em “Listar”.
+                            </p>
+                        )}
+
+                        {!carregando && resultado.length > 0 && (
+
                             <div className="table-card gestao-table-card">
-                                {tipo === "USUARIOS" && (
+
+                                {tipo === "PACIENTES" && (
+
                                     <table className="pacientes-table">
+
+                                        <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>CPF/CNS</th>
+                                            <th>Telefone</th>
+                                            <th>UBS</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        {resultado.map((p) => (
+                                            <tr key={p.id}>
+
+                                                <td>
+                                                    {p.nomeCompleto}
+                                                </td>
+
+                                                <td>
+                                                    {p.documento}
+                                                </td>
+
+                                                <td>
+                                                    {p.telefone || "-"}
+                                                </td>
+
+                                                <td>
+                                                    {p.unidadeSaudeNome || "-"}
+                                                </td>
+
+                                            </tr>
+                                        ))}
+
+                                        </tbody>
+
+                                    </table>
+                                )}
+
+                                {tipo === "USUARIOS" && (
+
+                                    <table className="pacientes-table">
+
                                         <thead>
                                         <tr>
                                             <th>Nome</th>
@@ -321,22 +741,30 @@ function GestaoListagem() {
                                             <th>UBS</th>
                                         </tr>
                                         </thead>
+
                                         <tbody>
+
                                         {resultado.map((u) => (
                                             <tr key={u.id}>
+
                                                 <td>{u.nome}</td>
                                                 <td>{u.email}</td>
                                                 <td>{u.login}</td>
                                                 <td>{u.perfil}</td>
                                                 <td>{u.unidadeSaudeNome || "-"}</td>
+
                                             </tr>
                                         ))}
+
                                         </tbody>
+
                                     </table>
                                 )}
 
                                 {tipo === "UBS" && (
+
                                     <table className="pacientes-table">
+
                                         <thead>
                                         <tr>
                                             <th>Nome</th>
@@ -346,49 +774,87 @@ function GestaoListagem() {
                                             <th>Bairro</th>
                                         </tr>
                                         </thead>
+
                                         <tbody>
+
                                         {resultado.map((u) => (
                                             <tr key={u.id}>
+
                                                 <td>{u.nome}</td>
                                                 <td>{u.cnes}</td>
                                                 <td>{u.telefone || "-"}</td>
                                                 <td>{u.telefone2 || "-"}</td>
                                                 <td>{u.endereco?.bairro || "-"}</td>
+
                                             </tr>
                                         ))}
+
                                         </tbody>
+
                                     </table>
                                 )}
 
-                                {tipo === "PACIENTES" && (
+                                {tipo === "DEMANDAS" && (
+
                                     <table className="pacientes-table">
+
                                         <thead>
                                         <tr>
-                                            <th>Nome</th>
-                                            <th>CPF/CNS</th>
-                                            <th>Telefone</th>
+                                            <th>Paciente</th>
+                                            <th>Criador</th>
                                             <th>UBS</th>
+                                            <th>Status</th>
+                                            <th>Data abertura</th>
                                         </tr>
                                         </thead>
+
                                         <tbody>
-                                        {resultado.map((p) => (
-                                            <tr key={p.id}>
-                                                <td>{p.nomeCompleto}</td>
-                                                <td>{p.documento}</td>
-                                                <td>{p.telefone || "-"}</td>
-                                                <td>{p.unidadeSaudeNome || "-"}</td>
+
+                                        {resultado.map((d) => (
+                                            <tr key={d.id}>
+                                                <td>
+                                                    {d.pacienteNome || "-"}
+                                                </td>
+
+                                                <td>
+                                                    {d.usuarioCriadorNome || "-"}
+                                                </td>
+
+                                                <td>
+                                                    {d.unidadeResponsavelNome || "-"}
+                                                </td>
+
+                                                <td>
+                                                    {d.status || "-"}
+                                                </td>
+
+                                                <td>
+                                                    {formatarDataHora(d.dataHoraCriacao)}
+                                                </td>
+
                                             </tr>
                                         ))}
+
                                         </tbody>
+
                                     </table>
                                 )}
+
+                                <Pagination
+                                    pagina={pagina}
+                                    totalPaginas={totalPaginas}
+                                    onChangePagina={setPagina}
+                                />
+
                             </div>
                         )}
+
                     </div>
 
                 </div>
 
             </div>
+
         </div>
     );
 }

@@ -4,6 +4,8 @@ import com.vincula.dto.MudancaSenhaDTO;
 import com.vincula.dto.usuario.MeuPerfilDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
+import com.vincula.dto.usuario.UsuarioShortResponseDTO;
+import com.vincula.enums.PerfilUsuario;
 import com.vincula.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -39,8 +41,14 @@ public class UsuarioController {
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @GetMapping("/perfil/{perfil}")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarTodos(@PathVariable PerfilUsuario perfil, Pageable pageable) {
+        return ResponseEntity.ok(usuarioService.listarTodosPorPerfil(perfil, pageable));
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping("/all")
-    public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
+    public ResponseEntity<List<UsuarioShortResponseDTO>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
