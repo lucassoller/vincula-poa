@@ -1,5 +1,5 @@
 import CampoDetalhe from "./CampoDetalhe";
-import {formatarDataHora, motivoBuscaLabel, prazoLabel, statusLabel, tentativaContatoLabe} from "../utils/demandaUtils";
+import {formatarDataHora, motivoBuscaLabel, prazoLabel, statusLabel, tentativaContatoLabe} from "../utils/utils.js";
 
 function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
     return (

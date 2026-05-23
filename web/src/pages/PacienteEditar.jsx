@@ -280,11 +280,11 @@ function PacienteEditar() {
                             </div>
 
                             <div className="form-actions">
-                                <button type="button" className="primary-btn" onClick={() => setEtapa(2)}>
+                                <button type="button" className="buscar-btn" onClick={() => setEtapa(2)}>
                                     Próximo
                                 </button>
 
-                                <button type="button" className="danger-btn" onClick={() => navigate("/pacientes")}>
+                                <button type="button" className="buscar-btn" onClick={() => navigate("/pacientes")}>
                                     Cancelar
                                 </button>
                             </div>
@@ -305,7 +305,7 @@ function PacienteEditar() {
                                     Salvar alterações
                                 </button>
 
-                                <button type="button" className="limpar-btn" onClick={() => setEtapa(1)}>
+                                <button type="button" className="buscar-btn" onClick={() => setEtapa(1)}>
                                     Voltar
                                 </button>
                             </div>

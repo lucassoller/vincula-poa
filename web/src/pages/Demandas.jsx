@@ -7,7 +7,7 @@ import {
     formatarDataHora,
     statusLabel,
     motivoBuscaLabel
-} from "../utils/demandaUtils";
+} from "../utils/utils.js";
 
 import ModalTentativaContato from "../components/ModalTentativaContato";
 import ModalRedirecionarDemanda from "../components/ModalRedirecionarDemanda";

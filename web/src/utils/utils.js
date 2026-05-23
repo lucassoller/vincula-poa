@@ -28,6 +28,13 @@ export const tentativaContatoLabe = {
     "OUTRO": "Outro",
 };
 
+export const sexoLabel = {
+    "MASCULINO": "Masculino",
+    "FEMININO": "Feminino",
+    "NAO_INFORMADO": "Não informado",
+    "OUTRO": "Outro",
+};
+
 export function formatarDataHora(data) {
     if (!data) return "-";
 

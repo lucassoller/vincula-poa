@@ -1,8 +1,9 @@
 import Navbar from "./Navbar";
+import "./layout.css"
 
 function Layout({ children }) {
   return (
-    <div style={styles.navbarcontainer}>
+    <div className="navbarcontainer">
       <Navbar />
         {children}
     </div>
@@ -10,12 +11,3 @@ function Layout({ children }) {
 }
 
 export default Layout;
-
-const styles = {
-    navbarcontainer: {
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        fontFamily: "Segoe UI",
-    }
-};

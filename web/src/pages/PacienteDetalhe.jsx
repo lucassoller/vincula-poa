@@ -7,6 +7,7 @@ import {
     mascaraTelefone,
     mascaraCEP
 } from "../utils/mascaras";
+import {sexoLabel} from "../utils/utils.js";
 
 function PacienteDetalhe() {
     const { id } = useParams();
@@ -78,7 +79,7 @@ function PacienteDetalhe() {
                         <p>Detalhes do paciente cadastrado</p>
                     </div>
 
-                    <button className="buscar-btns" onClick={() => navigate("/pacientes")}>
+                    <button className="buscar-btn" onClick={() => navigate("/pacientes")}>
                         Voltar
                     </button>
                 </div>
@@ -89,10 +90,7 @@ function PacienteDetalhe() {
                     <div className="detalhe-grid">
                         <Campo label="CPF/CNS" valor={mascaraDocumento(paciente.documento)} />
                         <Campo label="Telefone" valor={mascaraTelefone(paciente.telefone)} />
-                        <Campo label="Sexo" valor={paciente.sexo === "MASCULINO" ? "Masculino"
-                                                : paciente.sexo === "FEMININO" ? "Feminino"
-                                                : paciente.sexo === "NAO_INFORMADO" ? "Não informado"
-                                                : paciente.sexo === "OUTRO" ? "Outro" : null} />
+                        <Campo label="Sexo" valor={sexoLabel[paciente.sexo]} />
                         <Campo label="Data de nascimento" valor={paciente.dataNascimento
                             ?.split("-")
                             .reverse()

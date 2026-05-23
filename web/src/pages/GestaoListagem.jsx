@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./gestaoListagem.css";
 import api from "../api/api.js";
-import {formatarDataHora} from "../utils/demandaUtils.js";
+import {formatarDataHora} from "../utils/utils.js";
 import Pagination from "../components/Paginations.jsx";
 
 function GestaoListagem() {
