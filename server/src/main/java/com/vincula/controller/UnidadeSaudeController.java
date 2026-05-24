@@ -39,6 +39,12 @@ public class UnidadeSaudeController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtradas/{filtro}")
+    public ResponseEntity<Page<UnidadeSaudeResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodosFiltrados(filtro, pageable));
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/all")
     public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodos() {
         return ResponseEntity.ok(unidadeSaudeService.listarTodos());

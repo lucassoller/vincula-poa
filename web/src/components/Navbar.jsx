@@ -1,104 +1,230 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useEffect, useRef, useState } from "react";
-import "./navbar.css"
+import "./navbar.css";
 
 function Navbar() {
+
     const navigate = useNavigate();
-    const {usuario, logout} = useAuth();
+
+    const { usuario, logout } = useAuth();
 
     const [menuAberto, setMenuAberto] = useState(false);
+
     const menuRef = useRef(null);
 
     useEffect(() => {
+
         function fecharAoClicarFora(event) {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
+
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target)
+            ) {
                 setMenuAberto(false);
             }
+
         }
 
         document.addEventListener("mousedown", fecharAoClicarFora);
 
         return () => {
-            document.removeEventListener("mousedown", fecharAoClicarFora);
+            document.removeEventListener(
+                "mousedown",
+                fecharAoClicarFora
+            );
         };
+
     }, []);
 
-    const inicial = usuario?.nome?.charAt(0)?.toUpperCase() || "U";
+    const inicial =
+        usuario?.nome?.charAt(0)?.toUpperCase() || "U";
+
     return (
+
         <nav className="navbar">
-            <div className="navbar-logo">Vincula POA</div>
+
+            <div className="navbar-logo">
+                Vincula POA
+            </div>
 
             <div className="navbar-links">
-                <Link to="/indicadores" className="navbar-link">
+
+                <Link
+                    to="/indicadores"
+                    className="navbar-link"
+                >
                     Indicadores
                 </Link>
 
-                <Link to="/pacientes" className="navbar-link">
-                    Pacientes
-                </Link>
-
-                <Link to="/demandas" className="navbar-link">
-                    Demandas
-                </Link>
-
-                <Link to="/demandas/cadastro" className="navbar-link">
-                    Criar Demanda
-                </Link>
-
-                <Link to="/auditoria" className="navbar-link">
-                    Auditoria
-                </Link>
-
-                <Link to="/pacientes/cadastro" className="navbar-link">
-                    Cadastrar Paciente
-                </Link>
-
-                <Link to="/usuarios/cadastro" className="navbar-link">
-                    Cadastrar Usuário
-                </Link>
-
-                <Link to="/unidades-saude/cadastro" className="navbar-link">
-                    Cadastrar UBS
-                </Link>
-
-                <Link to="/mapa" className="navbar-link">
-                    Mapa UBS
-                </Link>
-
-                <Link to="/mapa/importar" className="navbar-link">
-                    Importar mapa
-                </Link>
-
                 {usuario?.perfil === "GESTAO_MUNICIPAL" && (
-                    <Link to="/gestao/listar" className="navbar-link">
-                        Listar tudo
+                    <Link
+                        to="/auditoria"
+                        className="navbar-link"
+                    >
+                        Auditoria
                     </Link>
                 )}
+
+                <div className="nav-dropdown">
+
+                    <span className="navbar-link">
+                        Pacientes ▾
+                    </span>
+
+                    <div className="nav-dropdown-menu">
+
+                        <Link
+                            to="/pacientes"
+                            className="dropdown-link"
+                        >
+                            Listar pacientes
+                        </Link>
+
+                        <Link
+                            to="/pacientes/cadastro"
+                            className="dropdown-link"
+                        >
+                            Cadastrar paciente
+                        </Link>
+
+                    </div>
+
+                </div>
+
+                <div className="nav-dropdown">
+
+                    <span className="navbar-link">
+                        Demandas ▾
+                    </span>
+
+                    <div className="nav-dropdown-menu">
+
+                        <Link
+                            to="/demandas"
+                            className="dropdown-link"
+                        >
+                            Listar demandas
+                        </Link>
+
+                        <Link
+                            to="/demandas/cadastro"
+                            className="dropdown-link"
+                        >
+                            Nova demanda
+                        </Link>
+
+                    </div>
+
+                </div>
+
+                <div className="nav-dropdown">
+
+                    <span className="navbar-link">
+                        UBS ▾
+                    </span>
+
+                    <div className="nav-dropdown-menu">
+                        <Link
+                            to="/unidades-saude"
+                            className="dropdown-link"
+                        >
+                            Listar UBS
+                        </Link>
+
+                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                        <Link
+                            to="/unidades-saude/cadastro"
+                            className="dropdown-link"
+                        >
+                            Cadastrar UBS
+                        </Link>
+                        )}
+
+                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                            <Link
+                                to="/usuarios/cadastro"
+                                className="dropdown-link"
+                            >
+                                Cadastrar usuário
+                            </Link>
+
+                        )}
+
+                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+
+                            <Link
+                                to="/gestao/listar"
+                                className="dropdown-link"
+                            >
+                                Listar tudo
+                            </Link>
+
+                        )}
+
+                    </div>
+
+                </div>
+
+                <div className="nav-dropdown">
+
+                    <span className="navbar-link">
+                        Mapa UBS ▾
+                    </span>
+
+                    <div className="nav-dropdown-menu">
+
+                        <Link
+                            to="/mapa"
+                            className="dropdown-link"
+                        >
+                            Visualizar mapa
+                        </Link>
+                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                        <Link
+                            to="/mapa/importar"
+                            className="dropdown-link"
+                        >
+                            Importar mapa
+                        </Link>
+                        )}
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <div className="user-menu" ref={menuRef}>
+            <div
+                className="user-menu"
+                ref={menuRef}
+            >
+
                 <button
                     type="button"
                     className="user-button"
                     onClick={() => setMenuAberto(!menuAberto)}
                     onMouseDown={(e) => e.preventDefault()}
                 >
-                <span className="avatar">
-                    {inicial}
-                </span>
+
+                    <span className="avatar">
+                        {inicial}
+                    </span>
 
                     <span className="user-name">
-                    {usuario?.nome || "Usuário"}
-                </span>
+                        {usuario?.nome || "Usuário"}
+                    </span>
 
                     <span className="arrow">
-                    ▾
-                </span>
+                        ▾
+                    </span>
+
                 </button>
 
                 {menuAberto && (
+
                     <div className="user-dropdown">
+
                         <button
                             className="dropdown-item"
                             onClick={() => {
@@ -130,12 +256,16 @@ function Navbar() {
                         >
                             Sair
                         </button>
+
                     </div>
+
                 )}
+
             </div>
+
         </nav>
+
     );
 }
-
 
 export default Navbar;

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import Login from "./pages/Login";
 import Indicador from "./pages/Indicador.jsx";
 import Pacientes from "./pages/Pacientes";
@@ -18,73 +18,89 @@ import AlterarSenha from "./pages/AlterarSenha.jsx";
 import DemandaCadastro from "./pages/DemandaCadastro.jsx";
 import MapaTerritorios from "./pages/MapasTerritorio.jsx";
 import ImportarMapa from "./pages/ImportarMapa.jsx";
-
+import UnidadesSaude from "./pages/UnidadesSaude.jsx";
+import {useAuth} from "./context/AuthContext.jsx";
 
 function App() {
-  return (
+    const { usuario } = useAuth();
+    return (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
-            <Route path="/mapa" element={
-                <Layout>
-                    <MapaTerritorios />
-                </Layout>} />
-          <Route
+            <Route
+                path="/mapa"
+                element={
+                    <Layout>
+                        <MapaTerritorios />
+                    </Layout>
+                }
+            />
+            <Route
               path="/indicadores"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
                     <Layout>
                         <Indicador />
                     </Layout>
                 </ProtectedRoute>
               }
-          />
-
-          <Route
+            />
+            <Route
               path="/pacientes"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
                     <Layout>
                         <Pacientes />
                     </Layout>
                 </ProtectedRoute>
               }
-          />
+            />
             <Route
                 path="/mapa/importar"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
                         <Layout>
                             <ImportarMapa />
                         </Layout>
                     </ProtectedRoute>
                 }
             />
-        <Route
-            path="/pacientes/:id"
-            element={
-                <ProtectedRoute>
-                    <Layout>
-                        <PacienteDetalhe />
-                    </Layout>
-                </ProtectedRoute>
-            }
-        />
-        <Route
-            path="/pacientes/:id/editar"
-            element={
-                <ProtectedRoute>
-                    <Layout>
-                        <PacienteEditar />
-                    </Layout>
-                </ProtectedRoute>
-            }
-        />
+
+            <Route
+                path="/pacientes/cadastro"
+                element={
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                        <Layout>
+                            <PacienteCadastro />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/pacientes/:id"
+                element={
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                        <Layout>
+                            <PacienteDetalhe />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/pacientes/:id/editar"
+                element={
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                        <Layout>
+                            <PacienteEditar />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
 
             <Route
                 path="/demandas"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
                         <Layout>
                             <Demandas />
                         </Layout>
@@ -92,31 +108,32 @@ function App() {
                 }
             />
 
-          <Route
-              path="/auditoria"
-              element={
-                <ProtectedRoute>
-                    <Layout>
-                        <Auditoria />
-                    </Layout>
-                </ProtectedRoute>
-              }
-          />
             <Route
-                path="/pacientes/cadastro"
+                path="/demandas/cadastro"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
                         <Layout>
-                            <PacienteCadastro />
+                            <DemandaCadastro />
                         </Layout>
                     </ProtectedRoute>
                 }
             />
 
             <Route
+              path="/auditoria"
+              element={
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
+                    <Layout>
+                        <Auditoria />
+                    </Layout>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
                 path="/usuarios/cadastro"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
                         <Layout>
                             <UsuarioCadastro />
                         </Layout>
@@ -127,17 +144,29 @@ function App() {
             <Route
                 path="/unidades-saude/cadastro"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
                         <Layout>
                             <UnidadeSaudeCadastro />
                         </Layout>
                     </ProtectedRoute>
                 }
             />
+
+            <Route
+                path="/unidades-saude"
+                element={
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                        <Layout>
+                            <UnidadesSaude />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+
             <Route
                 path="/unidades-saude/:id/editar"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
                         <Layout>
                             <UnidadeSaudeEditar />
                         </Layout>
@@ -147,7 +176,7 @@ function App() {
             <Route
                 path="/gestao/listar"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
                         <Layout>
                             <GestaoListagem />
                         </Layout>
@@ -157,7 +186,7 @@ function App() {
             <Route
                 path="/meu-perfil"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
                         <Layout>
                             <MeuPerfil />
                         </Layout>
@@ -167,25 +196,24 @@ function App() {
             <Route
                 path="/alterar-senha"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
                         <Layout>
                             <AlterarSenha />
-                        </Layout>
-                    </ProtectedRoute>} />
-            <Route
-                path="/demandas/cadastro"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <DemandaCadastro />
                         </Layout>
                     </ProtectedRoute>
                 }
             />
-
+            <Route
+                path="*"
+                element={
+                    usuario
+                        ? <Navigate to="/indicadores" replace />
+                        : <Navigate to="/" replace />
+                }
+            />
         </Routes>
       </BrowserRouter>
-  );
+    );
 }
 
 export default App;

@@ -98,7 +98,7 @@ public class DemandaController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/unidade/{unidadeSaudeId}/{filtro}")
+    @GetMapping("/filtradas/unidade/{unidadeSaudeId}/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaudeFiltradas(
             @PathVariable Long unidadeSaudeId,
             @PathVariable String filtro,

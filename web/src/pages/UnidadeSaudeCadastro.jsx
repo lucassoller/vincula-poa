@@ -109,7 +109,6 @@ function UnidadeSaudeCadastro() {
                 voltarParaEtapaComErro(errors);
             } else {
                 setMensagem(error.response.data.message);
-
             }
         }
     }

@@ -59,6 +59,12 @@ public class UnidadeSaudeService {
                 .toList();
     }
 
+    public Page<UnidadeSaudeResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
+        auditoriaFacade.unidadeSaudeVisualizada(0L);
+        return unidadeSaudeRepository.buscarFiltradas(filtro, pageable)
+                .map(this::toDTO);
+    }
+
     public List<PacienteResponseDTO> listarPacientesPorUnidade(Long unidadeSaudeId) {
         auditoriaFacade.unidadeSaudeVisualizada(0L);
 

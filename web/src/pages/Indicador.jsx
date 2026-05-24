@@ -1,47 +1,68 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-    PieChart,
-    Pie,
-    Cell,
-    ResponsiveContainer,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    CartesianGrid,
-} from "recharts";
+import {PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,} from "recharts";
 import api from "../api/api";
 import "./indicador.css";
-import {useAuth} from "../context/AuthContext.jsx";
-
-const COLORS = ["#2563eb", "#06b6d4", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
+import { useAuth } from "../context/AuthContext.jsx";
+const COLORS = ["#2563eb", "#06b6d4", "#22c55e","#f59e0b", "#ef4444", "#8b5cf6", "#ec4899",];
 
 function Indicador() {
+
     const { usuario } = useAuth();
     const [indicador, setIndicador] = useState(null);
     const [erro, setErro] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [inicio, setInicio] = useState("");
     const [fim, setFim] = useState("");
-    const [unidadeSaudeId, setUnidadeSaudeId] = useState("");
+    const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
     const [unidades, setUnidades] = useState([]);
+    const unidadeSaudeId =
+        usuario?.perfil === "EXECUTOR_APS"
+            ? String(usuario.unidadeSaudeId)
+            : unidadeSelecionada;
+
+    useEffect(() => {
+
+        let ativo = true;
+
+        async function carregarUnidades() {
+
+            try {
+                const response = await api.get("/unidades-saude/all");
+                if (!ativo) {
+                    return;
+                }
+                setUnidades(response.data);
+            } catch {
+                if (ativo) {
+                    setErro("Erro ao carregar unidades.");
+                }
+            }
+        }
+
+        if (usuario) {
+            void carregarUnidades();
+        }
+
+        return () => {
+            ativo = false;
+        };
+
+    }, [usuario]);
 
     const carregarIndicador = useCallback(async () => {
+
         try {
             const temInicio = inicio !== "";
             const temFim = fim !== "";
 
-            if ((temInicio && !temFim) || (!temInicio && temFim)) {
+            if ((temInicio && !temFim) ||(!temInicio && temFim)) {
                 setErro("Informe início e fim do período.");
                 return;
             }
 
             setCarregando(true);
             setErro("");
-
             const params = new URLSearchParams();
-
             if (unidadeSaudeId) {
                 params.append("unidadeSaudeId", unidadeSaudeId);
             }
@@ -51,77 +72,36 @@ function Indicador() {
                 params.append("fim", `${fim}T23:59:59`);
             }
 
-            const response = await api.get(
-                `/indicadores/geral?${params.toString()}`
-            );
+            const response = await api.get(`/indicadores/geral?${params.toString()}`);
 
             setIndicador(response.data);
 
         } catch {
-            setErro("Erro ao carregar indicador");
+
+            setErro(
+                "Erro ao carregar indicador"
+            );
+
         } finally {
             setCarregando(false);
         }
     }, [unidadeSaudeId, inicio, fim]);
 
     useEffect(() => {
-        let ativo = true;
 
-        async function carregarUnidades() {
-            try {
-                const response = await api.get("/unidades-saude/all");
-
-                if (ativo) {
-                    setUnidades(response.data);
-
-                    if (usuario?.perfil === "EXECUTOR_APS") {
-                        setUnidadeSaudeId(usuario.unidadeSaudeId);
-                    }
-                }
-            } catch {
-                if (ativo) {
-                    setErro("Erro ao carregar unidades.");
-                }
-            }
+        if (!usuario) {
+            return;
         }
 
-        void carregarUnidades();
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void carregarIndicador();
 
-        return () => {
-            ativo = false;
-        };
-    }, [usuario]);
+    }, [carregarIndicador, usuario]);
 
-    useEffect(() => {
-        const executar = async () => {
-            await carregarIndicador();
-        };
-
-        void executar();
-    }, []);
-
-    if (carregando) {
-        return (
-            <div className="loading-container">
-                <div className="loading-card">Carregando indicadores...</div>
-            </div>
-        );
-    }
-
-    if (erro) {
-        return <div className="indicador-error">{erro}</div>;
-    }
-
-    const producao = indicador?.producao || [];
-    const processo = indicador?.processo || [];
-    const prazos = indicador?.prazos || [];
-    const resultado = indicador?.resultado || [];
-    const motivos = indicador?.principaisMotivosInsucesso || [];
 
     async function exportarCsv() {
         try {
             const params = new URLSearchParams();
-
             if (unidadeSaudeId) {
                 params.append("unidadeSaudeId", unidadeSaudeId);
             }
@@ -134,14 +114,19 @@ function Indicador() {
                 params.append("fim", `${fim}T23:59:59`);
             }
 
-            const response = await api.get(
-                `/indicadores/exportar?${params.toString()}`,
-                { responseType: "blob" }
+            const response = await api.get(`/indicadores/exportar?${params.toString()}`,
+                {
+                    responseType: "blob",
+                }
             );
 
-            const blob = new Blob([response.data], {
-                type: "text/csv;charset=utf-8;",
-            });
+            const blob = new Blob(
+                [response.data],
+                {
+                    type:
+                        "text/csv;charset=utf-8;",
+                }
+            );
 
             const agora = new Date();
 
@@ -154,18 +139,48 @@ function Indicador() {
             const url = window.URL.createObjectURL(blob);
 
             const link = document.createElement("a");
+
             link.href = url;
-            link.setAttribute("download", "indicadores-vincula-poa"+dataHora+".csv");
+
+            link.setAttribute(
+                "download",
+                `indicadores-vincula-poa-${dataHora}.csv`
+            );
 
             document.body.appendChild(link);
             link.click();
-
             link.remove();
             window.URL.revokeObjectURL(url);
         } catch {
             setErro("Erro ao exportar CSV.");
         }
     }
+
+    if (carregando) {
+
+        return (
+            <div className="loading-container">
+                <div className="loading-card">
+                    Carregando indicadores...
+                </div>
+            </div>
+        );
+
+    }
+
+    if (erro) {
+        return (
+            <div className="indicador-error">
+                {erro}
+            </div>
+        );
+    }
+
+    const producao = indicador?.producao || [];
+    const processo = indicador?.processo || [];
+    const prazos = indicador?.prazos || [];
+    const resultado = indicador?.resultado || [];
+    const motivos = indicador?.principaisMotivosInsucesso || [];
 
     return (
         <div className="indicador-container">
@@ -175,34 +190,50 @@ function Indicador() {
                         <h1>Indicadores</h1>
                         <p>Indicadores gerais de busca ativa</p>
                     </div>
+
                     <div className="indicador-filtros">
+
                         <input
                             type="date"
                             className="input-field"
                             value={inicio}
-                            onChange={(e) => setInicio(e.target.value)}
+                            onChange={(e) =>
+                                setInicio(e.target.value)
+                            }
                         />
 
                         <input
                             type="date"
                             className="input-field"
                             value={fim}
-                            onChange={(e) => setFim(e.target.value)}
+                            onChange={(e) =>
+                                setFim(e.target.value)
+                            }
                         />
 
                         <select
                             className="input-field"
                             value={unidadeSaudeId}
-                            onChange={(e) => setUnidadeSaudeId(e.target.value)}
+                            onChange={(e) =>
+                                setUnidadeSelecionada(e.target.value)
+                            }
                             disabled={usuario?.perfil === "EXECUTOR_APS"}
                         >
-                            <option value="">Todas as UBS</option>
+
+                            <option value="">
+                                Todas as UBS
+                            </option>
 
                             {unidades.map((u) => (
-                                <option key={u.id} value={u.id}>
+                                <option
+                                    key={u.id}
+                                    value={u.id}
+                                >
                                     {u.nome}
                                 </option>
+
                             ))}
+
                         </select>
 
                         <div className="indicador-actions">
@@ -222,36 +253,67 @@ function Indicador() {
                         </div>
                     </div>
                 </div>
-
-                <SecaoCards titulo="Produção" dados={producao} />
+                <SecaoCards
+                    titulo="Produção"
+                    dados={producao}
+                />
 
                 <div className="indicador-grid">
                     <ChartCard titulo="Prazos das demandas abertas ou em andamento">
-                        <DonutChart dados={prazos} nomeKey="indicador" valorKey="valor" />
+                        <DonutChart
+                            dados={prazos}
+                            nomeKey="indicador"
+                            valorKey="valor"
+                        />
                     </ChartCard>
-
                     <ChartCard titulo="Resumo dos prazos">
-                        <SecaoCardsInterna dados={prazos} />
+                        <SecaoCardsInterna
+                            dados={prazos}
+                        />
                     </ChartCard>
                 </div>
 
                 <div className="indicador-grid">
                     <ChartCard titulo="Resultados dos desfechos">
-                        <DonutChart dados={resultado} nomeKey="indicador" valorKey="valor" />
+                        <DonutChart
+                            dados={resultado}
+                            nomeKey="indicador"
+                            valorKey="valor"
+                        />
                     </ChartCard>
-
                     <ChartCard titulo="Principais motivos de insucesso">
-                        <BarChartSimples dados={motivos} nomeKey="motivo" valorKey="quantidade" />
+                        <BarChartSimples
+                            dados={motivos}
+                            nomeKey="motivo"
+                            valorKey="quantidade"
+                        />
                     </ChartCard>
                 </div>
 
-                <SecaoCards titulo="Processo" dados={processo} />
-
+                <SecaoCards
+                    titulo="Processo"
+                    dados={processo}
+                />
                 <div className="ranking-grid">
-                    <Ranking titulo="Total de demandas por UBS" dados={indicador?.rankingTotalDemandas} />
-                    <Ranking titulo="Percentual de resolução de demandas" dados={indicador?.rankingPercentualResolucao} />
-                    <Ranking titulo="Tempo médio de resolução de demandas" dados={indicador?.rankingTempoMedioResolucao} />
-                    <Ranking titulo="Tempo médio até primeira tentativa de contato" dados={indicador?.rankingTempoPrimeiraTentativa} />
+                    <Ranking
+                        titulo="Total de demandas por UBS"
+                        dados={indicador?.rankingTotalDemandas}
+                    />
+
+                    <Ranking
+                        titulo="Percentual de resolução de demandas"
+                        dados={indicador?.rankingPercentualResolucao}
+                    />
+
+                    <Ranking
+                        titulo="Tempo médio de resolução de demandas"
+                        dados={indicador?.rankingTempoMedioResolucao}
+                    />
+
+                    <Ranking
+                        titulo="Tempo médio até primeira tentativa de contato"
+                        dados={indicador?.rankingTempoPrimeiraTentativa}
+                    />
                 </div>
             </div>
         </div>

@@ -18,10 +18,7 @@ public class TerritorializacaoService {
 
     private final TerritorioUbsRepository repository;
 
-    public UnidadeSaude buscarUbsPorCoordenada(
-            Double latitude,
-            Double longitude
-    ) {
+    public UnidadeSaude buscarUbsPorCoordenada(Double latitude, Double longitude) {
 
         GeometryFactory geometryFactory = new GeometryFactory();
 

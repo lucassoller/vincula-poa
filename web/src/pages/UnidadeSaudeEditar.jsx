@@ -162,7 +162,7 @@ function UnidadeSaudeEditar() {
         try {
             await api.put(`/unidades-saude/${id}`, form);
 
-            navigate("/pacientes");
+            navigate("/indicadores");
         } catch (error) {
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;

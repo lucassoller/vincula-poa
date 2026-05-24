@@ -2,17 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import "./pacienteDetalhe.css";
-import {
-    mascaraDocumento,
-    mascaraTelefone,
-    mascaraCEP
-} from "../utils/mascaras";
+import {mascaraDocumento, mascaraTelefone, mascaraCEP} from "../utils/mascaras";
 import {sexoLabel} from "../utils/utils.js";
 
 function PacienteDetalhe() {
-    const { id } = useParams();
     const navigate = useNavigate();
-
+    const { id } = useParams();
     const [paciente, setPaciente] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");

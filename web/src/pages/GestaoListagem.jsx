@@ -240,20 +240,15 @@ function GestaoListagem() {
                         <h1>Central de Gestão</h1>
 
                         <p>
-                            Consulte usuários, unidades de saúde e pacientes
+                            Consulte demandas, pacientes, unidades de saúde e usuários
                         </p>
                     </div>
                 </div>
 
                 <div className="gestao-card">
-
                     <div className="form-grid two">
-
                         <div className="form-group">
-
-                            <label>
-                                Tipo de listagem
-                            </label>
+                            <label>Tipo de listagem</label>
 
                             <select
                                 className="input-field"
@@ -279,43 +274,31 @@ function GestaoListagem() {
                                 <option value="">
                                     Selecione
                                 </option>
-
+                                <option value="DEMANDAS">
+                                    Demandas
+                                </option>
+                                <option value="PACIENTES">
+                                    Pacientes
+                                </option>
+                                <option value="UBS">
+                                    Unidades Básicas de Saúde
+                                </option>
                                 <option value="USUARIOS">
                                     Usuários
                                 </option>
 
-                                <option value="UBS">
-                                    Unidades Básicas de Saúde
-                                </option>
-
-                                <option value="PACIENTES">
-                                    Pacientes
-                                </option>
-
-                                <option value="DEMANDAS">
-                                    Demandas
-                                </option>
-
                             </select>
-
                         </div>
-
                     </div>
 
                     {tipo === "USUARIOS" && (
                         <div className="gestao-filter-box">
 
-                            <h2>
-                                Filtros de usuários
-                            </h2>
+                            <h2>Filtros de usuários</h2>
 
                             <div className="form-grid two">
-
                                 <div className="form-group">
-
-                                    <label>
-                                        Usuário
-                                    </label>
+                                    <label>Usuário</label>
 
                                     <select
                                         className="input-field"
@@ -338,16 +321,11 @@ function GestaoListagem() {
                                                 {usuario.nome}
                                             </option>
                                         ))}
-
                                     </select>
-
                                 </div>
-
                                 <div className="form-group">
 
-                                    <label>
-                                        Perfil
-                                    </label>
+                                    <label>Perfil</label>
 
                                     <select
                                         className="input-field"
@@ -357,7 +335,6 @@ function GestaoListagem() {
                                             setFiltroPerfil(e.target.value)
                                         }
                                     >
-
                                         <option value="">
                                             Todos os perfis
                                         </option>
@@ -373,30 +350,20 @@ function GestaoListagem() {
                                         <option value="GESTAO_MUNICIPAL">
                                             Gestão Municipal
                                         </option>
-
                                     </select>
-
                                 </div>
-
                             </div>
-
                         </div>
                     )}
 
                     {tipo === "UBS" && (
                         <div className="gestao-filter-box">
 
-                            <h2>
-                                Filtros de UBS
-                            </h2>
-
+                            <h2>Filtros de UBS</h2>
                             <div className="form-grid two">
-
                                 <div className="form-group">
 
-                                    <label>
-                                        Unidade Básica de Saúde
-                                    </label>
+                                    <label>Unidade Básica de Saúde</label>
 
                                     <select
                                         className="input-field"
@@ -418,30 +385,20 @@ function GestaoListagem() {
                                                 {ubs.nome}
                                             </option>
                                         ))}
-
                                     </select>
-
                                 </div>
-
                             </div>
-
                         </div>
                     )}
 
                     {tipo === "PACIENTES" && (
                         <div className="gestao-filter-box">
 
-                            <h2>
-                                Filtros de pacientes
-                            </h2>
+                            <h2>Filtros de pacientes</h2>
 
                             <div className="form-grid two">
-
                                 <div className="form-group">
-
-                                    <label>
-                                        Paciente
-                                    </label>
+                                    <label>Paciente</label>
 
                                     <select
                                         className="input-field"
@@ -464,16 +421,11 @@ function GestaoListagem() {
                                                 {paciente.nomeCompleto}
                                             </option>
                                         ))}
-
                                     </select>
-
                                 </div>
-
                                 <div className="form-group">
 
-                                    <label>
-                                        UBS vinculada
-                                    </label>
+                                    <label>UBS vinculada</label>
 
                                     <select
                                         className="input-field"
@@ -483,7 +435,6 @@ function GestaoListagem() {
                                             setFiltroUbsPaciente(e.target.value)
                                         }
                                     >
-
                                         <option value="">
                                             Todas as UBS
                                         </option>
@@ -498,28 +449,19 @@ function GestaoListagem() {
                                         ))}
 
                                     </select>
-
                                 </div>
-
                             </div>
-
                         </div>
                     )}
 
                     {tipo === "DEMANDAS" && (
                         <div className="gestao-filter-box">
 
-                            <h2>
-                                Filtros de demandas
-                            </h2>
+                            <h2>Filtros de demandas</h2>
 
                             <div className="form-grid two">
-
                                 <div className="form-group">
-
-                                    <label>
-                                        Paciente
-                                    </label>
+                                    <label>Paciente</label>
 
                                     <select
                                         className="input-field"
@@ -542,13 +484,9 @@ function GestaoListagem() {
                                                 {paciente.nomeCompleto}
                                             </option>
                                         ))}
-
                                     </select>
-
                                 </div>
-
                                 <div className="form-group">
-
                                     <label>
                                         Unidade de Saúde
                                     </label>
@@ -574,16 +512,11 @@ function GestaoListagem() {
                                                 {ubs.nome}
                                             </option>
                                         ))}
-
                                     </select>
-
                                 </div>
-
                             </div>
                             <div className="form-grid two">
-
                                 <div className="form-group">
-
                                     <label>
                                         Usuário responsável
                                     </label>
@@ -596,7 +529,6 @@ function GestaoListagem() {
                                             setFiltroUsuario(e.target.value)
                                         }
                                     >
-
                                         <option value="">
                                             Todos os usuários
                                         </option>
@@ -609,16 +541,12 @@ function GestaoListagem() {
                                                 {usuario.nome}
                                             </option>
                                         ))}
-
                                     </select>
 
                                 </div>
                                 <div className="form-group">
 
-                                    <label>
-                                        Status
-                                    </label>
-
+                                    <label>Status</label>
                                     <select
                                         className="input-field"
                                         value={filtroStatus}
@@ -671,25 +599,18 @@ function GestaoListagem() {
                     <div className="gestao-placeholder">
 
                         {carregando && (
-                            <p>
-                                Carregando...
-                            </p>
+                            <p>Carregando...</p>
                         )}
 
                         {!carregando && resultado.length === 0 && (
-                            <p>
-                                Selecione uma listagem e clique em “Listar”.
-                            </p>
+                            <p>Selecione uma listagem e clique em “Listar”.</p>
                         )}
 
                         {!carregando && resultado.length > 0 && (
 
                             <div className="table-card gestao-table-card">
-
                                 {tipo === "PACIENTES" && (
-
                                     <table className="pacientes-table">
-
                                         <thead>
                                         <tr>
                                             <th>Nome</th>
@@ -698,40 +619,22 @@ function GestaoListagem() {
                                             <th>UBS</th>
                                         </tr>
                                         </thead>
-
                                         <tbody>
 
                                         {resultado.map((p) => (
                                             <tr key={p.id}>
-
-                                                <td>
-                                                    {p.nomeCompleto}
-                                                </td>
-
-                                                <td>
-                                                    {p.documento}
-                                                </td>
-
-                                                <td>
-                                                    {p.telefone || "-"}
-                                                </td>
-
-                                                <td>
-                                                    {p.unidadeSaudeNome || "-"}
-                                                </td>
-
+                                                <td>{p.nomeCompleto}</td>
+                                                <td>{p.documento}</td>
+                                                <td>{p.telefone || "-"}</td>
+                                                <td>{p.unidadeSaudeNome || "-"}</td>
                                             </tr>
                                         ))}
-
                                         </tbody>
-
                                     </table>
                                 )}
 
                                 {tipo === "USUARIOS" && (
-
                                     <table className="pacientes-table">
-
                                         <thead>
                                         <tr>
                                             <th>Nome</th>
@@ -741,30 +644,23 @@ function GestaoListagem() {
                                             <th>UBS</th>
                                         </tr>
                                         </thead>
-
                                         <tbody>
 
                                         {resultado.map((u) => (
                                             <tr key={u.id}>
-
                                                 <td>{u.nome}</td>
                                                 <td>{u.email}</td>
                                                 <td>{u.login}</td>
                                                 <td>{u.perfil}</td>
                                                 <td>{u.unidadeSaudeNome || "-"}</td>
-
                                             </tr>
                                         ))}
-
                                         </tbody>
-
                                     </table>
                                 )}
 
                                 {tipo === "UBS" && (
-
                                     <table className="pacientes-table">
-
                                         <thead>
                                         <tr>
                                             <th>Nome</th>
@@ -779,18 +675,14 @@ function GestaoListagem() {
 
                                         {resultado.map((u) => (
                                             <tr key={u.id}>
-
                                                 <td>{u.nome}</td>
                                                 <td>{u.cnes}</td>
                                                 <td>{u.telefone || "-"}</td>
                                                 <td>{u.telefone2 || "-"}</td>
                                                 <td>{u.endereco?.bairro || "-"}</td>
-
                                             </tr>
                                         ))}
-
                                         </tbody>
-
                                     </table>
                                 )}
 
@@ -812,31 +704,14 @@ function GestaoListagem() {
 
                                         {resultado.map((d) => (
                                             <tr key={d.id}>
-                                                <td>
-                                                    {d.pacienteNome || "-"}
-                                                </td>
-
-                                                <td>
-                                                    {d.usuarioCriadorNome || "-"}
-                                                </td>
-
-                                                <td>
-                                                    {d.unidadeResponsavelNome || "-"}
-                                                </td>
-
-                                                <td>
-                                                    {d.status || "-"}
-                                                </td>
-
-                                                <td>
-                                                    {formatarDataHora(d.dataHoraCriacao)}
-                                                </td>
-
+                                                <td>{d.pacienteNome || "-"}</td>
+                                                <td>{d.usuarioCriadorNome || "-"}</td>
+                                                <td>{d.unidadeResponsavelNome || "-"}</td>
+                                                <td>{d.status || "-"}</td>
+                                                <td>{formatarDataHora(d.dataHoraCriacao)}</td>
                                             </tr>
                                         ))}
-
                                         </tbody>
-
                                     </table>
                                 )}
 
@@ -845,16 +720,11 @@ function GestaoListagem() {
                                     totalPaginas={totalPaginas}
                                     onChangePagina={setPagina}
                                 />
-
                             </div>
                         )}
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
     );
 }

@@ -21,10 +21,6 @@ public class IndicadorController {
         this.indicadorService = indicadorService;
     }
 
-    // =========================
-    // INDICADORES
-    // =========================
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/geral")
     public ResponseEntity<IndicadorDTO> indicadorGeral(
@@ -33,10 +29,6 @@ public class IndicadorController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
         return ResponseEntity.ok(indicadorService.indicadorGeral(unidadeSaudeId, inicio, fim));
     }
-
-    // =========================
-    // EXPORTACAO
-    // =========================
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/exportar", produces = "text/csv")

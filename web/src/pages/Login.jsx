@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
 import { useAuth } from "../context/AuthContext";
@@ -6,13 +6,16 @@ import api from "../api/api";
 
 function Login() {
     const navigate = useNavigate();
-    const { login: realizarLogin } = useAuth();
-
+    const { login: realizarLogin , logout} = useAuth();
     const [loginUsuario, setLoginUsuario] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
     const [carregando, setCarregando] = useState(false);
     const [mostrarSenha, setMostrarSenha] = useState(false);
+
+    useEffect(() => {
+        logout();
+    }, []);
 
     async function entrar(e) {
         e.preventDefault();

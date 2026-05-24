@@ -127,14 +127,9 @@ public class DemandaExporter {
 
         String texto = valor.replace("\"", "\"\"");
 
-        if (
-                texto.contains(",") ||
-                        texto.contains("\"") ||
-                        texto.contains("\n")
-        ) {
+        if (texto.contains(",") || texto.contains("\"") || texto.contains("\n")) {
             return "\"" + texto + "\"";
         }
-
         return texto;
     }
 }

@@ -24,14 +24,10 @@ const formInicial = {
 };
 
 function PacienteCadastro() {
-    const [etapa, setEtapa] = useState(1);
-
-    const [erros, setErros] = useState({});
-
     const navigate = useNavigate();
-
+    const [etapa, setEtapa] = useState(1);
+    const [erros, setErros] = useState({});
     const [form, setForm] = useState(formInicial);
-
     const [mensagem, setMensagem] = useState("");
 
     function alterar(e) {

@@ -1,12 +1,4 @@
-import {
-    MapContainer,
-    TileLayer,
-    GeoJSON,
-    CircleMarker,
-    Popup,
-    Pane
-} from "react-leaflet";
-
+import {MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, Pane} from "react-leaflet";
 import { useEffect, useState } from "react";
 import api from "../api/api";
 import "./mapasTerritorio.css";
@@ -45,13 +37,11 @@ function MapaTerritorios() {
                         },
                     })),
                 };
-
                 setGeoJson(featureCollection);
             })
             .catch(() => {
                 console.error("Erro ao carregar mapa");
             });
-
     }, []);
 
     return (
@@ -70,9 +60,7 @@ function MapaTerritorios() {
 
                 <Pane
                     name="territorios"
-                    style={{
-                        zIndex: 400,
-                    }}
+                    style={{zIndex: 400,}}
                 >
 
                     {geoJson && (
@@ -93,47 +81,32 @@ function MapaTerritorios() {
                                 layer.bindPopup(`
                                     <div style="min-width:240px">
 
-                                        <strong>
-                                            ${props.nome || "Território"}
-                                        </strong>
-
+                                        <strong>${props.nome || "Território"}</strong>
                                         <br/><br/>
-
 
                                         <b>CNES:</b>
                                         ${props.cnes || "-"}
-
                                         <br/>
 
                                         <b>Distrito:</b>
                                         ${props.distrito || "-"}
-
                                         <br/>
-
                                     </div>
                                 `);
                             }}
                         />
                     )}
-
                 </Pane>
 
                 <Pane
                     name="pontos"
-                    style={{
-                        zIndex: 650,
-                    }}
+                    style={{zIndex: 650}}
                 >
 
                     {territorios.map((territorio, index) => {
+                        const endereco = territorio.endereco;
 
-                        const endereco =
-                            territorio.endereco;
-
-                        if (
-                            !endereco.latitude ||
-                            !endereco.longitude
-                        ) {
+                        if (!endereco.latitude || !endereco.longitude) {
                             return null;
                         }
 
@@ -159,17 +132,10 @@ function MapaTerritorios() {
                                     weight: 2,
                                 }}
                             >
-
                                 <Popup>
-
                                     <div style={{ minWidth: "260px" }}>
-
-                                        <strong>
-                                            {territorio.nome}
-                                        </strong>
-
+                                        <strong>{territorio.nome}</strong>
                                         <br /><br />
-
                                         <b>CNES:</b>
                                         {" "}
                                         {territorio.cnes || "-"}
@@ -194,19 +160,13 @@ function MapaTerritorios() {
                                                     : "-"
                                         }
                                         <br />
-
                                     </div>
-
                                 </Popup>
-
                             </CircleMarker>
                         );
                     })}
-
                 </Pane>
-
             </MapContainer>
-
         </div>
     );
 }

@@ -32,9 +32,8 @@ function UsuarioCadastro() {
             try {
                 const response = await api.get("/unidades-saude/all");
                 setUnidades(response.data);
-                // eslint-disable-next-line no-unused-vars
-            } catch (error) {
-                console.error("Erro ao buscar unidades");
+            } catch {
+                setMensagem("Erro ao carregar unidades");
             }
         }
 
