@@ -20,13 +20,26 @@ import MapaTerritorios from "./pages/MapasTerritorio.jsx";
 import ImportarMapa from "./pages/ImportarMapa.jsx";
 import UnidadesSaude from "./pages/UnidadesSaude.jsx";
 import {useAuth} from "./context/AuthContext.jsx";
+import EsqueciSenha from "./pages/EsqueciSenha.jsx";
+import RedefinirSenha from "./pages/RedefinirSenha.jsx";
 
 function App() {
     const { usuario } = useAuth();
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+            <Route path="/"
+                 element={<Login />} />
+
+            <Route
+                path="/esqueci-senha"
+                element={<EsqueciSenha />}
+            />
+
+            <Route
+                path="/redefinir-senha"
+                element={<RedefinirSenha />}
+            />
             <Route
                 path="/mapa"
                 element={

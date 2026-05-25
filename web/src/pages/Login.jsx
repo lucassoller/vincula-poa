@@ -80,7 +80,7 @@ function Login() {
                         </span>
                     </div>
 
-                    <div className="login-senha">
+                    <div className="login-senha" onClick={() => navigate("/esqueci-senha")}>
                         Esqueci minha senha
                     </div>
 

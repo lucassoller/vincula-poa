@@ -183,26 +183,18 @@ public class AuditoriaFacade {
         );
     }
 
-    public void emailEnviadoPorDemanda(Long demandaId, Long pacienteId) {
+    public void emailEnviado(String email) {
         registrar(
                 TipoAcaoAuditoria.EMAIL_ENVIADO,
-                "Demanda",
-                demandaId,
-                "Email enviado para paciente ID " + pacienteId
+                "Usuario",
+                0L,
+                "Email enviado para recuperação de senha do usuario " + email
         );
     }
 
-    public void emailEnviadoPorPaciente(Long pacienteId) {
-        registrar(
-                TipoAcaoAuditoria.EMAIL_ENVIADO,
-                "Paciente",
-                pacienteId,
-                "Email enviado diretamente para paciente ID " + pacienteId
-        );
-    }
 
-    public void emailFalhou(String entidade, Long entidadeId, String descricao) {
-        registrar(TipoAcaoAuditoria.EMAIL_FALHOU, entidade, entidadeId, descricao);
+    public void emailFalhou(String email) {
+        registrar(TipoAcaoAuditoria.EMAIL_FALHOU, "Usuario", 0L, "Email de recuperação falhou do usuario " + email);
     }
 
     public void indicadorAcessado(String descricao) {

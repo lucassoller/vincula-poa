@@ -1,6 +1,6 @@
 package com.vincula.service;
 
-import com.vincula.dto.MudancaSenhaDTO;
+import com.vincula.dto.senha.MudancaSenhaDTO;
 import com.vincula.dto.usuario.MeuPerfilDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;

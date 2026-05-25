@@ -27,18 +27,11 @@
 }
 
 .navbar-link:hover {
-    color: #93c5fd;
     text-decoration: none;
 }
 
 .navbar-link:visited {
     color: #fff;
-}
-
-.navbar-link:active {
-    color: #93c5fd;
-    text-decoration: none;
-    outline: none;
 }
 
 .user-menu {
