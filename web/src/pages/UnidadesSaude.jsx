@@ -155,12 +155,14 @@ function UnidadesSaude() {
                             </button>
 
                         </div>
-                        <button
-                            className="buscar-btn"
-                            onClick={() => navigate("/unidades-saude/cadastro")}
-                        >
-                            + Nova UBS
-                        </button>
+                        {(usuario?.perfil === "GESTAO_MUNICIPAL" || usuario?.perfil === "EXECUTOR_APS") && (
+                            <button
+                                className="buscar-btn"
+                                onClick={() => navigate("/unidades-saude/cadastro")}
+                            >
+                                + Nova UBS
+                            </button>
+                        )}
                     </div>
                     <table className="pacientes-table">
                         <thead>

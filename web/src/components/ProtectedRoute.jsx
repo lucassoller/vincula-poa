@@ -11,7 +11,11 @@ function ProtectedRoute({ children,  perfisPermitidos = []}) {
     const permitido = perfisPermitidos.includes(usuario.perfil);
 
     if (!permitido) {
-        return <Navigate to="/indicadores" replace />;
+        if(usuario.perfil === "SOLICITANTE"){
+            return <Navigate to="/demandas" replace />;
+        }else{
+            return <Navigate to="/indicadores" replace />;
+        }
     }
 
     return children;

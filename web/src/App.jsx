@@ -51,7 +51,7 @@ function App() {
             <Route
               path="/indicadores"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS", "SOLICITANTE"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
                     <Layout>
                         <Indicador />
                     </Layout>

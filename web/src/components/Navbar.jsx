@@ -49,13 +49,14 @@ function Navbar() {
             </div>
 
             <div className="navbar-links">
-
-                <Link
-                    to="/indicadores"
-                    className="navbar-link"
-                >
-                    Indicadores
-                </Link>
+                {(usuario?.perfil === "GESTAO_MUNICIPAL" || usuario?.perfil === "EXECUTOR_APS") && (
+                    <Link
+                        to="/indicadores"
+                        className="navbar-link"
+                    >
+                        Indicadores
+                    </Link>
+                )}
 
                 {usuario?.perfil === "GESTAO_MUNICIPAL" && (
                     <Link
@@ -77,7 +78,7 @@ function Navbar() {
 
                 )}
 
-                {usuario?.perfil === "GESTAO_MUNICIPAL" && usuario?.perfil === "EXECUTOR_APS" && (
+                {(usuario?.perfil === "GESTAO_MUNICIPAL" || usuario?.perfil === "EXECUTOR_APS") && (
                     <div className="nav-dropdown">
 
                         <span className="navbar-link">

@@ -373,6 +373,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     FROM unidade_saude u
     LEFT JOIN demanda d ON d.unidade_responsavel_id = u.id
     GROUP BY u.id, u.nome
+    HAVING COUNT(d.id) > 0
     ORDER BY valor DESC, u.nome ASC
     """, nativeQuery = true)
     List<RankingQuantidadeProjection> rankingUnidadesPorTotalDemandas();
@@ -381,13 +382,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT
         u.id AS unidadeSaudeId,
         u.nome AS unidadeSaudeNome,
-        CASE 
-            WHEN COUNT(d.id) = 0 THEN 0
-            ELSE COUNT(d.id) FILTER (WHERE d.status = 'FINALIZADA') * 100.0 / COUNT(d.id)
-        END AS valor
+        COUNT(d.id) FILTER (WHERE d.status = 'FINALIZADA') * 100.0 / COUNT(d.id) AS valor
     FROM unidade_saude u
     LEFT JOIN demanda d ON d.unidade_responsavel_id = u.id
     GROUP BY u.id, u.nome
+    HAVING COUNT(d.id) > 0
     ORDER BY valor DESC, u.nome ASC
     """, nativeQuery = true)
     List<RankingValorProjection> rankingUnidadesPorPercentualResolucao();

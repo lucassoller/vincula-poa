@@ -16,6 +16,13 @@
     margin-bottom: 28px;
 }
 
+.indicador-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
 .indicador-header h1 {
     margin: 0;
     font-size: 38px;

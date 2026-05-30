@@ -219,9 +219,15 @@ function Indicador() {
         <div className="indicador-container">
             <div className="indicador-page">
                 <div className="indicador-header">
-                    <div>
-                        <h1>Indicadores</h1>
-                        <p>Indicadores gerais de busca ativa</p>
+                    <div className="indicador-header-top">
+                        <div>
+                            <h1>Indicadores</h1>
+                            <p>Indicadores gerais de busca ativa</p>
+                        </div>
+
+                        <div className="perfil-badge">
+                            {usuario?.perfil}
+                        </div>
                     </div>
 
                     <div className="indicador-filtros">
