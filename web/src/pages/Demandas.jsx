@@ -57,7 +57,11 @@ function Demandas() {
                 demandasResponse = await api.get(
                     `/demandas/unidade/${usuario.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
-            } else {
+            } else if (usuario?.perfil === "SOLICITANTE") {
+                demandasResponse = await api.get(
+                    `/demandas/usuario/${usuario.id}?page=${paginaAtual}&size=${tamanhoPagina}`
+                );
+            }else {
                 demandasResponse = { data: { content: [], page: { totalPages: 0 } } };
             }
 
@@ -88,6 +92,11 @@ function Demandas() {
             } else if (usuario?.perfil === "EXECUTOR_APS") {
                 demandasResponse = await api.get(
                     `/demandas/filtradas/unidade/${usuario.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
+                );
+
+            }  else if (usuario?.perfil === "SOLICITANTE") {
+                demandasResponse = await api.get(
+                    `/demandas/filtradas/usuario/${usuario.id}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
 
             } else {
@@ -304,6 +313,13 @@ function Demandas() {
                             responseType: "blob",
                         }
                     );
+                }else if (usuario?.perfil === "SOLICITANTE") {
+                    response = await api.get(
+                        `/demandas/exportar/filtradas/usuario/${usuario.id}/${filtro}`,
+                        {
+                            responseType: "blob",
+                        }
+                    );
                 }
             } else {
                 if (usuario?.perfil === "GESTAO_MUNICIPAL") {
@@ -317,6 +333,14 @@ function Demandas() {
 
                     response = await api.get(
                         `/demandas/exportar/unidade/${usuario.unidadeSaudeId}`,
+                        {
+                            responseType: "blob",
+                        }
+                    );
+                } else if (usuario?.perfil === "SOLICITANTE") {
+
+                    response = await api.get(
+                        `/demandas/exportar/usuario/${usuario.id}`,
                         {
                             responseType: "blob",
                         }
@@ -448,6 +472,7 @@ function Demandas() {
                         <tr>
                             <th>Paciente</th>
                             <th>Motivo</th>
+                            <th>Criador</th>
                             <th>Data de abertura</th>
                             <th>Data de encerramento</th>
                             <th>Status</th>
@@ -464,6 +489,7 @@ function Demandas() {
 
                                 <td><b>{d.pacienteNome || d.pacienteId}</b></td>
                                 <td>{motivoBuscaLabel[d.motivoBuscaAtiva]}</td>
+                                <td>{d.usuarioCriadorNome || d.usuarioCriadorId}</td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
                                 <td>{formatarDataHora(d.dataHoraFinalizacao) || "-"}</td>
 
@@ -484,7 +510,7 @@ function Demandas() {
                                             Ver mais
                                         </button>
 
-                                        {d.status !== "FINALIZADA" && (
+                                        {d.status !== "FINALIZADA" && usuario?.perfil !== "SOLICITANTE" && (
                                             <>
                                                 <button
                                                     className="btn-tentativa"

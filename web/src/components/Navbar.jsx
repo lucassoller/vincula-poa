@@ -66,31 +66,44 @@ function Navbar() {
                     </Link>
                 )}
 
-                <div className="nav-dropdown">
+                {usuario?.perfil === "GESTAO_MUNICIPAL" && (
 
-                    <span className="navbar-link">
-                        Pacientes ▾
-                    </span>
+                    <Link
+                        to="/gestao/listar"
+                        className="navbar-link"
+                    >
+                        Listar tudo
+                    </Link>
 
-                    <div className="nav-dropdown-menu">
+                )}
 
-                        <Link
-                            to="/pacientes"
-                            className="dropdown-link"
-                        >
-                            Listar pacientes
-                        </Link>
+                {usuario?.perfil === "GESTAO_MUNICIPAL" && usuario?.perfil === "EXECUTOR_APS" && (
+                    <div className="nav-dropdown">
 
-                        <Link
-                            to="/pacientes/cadastro"
-                            className="dropdown-link"
-                        >
-                            Cadastrar paciente
-                        </Link>
+                        <span className="navbar-link">
+                            Pacientes ▾
+                        </span>
+
+                        <div className="nav-dropdown-menu">
+
+                            <Link
+                                to="/pacientes"
+                                className="dropdown-link"
+                            >
+                                Listar pacientes
+                            </Link>
+
+                            <Link
+                                to="/pacientes/cadastro"
+                                className="dropdown-link"
+                            >
+                                Cadastrar paciente
+                            </Link>
+
+                        </div>
 
                     </div>
-
-                </div>
+                )}
 
                 <div className="nav-dropdown">
 
@@ -147,17 +160,6 @@ function Navbar() {
                                 className="dropdown-link"
                             >
                                 Cadastrar usuário
-                            </Link>
-
-                        )}
-
-                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
-
-                            <Link
-                                to="/gestao/listar"
-                                className="dropdown-link"
-                            >
-                                Listar tudo
                             </Link>
 
                         )}

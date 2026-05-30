@@ -30,7 +30,7 @@ public class DemandaController {
         this.demandaService = demandaService;
     }
 
-    @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<DemandaResponseDTO> criar(@Valid @RequestBody DemandaDTO dto) {
         return ResponseEntity.ok(demandaService.criar(dto));
@@ -107,6 +107,16 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSaudeFiltradas(unidadeSaudeId, filtro, pageable));
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtradas/usuario/{usuarioCriadorId}/{filtro}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUsuarioFiltradas(
+            @PathVariable Long usuarioCriadorId,
+            @PathVariable String filtro,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(demandaService.listarPorUsuarioCriadorFiltradas(usuarioCriadorId, filtro, pageable));
+    }
+
     @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/redirecionar")
     public ResponseEntity<DemandaResponseDTO> redirecionar(@PathVariable Long id,
@@ -150,6 +160,17 @@ public class DemandaController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/exportar/usuario/{usuarioCriadorId}", produces = "text/csv")
+    public ResponseEntity<String> exportarDemandasPorUsuarioCsv(
+            @PathVariable Long usuarioCriadorId
+    ) {
+
+        String csv = demandaService.exportarDemandasPorUsuarioCsv(usuarioCriadorId);
+
+        return gerarRespostaCsv(csv);
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/exportar/filtradas/{filtro}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasFiltradasCsv(
             @PathVariable String filtro
@@ -172,6 +193,22 @@ public class DemandaController {
 
         String csv = demandaService
                 .exportarDemandasFiltradasPorUnidadeCsv(unidadeId, filtro);
+
+        return gerarRespostaCsv(csv);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(
+            value = "/exportar/filtradas/usuario/{usuarioCriadorId}/{filtro}",
+            produces = "text/csv"
+    )
+    public ResponseEntity<String> exportarDemandasFiltradasPorUsuarioCsv(
+            @PathVariable Long usuarioCriadorId,
+            @PathVariable String filtro
+    ) {
+
+        String csv = demandaService
+                .exportarDemandasFiltradasPorUsuarioCsv(usuarioCriadorId, filtro);
 
         return gerarRespostaCsv(csv);
     }

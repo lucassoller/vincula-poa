@@ -142,25 +142,6 @@ function DemandaCadastro() {
                             </select>
                             {erros.pacienteId && <small>{erros.pacienteId}</small>}
                         </div>
-
-                        <div className="form-group">
-                            <label>Unidade responsável <span>*</span></label>
-                            <select
-                                className="input-field"
-                                name="unidadeResponsavelId"
-                                value={form.unidadeResponsavelId}
-                                onChange={alterar}
-                                disabled={usuario?.perfil === "EXECUTOR_APS"}
-                            >
-                                <option value="">Selecione</option>
-                                {unidades.map((u) => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.nome}
-                                    </option>
-                                ))}
-                            </select>
-                            {erros.unidadeResponsavelId && <small>{erros.unidadeResponsavelId}</small>}
-                        </div>
                     </div>
 
                     <div className="form-grid two">

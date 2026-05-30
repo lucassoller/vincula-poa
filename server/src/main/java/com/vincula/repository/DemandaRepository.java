@@ -37,6 +37,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     WHERE (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -52,6 +53,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     WHERE (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -86,6 +88,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     AND (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -104,6 +107,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     AND (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -122,6 +126,51 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
 """)
     Page<Demanda> findByUsuarioOrderByPacienteNome(@Param("usuarioCriadorId") Long usuarioCriadorId, Pageable pageable);
 
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.usuarioCriador.id = :usuarioCriadorId
+    ORDER BY p.nomeCompleto ASC
+""")
+    List<Demanda> findByUsuarioOrderByPacienteNome(@Param("usuarioCriadorId") Long usuarioCriadorId);
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.usuarioCriador.id = :usuarioCriadorId
+    AND (
+        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
+    )
+    ORDER BY p.nomeCompleto ASC
+""")
+    Page<Demanda> findFiltradasByUsuarioCriador(@Param("usuarioCriadorId") Long usuarioCriadorId,
+                                                @Param("filtro") String filtro,
+                                                Pageable pageable);
+
+    @Query("""
+    SELECT d
+    FROM Demanda d
+    JOIN d.paciente p
+    WHERE d.usuarioCriador.id = :usuarioCriadorId
+    AND (
+        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
+    )
+    ORDER BY p.nomeCompleto ASC
+""")
+    List<Demanda> findFiltradasByUsuarioCriador(@Param("usuarioCriadorId") Long usuarioCriadorId,
+                                                @Param("filtro") String filtro);
 
     @Query("""
     SELECT d

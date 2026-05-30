@@ -93,6 +93,12 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
+    public Page<DemandaResponseDTO> listarPorUsuarioCriadorFiltradas(Long usuarioId, String filtro, Pageable pageable) {
+        auditoriaFacade.demandaVisualizada(0L);
+        return demandaRepository.findFiltradasByUsuarioCriador(usuarioId, filtro, pageable)
+                .map(this::toDTO);
+    }
+
     public Page<DemandaResponseDTO> listarPorStatus(StatusDemanda status, Pageable pageable) {
         auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByStatusOrderByPacienteNome(status, pageable)
@@ -225,18 +231,28 @@ public class DemandaService {
         return demandaExporter.exportar(demandas);
     }
 
-    public String exportarDemandasPorUnidadeCsv(Long unidadeId){
-        List<Demanda> demandas = demandaRepository.findByUnidadeOrderByPacienteNome(unidadeId);
-        return demandaExporter.exportar(demandas);
-    }
-
     public String exportarDemandasFiltradasCsv(String filtro){
         List<Demanda> demandas = demandaRepository.findFiltradas(filtro);
         return demandaExporter.exportar(demandas);
     }
 
+    public String exportarDemandasPorUnidadeCsv(Long unidadeId){
+        List<Demanda> demandas = demandaRepository.findByUnidadeOrderByPacienteNome(unidadeId);
+        return demandaExporter.exportar(demandas);
+    }
+
     public String exportarDemandasFiltradasPorUnidadeCsv(Long unidadeId, String filtro){
         List<Demanda> demandas = demandaRepository.findFiltradasByUnidade(unidadeId, filtro);
+        return demandaExporter.exportar(demandas);
+    }
+
+    public String exportarDemandasPorUsuarioCsv(Long usuarioCriadorId){
+        List<Demanda> demandas = demandaRepository.findByUsuarioOrderByPacienteNome(usuarioCriadorId);
+        return demandaExporter.exportar(demandas);
+    }
+
+    public String exportarDemandasFiltradasPorUsuarioCsv(Long usuarioCriadorId, String filtro){
+        List<Demanda> demandas = demandaRepository.findFiltradasByUsuarioCriador(usuarioCriadorId, filtro);
         return demandaExporter.exportar(demandas);
     }
 
@@ -258,15 +274,17 @@ public class DemandaService {
     private Demanda toEntity(DemandaDTO dto) {
         Paciente paciente = buscarPacientePorId(dto.getPacienteId());
 
-        UnidadeSaude unidadeResponsavel = buscarUnidadeSaudePorId(dto.getUnidadeResponsavelId());
-
         Usuario usuarioCriador = usuarioService.buscarUsuarioAutenticado();
 
         Demanda entity = new Demanda();
         entity.setPaciente(paciente);
         entity.setUsuarioCriador(usuarioCriador);
-        entity.setUnidadeSolicitante(usuarioCriador.getUnidadeSaude());
-        entity.setUnidadeResponsavel(unidadeResponsavel);
+
+        if(usuarioCriador.getUnidadeSaude() != null){
+            entity.setUnidadeSolicitante(usuarioCriador.getUnidadeSaude());
+        }
+
+        entity.setUnidadeResponsavel(paciente.getUnidadeSaude());
         entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
         entity.setDescricaoBusca(dto.getDescricaoBusca());
         entity.setPrazoDemanda(dto.getPrazoDemanda());
