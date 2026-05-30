@@ -3,10 +3,11 @@ import {PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, T
 import api from "../api/api";
 import "./indicador.css";
 import { useAuth } from "../context/AuthContext.jsx";
+import {useNavigate} from "react-router-dom";
 const COLORS = ["#2563eb", "#06b6d4", "#22c55e","#f59e0b", "#ef4444", "#8b5cf6", "#ec4899",];
 
 function Indicador() {
-
+    const navigate = useNavigate();
     const { usuario } = useAuth();
     const [indicador, setIndicador] = useState(null);
     const [erro, setErro] = useState("");
@@ -21,6 +22,11 @@ function Indicador() {
             : unidadeSelecionada;
 
     useEffect(() => {
+
+        if(usuario?.perfil === "SOLICITANTE"){
+            navigate("/demandas");
+            return;
+        }
 
         let ativo = true;
 
@@ -47,41 +53,45 @@ function Indicador() {
             ativo = false;
         };
 
-    }, [usuario]);
+    }, [navigate, usuario]);
 
-    const carregarIndicador = useCallback(async () => {
+    const carregarIndicador = useCallback(async (
+        unidade = unidadeSaudeId,
+        dataInicio = inicio,
+        dataFim = fim
+    ) => {
 
         try {
-            const temInicio = inicio !== "";
-            const temFim = fim !== "";
+            const temInicio = dataInicio !== "";
+            const temFim = dataFim !== "";
 
-            if ((temInicio && !temFim) ||(!temInicio && temFim)) {
+            if ((temInicio && !temFim) || (!temInicio && temFim)) {
                 setErro("Informe início e fim do período.");
                 return;
             }
 
             setCarregando(true);
             setErro("");
+
             const params = new URLSearchParams();
-            if (unidadeSaudeId) {
+
+            if (unidade) {
                 params.append("unidadeSaudeId", unidadeSaudeId);
             }
 
             if (temInicio && temFim) {
-                params.append("inicio", `${inicio}T00:00:00`);
-                params.append("fim", `${fim}T23:59:59`);
+                params.append("inicio", `${dataInicio}T00:00:00`);
+                params.append("fim", `${dataFim}T23:59:59`);
             }
 
-            const response = await api.get(`/indicadores/geral?${params.toString()}`);
+            const response = await api.get(
+                `/indicadores/geral?${params.toString()}`
+            );
 
             setIndicador(response.data);
 
         } catch {
-
-            setErro(
-                "Erro ao carregar indicador"
-            );
-
+            setErro("Erro ao carregar indicador");
         } finally {
             setCarregando(false);
         }
@@ -96,7 +106,7 @@ function Indicador() {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         void carregarIndicador();
 
-    }, [carregarIndicador, usuario]);
+    }, [usuario]);
 
 
     async function exportarCsv() {
@@ -154,6 +164,29 @@ function Indicador() {
         } catch {
             setErro("Erro ao exportar CSV.");
         }
+    }
+
+    async function limparFiltros() {
+
+        setInicio("");
+        setFim("");
+
+        const unidade =
+            usuario?.perfil === "EXECUTOR_APS"
+                ? String(usuario.unidadeSaudeId)
+                : "";
+
+        if (usuario?.perfil !== "EXECUTOR_APS") {
+            setUnidadeSelecionada("");
+        }
+
+        setErro("");
+
+        await carregarIndicador(
+            unidade,
+            "",
+            ""
+        );
     }
 
     if (carregando) {
@@ -242,6 +275,13 @@ function Indicador() {
                                 onClick={carregarIndicador}
                             >
                                 Aplicar filtros
+                            </button>
+
+                            <button
+                                className="buscar-btn"
+                                onClick={limparFiltros}
+                            >
+                                Limpar filtros
                             </button>
 
                             <button

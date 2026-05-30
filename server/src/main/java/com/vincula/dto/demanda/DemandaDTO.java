@@ -19,8 +19,4 @@ public class DemandaDTO {
 
     @NotNull(message = "Paciente é obrigatório")
     private Long pacienteId;
-
-    @NotNull(message = "Unidade responsável é obrigatória")
-    private Long unidadeResponsavelId;
-
 }

@@ -426,7 +426,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
       AND (
         (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
       )
@@ -436,7 +436,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
       AND (
         (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
       )
@@ -466,7 +466,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
         AND (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
     """, nativeQuery = true)
     long countDemandasAtrasadasPorPeriodo(@Param("inicio") LocalDateTime inicio,
@@ -475,7 +475,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
           AND unidade_responsavel_id = :unidadeId
         AND (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
     """, nativeQuery = true)
@@ -503,7 +503,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
       AND status = 'FINALIZADA'
       AND data_hora_finalizacao > data_hora_limite
     """, nativeQuery = true)
@@ -513,7 +513,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE dataHoraCriacao BETWEEN :inicio AND :fim
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
           AND unidade_responsavel_id = :unidadeId
       AND status = 'FINALIZADA'
       AND data_hora_finalizacao > data_hora_limite
