@@ -33,7 +33,4 @@ public class PacienteDTO {
     @NotNull(message = "Endereço é obrigatório")
     @Valid
     private EnderecoDTO endereco;
-
-    @NotNull(message = "Unidade de saúde é obrigatória")
-    private Long unidadeSaudeId;
 }

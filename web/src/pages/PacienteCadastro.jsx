@@ -3,56 +3,36 @@ import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm";
 import "./pacienteCadastro.css";
 import {useNavigate} from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 
-const formInicial = {
-    nomeCompleto: "",
-    telefone: "",
-    documento: "",
-    dataNascimento: "",
-    sexo: "",
-    endereco: {
-        rua: "",
-        numero: "",
-        bairro: "",
-        cidade: "Porto Alegre",
-        estado: "RS",
-        cep: "",
-    },
-    unidadeSaudeId: 1
-};
-
 function PacienteCadastro() {
+    const {
+        register,
+        handleSubmit,
+    } = useForm({
+        defaultValues: {
+            nomeCompleto: "",
+            telefone: "",
+            documento: "",
+            dataNascimento: "",
+            sexo: "",
+            endereco: {
+                rua: "",
+                numero: "",
+                bairro: "",
+                cidade: "Porto Alegre",
+                estado: "RS",
+                cep: "00000000",
+            }
+        }
+    });
+
     const navigate = useNavigate();
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
-    const [form, setForm] = useState(formInicial);
     const [mensagem, setMensagem] = useState("");
-
-    function alterar(e) {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    }
-
-    function alterarEndereco(e) {
-        setForm({
-            ...form,
-            endereco: { ...form.endereco, [e.target.name]: e.target.value },
-        });
-    }
-
-    function alterarCep(e) {
-        const cep = e.target.value.replace(/\D/g, "");
-
-        setForm({
-            ...form,
-            endereco: { ...form.endereco, cep },
-        });
-
-        if (cep.length === 8) {
-            buscarCep(cep);
-        }
-    }
 
     function voltarParaEtapaComErro(errors) {
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
@@ -64,49 +44,19 @@ function PacienteCadastro() {
             setMensagem("Dados inválidos.");
     }
 
-    async function buscarCep(cep) {
-        try {
-            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await response.json();
+    async function salvar(dados) {
 
-            if (data.erro) {
-                setMensagem("CEP não encontrado.");
-                return;
-            }
-
-            setForm((prev) => ({
-                ...prev,
-                endereco: {
-                    ...prev.endereco,
-                    rua: data.logradouro || "",
-                    bairro: data.bairro || "",
-                    cidade: data.localidade || "",
-                    estado: data.uf || "",
-                    cep,
-                },
-            }));
-        } catch {
-            setMensagem("Erro ao buscar CEP.");
-        }
-    }
-
-    async function salvar(e) {
-        e.preventDefault();
         setMensagem("");
         setErros({});
 
         try {
             const payload = {
-                ...form,
-                sexo: form.sexo || null,
-                unidadeSaudeId: form.unidadeSaudeId
-                    ? Number(form.unidadeSaudeId)
-                    : null,
+                ...dados,
+                sexo: dados.sexo || null
             };
 
             const response = await api.post("/pacientes", payload);
-            setMensagem("Paciente cadastrado com sucesso e vinculado na unidade " + response.data.unidadeSaudeNome);
-            setForm(formInicial);
+            navigate(`/pacientes/${response.data.id}`);
             setErros({});
         }catch (error) {
             if (error.response?.data?.errors) {
@@ -153,7 +103,7 @@ function PacienteCadastro() {
                     </div>
                 </div>
 
-                <form className="cadastro-card" onSubmit={salvar}>
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
                     {etapa === 1 && (
                         <>
                             <div className="form-grid full">
@@ -161,9 +111,7 @@ function PacienteCadastro() {
                                     <label>Nome completo <span>*</span></label>
                                     <input
                                         className="input-field"
-                                        name="nomeCompleto"
-                                        value={form.nomeCompleto}
-                                        onChange={alterar}
+                                        {...register("nomeCompleto")}
                                     />
                                     {erros.nomeCompleto && <small>{erros.nomeCompleto}</small>}
                                 </div>
@@ -175,9 +123,7 @@ function PacienteCadastro() {
 
                                     <input
                                         className="input-field"
-                                        name="documento"
-                                        value={form.documento}
-                                        onChange={alterar}
+                                        {...register("documento")}
                                         type="number"
                                         placeholder="Digite CPF ou CNS"
                                     />
@@ -188,10 +134,8 @@ function PacienteCadastro() {
                                     <label>Telefone</label>
                                     <input
                                         className="input-field"
-                                        name="telefone"
+                                        {...register("telefone")}
                                         placeholder="(xx)xxxxx-xxxx"
-                                        value={form.telefone}
-                                        onChange={alterar}
                                         type="text"
                                     />
                                     {erros.telefone && <small>{erros.telefone}</small>}
@@ -203,10 +147,8 @@ function PacienteCadastro() {
                                     <label>Data de nascimento</label>
                                     <input
                                         className="input-field"
-                                        name="dataNascimento"
+                                        {...register("dataNascimento")}
                                         type="date"
-                                        value={form.dataNascimento}
-                                        onChange={alterar}
                                     />
                                     {erros.dataNascimento && <small>{erros.dataNascimento}</small>}
                                 </div>
@@ -215,9 +157,8 @@ function PacienteCadastro() {
                                     <label>Sexo</label>
                                     <select
                                         className="input-field"
-                                        name="sexo"
-                                        value={form.sexo}
-                                        onChange={alterar}
+                                        {...register("sexo")}
+
                                     >
                                         <option value="">Selecione</option>
                                         <option value="FEMININO">Feminino</option>
@@ -244,10 +185,8 @@ function PacienteCadastro() {
                     {etapa === 2 && (
                         <>
                             <EnderecoForm
-                                endereco={form.endereco}
+                                register={register}
                                 erros={erros}
-                                onChange={alterarEndereco}
-                                onBuscarCep={alterarCep}
                             />
 
                             <div className="form-actions">

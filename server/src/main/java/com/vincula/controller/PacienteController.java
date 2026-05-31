@@ -28,7 +28,7 @@ public class PacienteController {
         this.demandaService = demandaService;
     }
 
-    @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS')")
+    @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
     @PostMapping
     public ResponseEntity<PacienteResponseDTO> criar(@Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteCriado = pacienteService.criar(dto);

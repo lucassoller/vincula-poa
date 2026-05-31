@@ -3,30 +3,36 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm";
 import "./pacienteCadastro.css";
-
-const formInicial = {
-    nomeCompleto: "",
-    telefone: "",
-    documento: "",
-    dataNascimento: "",
-    sexo: "",
-    endereco: {
-        rua: "",
-        numero: "",
-        bairro: "",
-        cidade: "Porto Alegre",
-        estado: "RS",
-        cep: "",
-    },
-};
+import { useForm } from "react-hook-form";
+import ModalRedirecionarDemandas from "../components/ModalRedirecionarDemandas.jsx";
 
 const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 
 function PacienteEditar() {
+    const {
+        register,
+        handleSubmit,
+        reset,
+    } = useForm({
+        defaultValues: {
+            nomeCompleto: "",
+            telefone: "",
+            documento: "",
+            dataNascimento: "",
+            sexo: "",
+            endereco: {
+                rua: "",
+                numero: "",
+                bairro: "",
+                cidade: "Porto Alegre",
+                estado: "RS",
+                cep: "00000000",
+            }
+        }
+    });
     const { id } = useParams();
     const navigate = useNavigate();
     const [etapa, setEtapa] = useState(1);
-    const [form, setForm] = useState(formInicial);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
@@ -38,7 +44,7 @@ function PacienteEditar() {
         async function carregarPaciente() {
             try {
                 const response = await api.get(`/pacientes/${id}`);
-                setForm(response.data);
+                reset(response.data);
                 setUnidadeOriginalId(response.data.unidadeSaudeId);
             } catch {
                 setMensagem("Erro ao carregar paciente.");
@@ -48,56 +54,7 @@ function PacienteEditar() {
         }
 
         void carregarPaciente();
-    }, [id]);
-
-    function alterar(e) {
-        const { name, value } = e.target;
-
-        setForm({
-            ...form,
-            [name]: value,
-        });
-
-        setErros((prev) => {
-            const novos = { ...prev };
-            delete novos[name];
-            return novos;
-        });
-    }
-
-    function alterarEndereco(e) {
-        const { name, value } = e.target;
-
-        setForm({
-            ...form,
-            endereco: {
-                ...form.endereco,
-                [name]: value,
-            },
-        });
-
-        setErros((prev) => {
-            const novos = { ...prev };
-            delete novos[`endereco.${name}`];
-            return novos;
-        });
-    }
-
-    function alterarCep(e) {
-        const cep = e.target.value.replace(/\D/g, "");
-
-        setForm({
-            ...form,
-            endereco: {
-                ...form.endereco,
-                cep,
-            },
-        });
-
-        if (cep.length === 8) {
-            buscarCep(cep);
-        }
-    }
+    }, [id, reset]);
 
     function voltarParaEtapaComErro(errors) {
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
@@ -109,44 +66,14 @@ function PacienteEditar() {
         setMensagem("Dados inválidos.");
     }
 
-    async function buscarCep(cep) {
-        try {
-            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await response.json();
-
-            if (data.erro) {
-                setMensagem("CEP não encontrado.");
-                return;
-            }
-
-            setForm((prev) => ({
-                ...prev,
-                endereco: {
-                    ...prev.endereco,
-                    rua: data.logradouro || "",
-                    bairro: data.bairro || "",
-                    cidade: data.localidade || "",
-                    estado: data.uf || "",
-                    cep,
-                },
-            }));
-        } catch {
-            setMensagem("Erro ao buscar CEP.");
-        }
-    }
-
-    async function salvar(e) {
-        e.preventDefault();
+    async function salvar(dados) {
         setMensagem("");
         setErros({});
 
         try {
             const payload = {
-                ...form,
-                sexo: form.sexo || null,
-                unidadeSaudeId: form.unidadeSaudeId
-                    ? Number(form.unidadeSaudeId)
-                    : null,
+                ...dados,
+                sexo: dados.sexo || null
             };
 
             const response = await api.put(`/pacientes/${id}`, payload);
@@ -233,13 +160,13 @@ function PacienteEditar() {
                     </div>
                 </div>
 
-                <form className="cadastro-card" onSubmit={salvar}>
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
                     {etapa === 1 && (
                         <>
                             <div className="form-grid full">
                                 <div className="form-group">
                                     <label>Nome completo <span>*</span></label>
-                                    <input className="input-field" name="nomeCompleto" value={form.nomeCompleto} onChange={alterar} />
+                                    <input className="input-field" {...register("nomeCompleto")} />
                                     {erros.nomeCompleto && <small>{erros.nomeCompleto}</small>}
                                 </div>
                             </div>
@@ -247,12 +174,12 @@ function PacienteEditar() {
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>CPF/CNS <span>*</span></label>
-                                    <input placeholder="Digite CPF ou CNS" type={"number"} className="input-field" name="documento" value={form.documento} onChange={alterar} />
+                                    <input placeholder="Digite CPF ou CNS" type={"number"} className="input-field" {...register("documento")} />
                                     {erros.documento && <small>{erros.documento}</small>}
                                 </div>
                                 <div className="form-group">
                                     <label>Telefone</label>
-                                    <input placeholder="(xx)xxxxx-xxxx" type={"number"} className="input-field" name="telefone" value={form.telefone || ""} onChange={alterar} />
+                                    <input placeholder="(xx)xxxxx-xxxx" type={"number"} className="input-field" {...register("telefone")} />
                                     {erros.telefone && <small>{erros.telefone}</small>}
                                 </div>
                             </div>
@@ -260,13 +187,13 @@ function PacienteEditar() {
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>Data de nascimento</label>
-                                    <input className="input-field" name="dataNascimento" type="date" value={form.dataNascimento || ""} onChange={alterar} />
+                                    <input className="input-field" type="date" {...register("dataNascimento")} />
                                     {erros.dataNascimento && <small>{erros.dataNascimento}</small>}
                                 </div>
 
                                 <div className="form-group">
                                     <label>Sexo</label>
-                                    <select className="input-field" name="sexo" value={form.sexo || ""} onChange={alterar}>
+                                    <select className="input-field" {...register("sexo")}>
                                         <option value="">Selecione</option>
                                         <option value="FEMININO">Feminino</option>
                                         <option value="MASCULINO">Masculino</option>
@@ -292,10 +219,8 @@ function PacienteEditar() {
                     {etapa === 2 && (
                         <>
                             <EnderecoForm
-                                endereco={form.endereco}
+                                register={register}
                                 erros={erros}
-                                onChange={alterarEndereco}
-                                onBuscarCep={alterarCep}
                             />
 
                             <div className="form-actions">
@@ -312,37 +237,10 @@ function PacienteEditar() {
                 </form>
             </div>
             {mostrarConfirmacaoRedirecionamento && (
-                <div className="modal-overlay">
-                    <div className="modal-card">
-                        <div className="modal-header">
-                            <div>
-                                <h2>Redirecionar demandas abertas?</h2>
-                                <p>
-                                    A UBS vinculada ao paciente mudou. Deseja redirecionar as demandas abertas
-                                    e em andamento para a nova UBS?
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="modal-actions">
-                            <button
-                                type="button"
-                                className="buscar-btn"
-                                onClick={confirmarRedirecionamentoDemandas}
-                            >
-                                Sim, redirecionar
-                            </button>
-
-                            <button
-                                type="button"
-                                className="limpar-btn"
-                                onClick={negarRedirecionamentoDemandas}
-                            >
-                                Não, apenas salvar paciente
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <ModalRedirecionarDemandas
+                    onConfirmar={confirmarRedirecionamentoDemandas}
+                    onCancelar={negarRedirecionamentoDemandas}
+                />
             )}
         </div>
     );
