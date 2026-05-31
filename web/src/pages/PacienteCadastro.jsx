@@ -24,7 +24,6 @@ function PacienteCadastro() {
                 bairro: "",
                 cidade: "Porto Alegre",
                 estado: "RS",
-                cep: "00000000",
             }
         }
     });
@@ -45,7 +44,6 @@ function PacienteCadastro() {
     }
 
     async function salvar(dados) {
-
         setMensagem("");
         setErros({});
 
@@ -175,7 +173,7 @@ function PacienteCadastro() {
                                     Próximo
                                 </button>
 
-                                <button type="button" className="buscar-btn" onClick={() => navigate("/indicadores")}>
+                                <button type="button" className="buscar-btn" onClick={() => navigate("/pacientes")}>
                                     Cancelar
                                 </button>
                             </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import "./pacienteDetalhe.css";
-import {mascaraDocumento, mascaraTelefone, mascaraCEP} from "../utils/mascaras";
+import {mascaraDocumento, mascaraTelefone} from "../utils/mascaras";
 import {sexoLabel} from "../utils/utils.js";
 
 function PacienteDetalhe() {
@@ -105,7 +105,6 @@ function PacienteDetalhe() {
                     <h2>Endereço</h2>
 
                     <div className="detalhe-grid">
-                        <Campo label="CEP" valor={mascaraCEP(paciente.endereco?.cep)} />
                         <Campo label="Rua" valor={paciente.endereco?.rua} />
                         <Campo label="Número" valor={paciente.endereco?.numero} />
                         <Campo label="Bairro" valor={paciente.endereco?.bairro} />

@@ -127,7 +127,6 @@ public class AuditoriaDescricaoUtil {
         adicionarAlteracao(sb, "Bairro", entity.getBairro(), dto.getBairro());
         adicionarAlteracao(sb, "Cidade", entity.getCidade(), dto.getCidade());
         adicionarAlteracao(sb, "Estado", entity.getEstado(), dto.getEstado());
-        adicionarAlteracao(sb, "CEP", entity.getCep(), dto.getCep());
 
         return sb.toString();
     }

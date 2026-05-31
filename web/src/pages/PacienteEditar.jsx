@@ -26,7 +26,6 @@ function PacienteEditar() {
                 bairro: "",
                 cidade: "Porto Alegre",
                 estado: "RS",
-                cep: "00000000",
             }
         }
     });

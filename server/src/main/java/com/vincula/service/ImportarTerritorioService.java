@@ -90,7 +90,6 @@ public class ImportarTerritorioService {
                 endereco.setCidade("Porto Alegre");
                 endereco.setEstado("RS");
                 endereco.setNumero("S/N");
-                endereco.setCep("00000000");
 
                 UnidadeSaude usRamos = new UnidadeSaude();
                 usRamos.setNome("US Ramos");
@@ -257,7 +256,6 @@ public class ImportarTerritorioService {
 
         endereco.setCidade("Porto Alegre");
         endereco.setEstado("RS");
-        endereco.setCep("00000000");
         endereco.setLatitude(latitude);
         endereco.setLongitude(longitude);
 

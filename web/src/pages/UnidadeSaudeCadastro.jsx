@@ -2,58 +2,35 @@ import { useState } from "react";
 import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm.jsx";
 import {useNavigate} from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2"];
 
-const formInicial = {
-    nome: "",
-    cnes: "",
-    telefone: "",
-    telefone2: "",
-    endereco: {
-        rua: "",
-        numero: "",
-        bairro: "",
-        cidade: "Porto Alegre",
-        estado: "RS",
-        cep: "",
-    }
-};
-
 function UnidadeSaudeCadastro() {
-    const [etapa, setEtapa] = useState(1);
-
-    const [erros, setErros] = useState({});
-
-    const navigate = useNavigate();
-
-    const [form, setForm] = useState(formInicial);
-
-    const [mensagem, setMensagem] = useState("");
-
-    function alterar(e) {
-        setForm({...form, [e.target.name]: e.target.value});
-    }
-
-    function alterarEndereco(e) {
-        setForm({
-            ...form,
-            endereco: {...form.endereco, [e.target.name]: e.target.value},
-        });
-    }
-
-    function alterarCep(e) {
-        const cep = e.target.value.replace(/\D/g, "");
-
-        setForm({
-            ...form,
-            endereco: {...form.endereco, cep},
-        });
-
-        if (cep.length === 8) {
-            buscarCep(cep);
+    const {
+        register,
+        handleSubmit,
+        reset
+    } = useForm({
+        defaultValues: {
+            nome: "",
+            cnes: "",
+            telefone: "",
+            telefone2: "",
+            endereco: {
+                rua: "",
+                numero: "",
+                bairro: "",
+                cidade: "Porto Alegre",
+                estado: "RS",
+            }
         }
-    }
+    });
+
+    const [etapa, setEtapa] = useState(1);
+    const [erros, setErros] = useState({});
+    const navigate = useNavigate();
+    const [mensagem, setMensagem] = useState("");
 
     function voltarParaEtapaComErro(errors) {
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
@@ -65,45 +42,18 @@ function UnidadeSaudeCadastro() {
         setMensagem("Dados inválidos.");
     }
 
-    async function buscarCep(cep) {
-        try {
-            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await response.json();
-
-            if (data.erro) {
-                setMensagem("CEP não encontrado.");
-                return;
-            }
-
-            setForm((prev) => ({
-                ...prev,
-                endereco: {
-                    ...prev.endereco,
-                    rua: data.logradouro || "",
-                    bairro: data.bairro || "",
-                    cidade: data.localidade || "",
-                    estado: data.uf || "",
-                    cep,
-                },
-            }));
-        } catch {
-            setMensagem("Erro ao buscar CEP.");
-        }
-    }
-
-    async function salvar(e) {
-        e.preventDefault();
+    async function salvar(dados) {
         setMensagem("");
+        setErros({});
 
         try {
-            await api.post("/unidades-saude", form);
+            await api.post("/unidades-saude", dados);
             setMensagem("Unidade de saúde cadastrada com sucesso!");
-            setForm(formInicial);
+            reset();
             setErros({});
         }catch (error) {
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
-
                 setErros(errors);
                 setMensagem(error.response.data.message || "Dados inválidos");
                 voltarParaEtapaComErro(errors);
@@ -146,7 +96,7 @@ function UnidadeSaudeCadastro() {
                         Endereço
                     </div>
                 </div>
-                <form className="cadastro-card" onSubmit={salvar}>
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
                     {etapa === 1 && (
                         <>
                             <div className="form-grid full">
@@ -156,9 +106,7 @@ function UnidadeSaudeCadastro() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="nome"
-                                        value={form.nome}
-                                        onChange={alterar}
+                                        {...register("nome")}
                                     />
                                     {erros.nome && (
                                         <small>{erros.nome}</small>
@@ -172,10 +120,8 @@ function UnidadeSaudeCadastro() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="cnes"
                                         type="text"
-                                        value={form.cnes}
-                                        onChange={alterar}
+                                        {...register("cnes")}
                                     />
                                     {erros.cnes && (
                                         <small>{erros.cnes}</small>
@@ -189,11 +135,9 @@ function UnidadeSaudeCadastro() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="telefone"
                                         placeholder="(xx)xxxxx-xxxx"
-                                        value={form.telefone}
                                         type="text"
-                                        onChange={alterar}
+                                        {...register("telefone")}
                                     />
                                     {erros.telefone && (
                                         <small>{erros.telefone}</small>
@@ -205,11 +149,9 @@ function UnidadeSaudeCadastro() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="telefone2"
                                         placeholder="(xx)xxxxx-xxxx"
-                                        value={form.telefone2}
                                         type="text"
-                                        onChange={alterar}
+                                        {...register("telefone2")}
                                     />
                                     {erros.telefone2 && (
                                         <small>{erros.telefone2}</small>
@@ -228,7 +170,7 @@ function UnidadeSaudeCadastro() {
                                 <button
                                     type="button"
                                     className="buscar-btn"
-                                    onClick={() => navigate("/indicadores")}
+                                    onClick={() => navigate("/unidades-saude")}
                                 >
                                     Cancelar
                                 </button>
@@ -238,10 +180,8 @@ function UnidadeSaudeCadastro() {
                     {etapa === 2 && (
                         <>
                             <EnderecoForm
-                                endereco={form.endereco}
+                                register={register}
                                 erros={erros}
-                                onChange={alterarEndereco}
-                                onBuscarCep={alterarCep}
                             />
                             <div className="form-actions">
                                 <button

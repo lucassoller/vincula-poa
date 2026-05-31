@@ -27,9 +27,6 @@ public class Endereco {
     @Column(nullable = false, length = 2)
     private String estado;
 
-    @Column(nullable = false, length = 8)
-    private String cep;
-
     @Column
     private Double latitude;
 

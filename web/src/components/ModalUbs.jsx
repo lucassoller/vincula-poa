@@ -45,11 +45,6 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
 
                     <div className="ubs-info-grid">
                         <CampoDetalhe
-                            label="CEP"
-                            valor={ubsSelecionada.endereco?.cep}
-                        />
-
-                        <CampoDetalhe
                             label="Rua"
                             valor={ubsSelecionada.endereco?.rua}
                         />

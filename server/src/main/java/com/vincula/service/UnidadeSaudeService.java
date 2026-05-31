@@ -150,6 +150,7 @@ public class UnidadeSaudeService {
         entity.setNome(dto.getNome());
         entity.setCnes(dto.getCnes());
         entity.setTelefone(dto.getTelefone());
+        entity.setTelefone2(dto.getTelefone2());
         entity.setEndereco(endereco);
 
         return entity;
@@ -161,6 +162,7 @@ public class UnidadeSaudeService {
         dto.setNome(entity.getNome());
         dto.setCnes(entity.getCnes());
         dto.setTelefone(entity.getTelefone());
+        dto.setTelefone2(entity.getTelefone2());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
         return dto;
     }

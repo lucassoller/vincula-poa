@@ -2,121 +2,53 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm";
-
-const formInicial = {
-    nome: "",
-    cnes: "",
-    telefone: "",
-    telefone2: "",
-    endereco: {
-        cep: "",
-        rua: "",
-        numero: "",
-        bairro: "",
-        cidade: "Porto Alegre",
-        estado: "RS",
-    },
-};
+import { useForm } from "react-hook-form";
 
 const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2"];
 
 function UnidadeSaudeEditar() {
+    const {
+        register,
+        handleSubmit,
+        reset,
+    } = useForm({
+        defaultValues: {
+            nome: "",
+            cnes: "",
+            telefone: "",
+            telefone2: "",
+            endereco: {
+                rua: "",
+                numero: "",
+                bairro: "",
+                cidade: "Porto Alegre",
+                estado: "RS",
+            }
+        }
+    });
     const { id } = useParams();
     const navigate = useNavigate();
     const [etapa, setEtapa] = useState(1);
-    const [form, setForm] = useState(formInicial);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
 
     useEffect(() => {
-        let ativo = true;
-
         async function carregarUnidade() {
             try {
                 const response = await api.get(`/unidades-saude/${id}`);
-
-                if (ativo) {
-                    setForm({
-                        nome: response.data.nome || "",
-                        cnes: response.data.cnes || "",
-                        telefone: response.data.telefone || "",
-                        endereco: {
-                            cep: response.data.endereco?.cep || "",
-                            rua: response.data.endereco?.rua || "",
-                            numero: response.data.endereco?.numero || "",
-                            bairro: response.data.endereco?.bairro || "",
-                            cidade: response.data.endereco?.cidade || "Porto Alegre",
-                            estado: response.data.endereco?.estado || "RS",
-                        },
-                    });
-                }
+                reset(response.data);
             } catch {
-                if (ativo) {
-                    setMensagem("Erro ao carregar unidade de saúde.");
-                }
+                setMensagem("Erro ao carregar unidade de saúde.");
+
             } finally {
-                if (ativo) {
-                    setCarregando(false);
-                }
+                setCarregando(false);
             }
         }
 
         void carregarUnidade();
 
-        return () => {
-            ativo = false;
-        };
-    }, [id]);
-
-    function alterar(e) {
-        const { name, value } = e.target;
-
-        setForm({
-            ...form,
-            [name]: value,
-        });
-
-        setErros((prev) => {
-            const novos = { ...prev };
-            delete novos[name];
-            return novos;
-        });
-    }
-
-    function alterarEndereco(e) {
-        const { name, value } = e.target;
-
-        setForm({
-            ...form,
-            endereco: {
-                ...form.endereco,
-                [name]: value,
-            },
-        });
-
-        setErros((prev) => {
-            const novos = { ...prev };
-            delete novos[`endereco.${name}`];
-            return novos;
-        });
-    }
-
-    function alterarCep(e) {
-        const cep = e.target.value.replace(/\D/g, "");
-
-        setForm({
-            ...form,
-            endereco: {
-                ...form.endereco,
-                cep,
-            },
-        });
-
-        if (cep.length === 8) {
-            buscarCep(cep);
-        }
-    }
+    }, [id, reset]);
 
     function voltarParaEtapaComErro(errors) {
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
@@ -128,41 +60,14 @@ function UnidadeSaudeEditar() {
         setMensagem("Dados inválidos.");
     }
 
-    async function buscarCep(cep) {
-        try {
-            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await response.json();
-
-            if (data.erro) {
-                setMensagem("CEP não encontrado.");
-                return;
-            }
-
-            setForm((prev) => ({
-                ...prev,
-                endereco: {
-                    ...prev.endereco,
-                    rua: data.logradouro || "",
-                    bairro: data.bairro || "",
-                    cidade: data.localidade || "",
-                    estado: data.uf || "",
-                    cep,
-                },
-            }));
-        } catch {
-            setMensagem("Erro ao buscar CEP.");
-        }
-    }
-
-    async function salvar(e) {
-        e.preventDefault();
+    async function salvar(dados) {
         setMensagem("");
         setErros({});
 
         try {
-            await api.put(`/unidades-saude/${id}`, form);
-
-            navigate("/indicadores");
+            await api.put(`/unidades-saude/${id}`, dados);
+            setMensagem("Unidade de saúde editada com sucesso!");
+            setEtapa(1);
         } catch (error) {
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
@@ -219,7 +124,7 @@ function UnidadeSaudeEditar() {
                         Endereço
                     </div>
                 </div>
-                <form className="cadastro-card" onSubmit={salvar}>
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
                     {etapa === 1 && (
                         <>
                             <div className="form-grid full">
@@ -229,9 +134,7 @@ function UnidadeSaudeEditar() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="nome"
-                                        value={form.nome}
-                                        onChange={alterar}
+                                        {...register("nome")}
                                     />
                                     {erros.nome && (
                                         <small>{erros.nome}</small>
@@ -245,9 +148,7 @@ function UnidadeSaudeEditar() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="cnes"
-                                        value={form.cnes}
-                                        onChange={alterar}
+                                        {...register("cnes")}
                                     />
 
                                     {erros.cnes && (
@@ -262,10 +163,9 @@ function UnidadeSaudeEditar() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="telefone"
                                         placeholder="(xx)xxxxx-xxxx"
-                                        value={form.telefone}
-                                        onChange={alterar}
+                                        type="text"
+                                        {...register("telefone")}
                                     />
                                     {erros.telefone && (
                                         <small>{erros.telefone}</small>
@@ -277,10 +177,9 @@ function UnidadeSaudeEditar() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        name="telefone2"
                                         placeholder="(xx)xxxxx-xxxx"
-                                        value={form.telefone2}
-                                        onChange={alterar}
+                                        type="text"
+                                        {...register("telefone2")}
                                     />
                                     {erros.telefone2 && (
                                         <small>{erros.telefone2}</small>
@@ -299,7 +198,7 @@ function UnidadeSaudeEditar() {
                                 <button
                                     type="button"
                                     className="buscar-btn"
-                                    onClick={() => navigate("/pacientes")}
+                                    onClick={() => navigate("/unidades-saude")}
                                 >
                                     Cancelar
                                 </button>
@@ -309,10 +208,8 @@ function UnidadeSaudeEditar() {
                     {etapa === 2 && (
                         <>
                             <EnderecoForm
-                                endereco={form.endereco}
+                                register={register}
                                 erros={erros}
-                                onChange={alterarEndereco}
-                                onBuscarCep={alterarCep}
                             />
                             <div className="form-actions">
                                 <button

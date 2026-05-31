@@ -88,7 +88,6 @@ public class EnderecoService {
         dto.setBairro(entity.getBairro());
         dto.setCidade(entity.getCidade());
         dto.setEstado(entity.getEstado());
-        dto.setCep(entity.getCep());
 
         return dto;
     }
@@ -99,6 +98,5 @@ public class EnderecoService {
         entity.setBairro(dto.getBairro());
         entity.setCidade(dto.getCidade());
         entity.setEstado(dto.getEstado());
-        entity.setCep(dto.getCep());
     }
 }
