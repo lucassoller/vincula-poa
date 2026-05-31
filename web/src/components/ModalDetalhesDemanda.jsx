@@ -32,6 +32,7 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                         <CampoDetalhe label="Prazo" valor={prazoLabel[demanda.prazoDemanda]} />
                         <CampoDetalhe label="Criada em" valor={formatarDataHora(demanda.dataHoraCriacao)} />
                         <CampoDetalhe label="Data limite" valor={formatarDataHora(demanda.dataHoraLimite)} />
+                        <CampoDetalhe label="Descrição da busca" valor={demanda.descricaoBusca} />
                     </div>
                 </div>
 
@@ -41,17 +42,17 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                     <div className="detalhe-grid">
                         <CampoDetalhe
                             label="Unidade solicitante"
-                            valor={demanda.unidadeSolicitanteNome || demanda.unidadeSolicitanteId}
+                            valor={demanda.unidadeSolicitanteNome}
                         />
 
                         <CampoDetalhe
                             label="Unidade responsável"
-                            valor={demanda.unidadeResponsavelNome || demanda.unidadeResponsavelId}
+                            valor={demanda.unidadeResponsavelNome}
                         />
 
                         <CampoDetalhe
                             label="Unidade anterior"
-                            valor={demanda.unidadeResponsavelAnteriorNome || demanda.unidadeResponsavelAnteriorId}
+                            valor={demanda.unidadeResponsavelAnteriorNome}
                         />
                     </div>
                 </div>
@@ -85,7 +86,7 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
 
                         <div className="detalhe-grid">
                             <CampoDetalhe label="Motivo redirecionamento" valor={demanda.motivoRedirecionamento} />
-                            <CampoDetalhe label="Data redirecionamento" valor={demanda.dataHoraRedirecionamento} />
+                            <CampoDetalhe label="Data redirecionamento" valor={formatarDataHora(demanda.dataHoraRedirecionamento)} />
                         </div>
                     </div>
                 )}

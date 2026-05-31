@@ -91,7 +91,7 @@ public class PacienteController {
         return ResponseEntity.ok(paciente);
     }
 
-    @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS')")
+    @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteAtualizado = pacienteService.atualizar(id, dto);

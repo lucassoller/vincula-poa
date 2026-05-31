@@ -154,8 +154,6 @@ function PacienteEditar() {
             setPacienteAtualizado(response.data);
 
             const mudouUnidade =
-                unidadeOriginalId &&
-                response.data.unidadeSaudeId &&
                 Number(unidadeOriginalId) !== Number(response.data.unidadeSaudeId);
 
             if (mudouUnidade) {
@@ -182,7 +180,7 @@ function PacienteEditar() {
     async function confirmarRedirecionamentoDemandas() {
         try {
             await api.patch(`/pacientes/${id}/redirecionar-abertas`, {
-                novaUnidadeResponsavelId: pacienteAtualizado.unidadeResponsavel.id,
+                novaUnidadeResponsavelId: pacienteAtualizado.unidadeSaudeId,
                 motivoRedirecionamento: "Atualização de endereço/território",
             });
 

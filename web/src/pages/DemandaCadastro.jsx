@@ -18,20 +18,22 @@ function DemandaCadastro() {
 
     const [form, setForm] = useState(formInicial);
     const [pacientes, setPacientes] = useState([]);
-    const [unidades, setUnidades] = useState([]);
+    //const [unidades, setUnidades] = useState([]);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
 
     useEffect(() => {
         async function carregarDados() {
             try {
-                const [pacientesRes, unidadesRes] = await Promise.all([
-                    api.get("/pacientes?page=0&size=10"),
-                    api.get("/unidades-saude/all"),
+                const [pacientesRes
+                    //, unidadesRes
+                ] = await Promise.all([
+                    api.get("/pacientes/all"),
+                    //api.get("/unidades-saude/all"),
                 ]);
 
-                setPacientes(pacientesRes.data.content);
-                setUnidades(unidadesRes.data);
+                setPacientes(pacientesRes.data);
+                //setUnidades(unidadesRes.data);
 
                 if (usuario?.perfil === "EXECUTOR_APS") {
                     setForm((prev) => ({

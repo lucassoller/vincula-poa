@@ -105,7 +105,7 @@ function PacienteCadastro() {
             };
 
             const response = await api.post("/pacientes", payload);
-            setMensagem("Paciente cadastrado com sucesso e vinculado na Unidade " + response.data.unidadeSaudeNome);
+            setMensagem("Paciente cadastrado com sucesso e vinculado na unidade " + response.data.unidadeSaudeNome);
             setForm(formInicial);
             setErros({});
         }catch (error) {
