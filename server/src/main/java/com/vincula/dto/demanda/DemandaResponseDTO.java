@@ -5,6 +5,7 @@ import com.vincula.enums.MotivoBuscaAtiva;
 import com.vincula.enums.PrazoDemanda;
 import com.vincula.enums.StatusDemanda;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -22,8 +23,11 @@ public class DemandaResponseDTO {
     private DesfechoDemanda desfecho;
     private String descricaoDesfecho;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dataHoraCriacao;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dataHoraLimite;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dataHoraFinalizacao;
 
     private Long pacienteId;
@@ -46,6 +50,7 @@ public class DemandaResponseDTO {
 
     private Boolean foiRedirecionada;
     private String motivoRedirecionamento;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dataHoraRedirecionamento;
 
     private Long usuarioRedirecionamentoId;

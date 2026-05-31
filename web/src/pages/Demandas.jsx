@@ -18,6 +18,7 @@ function Demandas() {
     const [demandaSelecionada, setDemandaSelecionada] = useState(null);
     const [acao, setAcao] = useState("");
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [erros, setErros] = useState({});
     const [demandaDetalhada, setDemandaDetalhada] = useState(null);
     const [tentativasContato, setTentativasContato] = useState([]);
@@ -68,7 +69,7 @@ function Demandas() {
             setDemandas(demandasResponse.data.content);
             setTotalPaginas(demandasResponse.data.page.totalPages);
         } catch {
-            setMensagem("Erro ao carregar demandas.");
+            setMensagemSucesso("Erro ao carregar demandas.");
         } finally {
             setCarregando(false);
         }
@@ -107,7 +108,7 @@ function Demandas() {
             setTotalPaginas(demandasResponse.data.page.totalPages);
 
         } catch {
-            setMensagem("Erro ao buscar demandas.");
+            setMensagemSucesso("Erro ao buscar demandas.");
         } finally {
             setCarregando(false);
         }
@@ -132,7 +133,7 @@ function Demandas() {
                 const response = await api.get("/unidades-saude/all");
                 setUnidades(response.data);
             } catch {
-                setMensagem("Erro ao carregar unidades.");
+                setMensagemSucesso("Erro ao carregar unidades.");
             }
         }
 
@@ -202,7 +203,7 @@ function Demandas() {
 
         try {
             await api.post("/tentativas-contato", payload);
-            setMensagem("Tentativa registrada com sucesso!");
+            setMensagemSucesso("Tentativa registrada com sucesso!");
             fecharModal();
 
             if (modoFiltrado) {
@@ -231,7 +232,7 @@ function Demandas() {
                 `/demandas/${demandaSelecionada.id}/redirecionar`,
                 payload
             );
-            setMensagem("Demanda redirecionada com sucesso!");
+            setMensagemSucesso("Demanda redirecionada com sucesso!");
             fecharModal();
 
             if (modoFiltrado) {
@@ -258,7 +259,7 @@ function Demandas() {
                 `/demandas/${demandaSelecionada.id}/encerrar`,
                 payload
             );
-            setMensagem("Demanda encerrada com sucesso!");
+            setMensagemSucesso("Demanda encerrada com sucesso!");
             fecharModal();
             if (modoFiltrado) {
                 await buscarDemandas(pagina);
@@ -281,7 +282,7 @@ function Demandas() {
             );
             setTentativasContato(tentativasResponse.data);
         } catch {
-            setMensagem("Erro ao carregar detalhes da demanda.");
+            setMensagemSucesso("Erro ao carregar detalhes da demanda.");
         }
     }
 
@@ -406,12 +407,12 @@ function Demandas() {
                     <span className="perfil-badge">{usuario?.perfil}</span>
                 </div>
 
-                {mensagem && (
+                {mensagemSucesso && (
                     <div className="alert-card">
-                        <span>{mensagem}</span>
+                        <span>{mensagemSucesso}</span>
                         <button
                             type="button"
-                            onClick={() => setMensagem("")}
+                            onClick={() => setMensagemSucesso("")}
                         >
                             ✕
                         </button>
@@ -431,7 +432,6 @@ function Demandas() {
                                     if (e.key === "Enter") {
                                         executarBusca();
                                     }
-
                                 }}
                             />
 
@@ -564,6 +564,8 @@ function Demandas() {
                     erros={erros}
                     onSalvar={salvarTentativa}
                     onFechar={fecharModal}
+                    mensagem={mensagem}
+                    setMensagem={setMensagem}
                 />
             )}
 
@@ -576,6 +578,8 @@ function Demandas() {
                     erros={erros}
                     onSalvar={salvarRedirecionamento}
                     onFechar={fecharModal}
+                    mensagem={mensagem}
+                    setMensagem={setMensagem}
                 />
             )}
 
@@ -587,6 +591,8 @@ function Demandas() {
                     erros={erros}
                     onSalvar={salvarEncerramento}
                     onFechar={fecharModal}
+                    mensagem={mensagem}
+                    setMensagem={setMensagem}
                 />
             )}
 

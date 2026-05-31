@@ -316,6 +316,7 @@ public class DemandaService {
         dto.setStatus(entity.getStatus());
 
         dto.setDataHoraCriacao(entity.getDataHoraCriacao());
+        dto.setDataHoraLimite(entity.getDataHoraLimite());
 
         dto.setUsuarioCriadorId(entity.getUsuarioCriador().getId());
         dto.setUsuarioCriadorNome(entity.getUsuarioCriador().getNome());

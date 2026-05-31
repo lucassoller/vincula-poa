@@ -1,4 +1,4 @@
-function ModalEncerrarDemanda({ demanda, encerramento, setEncerramento, erros, onSalvar, onFechar }) {
+function ModalEncerrarDemanda({ demanda, encerramento, setEncerramento, erros, onSalvar, onFechar, mensagem, setMensagem }) {
     return (
         <div className="modal-overlay">
             <div className="modal-card">
@@ -6,10 +6,22 @@ function ModalEncerrarDemanda({ demanda, encerramento, setEncerramento, erros, o
                     <div>
                         <h2>Encerrar demanda</h2>
                         <p>Demanda #{demanda.id}</p>
+
                     </div>
 
                     <button className="modal-close" onClick={onFechar}>✕</button>
                 </div>
+                {mensagem && (
+                    <div className="alert-card">
+                        <span>{mensagem}</span>
+                        <button
+                            type="button"
+                            onClick={() => setMensagem("")}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
 
                 <form onSubmit={onSalvar}>
                     <div className="form-group">

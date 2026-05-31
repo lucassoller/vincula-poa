@@ -1,5 +1,12 @@
 import CampoDetalhe from "./CampoDetalhe";
-import {formatarDataHora, motivoBuscaLabel, prazoLabel, statusLabel, tentativaContatoLabe} from "../utils/utils.js";
+import {
+    desfechoLabel,
+    formatarDataHora,
+    motivoBuscaLabel,
+    prazoLabel,
+    statusLabel,
+    tentativaContatoLabe
+} from "../utils/utils.js";
 
 function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
     return (
@@ -59,33 +66,44 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                     </div>
                 </div>
 
-                <div className="detalhe-section">
-                    <h3>Desfecho</h3>
 
-                    <div className="detalhe-grid">
-                        <CampoDetalhe label="Desfecho" valor={demanda.desfecho} />
-                        <CampoDetalhe label="Descrição do desfecho" valor={demanda.descricaoDesfecho} />
-                        <CampoDetalhe label="Data finalização" valor={formatarDataHora(demanda.dataHoraFinalizacao)} />
+                {demanda.desfecho !== null && (
+                    <div className="detalhe-section">
+                        <h3>Desfecho</h3>
+
+                        <div className="detalhe-grid">
+                            <CampoDetalhe label="Desfecho" valor={desfechoLabel[demanda.desfecho]} />
+                            <CampoDetalhe label="Descrição do desfecho" valor={demanda.descricaoDesfecho} />
+                            <CampoDetalhe label="Data finalização" valor={formatarDataHora(demanda.dataHoraFinalizacao)} />
+                        </div>
                     </div>
-                </div>
+                )}
+
+                {demanda.foiRedirecionada && (
+                    <div className="detalhe-section">
+                        <h3>Redirecionamento</h3>
+
+                        <div className="detalhe-grid">
+                            <CampoDetalhe label="Motivo redirecionamento" valor={demanda.motivoRedirecionamento} />
+                            <CampoDetalhe label="Data redirecionamento" valor={demanda.dataHoraRedirecionamento} />
+                        </div>
+                    </div>
+                )}
+
+                {tentativasContato.length > 0 && (
 
                 <div className="detalhe-section">
                     <h3>Tentativas de contato</h3>
 
-                    {tentativasContato.length === 0 ? (
-                        <div className="empty-state">
-                            Nenhuma tentativa registrada.
-                        </div>
-                    ) : (
                         <div className="tentativas-lista">
                             {tentativasContato.map((t) => (
                                 <div className="tentativa-card" key={t.id}>
                                     <div className="tentativa-top">
-                                        <strong>{t.tipo}</strong>
+                                        <strong>{tentativaContatoLabe[t.tipo]}</strong>
                                         <span>{formatarDataHora(t.dataHora)}</span>
                                     </div>
 
-                                    <p>{tentativaContatoLabe[t.descricao]}</p>
+                                    <p>{t.descricao}</p>
 
                                     <small>
                                         Registrado por: {t.usuarioNome}
@@ -93,8 +111,9 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                                 </div>
                             ))}
                         </div>
-                    )}
+
                 </div>
+                )}
 
             </div>
         </div>

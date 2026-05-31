@@ -1,12 +1,4 @@
-function ModalRedirecionarDemanda({
-                                      demanda,
-                                      unidades,
-                                      redirecionamento,
-                                      setRedirecionamento,
-                                      erros,
-                                      onSalvar,
-                                      onFechar
-                                  }) {
+function ModalRedirecionarDemanda({demanda, unidades, redirecionamento, setRedirecionamento, erros, onSalvar, onFechar, mensagem, setMensagem}) {
     return (
         <div className="modal-overlay">
             <div className="modal-card">
@@ -18,6 +10,18 @@ function ModalRedirecionarDemanda({
 
                     <button className="modal-close" onClick={onFechar}>✕</button>
                 </div>
+
+                {mensagem && (
+                    <div className="alert-card">
+                        <span>{mensagem}</span>
+                        <button
+                            type="button"
+                            onClick={() => setMensagem("")}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
 
                 <form onSubmit={onSalvar}>
                     <div className="form-group">

@@ -21,6 +21,16 @@ export const motivoBuscaLabel = {
     "OUTRO": "Outro",
 };
 
+export const desfechoLabel = {
+    "ENCONTRADO_VINCULADO" : "Encontrado e vinculado",
+    "ENCONTRADO_RECUSOU": "Encontrado e recuso contato",
+    "NAO_LOCALIZADO": "Não localizado",
+    "ENDERECO_INCORRETO": "Endereço incorreto",
+    "MUDOU_TERRITORIO": "Mudou de território",
+    "OBITO": "Óbito",
+    "OUTRO": "Outro",
+};
+
 export const tentativaContatoLabe = {
     "LIGACAO": "Ligação",
     "VISITA": "Visita",
