@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import {PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,} from "recharts";
 import api from "../api/api";
 import "./indicador.css";
 import { useAuth } from "../context/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
-import {formatarValorIndicador} from "../utils/utils.js";
-const COLORS = ["#2563eb", "#06b6d4", "#22c55e","#f59e0b", "#ef4444", "#8b5cf6", "#ec4899",];
+import Ranking from "../components/Ranking.jsx";
+import BarChartSimples from "../components/BarChartSimples.jsx";
+import DonutChart from "../components/DonutChart.jsx";
+import SecaoCardsInterna from "../components/SecaoCardsInterna.jsx";
+import ChartCard from "../components/ChartCard.jsx";
+import SecaoCards from "../components/SecaoCards.jsx";
 
 function Indicador() {
     const navigate = useNavigate();
@@ -339,167 +342,6 @@ function Indicador() {
                     />
                 </div>
             </div>
-        </div>
-    );
-}
-
-function SecaoCardsInterna({ dados }) {
-    return (
-        <div className="prazo-card-list">
-            {dados?.map((item, index) => (
-                <div key={index} className="prazo-card-item">
-                    <span>{item.indicador}</span>
-                    <strong>{formatarValorIndicador(item)}</strong>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-function SecaoCards({ titulo, dados }) {
-    return (
-        <section className="indicador-section">
-            <h2>{titulo}</h2>
-
-            <div className="kpi-grid">
-                {dados?.map((item, index) => (
-                    <div key={index} className="kpi-card">
-                        <span>{item.indicador}</span>
-                        <strong>{formatarValorIndicador(item)}</strong>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-}
-
-function ChartCard({ titulo, children }) {
-    return (
-        <div className="chart-card">
-            <h2>{titulo}</h2>
-            {children}
-        </div>
-    );
-}
-
-function DonutChart({ dados, nomeKey, valorKey }) {
-    const dadosValidos = dados
-        .map((item) => ({
-            nome: item[nomeKey],
-            valor: Number(item[valorKey]) || 0,
-        }))
-        .filter((item) => item.valor > 0);
-
-    if (dadosValidos.length === 0) {
-        return <div className="empty-state">Sem dados para exibir.</div>;
-    }
-
-    return (
-        <div className="donut-wrapper">
-            <ResponsiveContainer width="100%" height={280}>
-                <PieChart>
-                    <Pie
-                        data={dadosValidos}
-                        dataKey="valor"
-                        nameKey="nome"
-                        innerRadius={70}
-                        outerRadius={110}
-                        paddingAngle={3}
-                    >
-                        {dadosValidos.map((_, index) => (
-                            <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                    </Pie>
-                    <Tooltip />
-                </PieChart>
-            </ResponsiveContainer>
-
-            <div className="chart-legend">
-                {dadosValidos.map((item, index) => (
-                    <div key={index} className="legend-item">
-                        <span style={{ background: COLORS[index % COLORS.length] }}></span>
-                        {item.nome}: <strong>{item.valor + " %"}</strong>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-function BarChartSimples({ dados, nomeKey, valorKey }) {
-    const dadosGrafico = dados.map((item) => ({
-        nome: item[nomeKey],
-        valor: Number(item[valorKey]) || 0,
-    }));
-
-    if (dadosGrafico.length === 0) {
-        return <div className="empty-state">Sem dados para exibir.</div>;
-    }
-
-    return (
-        <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={dadosGrafico}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="nome" tick={{ fontSize: 12 }} />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="valor" radius={[10, 10, 0, 0]} fill="#2563eb" />
-            </BarChart>
-        </ResponsiveContainer>
-    );
-}
-
-function Ranking({ titulo, dados }) {
-    const [expandido, setExpandido] = useState(false);
-
-    if (!dados || dados.length === 0) {
-        return null;
-    }
-
-    const quantidadeInicial = 5;
-
-    const dadosExibidos = expandido
-        ? dados
-        : dados.slice(0, quantidadeInicial);
-
-    return (
-        <div className="ranking-card">
-            <h2>{titulo}</h2>
-            <div className="ranking-list">
-                {dadosExibidos.map((item, index) => (
-
-                    <div
-                        key={item.unidadeSaudeId ?? index}
-                        className="ranking-item"
-                    >
-
-                        <span className="ranking-position">
-                            {index + 1}
-                        </span>
-                        <div>
-                            <strong>
-                                {item.unidadeSaudeNome}
-                            </strong>
-                            <p>{item.valor}</p>
-                        </div>
-
-                    </div>
-                ))}
-
-            </div>
-
-            {dados.length > quantidadeInicial && (
-
-                <button
-                    type="button"
-                    className="ranking-expand-btn"
-                    onClick={() => setExpandido(!expandido)}
-                >
-                    {expandido ? "Ver menos" : "Ver mais"}
-                </button>
-
-            )}
-
         </div>
     );
 }

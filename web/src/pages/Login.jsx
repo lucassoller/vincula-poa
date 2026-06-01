@@ -30,7 +30,11 @@ function Login() {
 
             realizarLogin(response.data, response.data.token);
 
-            navigate("/indicadores");
+            if(response.data.perfil === "SOLICITANTE"){
+                navigate("/demandas");
+            }else{
+                navigate("/indicadores");
+            }
         } catch (error) {
             const mensagem = error.response?.data?.message;
             const erroLogin = error.response?.data?.errors?.login;

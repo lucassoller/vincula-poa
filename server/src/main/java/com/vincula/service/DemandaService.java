@@ -218,31 +218,37 @@ public class DemandaService {
 
     public String exportarDemandasCsv(){
         List<Demanda> demandas = demandaRepository.findAllOrderByPacienteNome();
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas exportadas");
         return demandaExporter.exportar(demandas);
     }
 
     public String exportarDemandasFiltradasCsv(String filtro){
         List<Demanda> demandas = demandaRepository.findFiltradas(filtro);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas exportadas");
         return demandaExporter.exportar(demandas);
     }
 
     public String exportarDemandasPorUnidadeCsv(Long unidadeId){
         List<Demanda> demandas = demandaRepository.findByUnidadeOrderByPacienteNome(unidadeId);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas da unidade " + unidadeId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 
     public String exportarDemandasFiltradasPorUnidadeCsv(Long unidadeId, String filtro){
         List<Demanda> demandas = demandaRepository.findFiltradasByUnidade(unidadeId, filtro);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas da unidade " + unidadeId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 
     public String exportarDemandasPorUsuarioCsv(Long usuarioCriadorId){
         List<Demanda> demandas = demandaRepository.findByUsuarioOrderByPacienteNome(usuarioCriadorId);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas do usuário criador " + usuarioCriadorId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 
     public String exportarDemandasFiltradasPorUsuarioCsv(Long usuarioCriadorId, String filtro){
         List<Demanda> demandas = demandaRepository.findFiltradasByUsuarioCriador(usuarioCriadorId, filtro);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas do usuário criador " + usuarioCriadorId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 

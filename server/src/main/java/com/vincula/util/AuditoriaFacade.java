@@ -163,4 +163,8 @@ public class AuditoriaFacade {
     public void exportacaoCsvRealizada(String descricao) {
         registrar(TipoAcaoAuditoria.EXPORTACAO_CSV_REALIZADA, "Indicador", 0L, descricao);
     }
+
+    public void exportacaoCsvRealizadaDemanda(String descricao) {
+        registrar(TipoAcaoAuditoria.EXPORTACAO_CSV_REALIZADA, "Demanda", 0L, descricao);
+    }
 }
