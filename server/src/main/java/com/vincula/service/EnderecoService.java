@@ -33,7 +33,6 @@ public class EnderecoService {
     }
 
     public List<EnderecoResponseDTO> listarTodos() {
-        auditoriaFacade.enderecoVisualizado(0L);
         return enderecoRepository.findAll()
                 .stream()
                 .map(this::toDTO)
@@ -42,7 +41,6 @@ public class EnderecoService {
 
     public EnderecoResponseDTO buscarPorId(Long id) {
         Endereco endereco = buscarEnderecoPorId(id);
-        auditoriaFacade.enderecoVisualizado(endereco.getId());
         return toDTO(endereco);
     }
 

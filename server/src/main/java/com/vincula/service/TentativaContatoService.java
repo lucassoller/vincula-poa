@@ -70,7 +70,6 @@ public class TentativaContatoService {
     }
 
     public List<TentativaContatoResponseDTO> listarPorDemanda(Long id) {
-        auditoriaFacade.tentativaContatoVisualizado(0L);
         return tentativaRepository.findByDemandaId(id)
                 .stream()
                 .map(this::toDTO)
@@ -78,7 +77,6 @@ public class TentativaContatoService {
     }
 
     public List<TentativaContatoResponseDTO> listarPorUsuario(Long id) {
-        auditoriaFacade.tentativaContatoVisualizado(0L);
         return tentativaRepository.findByUsuarioId(id)
                 .stream()
                 .map(this::toDTO)
@@ -86,7 +84,6 @@ public class TentativaContatoService {
     }
 
     public Page<TentativaContatoResponseDTO> listarTodas(Pageable pageable) {
-        auditoriaFacade.tentativaContatoVisualizado(0L);
         return tentativaRepository.findAllByOrderByDemandaIdAsc(pageable)
                 .map(this::toDTO);
     }

@@ -58,49 +58,41 @@ public class DemandaService {
     }
 
     public Page<DemandaResponseDTO> listarTodas(Pageable pageable) {
-        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findAllOrderByPacienteNome(pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarTodasFiltradas(String filtro, Pageable pageable) {
-        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findFiltradas(filtro, pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarPorPaciente(Long pacienteId, Pageable pageable) {
-        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByPacienteOrderByPacienteNome(pacienteId, pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarPorUnidadeSaude(Long unidadeResponsavelId, Pageable pageable) {
-        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUnidadeOrderByPacienteNome(unidadeResponsavelId, pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarPorUnidadeSaudeFiltradas(Long unidadeResponsavelId, String filtro, Pageable pageable) {
-        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findFiltradasByUnidade(unidadeResponsavelId, filtro, pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarPorUsuarioCriador(Long usuarioId, Pageable pageable) {
-        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByUsuarioOrderByPacienteNome(usuarioId, pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarPorUsuarioCriadorFiltradas(Long usuarioId, String filtro, Pageable pageable) {
-        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findFiltradasByUsuarioCriador(usuarioId, filtro, pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarPorStatus(StatusDemanda status, Pageable pageable) {
-        auditoriaFacade.demandaVisualizada(0L);
         return demandaRepository.findByStatusOrderByPacienteNome(status, pageable)
                 .map(this::toDTO);
     }
@@ -211,8 +203,6 @@ public class DemandaService {
 
     public DemandaResponseDTO buscarPorId(Long id) {
         Demanda entity = buscarDemandaPorId(id);
-
-        auditoriaFacade.demandaVisualizada(entity.getId());
 
         return toDTO(entity);
     }

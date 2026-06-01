@@ -16,10 +16,6 @@ export function mascaraTelefone(valor) {
         .replace(/(\d{5})(\d)/, "$1-$2");
 }
 
-export function mascaraCNES(valor) {
-    return somenteNumeros(valor).slice(0, 7);
-}
-
 export function mascaraDocumento(valor) {
     if(valor.length === 15){
         return somenteNumeros(valor)

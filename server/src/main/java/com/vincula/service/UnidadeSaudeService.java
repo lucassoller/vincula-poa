@@ -35,24 +35,18 @@ public class UnidadeSaudeService {
 
     public UnidadeSaudeResponseDTO criar(UnidadeSaudeDTO dto) {
         validarCnesCreate(dto);
-
         UnidadeSaude entity = toEntity(dto);
-
         UnidadeSaude salvo = unidadeSaudeRepository.save(entity);
-
         auditoriaFacade.unidadeSaudeCriada(salvo.getId());
-
         return toDTO(salvo);
     }
 
     public Page<UnidadeSaudeResponseDTO> listarTodos(Pageable pageable) {
-        auditoriaFacade.unidadeSaudeVisualizada(0L);
         return unidadeSaudeRepository.findAllByOrderByNomeAsc(pageable)
                 .map(this::toDTO);
     }
 
     public List<UnidadeSaudeShortResponseDTO> listarTodos() {
-        auditoriaFacade.unidadeSaudeVisualizada(0L);
         return unidadeSaudeRepository.findAllByOrderByNomeAsc()
                 .stream()
                 .map(this::toShortDTO)
@@ -60,14 +54,11 @@ public class UnidadeSaudeService {
     }
 
     public Page<UnidadeSaudeResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
-        auditoriaFacade.unidadeSaudeVisualizada(0L);
         return unidadeSaudeRepository.buscarFiltradas(filtro, pageable)
                 .map(this::toDTO);
     }
 
     public List<PacienteResponseDTO> listarPacientesPorUnidade(Long unidadeSaudeId) {
-        auditoriaFacade.unidadeSaudeVisualizada(0L);
-
         return unidadeSaudeRepository.findPacientesByUnidadeSaudeId(unidadeSaudeId)
                 .stream()
                 .map(this::toPacienteDTO)
@@ -76,36 +67,24 @@ public class UnidadeSaudeService {
 
     public UnidadeSaudeResponseDTO buscarPorId(Long id) {
         UnidadeSaude entity = buscarUnidadeSaudePorId(id);
-
-        auditoriaFacade.unidadeSaudeVisualizada(entity.getId());
-
         return toDTO(entity);
     }
 
     public UnidadeSaudeResponseDTO buscarPorCnes(String cnes) {
         UnidadeSaude entity = buscarUnidadeSaudePorCnes(cnes);
-
-        auditoriaFacade.unidadeSaudeVisualizada(entity.getId());
-
         return toDTO(entity);
     }
 
     public UnidadeSaudeResponseDTO atualizar(Long id, UnidadeSaudeDTO dto) {
-
         UnidadeSaude entity = buscarUnidadeSaudePorId(id);
-
         validarCnesUpdate(dto, id);
-
         String descricaoLog = AuditoriaDescricaoUtil.unidadeSaudeAtualizada(entity, dto);
 
         entity.setNome(dto.getNome());
         entity.setCnes(dto.getCnes());
         entity.setTelefone(dto.getTelefone());
-
         enderecoMapper.updateEntityFromDto(dto.getEndereco(), entity.getEndereco());
-
         UnidadeSaude atualizado = unidadeSaudeRepository.save(entity);
-
         auditoriaFacade.unidadeSaudeAtualizada(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);

@@ -175,7 +175,7 @@ function Auditoria() {
                                 key={u.id}
                                 value={u.id}
                             >
-                                {u.id + " - " + u.nome}
+                                {u.nome + " - " + u.email}
                             </option>
                         ))}
                     </select>

@@ -53,13 +53,11 @@ public class UsuarioService {
     }
 
     public Page<UsuarioResponseDTO> listarTodos(Pageable pageable) {
-        auditoriaFacade.usuarioVisualizado(0L);
         return usuarioRepository.findAllByOrderByNomeAsc(pageable)
                 .map(this::toDTO);
     }
 
     public List<UsuarioShortResponseDTO> listarTodos() {
-        auditoriaFacade.usuarioVisualizado(0L);
         return usuarioRepository.findAllByOrderByNomeAsc()
                 .stream()
                 .map(this::toShortDTO)
@@ -67,34 +65,24 @@ public class UsuarioService {
     }
 
     public Page<UsuarioResponseDTO> listarTodosPorPerfil(PerfilUsuario perfil, Pageable pageable) {
-        auditoriaFacade.usuarioVisualizado(0L);
         return usuarioRepository.findByPerfilOrderByNomeAsc(perfil, pageable)
                 .map(this::toDTO);
     }
 
     public UsuarioResponseDTO buscarPorId(Long id) {
         Usuario entity = buscarUsuarioPorId(id);
-
-        auditoriaFacade.usuarioVisualizado(entity.getId());
-
         return toDTO(entity);
     }
 
     public UsuarioResponseDTO buscarPorEmail(String email) {
         Usuario entity = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
-
-        auditoriaFacade.usuarioVisualizado(entity.getId());
-
         return toDTO(entity);
     }
 
     public UsuarioResponseDTO buscarPorLogin(String login) {
         Usuario entity = usuarioRepository.findByLogin(login)
                 .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
-
-        auditoriaFacade.usuarioVisualizado(entity.getId());
-
         return toDTO(entity);
     }
 
@@ -260,7 +248,6 @@ public class UsuarioService {
 
     public UsuarioResponseDTO getUsuarioAutenticadoDTO() {
         Usuario usuario = buscarUsuarioAutenticado();
-        auditoriaFacade.usuarioVisualizado(usuario.getId());
         return toDTO(usuario);
     }
 
@@ -303,10 +290,9 @@ public class UsuarioService {
 
     private UsuarioShortResponseDTO toShortDTO(Usuario entity) {
         UsuarioShortResponseDTO dto = new UsuarioShortResponseDTO();
-
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
-
+        dto.setEmail(entity.getEmail());
         return dto;
     }
 }

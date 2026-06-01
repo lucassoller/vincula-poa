@@ -171,7 +171,7 @@ function DemandaCadastro() {
                         <button
                             type="button"
                             className="buscar-btn"
-                            onClick={() => navigate("/indicadores")}
+                            onClick={() => navigate("/demandas")}
                         >
                             Cancelar
                         </button>

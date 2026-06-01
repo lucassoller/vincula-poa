@@ -83,15 +83,12 @@ public class PacienteService {
 
     public PacienteResponseDTO buscarPorId(Long id) {
         Paciente paciente = buscarPacientePorId(id);
-        auditoriaFacade.pacienteVisualizado(paciente.getId());
         return toDTO(paciente);
     }
 
     public PacienteResponseDTO buscarPorDocumento(String documento) {
         Paciente paciente = pacienteRepository.findByDocumento(documento)
                 .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
-
-        auditoriaFacade.pacienteVisualizado(paciente.getId());
 
         return toDTO(paciente);
     }

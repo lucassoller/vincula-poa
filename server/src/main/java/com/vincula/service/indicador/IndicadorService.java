@@ -79,17 +79,11 @@ public class IndicadorService {
         }
 
         validarAcessoIndicadorGeral();
-
-        auditoriaFacade.indicadorAcessado("Indicador geral acessado");
-
         return indicadorGeral();
     }
 
     public IndicadorDTO indicadorPorUnidade(Long unidadeSaudeId) {
         validarAcessoUnidade(unidadeSaudeId);
-
-        auditoriaFacade.indicadorAcessado("Indicador da unidade ID " + unidadeSaudeId + " acessado");
-
         return new IndicadorDTO(
                 indicadorProducaoService.indicadoresPorUnidade(unidadeSaudeId),
                 indicadorProcessoService.montarProcessoPorUnidade(unidadeSaudeId),
@@ -105,9 +99,6 @@ public class IndicadorService {
 
     public IndicadorDTO indicadorPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         validarAcessoIndicadorGeral();
-
-        auditoriaFacade.indicadorAcessado("Indicador de "+ inicio + " até "+ fim +" acessado");
-
         return new IndicadorDTO(
                 indicadorProducaoService.indicadoresPorPeriodo(inicio, fim),
                 indicadorProcessoService.montarProcessoPorPeriodo(inicio, fim),
@@ -123,10 +114,6 @@ public class IndicadorService {
 
     public IndicadorDTO indicadorPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
         validarAcessoUnidade(unidadeSaudeId);
-
-        auditoriaFacade.indicadorAcessado("Indicador da unidade ID " +
-                unidadeSaudeId + "de "+ inicio + " até "+ fim +" acessado");
-
         return new IndicadorDTO(
                 indicadorProducaoService.indicadoresPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorProcessoService.montarProcessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),

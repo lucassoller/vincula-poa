@@ -45,10 +45,8 @@ public class LoginService {
                     )
             );
         } catch (DisabledException ex) {
-            auditoriaFacade.loginFalhou(dto.getLogin());
             throw new BusinessException("Usuário inativo");
         } catch (AuthenticationException ex) {
-            auditoriaFacade.loginFalhou(dto.getLogin());
             throw new BusinessException("Login ou senha inválidos");
         }
 

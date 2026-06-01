@@ -3,6 +3,7 @@ import "./gestaoListagem.css";
 import api from "../api/api.js";
 import {formatarDataHora} from "../utils/utils.js";
 import Pagination from "../components/Paginations.jsx";
+import {mascaraDocumento, mascaraTelefone} from "../utils/mascaras.js";
 
 function GestaoListagem() {
 
@@ -10,7 +11,6 @@ function GestaoListagem() {
     const [mensagem, setMensagem] = useState("");
     const [filtroUsuario, setFiltroUsuario] = useState("");
     const [filtroUbs, setFiltroUbs] = useState("");
-    const [filtroTentativas, setFiltroTentativas] = useState("");
     const [filtroPaciente, setFiltroPaciente] = useState("");
     const [filtroPerfil, setFiltroPerfil] = useState("");
     const [filtroUbsPaciente, setFiltroUbsPaciente] = useState("");
@@ -18,7 +18,6 @@ function GestaoListagem() {
     const [usuariosSelect, setUsuariosSelect] = useState([]);
     const [unidadesSelect, setUnidadesSelect] = useState([]);
     const [pacientesSelect, setPacientesSelect] = useState([]);
-    const [tentativasSelect, setTentativasSelect] = useState([]);
     const [resultado, setResultado] = useState([]);
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
@@ -33,17 +32,14 @@ function GestaoListagem() {
                     usuariosSelectRes,
                     unidadesSelectRes,
                     pacientesSelectRes,
-                    tentativasSelectRes,
                 ] = await Promise.all([
                     api.get("/usuarios/all"),
                     api.get("/unidades-saude/all"),
                     api.get("/pacientes/all"),
-                    api.get("/tentativas-contato/all"),
                 ]);
                 setUsuariosSelect(usuariosSelectRes.data);
                 setUnidadesSelect(unidadesSelectRes.data);
                 setPacientesSelect(pacientesSelectRes.data);
-                setTentativasSelect(tentativasSelectRes.data);
             } catch {
                 setMensagem("Erro ao carregar dados");
             }
@@ -276,7 +272,7 @@ function GestaoListagem() {
                                                 key={usuario.id}
                                                 value={usuario.id}
                                             >
-                                                {usuario.nome}
+                                                {usuario.nome + " - " + usuario.email}
                                             </option>
                                         ))}
                                     </select>
@@ -333,7 +329,7 @@ function GestaoListagem() {
                                                 key={ubs.id}
                                                 value={ubs.id}
                                             >
-                                                {ubs.nome}
+                                                {ubs.nome + " - " + ubs.cnes}
                                             </option>
                                         ))}
                                     </select>
@@ -365,7 +361,7 @@ function GestaoListagem() {
                                                 key={paciente.id}
                                                 value={paciente.id}
                                             >
-                                                {paciente.nomeCompleto}
+                                                {paciente.nomeCompleto + " - " + mascaraDocumento(paciente.documento)}
                                             </option>
                                         ))}
                                     </select>
@@ -388,7 +384,7 @@ function GestaoListagem() {
                                                 key={ubs.id}
                                                 value={ubs.id}
                                             >
-                                                {ubs.nome}
+                                                {ubs.nome + " - " + ubs.cnes}
                                             </option>
                                         ))}
                                     </select>
@@ -419,7 +415,7 @@ function GestaoListagem() {
                                                 key={paciente.id}
                                                 value={paciente.id}
                                             >
-                                                {paciente.nomeCompleto}
+                                                {paciente.nomeCompleto + " - " + mascaraDocumento(paciente.documento)}
                                             </option>
                                         ))}
                                     </select>
@@ -445,7 +441,7 @@ function GestaoListagem() {
                                                 key={ubs.id}
                                                 value={ubs.id}
                                             >
-                                                {ubs.nome}
+                                                {ubs.nome + " - " + ubs.cnes}
                                             </option>
                                         ))}
                                     </select>
@@ -472,7 +468,7 @@ function GestaoListagem() {
                                                 key={usuario.id}
                                                 value={usuario.id}
                                             >
-                                                {usuario.nome}
+                                                {usuario.nome + " - " + usuario.email}
                                             </option>
                                         ))}
                                     </select>
@@ -551,8 +547,8 @@ function GestaoListagem() {
                                         {resultado.map((p) => (
                                             <tr key={p.id}>
                                                 <td>{p.nomeCompleto}</td>
-                                                <td>{p.documento}</td>
-                                                <td>{p.telefone || "-"}</td>
+                                                <td>{mascaraDocumento(p.documento)}</td>
+                                                <td>{mascaraTelefone(p.telefone) || "-"}</td>
                                                 <td>{p.unidadeSaudeNome || "-"}</td>
                                             </tr>
                                         ))}
@@ -602,8 +598,8 @@ function GestaoListagem() {
                                             <tr key={u.id}>
                                                 <td>{u.nome}</td>
                                                 <td>{u.cnes}</td>
-                                                <td>{u.telefone || "-"}</td>
-                                                <td>{u.telefone2 || "-"}</td>
+                                                <td>{mascaraTelefone(u.telefone) || "-"}</td>
+                                                <td>{mascaraTelefone(u.telefone2) || "-"}</td>
                                                 <td>{u.endereco?.bairro || "-"}</td>
                                             </tr>
                                         ))}

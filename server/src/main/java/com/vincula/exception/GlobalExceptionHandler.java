@@ -95,8 +95,6 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        auditoriaFacade.acessoNegado("Acesso negado para URL: " + request.getRequestURI());
-
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 

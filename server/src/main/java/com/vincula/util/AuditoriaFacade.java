@@ -41,10 +41,6 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.PACIENTE_DELETADO, "Paciente", id, "Paciente deletado");
     }
 
-    public void pacienteVisualizado(Long id) {
-        registrar(TipoAcaoAuditoria.PACIENTE_VISUALIZADO, "Paciente", id, "Paciente visualizado");
-    }
-
     public void enderecoCriado(Long id) {
         registrar(TipoAcaoAuditoria.ENDERECO_CRIADO, "Endereco", id, "Endereco criado");
     }
@@ -55,10 +51,6 @@ public class AuditoriaFacade {
 
     public void enderecoDeletado(Long id) {
         registrar(TipoAcaoAuditoria.ENDERECO_ATUALIZADO, "Endereco", id, "Endereco deletado");
-    }
-
-    public void enderecoVisualizado(Long id) {
-        registrar(TipoAcaoAuditoria.ENDERECO_VISUALIZADO, "Endereco", id, "Endereco visualizado");
     }
 
     public void demandaCriada(Long id, Long pacienteID) {
@@ -79,10 +71,6 @@ public class AuditoriaFacade {
 
     public void demandaDeletada(Long id) {
         registrar(TipoAcaoAuditoria.DEMANDA_DELETADA, "Demanda", id, "Demanda deletada");
-    }
-
-    public void demandaVisualizada(Long id) {
-        registrar(TipoAcaoAuditoria.DEMANDA_VISUALIZADA, "Demanda", id, "Demanda visualizada");
     }
 
     public void statusDemandaAlterado(Long demandaId, String descricao) {
@@ -106,10 +94,6 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.TENTATIVA_CONTATO_DELETADA, "TentativaContato", id, "Tentativa contato deledada");
     }
 
-    public void tentativaContatoVisualizado(Long id) {
-        registrar(TipoAcaoAuditoria.TENTATIVA_CONTATO_VISUALIZADA, "TentativaContato", id, "Tentativa contato visualizada");
-    }
-
     public void usuarioCriado(Long id) {
         registrar(TipoAcaoAuditoria.USUARIO_CRIADO, "Usuario", id, "Usuário criado");
     }
@@ -120,10 +104,6 @@ public class AuditoriaFacade {
 
     public void usuarioDeletado(Long id) {
         registrar(TipoAcaoAuditoria.USUARIO_DELETADO, "Usuario", id, "Usuário deletado");
-    }
-
-    public void usuarioVisualizado(Long id) {
-        registrar(TipoAcaoAuditoria.USUARIO_VISUALIZADO, "Usuario", id, "Usuário visualizado");
     }
 
     public void usuarioSenhaAlteradaDeslogado(Long id) {
@@ -146,10 +126,6 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.UNIDADE_SAUDE_DELETADA, "UnidadeSaude", id, "Unidade de saúde deletada");
     }
 
-    public void unidadeSaudeVisualizada(Long id) {
-        registrar(TipoAcaoAuditoria.UNIDADE_SAUDE_VISUALIZADA, "UnidadeSaude", id, "Unidade de saúde visualizada");
-    }
-
     public void loginRealizado(Usuario usuario) {
         registrarComUsuario(
                 usuario,
@@ -170,19 +146,6 @@ public class AuditoriaFacade {
         );
     }
 
-    public void acessoNegado(String message){
-        registrar(TipoAcaoAuditoria.ACESSO_NEGADO, "Sistema", 0L, message);
-    }
-
-    public void loginFalhou(String login) {
-        registrar(
-                TipoAcaoAuditoria.LOGIN_FALHOU,
-                "Usuario",
-                0L,
-                "Tentativa de login falhou para: " + login
-        );
-    }
-
     public void emailEnviado(String email) {
         registrar(
                 TipoAcaoAuditoria.EMAIL_ENVIADO,
@@ -195,10 +158,6 @@ public class AuditoriaFacade {
 
     public void emailFalhou(String email) {
         registrar(TipoAcaoAuditoria.EMAIL_FALHOU, "Usuario", 0L, "Email de recuperação falhou do usuario " + email);
-    }
-
-    public void indicadorAcessado(String descricao) {
-        registrar(TipoAcaoAuditoria.DASHBOARD_ACESSADO, "Indicador", 0L, descricao);
     }
 
     public void exportacaoCsvRealizada(String descricao) {
