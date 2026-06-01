@@ -2,6 +2,8 @@ package com.vincula.repository;
 
 import com.vincula.dto.projection.RankingValorProjection;
 import com.vincula.entity.TentativaContato;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,7 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
 
     List<TentativaContato> findByDemandaId(Long demandaId);
     List<TentativaContato> findByUsuarioId(Long usuarioId);
+    Page<TentativaContato> findAllByOrderByDemandaIdAsc(Pageable pageable);
     boolean existsByDemandaId(Long demandaId);
 
     @Query(value = """

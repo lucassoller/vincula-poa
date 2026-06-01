@@ -4,6 +4,8 @@ import com.vincula.dto.tentativaContato.TentativaContatoDTO;
 import com.vincula.dto.tentativaContato.TentativaContatoResponseDTO;
 import com.vincula.service.TentativaContatoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +45,12 @@ public class TentativaContatoController {
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<TentativaContatoResponseDTO>> listarPorUsuario(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(tentativaService.listarPorUsuario(usuarioId));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping
+    public ResponseEntity<Page<TentativaContatoResponseDTO>> listarTodas(Pageable pageable) {
+        return ResponseEntity.ok(tentativaService.listarTodas(pageable));
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")

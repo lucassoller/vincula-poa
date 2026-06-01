@@ -12,6 +12,8 @@ import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.TentativaContatoRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,13 +37,9 @@ public class TentativaContatoService {
     }
 
     public TentativaContatoResponseDTO criar(TentativaContatoDTO dto) {
-
         TentativaContato entity = toEntity(dto);
-
         TentativaContato salvo = tentativaRepository.save(entity);
-
         auditoriaFacade.tentativaContatoCriada(salvo.getId(), salvo.getDemanda().getId());
-
         return toDTO(salvo);
     }
 
@@ -67,9 +65,7 @@ public class TentativaContatoService {
     public void deletar(Long id) {
         TentativaContato entity = buscarTentativaPorId(id);
         Long tentativaId = entity.getId();
-
         tentativaRepository.delete(entity);
-
         auditoriaFacade.tentativaContatoDeletada(tentativaId);
     }
 
@@ -87,6 +83,12 @@ public class TentativaContatoService {
                 .stream()
                 .map(this::toDTO)
                 .toList();
+    }
+
+    public Page<TentativaContatoResponseDTO> listarTodas(Pageable pageable) {
+        auditoriaFacade.tentativaContatoVisualizado(0L);
+        return tentativaRepository.findAllByOrderByDemandaIdAsc(pageable)
+                .map(this::toDTO);
     }
 
 

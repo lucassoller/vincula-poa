@@ -10,6 +10,7 @@ function GestaoListagem() {
     const [mensagem, setMensagem] = useState("");
     const [filtroUsuario, setFiltroUsuario] = useState("");
     const [filtroUbs, setFiltroUbs] = useState("");
+    const [filtroTentativas, setFiltroTentativas] = useState("");
     const [filtroPaciente, setFiltroPaciente] = useState("");
     const [filtroPerfil, setFiltroPerfil] = useState("");
     const [filtroUbsPaciente, setFiltroUbsPaciente] = useState("");
@@ -17,6 +18,7 @@ function GestaoListagem() {
     const [usuariosSelect, setUsuariosSelect] = useState([]);
     const [unidadesSelect, setUnidadesSelect] = useState([]);
     const [pacientesSelect, setPacientesSelect] = useState([]);
+    const [tentativasSelect, setTentativasSelect] = useState([]);
     const [resultado, setResultado] = useState([]);
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
@@ -30,15 +32,18 @@ function GestaoListagem() {
                 const [
                     usuariosSelectRes,
                     unidadesSelectRes,
-                    pacientesSelectRes
+                    pacientesSelectRes,
+                    tentativasSelectRes,
                 ] = await Promise.all([
                     api.get("/usuarios/all"),
                     api.get("/unidades-saude/all"),
-                    api.get("/pacientes/all")
+                    api.get("/pacientes/all"),
+                    api.get("/tentativas-contato/all"),
                 ]);
                 setUsuariosSelect(usuariosSelectRes.data);
                 setUnidadesSelect(unidadesSelectRes.data);
                 setPacientesSelect(pacientesSelectRes.data);
+                setTentativasSelect(tentativasSelectRes.data);
             } catch {
                 setMensagem("Erro ao carregar dados");
             }
@@ -154,6 +159,15 @@ function GestaoListagem() {
                 setPagina(paginaAtual);
             }
 
+            if (tipo === "TENTATIVAS") {
+                response = await api.get(
+                    `/tentativas-contato?page=${paginaAtual}&size=${tamanhoPagina}`
+                );
+                setResultado(response.data.content);
+                setTotalPaginas(response.data.page.totalPages);
+                setPagina(paginaAtual);
+            }
+
         } catch {
             setMensagem("Erro ao carregar dados.");
 
@@ -225,6 +239,9 @@ function GestaoListagem() {
                                 </option>
                                 <option value="PACIENTES">
                                     Pacientes
+                                </option>
+                                <option value="TENTATIVAS">
+                                    Tentativas de contato
                                 </option>
                                 <option value="UBS">
                                     Unidades Básicas de Saúde
@@ -615,6 +632,31 @@ function GestaoListagem() {
                                                 <td>{d.unidadeResponsavelNome || "-"}</td>
                                                 <td>{d.status || "-"}</td>
                                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {tipo === "TENTATIVAS" && (
+                                    <table className="pacientes-table">
+                                        <thead>
+                                        <tr>
+                                            <th>ID demanda</th>
+                                            <th>Usuário responsável</th>
+                                            <th>Tipo</th>
+                                            <th>Descrição</th>
+                                            <th>Data criação</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {resultado.map((u) => (
+                                            <tr key={u.id}>
+                                                <td>{u.demandaId}</td>
+                                                <td>{u.usuarioNome}</td>
+                                                <td>{u.tipo}</td>
+                                                <td>{u.descricao || "-"}</td>
+                                                <td>{formatarDataHora(u.dataHora)}</td>
                                             </tr>
                                         ))}
                                         </tbody>
