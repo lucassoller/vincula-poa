@@ -3,43 +3,40 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./demandaCadastro.css";
-
-const formInicial = {
-    motivoBuscaAtiva: "",
-    descricaoBusca: "",
-    prazoDemanda: "",
-    pacienteId: "",
-    unidadeResponsavelId: "",
-};
+import {useForm} from "react-hook-form";
 
 function DemandaCadastro() {
+    const {
+        reset,
+        register,
+        handleSubmit,
+        setValue,
+    } = useForm({
+        defaultValues: {
+            motivoBuscaAtiva: "",
+            descricaoBusca: "",
+            prazoDemanda: "",
+            pacienteId: "",
+            unidadeResponsavelId: "",
+        }
+    });
     const navigate = useNavigate();
     const { usuario } = useAuth();
-
-    const [form, setForm] = useState(formInicial);
     const [pacientes, setPacientes] = useState([]);
-    //const [unidades, setUnidades] = useState([]);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
 
     useEffect(() => {
         async function carregarDados() {
             try {
-                const [pacientesRes
-                    //, unidadesRes
-                ] = await Promise.all([
-                    api.get("/pacientes/all"),
-                    //api.get("/unidades-saude/all"),
-                ]);
-
-                setPacientes(pacientesRes.data);
-                //setUnidades(unidadesRes.data);
+                const response = await api.get("/pacientes/all");
+                setPacientes(response.data);
 
                 if (usuario?.perfil === "EXECUTOR_APS") {
-                    setForm((prev) => ({
-                        ...prev,
-                        unidadeResponsavelId: usuario.unidadeSaudeId || "",
-                    }));
+                    setValue(
+                        "unidadeResponsavelId",
+                        usuario.unidadeSaudeId || ""
+                    );
                 }
             } catch {
                 setMensagem("Erro ao carregar dados.");
@@ -47,63 +44,37 @@ function DemandaCadastro() {
         }
 
         void carregarDados();
-    }, [usuario]);
+    }, [usuario, setValue]);
 
-    function alterar(e) {
-        const { name, value } = e.target;
-
-        setForm({
-            ...form,
-            [name]: value,
-        });
-
-        setErros((prev) => {
-            const novos = { ...prev };
-            delete novos[name];
-            return novos;
-        });
-    }
-
-    async function salvar(e) {
-        e.preventDefault();
+    async function salvar(dados) {
         setMensagem("");
         setErros({});
 
         try {
             const payload = {
-                ...form,
-                motivoBuscaAtiva: form.motivoBuscaAtiva || null,
-                prazoDemanda: form.prazoDemanda || null,
-                pacienteId: form.pacienteId ? Number(form.pacienteId) : null,
-                unidadeResponsavelId: form.unidadeResponsavelId
-                    ? Number(form.unidadeResponsavelId)
+                ...dados,
+                motivoBuscaAtiva: dados.motivoBuscaAtiva || null,
+                prazoDemanda: dados.prazoDemanda || null,
+                pacienteId: dados.pacienteId ? Number(dados.pacienteId) : null,
+                unidadeResponsavelId: dados.unidadeResponsavelId
+                    ? Number(dados.unidadeResponsavelId)
                     : null,
             };
 
             await api.post("/demandas", payload);
 
             setMensagem("Demanda cadastrada com sucesso!");
-            limparFormDemanda();
+            reset();
+            setErros({});
         } catch (error) {
             if (error.response?.data?.errors) {
-                setErros(error.response.data.errors);
+                const errors = error.response.data.errors;
+                setErros(errors);
                 setMensagem(error.response.data.message || "Dados inválidos");
             } else {
-                setMensagem(error.response?.data?.message || "Erro ao cadastrar demanda.");
+                setMensagem(error.response.data.message);
             }
         }
-    }
-
-    function limparFormDemanda() {
-        setForm({
-            ...formInicial,
-            unidadeResponsavelId:
-                usuario?.perfil === "EXECUTOR_APS"
-                    ? usuario.unidadeSaudeId
-                    : "",
-        });
-
-        setErros({});
     }
 
     return (
@@ -124,16 +95,14 @@ function DemandaCadastro() {
                     </div>
                 )}
 
-                <form className="cadastro-card" onSubmit={salvar}>
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
 
                     <div className="form-grid two">
                         <div className="form-group">
                             <label>Paciente <span>*</span></label>
                             <select
                                 className="input-field"
-                                name="pacienteId"
-                                value={form.pacienteId}
-                                onChange={alterar}
+                                {...register("pacienteId")}
                             >
                                 <option value="">Selecione</option>
                                 {pacientes.map((p) => (
@@ -151,9 +120,7 @@ function DemandaCadastro() {
                             <label>Motivo da busca <span>*</span></label>
                             <select
                                 className="input-field"
-                                name="motivoBuscaAtiva"
-                                value={form.motivoBuscaAtiva}
-                                onChange={alterar}
+                                {...register("motivoBuscaAtiva")}
                             >
                                 <option value="">Selecione</option>
                                 <option value="CONDICAO_SAUDE">Condição de saúde</option>
@@ -168,9 +135,7 @@ function DemandaCadastro() {
                             <label>Prazo <span>*</span></label>
                             <select
                                 className="input-field"
-                                name="prazoDemanda"
-                                value={form.prazoDemanda}
-                                onChange={alterar}
+                                {...register("prazoDemanda")}
                             >
                                 <option value="">Selecione</option>
                                 <option value="D1">1 dia</option>
@@ -190,9 +155,7 @@ function DemandaCadastro() {
                             <label>Descrição da busca</label>
                             <textarea
                                 className="input-field textarea-field"
-                                name="descricaoBusca"
-                                value={form.descricaoBusca}
-                                onChange={alterar}
+                                {...register("descricaoBusca")}
                                 placeholder="Descreva informações importantes para a busca ativa"
                                 maxLength={500}
                             />

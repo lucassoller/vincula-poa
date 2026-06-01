@@ -4,6 +4,7 @@ import api from "../api/api";
 import "./indicador.css";
 import { useAuth } from "../context/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
+import {formatarValorIndicador} from "../utils/utils.js";
 const COLORS = ["#2563eb", "#06b6d4", "#22c55e","#f59e0b", "#ef4444", "#8b5cf6", "#ec4899",];
 
 function Indicador() {
@@ -22,36 +23,21 @@ function Indicador() {
             : unidadeSelecionada;
 
     useEffect(() => {
-
         if(usuario?.perfil === "SOLICITANTE"){
             navigate("/demandas");
             return;
         }
-
-        let ativo = true;
-
+        
         async function carregarUnidades() {
-
             try {
                 const response = await api.get("/unidades-saude/all");
-                if (!ativo) {
-                    return;
-                }
                 setUnidades(response.data);
             } catch {
-                if (ativo) {
-                    setErro("Erro ao carregar unidades.");
-                }
+                setErro("Erro ao carregar unidades.");
             }
         }
-
-        if (usuario) {
-            void carregarUnidades();
-        }
-
-        return () => {
-            ativo = false;
-        };
+        
+        void carregarUnidades();
 
     }, [navigate, usuario]);
 
@@ -64,7 +50,6 @@ function Indicador() {
         try {
             const temInicio = dataInicio !== "";
             const temFim = dataFim !== "";
-
             if ((temInicio && !temFim) || (!temInicio && temFim)) {
                 setErro("Informe início e fim do período.");
                 return;
@@ -87,7 +72,6 @@ function Indicador() {
             const response = await api.get(
                 `/indicadores/geral?${params.toString()}`
             );
-
             setIndicador(response.data);
 
         } catch {
@@ -98,15 +82,10 @@ function Indicador() {
     }, [unidadeSaudeId, inicio, fim]);
 
     useEffect(() => {
-
-        if (!usuario) {
-            return;
-        }
-
         // eslint-disable-next-line react-hooks/set-state-in-effect
         void carregarIndicador();
 
-    }, [usuario]);
+    }, []);
 
 
     async function exportarCsv() {
@@ -190,7 +169,6 @@ function Indicador() {
     }
 
     if (carregando) {
-
         return (
             <div className="loading-container">
                 <div className="loading-card">
@@ -198,7 +176,6 @@ function Indicador() {
                 </div>
             </div>
         );
-
     }
 
     if (erro) {
@@ -473,7 +450,6 @@ function BarChartSimples({ dados, nomeKey, valorKey }) {
 }
 
 function Ranking({ titulo, dados }) {
-
     const [expandido, setExpandido] = useState(false);
 
     if (!dados || dados.length === 0) {
@@ -488,11 +464,8 @@ function Ranking({ titulo, dados }) {
 
     return (
         <div className="ranking-card">
-
             <h2>{titulo}</h2>
-
             <div className="ranking-list">
-
                 {dadosExibidos.map((item, index) => (
 
                     <div
@@ -503,15 +476,11 @@ function Ranking({ titulo, dados }) {
                         <span className="ranking-position">
                             {index + 1}
                         </span>
-
                         <div>
                             <strong>
                                 {item.unidadeSaudeNome}
                             </strong>
-
-                            <p>
-                                {item.valor}
-                            </p>
+                            <p>{item.valor}</p>
                         </div>
 
                     </div>
@@ -533,23 +502,6 @@ function Ranking({ titulo, dados }) {
 
         </div>
     );
-}
-
-function formatarValorIndicador(item) {
-    const nome = item.indicador.toLowerCase();
-
-    const ehPercentual =
-        nome.includes("percentual") ||
-        nome.includes("(%)") ||
-        nome.includes("dentro do prazo") ||
-        nome.includes("atrasadas") ||
-        nome.includes("finalizadas com atraso");
-
-    if (ehPercentual && typeof item.valor === "number") {
-        return `${item.valor} %`;
-    }
-
-    return item.valor;
 }
 
 export default Indicador;

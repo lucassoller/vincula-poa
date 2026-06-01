@@ -1,31 +1,30 @@
 import {useEffect, useState} from "react";
 import api from "../api/api";
 import {useNavigate} from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 function UsuarioCadastro() {
-    const formInicial = {
-        nome: "",
-        email: "",
-        login: "",
-        senha: "",
-        confirmarSenha: "",
-        perfil: undefined,
-        unidadeSaudeId: ""
-    };
-    
+    const {
+        reset,
+        register,
+        handleSubmit,
+        watch,
+    } = useForm({
+        defaultValues: {
+            nome: "",
+            email: "",
+            login: "",
+            senha: "",
+            confirmarSenha: "",
+            perfil: "",
+            unidadeSaudeId: ""
+        }
+    });
+    const perfil = watch("perfil");
     const [erros, setErros] = useState({});
-
     const [unidades, setUnidades] = useState([]);
-
-    const [form, setForm] = useState(formInicial);
-
     const navigate = useNavigate();
-
     const [mensagem, setMensagem] = useState("");
-
-    function alterar(e) {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    }
 
     useEffect(() => {
         async function carregarUnidades() {
@@ -40,23 +39,22 @@ function UsuarioCadastro() {
         void carregarUnidades();
     }, []);
 
-    async function salvar(e) {
-        e.preventDefault();
+    async function salvar(dados) {
         setMensagem("");
 
         try {
             const payload = {
-                ...form,
+                ...dados,
 
-                perfil: form.perfil || null,
+                perfil: dados.perfil || null,
 
-                unidadeSaudeId: form.unidadeSaudeId
-                    ? Number(form.unidadeSaudeId)
+                unidadeSaudeId: dados.unidadeSaudeId
+                    ? Number(dados.unidadeSaudeId)
                     : null
             };
             await api.post("/usuarios", payload);
             setMensagem("Usuário cadastrado com sucesso!");
-            setForm(formInicial);
+            reset();
             setErros({});
         }catch (error) {
             if (error.response?.data?.errors) {
@@ -91,7 +89,7 @@ function UsuarioCadastro() {
                         </button>
                     </div>
                 )}
-                <form className="cadastro-card" onSubmit={salvar}>
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
                     <div className="form-grid full">
                         <div className="form-group">
                             <label>
@@ -99,9 +97,7 @@ function UsuarioCadastro() {
                             </label>
                             <input
                                 className="input-field"
-                                name="nome"
-                                value={form.nome}
-                                onChange={alterar}
+                                {...register("nome")}
                             />
                             {erros.nome && (
                                 <small>{erros.nome}</small>
@@ -115,9 +111,7 @@ function UsuarioCadastro() {
                             </label>
                             <input
                                 className="input-field"
-                                name="email"
-                                value={form.email}
-                                onChange={alterar}
+                                {...register("email")}
                                 placeholder="name@example.com"
                             />
                             {erros.email && (
@@ -130,9 +124,7 @@ function UsuarioCadastro() {
                             </label>
                             <input
                                 className="input-field"
-                                name="login"
-                                value={form.login}
-                                onChange={alterar}
+                                {...register("login")}
                             />
                             {erros.login && (
                                 <small>{erros.login}</small>
@@ -147,9 +139,7 @@ function UsuarioCadastro() {
                             <input
                                 type="password"
                                 className="input-field"
-                                name="senha"
-                                value={form.senha}
-                                onChange={alterar}
+                                {...register("senha")}
                             />
                             {erros.senha && (
                                 <small>{erros.senha}</small>
@@ -162,9 +152,7 @@ function UsuarioCadastro() {
                             <input
                                 type="password"
                                 className="input-field"
-                                name="confirmarSenha"
-                                value={form.confirmarSenha}
-                                onChange={alterar}
+                                {...register("confirmarSenha")}
                             />
                             {erros.confirmarSenha && (
                                 <small>{erros.confirmarSenha}</small>
@@ -178,9 +166,7 @@ function UsuarioCadastro() {
                             </label>
                             <select
                                 className="input-field"
-                                name="perfil"
-                                value={form.perfil}
-                                onChange={alterar}
+                                {...register("perfil")}
                             >
                                 <option value="">
                                     Selecionar
@@ -199,16 +185,14 @@ function UsuarioCadastro() {
                                 <small>{erros.perfil}</small>
                             )}
                         </div>
-                        {form.perfil === "EXECUTOR_APS" && (
+                        {perfil === "EXECUTOR_APS" && (
                             <div className="form-group">
                                 <label>
                                     Unidade Básica de Saúde <span>*</span>
                                 </label>
                                 <select
                                     className="input-field"
-                                    name="unidadeSaudeId"
-                                    value={form.unidadeSaudeId}
-                                    onChange={alterar}
+                                    {...register("unidadeSaudeId")}
                                 >
                                     <option value="">
                                         Selecione

@@ -3,7 +3,6 @@ import { useState } from "react";
 import api from "../api/api";
 
 function RedefinirSenha() {
-
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");

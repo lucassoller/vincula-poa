@@ -20,16 +20,13 @@ function ImportarMapa() {
         }
 
         try {
-
             setLoading(true);
             const geojson = await converterGoogleMaps(url);
             await api.post("/territorios/importar", geojson);
 
             setMensagem("Mapa importado com sucesso!");
             setUrl("");
-
         } catch (error) {
-
             setMensagem(
                 error.response?.data?.message ||
                 "Erro ao importar mapa."
@@ -46,43 +43,33 @@ function ImportarMapa() {
                 <div className="cadastro-header">
                     <div>
                         <h1>Importar mapa</h1>
-
                         <p>
                             Importe territórios e unidades de saúde
                             diretamente do Google My Maps
                         </p>
                     </div>
-
                 </div>
 
                 {mensagem && (
                     <div className="alert-card">
-
                         <span>{mensagem}</span>
-
                         <button
                             type="button"
                             onClick={() => setMensagem("")}
                         >
                             ✕
                         </button>
-
                     </div>
                 )}
-
                 <form
                     className="cadastro-card"
                     onSubmit={importar}
                 >
-
                     <div className="form-grid full">
-
                         <div className="form-group">
-
                             <label>
                                 Link do Google Maps <span>*</span>
                             </label>
-
                             <input
                                 className="input-field"
                                 type="text"
@@ -92,13 +79,9 @@ function ImportarMapa() {
                                 }
                                 placeholder="Cole o link do Google My Maps"
                             />
-
                         </div>
-
                     </div>
-
                     <div className="form-actions">
-
                         <button
                             type="submit"
                             className="buscar-btn"
@@ -108,13 +91,9 @@ function ImportarMapa() {
                                 ? "Importando..."
                                 : "Importar mapa"}
                         </button>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
     );
 }

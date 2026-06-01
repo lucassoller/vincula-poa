@@ -7,33 +7,26 @@ import Pagination from "../components/Paginations.jsx";
 function GestaoListagem() {
 
     const [tipo, setTipo] = useState("");
-
+    const [mensagem, setMensagem] = useState("");
     const [filtroUsuario, setFiltroUsuario] = useState("");
     const [filtroUbs, setFiltroUbs] = useState("");
     const [filtroPaciente, setFiltroPaciente] = useState("");
     const [filtroPerfil, setFiltroPerfil] = useState("");
     const [filtroUbsPaciente, setFiltroUbsPaciente] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("");
-
     const [usuariosSelect, setUsuariosSelect] = useState([]);
     const [unidadesSelect, setUnidadesSelect] = useState([]);
     const [pacientesSelect, setPacientesSelect] = useState([]);
-
     const [resultado, setResultado] = useState([]);
-
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
-
     const [carregando, setCarregando] = useState(false);
 
     const tamanhoPagina = 10;
 
     useEffect(() => {
-
         async function carregarDados() {
-
             try {
-
                 const [
                     usuariosSelectRes,
                     unidadesSelectRes,
@@ -43,14 +36,11 @@ function GestaoListagem() {
                     api.get("/unidades-saude/all"),
                     api.get("/pacientes/all")
                 ]);
-
                 setUsuariosSelect(usuariosSelectRes.data);
                 setUnidadesSelect(unidadesSelectRes.data);
                 setPacientesSelect(pacientesSelectRes.data);
-
             } catch {
-
-                console.error("Erro ao carregar dados");
+                setMensagem("Erro ao carregar dados");
             }
         }
 
@@ -59,218 +49,174 @@ function GestaoListagem() {
     }, []);
 
     useEffect(() => {
-
         if (tipo) {
             void listar(pagina);
         }
-
     }, [pagina]);
 
     async function listar(paginaAtual = 0) {
-
         try {
-
             setCarregando(true);
-
             let response;
 
-
             if (tipo === "PACIENTES") {
-
                 if (filtroPaciente) {
-
                     response = await api.get(
                         `/pacientes/${filtroPaciente}`
                     );
-
                     setResultado([response.data]);
                     setPagina(0);
                     setTotalPaginas(1);
-
                     return;
                 }
 
                 if (filtroUbsPaciente) {
-
                     response = await api.get(
                         `/pacientes/unidadeSaude/${filtroUbsPaciente}?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
-
                 } else {
-
                     response = await api.get(
                         `/pacientes?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
                 }
-
                 setResultado(response.data.content);
                 setTotalPaginas(response.data.page.totalPages);
                 setPagina(paginaAtual);
             }
 
             if (tipo === "USUARIOS") {
-
                 if (filtroUsuario) {
-
                     response = await api.get(
                         `/usuarios/${filtroUsuario}`
                     );
-
                     setResultado([response.data]);
                     setPagina(0);
                     setTotalPaginas(1);
-
                     return;
                 }
 
                 if (filtroPerfil) {
-
                     response = await api.get(
                         `/usuarios/perfil/${filtroPerfil}?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
-
                 } else {
-
                     response = await api.get(
                         `/usuarios?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
                 }
-
                 setResultado(response.data.content);
                 setTotalPaginas(response.data.page.totalPages);
                 setPagina(paginaAtual);
             }
 
             if (tipo === "UBS") {
-
                 if (filtroUbs) {
-
                     response = await api.get(
                         `/unidades-saude/${filtroUbs}`
                     );
-
                     setResultado([response.data]);
                     setPagina(0);
                     setTotalPaginas(1);
-
                     return;
                 }
-
                 response = await api.get(
                     `/unidades-saude?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
-
                 setResultado(response.data.content);
                 setTotalPaginas(response.data.page.totalPages);
                 setPagina(paginaAtual);
             }
 
             if (tipo === "DEMANDAS") {
-
                 if (filtroPaciente) {
-
                     response = await api.get(
                         `/demandas/paciente/${filtroPaciente}?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
-
                 } else if (filtroUbsPaciente) {
-
                     response = await api.get(
                         `/demandas/unidade/${filtroUbsPaciente}?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
-
                 } else if (filtroUsuario) {
-
                     response = await api.get(
                         `/demandas/usuario/${filtroUsuario}?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
-
                 } else if (filtroStatus) {
-
                     response = await api.get(
                         `/demandas/status/${filtroStatus}?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
-
                 } else {
-
                     response = await api.get(
                         `/demandas?page=${paginaAtual}&size=${tamanhoPagina}`
                     );
                 }
-
                 setResultado(response.data.content);
                 setTotalPaginas(response.data.page.totalPages);
                 setPagina(paginaAtual);
             }
 
-        } catch (error) {
-
-            console.error("Erro ao listar:", error);
+        } catch {
+            setMensagem("Erro ao carregar dados.");
 
         } finally {
-
             setCarregando(false);
         }
     }
 
     function limparFiltros() {
-
         setTipo("");
-
         setFiltroUsuario("");
         setFiltroUbs("");
         setFiltroPaciente("");
         setFiltroPerfil("");
         setFiltroUbsPaciente("");
         setFiltroStatus("");
-
         setResultado([]);
-
         setPagina(0);
         setTotalPaginas(0);
     }
 
     return (
         <div className="gestao-container">
-
             <div className="gestao-page">
-
                 <div className="gestao-header">
                     <div>
                         <h1>Central de Gestão</h1>
-
-                        <p>
-                            Consulte demandas, pacientes, unidades de saúde e usuários
-                        </p>
+                        <p>Consulte demandas, pacientes, unidades de saúde e usuários</p>
                     </div>
                 </div>
+
+                {mensagem && (
+                    <div className="alert-card">
+                        <span>{mensagem}</span>
+                        <button
+                            type="button"
+                            onClick={() => setMensagem("")}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
 
                 <div className="gestao-card">
                     <div className="form-grid two">
                         <div className="form-group">
                             <label>Tipo de listagem</label>
-
                             <select
                                 className="input-field"
                                 value={tipo}
                                 onChange={(e) => {
-
                                     setTipo(e.target.value);
-
                                     setFiltroUsuario("");
                                     setFiltroUbs("");
                                     setFiltroPaciente("");
                                     setFiltroPerfil("");
                                     setFiltroUbsPaciente("");
                                     setFiltroStatus("");
-
                                     setResultado([]);
-
                                     setPagina(0);
                                     setTotalPaginas(0);
                                 }}
                             >
-
                                 <option value="">
                                     Selecione
                                 </option>
@@ -286,20 +232,16 @@ function GestaoListagem() {
                                 <option value="USUARIOS">
                                     Usuários
                                 </option>
-
                             </select>
                         </div>
                     </div>
 
                     {tipo === "USUARIOS" && (
                         <div className="gestao-filter-box">
-
                             <h2>Filtros de usuários</h2>
-
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>Usuário</label>
-
                                     <select
                                         className="input-field"
                                         value={filtroUsuario}
@@ -308,7 +250,6 @@ function GestaoListagem() {
                                             setFiltroUsuario(e.target.value)
                                         }
                                     >
-
                                         <option value="">
                                             Todos os usuários
                                         </option>
@@ -324,9 +265,7 @@ function GestaoListagem() {
                                     </select>
                                 </div>
                                 <div className="form-group">
-
                                     <label>Perfil</label>
-
                                     <select
                                         className="input-field"
                                         value={filtroPerfil}
@@ -358,13 +297,10 @@ function GestaoListagem() {
 
                     {tipo === "UBS" && (
                         <div className="gestao-filter-box">
-
                             <h2>Filtros de UBS</h2>
                             <div className="form-grid two">
                                 <div className="form-group">
-
                                     <label>Unidade Básica de Saúde</label>
-
                                     <select
                                         className="input-field"
                                         value={filtroUbs}
@@ -372,11 +308,9 @@ function GestaoListagem() {
                                             setFiltroUbs(e.target.value)
                                         }
                                     >
-
                                         <option value="">
                                             Todas as UBS
                                         </option>
-
                                         {unidadesSelect.map((ubs) => (
                                             <option
                                                 key={ubs.id}
@@ -393,13 +327,10 @@ function GestaoListagem() {
 
                     {tipo === "PACIENTES" && (
                         <div className="gestao-filter-box">
-
                             <h2>Filtros de pacientes</h2>
-
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>Paciente</label>
-
                                     <select
                                         className="input-field"
                                         value={filtroPaciente}
@@ -412,7 +343,6 @@ function GestaoListagem() {
                                         <option value="">
                                             Todos os pacientes
                                         </option>
-
                                         {pacientesSelect.map((paciente) => (
                                             <option
                                                 key={paciente.id}
@@ -424,9 +354,7 @@ function GestaoListagem() {
                                     </select>
                                 </div>
                                 <div className="form-group">
-
                                     <label>UBS vinculada</label>
-
                                     <select
                                         className="input-field"
                                         value={filtroUbsPaciente}
@@ -438,7 +366,6 @@ function GestaoListagem() {
                                         <option value="">
                                             Todas as UBS
                                         </option>
-
                                         {unidadesSelect.map((ubs) => (
                                             <option
                                                 key={ubs.id}
@@ -447,7 +374,6 @@ function GestaoListagem() {
                                                 {ubs.nome}
                                             </option>
                                         ))}
-
                                     </select>
                                 </div>
                             </div>
@@ -456,13 +382,10 @@ function GestaoListagem() {
 
                     {tipo === "DEMANDAS" && (
                         <div className="gestao-filter-box">
-
                             <h2>Filtros de demandas</h2>
-
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>Paciente</label>
-
                                     <select
                                         className="input-field"
                                         value={filtroPaciente}
@@ -471,11 +394,9 @@ function GestaoListagem() {
                                             setFiltroPaciente(e.target.value)
                                         }
                                     >
-
                                         <option value="">
                                             Todos os pacientes
                                         </option>
-
                                         {pacientesSelect.map((paciente) => (
                                             <option
                                                 key={paciente.id}
@@ -490,7 +411,6 @@ function GestaoListagem() {
                                     <label>
                                         Unidade de Saúde
                                     </label>
-
                                     <select
                                         className="input-field"
                                         value={filtroUbsPaciente}
@@ -503,7 +423,6 @@ function GestaoListagem() {
                                         <option value="">
                                             Todas as UBS
                                         </option>
-
                                         {unidadesSelect.map((ubs) => (
                                             <option
                                                 key={ubs.id}
@@ -520,7 +439,6 @@ function GestaoListagem() {
                                     <label>
                                         Usuário responsável
                                     </label>
-
                                     <select
                                         className="input-field"
                                         value={filtroUsuario}
@@ -532,7 +450,6 @@ function GestaoListagem() {
                                         <option value="">
                                             Todos os usuários
                                         </option>
-
                                         {usuariosSelect.map((usuario) => (
                                             <option
                                                 key={usuario.id}
@@ -545,7 +462,6 @@ function GestaoListagem() {
 
                                 </div>
                                 <div className="form-group">
-
                                     <label>Status</label>
                                     <select
                                         className="input-field"
@@ -555,18 +471,15 @@ function GestaoListagem() {
                                             setFiltroStatus(e.target.value)
                                         }
                                     >
-
                                         <option value="">
                                             Todos os status
                                         </option>
                                         <option value="ABERTA">
                                             Aberta
                                         </option>
-
                                         <option value="EM_ANDAMENTO">
                                             Em andamento
                                         </option>
-
                                         <option value="FINALIZADA">
                                             Finalizada
                                         </option>
@@ -577,7 +490,6 @@ function GestaoListagem() {
                     )}
 
                     <div className="gestao-actions">
-
                         <button
                             type="button"
                             className="buscar-btn"
@@ -597,7 +509,6 @@ function GestaoListagem() {
                     </div>
 
                     <div className="gestao-placeholder">
-
                         {carregando && (
                             <p>Carregando...</p>
                         )}
@@ -607,7 +518,6 @@ function GestaoListagem() {
                         )}
 
                         {!carregando && resultado.length > 0 && (
-
                             <div className="table-card gestao-table-card">
                                 {tipo === "PACIENTES" && (
                                     <table className="pacientes-table">
@@ -670,9 +580,7 @@ function GestaoListagem() {
                                             <th>Bairro</th>
                                         </tr>
                                         </thead>
-
                                         <tbody>
-
                                         {resultado.map((u) => (
                                             <tr key={u.id}>
                                                 <td>{u.nome}</td>
@@ -687,24 +595,22 @@ function GestaoListagem() {
                                 )}
 
                                 {tipo === "DEMANDAS" && (
-
                                     <table className="pacientes-table">
-
                                         <thead>
                                         <tr>
                                             <th>Paciente</th>
+                                            <th>ID</th>
                                             <th>Criador</th>
                                             <th>UBS</th>
                                             <th>Status</th>
                                             <th>Data abertura</th>
                                         </tr>
                                         </thead>
-
                                         <tbody>
-
                                         {resultado.map((d) => (
                                             <tr key={d.id}>
                                                 <td>{d.pacienteNome || "-"}</td>
+                                                <td>{d.id}</td>
                                                 <td>{d.usuarioCriadorNome || "-"}</td>
                                                 <td>{d.unidadeResponsavelNome || "-"}</td>
                                                 <td>{d.status || "-"}</td>

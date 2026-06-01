@@ -2,35 +2,30 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import api from "../api/api.js";
+import {useForm} from "react-hook-form";
 
 function MeuPerfil() {
-    const navigate = useNavigate();
     const {usuario, setUsuario} = useAuth();
+    const {
+        register,
+        handleSubmit,
+    } = useForm({
+        defaultValues: {
+            nome: usuario?.nome,
+            email: usuario?.email,
+            login: usuario?.login,
+        }
+    });
+    const navigate = useNavigate();
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
 
-    const [form, setForm] = useState({
-        nome: usuario?.nome,
-        email: usuario?.email,
-        login: usuario?.login,
-    });
 
-    function alterar(e) {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
-    }
-
-    async function salvar(e) {
-        e.preventDefault();
-
+    async function salvar(dados) {
         try {
-            const response = await api.put("/usuarios/me", form);
-
+            const response = await api.put("/usuarios/me", dados);
             setUsuario(response.data);
             localStorage.setItem("usuario", JSON.stringify(response.data));
-
             setMensagem("Perfil atualizado com sucesso!");
         } catch (error) {
             const errors = error.response.data.errors;
@@ -62,15 +57,13 @@ function MeuPerfil() {
                     </div>
                 )}
 
-                <form className="cadastro-card" onSubmit={salvar}>
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
                     <div className="form-grid full">
                         <div className="form-group">
                             <label>Nome</label>
                             <input
                                 className="input-field"
-                                name="nome"
-                                value={form.nome}
-                                onChange={alterar}
+                                {...register("nome")}
                             />
                             {erros.nome && (
                                 <small>{erros.nome}</small>
@@ -83,10 +76,8 @@ function MeuPerfil() {
                             <label>Email</label>
                             <input
                                 className="input-field"
-                                name="email"
                                 type="email"
-                                value={form.email}
-                                onChange={alterar}
+                                {...register("email")}
                             />
                             {erros.email && (
                                 <small>{erros.email}</small>
@@ -97,9 +88,7 @@ function MeuPerfil() {
                             <label>Login</label>
                             <input
                                 className="input-field"
-                                name="login"
-                                value={form.login}
-                                onChange={alterar}
+                                {...register("login")}
                             />
                             {erros.login && (
                                 <small>{erros.login}</small>

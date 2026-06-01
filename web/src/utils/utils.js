@@ -59,3 +59,28 @@ export function formatarDataHora(data) {
 
     return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
 }
+
+export function formatarEnum(valor) {
+
+    if (!valor) return "-";
+
+    return valor
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(/\b\w/g, (letra) => letra.toUpperCase());
+}
+
+export function formatarValorIndicador(item) {
+    const nome = item.indicador.toLowerCase();
+    const ehPercentual =
+        nome.includes("percentual") ||
+        nome.includes("(%)") ||
+        nome.includes("dentro do prazo") ||
+        nome.includes("atrasadas") ||
+        nome.includes("finalizadas com atraso");
+
+    if (ehPercentual && typeof item.valor === "number") {
+        return `${item.valor} %`;
+    }
+    return item.valor;
+}

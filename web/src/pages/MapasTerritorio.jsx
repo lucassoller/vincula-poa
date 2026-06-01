@@ -4,7 +4,6 @@ import api from "../api/api";
 import "./mapasTerritorio.css";
 
 function MapaTerritorios() {
-
     const [territorios, setTerritorios] = useState([]);
     const [geoJson, setGeoJson] = useState(null);
 

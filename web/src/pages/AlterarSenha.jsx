@@ -1,109 +1,75 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api.js";
+import { useForm } from "react-hook-form";
 
 function AlterarSenha() {
-
+    const {
+        reset,
+        register,
+        handleSubmit,
+    } = useForm({
+        defaultValues: {
+            senhaAtual: "",
+            novaSenha: "",
+            confirmarSenha: "",
+        }
+    });
     const navigate = useNavigate();
-
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
-
     const [mostrarSenhaAtual, setMostrarSenhaAtual] = useState(false);
     const [mostrarNovaSenha, setMostrarNovaSenha] = useState(false);
     const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
-    const [form, setForm] = useState({
-        senhaAtual: "",
-        novaSenha: "",
-        confirmarSenha: "",
-    });
-
-    function alterar(e) {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
-    }
-
-    async function salvar(e) {
-
-        e.preventDefault();
-
+    async function salvar(dados) {
         try {
-
-            await api.put("/usuarios/me/senha", form);
-
+            await api.put("/usuarios/me/senha", dados);
             setMensagem("Senha alterada com sucesso!");
-
-            setForm({
-                senhaAtual: "",
-                novaSenha: "",
-                confirmarSenha: "",
-            });
+            reset();
 
         } catch (error) {
-
-            const data = error.response?.data;
-
-            setErros(data?.errors || {});
-
-            setMensagem(
-                typeof data === "string"
-                    ? data
-                    : data?.message || "Erro ao alterar senha"
-            );
+            if (error.response?.data?.errors) {
+                const errors = error.response.data.errors;
+                setErros(errors);
+                setMensagem(error.response.data.message || "Dados inválidos");
+            } else {
+                setMensagem(error.response.data.message);
+            }
         }
     }
 
     return (
-
         <div className="cadastro-container">
-
             <div className="cadastro-page">
-
                 <div className="cadastro-header">
-
                     <div>
                         <h1>Alterar senha</h1>
                         <p>Atualize sua senha de acesso ao sistema</p>
                     </div>
-
                 </div>
 
                 {mensagem && (
-
                     <div className="alert-card">
-
                         <span>{mensagem}</span>
-
                         <button
                             type="button"
                             onClick={() => setMensagem("")}
                         >
                             ✕
                         </button>
-
                     </div>
-
                 )}
 
-                <form className="cadastro-card" onSubmit={salvar}>
-
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
                     <div className="form-grid full">
-
                         <div className="form-group">
-
                             <label>Senha atual</label>
-
                             <div className="input-wrapper">
-
                                 <input
                                     className="input-field senha-input"
-                                    name="senhaAtual"
                                     type={mostrarSenhaAtual ? "text" : "password"}
-                                    value={form.senhaAtual}
-                                    onChange={alterar}
+                                    {...register("senhaAtual")}
                                 />
 
                                 <span
@@ -122,7 +88,6 @@ function AlterarSenha() {
                                         width={20}
                                     />
                                 </span>
-
                             </div>
 
                             {erros.senhaAtual && (
@@ -134,19 +99,13 @@ function AlterarSenha() {
                     </div>
 
                     <div className="form-grid two">
-
                         <div className="form-group">
-
                             <label>Nova senha</label>
-
                             <div className="input-wrapper">
-
                                 <input
                                     className="input-field senha-input"
-                                    name="novaSenha"
                                     type={mostrarNovaSenha ? "text" : "password"}
-                                    value={form.novaSenha}
-                                    onChange={alterar}
+                                    {...register("novaSenha")}
                                 />
 
                                 <span
@@ -175,17 +134,12 @@ function AlterarSenha() {
                         </div>
 
                         <div className="form-group">
-
                             <label>Confirmar nova senha</label>
-
                             <div className="input-wrapper">
-
                                 <input
                                     className="input-field senha-input"
-                                    name="confirmarSenha"
                                     type={mostrarConfirmarSenha ? "text" : "password"}
-                                    value={form.confirmarSenha}
-                                    onChange={alterar}
+                                    {...register("confirmarSenha")}
                                 />
 
                                 <span
@@ -204,7 +158,6 @@ function AlterarSenha() {
                                         width={20}
                                     />
                                 </span>
-
                             </div>
 
                             {erros.confirmarSenha && (
@@ -212,11 +165,9 @@ function AlterarSenha() {
                             )}
 
                         </div>
-
                     </div>
 
                     <div className="form-actions">
-
                         <button
                             type="submit"
                             className="buscar-btn"
@@ -231,15 +182,10 @@ function AlterarSenha() {
                         >
                             Cancelar
                         </button>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
     );
 }
-
 export default AlterarSenha;
