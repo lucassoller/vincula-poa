@@ -238,7 +238,7 @@ public class UsuarioService {
 
         } else {
 
-            if (dto.getPerfil() == PerfilUsuario.EXECUTOR_APS) {
+            if (dto.getPerfil() == PerfilUsuario.USUARIO_APS) {
                 throw new BusinessException(dto.getPerfil() + " deve estar vinculado a uma unidade de saúde");
             }
 

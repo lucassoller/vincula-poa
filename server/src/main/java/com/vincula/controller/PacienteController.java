@@ -28,7 +28,7 @@ public class PacienteController {
         this.demandaService = demandaService;
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
     @PostMapping
     public ResponseEntity<PacienteResponseDTO> criar(@Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteCriado = pacienteService.criar(dto);
@@ -47,7 +47,7 @@ public class PacienteController {
         return ResponseEntity.ok(pacienteService.listarTodos());
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
     @GetMapping("/unidadeSaude/{unidadeSaudeId}")
     public ResponseEntity<Page<PacienteResponseDTO>> listarPorUnidade(
             @PathVariable Long unidadeSaudeId,
@@ -65,7 +65,7 @@ public class PacienteController {
     }
 
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
     @GetMapping("/filtrados/unidadeSaude/{unidadeSaudeId}/{filtro}")
     public ResponseEntity<Page<PacienteResponseDTO>> listarPorUnidade(
             @PathVariable Long unidadeSaudeId,
@@ -77,21 +77,21 @@ public class PacienteController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
     @GetMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> buscarPorId(@PathVariable Long id) {
         PacienteResponseDTO paciente = pacienteService.buscarPorId(id);
         return ResponseEntity.ok(paciente);
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteAtualizado = pacienteService.atualizar(id, dto);
         return ResponseEntity.ok(pacienteAtualizado);
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/redirecionar-abertas")
     public ResponseEntity<Void> redirecionarDemandasAbertas(
             @PathVariable Long id,

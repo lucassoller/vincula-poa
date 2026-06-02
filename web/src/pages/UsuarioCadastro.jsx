@@ -174,8 +174,8 @@ function UsuarioCadastro() {
                                 <option value="SOLICITANTE">
                                     Solicitante
                                 </option>
-                                <option value="EXECUTOR_APS">
-                                    Executor APS
+                                <option value="USUARIO_APS">
+                                    Usuário APS
                                 </option>
                                 <option value="GESTAO_MUNICIPAL">
                                     Gestão Municipal
@@ -185,7 +185,7 @@ function UsuarioCadastro() {
                                 <small>{erros.perfil}</small>
                             )}
                         </div>
-                        {perfil === "EXECUTOR_APS" && (
+                        {perfil === "USUARIO_APS" && (
                             <div className="form-group">
                                 <label>
                                     Unidade Básica de Saúde <span>*</span>

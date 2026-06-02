@@ -29,7 +29,7 @@ function Pacientes() {
                 pacientesResponse = await api.get(
                     `/pacientes?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
-            } else if (usuario?.perfil === "EXECUTOR_APS") {
+            } else if (usuario?.perfil === "USUARIO_APS") {
                 pacientesResponse = await api.get(
                     `/pacientes/unidadeSaude/${usuario.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
@@ -58,7 +58,7 @@ function Pacientes() {
                 pacientesResponse = await api.get(
                     `/pacientes/filtrados/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
-            } else if (usuario?.perfil === "EXECUTOR_APS") {
+            } else if (usuario?.perfil === "USUARIO_APS") {
                 pacientesResponse = await api.get(
                     `/pacientes/filtrados/unidadeSaude/${usuario.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );

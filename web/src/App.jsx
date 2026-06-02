@@ -51,7 +51,7 @@ function App() {
             <Route
               path="/indicadores"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
                     <Layout>
                         <Indicador />
                     </Layout>
@@ -61,7 +61,7 @@ function App() {
             <Route
               path="/pacientes"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
                     <Layout>
                         <Pacientes />
                     </Layout>
@@ -82,7 +82,7 @@ function App() {
             <Route
                 path="/pacientes/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
                         <Layout>
                             <PacienteCadastro />
                         </Layout>
@@ -92,7 +92,7 @@ function App() {
             <Route
                 path="/pacientes/:id"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
                         <Layout>
                             <PacienteDetalhe />
                         </Layout>
@@ -102,7 +102,7 @@ function App() {
             <Route
                 path="/pacientes/:id/editar"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
                         <Layout>
                             <PacienteEditar />
                         </Layout>
@@ -113,7 +113,7 @@ function App() {
             <Route
                 path="/demandas"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                         <Layout>
                             <Demandas />
                         </Layout>
@@ -124,7 +124,7 @@ function App() {
             <Route
                 path="/demandas/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                         <Layout>
                             <DemandaCadastro />
                         </Layout>
@@ -168,7 +168,7 @@ function App() {
             <Route
                 path="/unidades-saude"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                         <Layout>
                             <UnidadesSaude />
                         </Layout>
@@ -199,7 +199,7 @@ function App() {
             <Route
                 path="/meu-perfil"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                         <Layout>
                             <MeuPerfil />
                         </Layout>
@@ -209,7 +209,7 @@ function App() {
             <Route
                 path="/alterar-senha"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "EXECUTOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                         <Layout>
                             <AlterarSenha />
                         </Layout>

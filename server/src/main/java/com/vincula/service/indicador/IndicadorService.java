@@ -182,7 +182,7 @@ public class IndicadorService {
             return;
         }
 
-        if (usuario.getPerfil() == PerfilUsuario.EXECUTOR_APS) {
+        if (usuario.getPerfil() == PerfilUsuario.USUARIO_APS) {
             if (usuario.getUnidadeSaude() == null || !usuario.getUnidadeSaude().getId().equals(unidadeSaudeId)) {
                 throw new BusinessException("Usuário não pode acessar indicadores de outra unidade");
             }

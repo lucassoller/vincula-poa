@@ -33,7 +33,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.criar(dto));
     }
 
-    @PreAuthorize("hasRole('EXECUTOR_APS')")
+    @PreAuthorize("hasRole('USUARIO_APS')")
     @PutMapping("/{id}")
     public ResponseEntity<DemandaResponseDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody DemandaDTO dto) {
@@ -52,7 +52,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.buscarPorId(id));
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
     @GetMapping("/paciente/{pacienteId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorPaciente(
             @PathVariable Long pacienteId,
@@ -61,7 +61,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorPaciente(pacienteId, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
     @GetMapping("/unidade/{unidadeSaudeId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaude(
             @PathVariable Long unidadeSaudeId,
@@ -94,7 +94,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));
     }
 
-    @PreAuthorize("hasRole('EXECUTOR_APS')")
+    @PreAuthorize("hasRole('USUARIO_APS')")
     @GetMapping("/filtradas/unidade/{unidadeSaudeId}/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaudeFiltradas(
             @PathVariable Long unidadeSaudeId,
@@ -114,14 +114,14 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUsuarioCriadorFiltradas(usuarioCriadorId, filtro, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/redirecionar")
     public ResponseEntity<DemandaResponseDTO> redirecionar(@PathVariable Long id,
                                                    @Valid @RequestBody RedirecionarDemandaDTO dto) {
         return ResponseEntity.ok(demandaService.redirecionar(id, dto));
     }
 
-    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/encerrar")
     public ResponseEntity<DemandaResponseDTO> encerrar(@PathVariable Long id,
                                                        @Valid @RequestBody EncerrarDemandaDTO dto) {
@@ -145,7 +145,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("hasRole('EXECUTOR_APS')")
+    @PreAuthorize("hasRole('USUARIO_APS')")
     @GetMapping(value = "/exportar/unidade/{unidadeId}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasPorUnidadeCsv(
             @PathVariable Long unidadeId
@@ -178,7 +178,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("hasRole('EXECUTOR_APS')")
+    @PreAuthorize("hasRole('USUARIO_APS')")
     @GetMapping(
             value = "/exportar/filtradas/unidade/{unidadeId}/{filtro}",
             produces = "text/csv"

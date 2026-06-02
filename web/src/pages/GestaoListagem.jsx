@@ -295,8 +295,8 @@ function GestaoListagem() {
                                             Solicitante
                                         </option>
 
-                                        <option value="EXECUTOR_APS">
-                                            Executor APS
+                                        <option value="USUARIO_APS">
+                                            Usuário APS
                                         </option>
 
                                         <option value="GESTAO_MUNICIPAL">

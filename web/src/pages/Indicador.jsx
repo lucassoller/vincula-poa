@@ -21,7 +21,7 @@ function Indicador() {
     const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
     const [unidades, setUnidades] = useState([]);
     const unidadeSaudeId =
-        usuario?.perfil === "EXECUTOR_APS"
+        usuario?.perfil === "USUARIO_APS"
             ? String(usuario.unidadeSaudeId)
             : unidadeSelecionada;
 
@@ -154,11 +154,11 @@ function Indicador() {
         setFim("");
 
         const unidade =
-            usuario?.perfil === "EXECUTOR_APS"
+            usuario?.perfil === "USUARIO_APS"
                 ? String(usuario.unidadeSaudeId)
                 : "";
 
-        if (usuario?.perfil !== "EXECUTOR_APS") {
+        if (usuario?.perfil !== "USUARIO_APS") {
             setUnidadeSelecionada("");
         }
 
@@ -236,7 +236,7 @@ function Indicador() {
                             onChange={(e) =>
                                 setUnidadeSelecionada(e.target.value)
                             }
-                            disabled={usuario?.perfil === "EXECUTOR_APS"}
+                            disabled={usuario?.perfil === "USUARIO_APS"}
                         >
 
                             <option value="">

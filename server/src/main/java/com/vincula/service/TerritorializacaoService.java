@@ -19,13 +19,9 @@ public class TerritorializacaoService {
     private final TerritorioUbsRepository repository;
 
     public UnidadeSaude buscarUbsPorCoordenada(Double latitude, Double longitude) {
-
         GeometryFactory geometryFactory = new GeometryFactory();
-
         Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-
         GeoJsonReader reader = new GeoJsonReader();
-
         List<TerritorioUbs> territorios = repository.findAll();
 
         for (TerritorioUbs territorio : territorios) {
@@ -35,11 +31,9 @@ public class TerritorializacaoService {
                 if (geometry.contains(point)) {
                     return territorio.getUnidadeSaude();
                 }
-
             } catch (Exception ignored) {
             }
         }
-
         return null;
     }
 }

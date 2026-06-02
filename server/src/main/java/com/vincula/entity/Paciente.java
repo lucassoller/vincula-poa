@@ -20,7 +20,7 @@ public class Paciente {
     @Column(length = 11)
     private String telefone;
 
-    @Column()
+    @Column
     private LocalDate dataNascimento;
 
     @Enumerated(EnumType.STRING)

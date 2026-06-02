@@ -14,13 +14,16 @@ public class RecuperacaoSenha {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String token;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
+    @Column
     private LocalDateTime expiracao;
 
+    @Column
     private Boolean usado = false;
 }

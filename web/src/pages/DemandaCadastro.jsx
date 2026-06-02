@@ -32,7 +32,7 @@ function DemandaCadastro() {
                 const response = await api.get("/pacientes/all");
                 setPacientes(response.data);
 
-                if (usuario?.perfil === "EXECUTOR_APS") {
+                if (usuario?.perfil === "USUARIO_APS") {
                     setValue(
                         "unidadeResponsavelId",
                         usuario.unidadeSaudeId || ""
