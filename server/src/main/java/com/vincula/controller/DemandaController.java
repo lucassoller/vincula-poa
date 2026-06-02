@@ -9,16 +9,13 @@ import com.vincula.service.DemandaService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @RestController
 @RequestMapping("/demandas")
@@ -43,7 +40,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.atualizar(id, dto));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodas(Pageable pageable) {
         return ResponseEntity.ok(demandaService.listarTodas(pageable));
@@ -55,7 +52,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.buscarPorId(id));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
     @GetMapping("/paciente/{pacienteId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorPaciente(
             @PathVariable Long pacienteId,
@@ -64,7 +61,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorPaciente(pacienteId, pageable));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
     @GetMapping("/unidade/{unidadeSaudeId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaude(
             @PathVariable Long unidadeSaudeId,
@@ -73,7 +70,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSaude(unidadeSaudeId, pageable));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('SOLICITANTE','GESTAO_MUNICIPAL')")
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUsuarioCriador(
             @PathVariable Long usuarioId,
@@ -82,7 +79,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUsuarioCriador(usuarioId, pageable));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping("/status/{status}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorStatus(
             @PathVariable StatusDemanda status,
@@ -91,13 +88,13 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorStatus(status, pageable));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping("/filtradas/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas(@PathVariable String filtro, Pageable pageable) {
         return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('EXECUTOR_APS')")
     @GetMapping("/filtradas/unidade/{unidadeSaudeId}/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaudeFiltradas(
             @PathVariable Long unidadeSaudeId,
@@ -107,7 +104,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSaudeFiltradas(unidadeSaudeId, filtro, pageable));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('SOLICITANTE')")
     @GetMapping("/filtradas/usuario/{usuarioCriadorId}/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUsuarioFiltradas(
             @PathVariable Long usuarioCriadorId,
@@ -124,7 +121,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.redirecionar(id, dto));
     }
 
-    @PreAuthorize("hasRole('EXECUTOR_APS')")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/encerrar")
     public ResponseEntity<DemandaResponseDTO> encerrar(@PathVariable Long id,
                                                        @Valid @RequestBody EncerrarDemandaDTO dto) {
@@ -139,7 +136,7 @@ public class DemandaController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping(value = "/exportar", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasCsv() {
 
@@ -148,7 +145,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('EXECUTOR_APS')")
     @GetMapping(value = "/exportar/unidade/{unidadeId}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasPorUnidadeCsv(
             @PathVariable Long unidadeId
@@ -159,7 +156,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('SOLICITANTE')")
     @GetMapping(value = "/exportar/usuario/{usuarioCriadorId}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasPorUsuarioCsv(
             @PathVariable Long usuarioCriadorId
@@ -170,7 +167,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping(value = "/exportar/filtradas/{filtro}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasFiltradasCsv(
             @PathVariable String filtro
@@ -181,7 +178,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('EXECUTOR_APS')")
     @GetMapping(
             value = "/exportar/filtradas/unidade/{unidadeId}/{filtro}",
             produces = "text/csv"
@@ -197,7 +194,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('SOLICITANTE')")
     @GetMapping(
             value = "/exportar/filtradas/usuario/{usuarioCriadorId}/{filtro}",
             produces = "text/csv"

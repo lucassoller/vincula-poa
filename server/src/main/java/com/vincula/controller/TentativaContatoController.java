@@ -22,32 +22,26 @@ public class TentativaContatoController {
         this.tentativaService = tentativaService;
     }
 
-    @PreAuthorize("hasRole('EXECUTOR_APS')")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
     @PostMapping
     public ResponseEntity<TentativaContatoResponseDTO> criar(@Valid @RequestBody TentativaContatoDTO dto) {
         return ResponseEntity.ok(tentativaService.criar(dto));
     }
 
-    @PreAuthorize("hasRole('EXECUTOR_APS')")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
     public ResponseEntity<TentativaContatoResponseDTO> atualizar(@PathVariable Long id,
                                                          @Valid @RequestBody TentativaContatoDTO dto) {
         return ResponseEntity.ok(tentativaService.atualizar(id, dto));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS','GESTAO_MUNICIPAL')")
     @GetMapping("/demanda/{demandaId}")
     public ResponseEntity<List<TentativaContatoResponseDTO>> listarPorDemanda(@PathVariable Long demandaId) {
         return ResponseEntity.ok(tentativaService.listarPorDemanda(demandaId));
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<TentativaContatoResponseDTO>> listarPorUsuario(@PathVariable Long usuarioId) {
-        return ResponseEntity.ok(tentativaService.listarPorUsuario(usuarioId));
-    }
-
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping
     public ResponseEntity<Page<TentativaContatoResponseDTO>> listarTodas(Pageable pageable) {
         return ResponseEntity.ok(tentativaService.listarTodas(pageable));

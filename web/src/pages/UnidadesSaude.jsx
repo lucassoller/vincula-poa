@@ -155,7 +155,7 @@ function UnidadesSaude() {
                             </button>
 
                         </div>
-                        {(usuario?.perfil === "GESTAO_MUNICIPAL" || usuario?.perfil === "EXECUTOR_APS") && (
+                        {(usuario?.perfil === "GESTAO_MUNICIPAL") && (
                             <button
                                 className="buscar-btn"
                                 onClick={() => navigate("/unidades-saude/cadastro")}

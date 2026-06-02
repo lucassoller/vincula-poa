@@ -28,14 +28,14 @@ public class PacienteController {
         this.demandaService = demandaService;
     }
 
-    @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
     @PostMapping
     public ResponseEntity<PacienteResponseDTO> criar(@Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteCriado = pacienteService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(pacienteCriado);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping
     public ResponseEntity<Page<PacienteResponseDTO>> listarTodos(Pageable pageable) {
         return ResponseEntity.ok(pacienteService.listarTodos(pageable));
@@ -47,7 +47,7 @@ public class PacienteController {
         return ResponseEntity.ok(pacienteService.listarTodos());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
     @GetMapping("/unidadeSaude/{unidadeSaudeId}")
     public ResponseEntity<Page<PacienteResponseDTO>> listarPorUnidade(
             @PathVariable Long unidadeSaudeId,
@@ -58,14 +58,14 @@ public class PacienteController {
         );
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping("/filtrados/{filtro}")
     public ResponseEntity<Page<PacienteResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
         return ResponseEntity.ok(pacienteService.listarTodosFiltrados(filtro, pageable));
     }
 
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
     @GetMapping("/filtrados/unidadeSaude/{unidadeSaudeId}/{filtro}")
     public ResponseEntity<Page<PacienteResponseDTO>> listarPorUnidade(
             @PathVariable Long unidadeSaudeId,
@@ -77,21 +77,14 @@ public class PacienteController {
         );
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
     @GetMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> buscarPorId(@PathVariable Long id) {
         PacienteResponseDTO paciente = pacienteService.buscarPorId(id);
         return ResponseEntity.ok(paciente);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/documento/{documento}")
-    public ResponseEntity<PacienteResponseDTO> buscarPorDocumento(@PathVariable String documento) {
-        PacienteResponseDTO paciente = pacienteService.buscarPorDocumento(documento);
-        return ResponseEntity.ok(paciente);
-    }
-
-    @PreAuthorize("hasAnyRole('SOLICITANTE','EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('EXECUTOR_APS', 'GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteAtualizado = pacienteService.atualizar(id, dto);

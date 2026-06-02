@@ -56,18 +56,6 @@ public class UnidadeSaudeController {
         return ResponseEntity.ok(unidadeSaudeService.buscarPorId(id));
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/{id}/pacientes")
-    public ResponseEntity<List<PacienteResponseDTO>> listarPacientesPorUnidade(@PathVariable Long id) {
-        return ResponseEntity.ok(unidadeSaudeService.listarPacientesPorUnidade(id));
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/cnes/{cnes}")
-    public ResponseEntity<UnidadeSaudeResponseDTO> buscarPorCnes(@PathVariable String cnes) {
-        return ResponseEntity.ok(unidadeSaudeService.buscarPorCnes(cnes));
-    }
-
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
     public ResponseEntity<UnidadeSaudeResponseDTO> atualizar(@PathVariable Long id,

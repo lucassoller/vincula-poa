@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.TerritorioUbsDTO;
 import com.vincula.service.ImportarTerritorioService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/territorios")
@@ -21,12 +23,14 @@ public class ImportarMapaController {
         this.objectMapper = objectMapper;
     }
 
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PostMapping("/importar")
     public void importar(@RequestBody Map<String, Object> geojson) {
         JsonNode node = objectMapper.valueToTree(geojson);
         importarTerritorioService.importar(node);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/mapa")
     public ResponseEntity<List<TerritorioUbsDTO>> exportar() {
         return ResponseEntity.ok(importarTerritorioService.listarTodos());
