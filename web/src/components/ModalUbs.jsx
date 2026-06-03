@@ -73,7 +73,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                     </div>
                 </div>
 
-                {usuario?.perfil !== 'SOLICITANTE' && (
+                {usuario?.perfil === 'GESTAO_MUNICIPAL' && (
                     <div className="ubs-actions">
                         <button
                             type="button"

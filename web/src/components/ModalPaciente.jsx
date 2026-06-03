@@ -118,7 +118,7 @@ function ModalPaciente({ pacienteSelecionado, setPacienteSelecionado }) {
                     </div>
                 </div>
 
-                {usuario?.perfil !== "SOLICITANTE" && (
+                {(usuario?.perfil !== "SOLICITANTE" || (usuario?.perfil === "SOLICITANTE" && usuario?.id === pacienteSelecionado.idUsuarioCadastro)) && (
                     <div className="ubs-actions">
                         <button
                             type="button"

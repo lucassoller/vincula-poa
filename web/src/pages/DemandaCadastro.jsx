@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./demandaCadastro.css";
-import {useForm} from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 
 function DemandaCadastro() {
     const {
@@ -16,10 +16,10 @@ function DemandaCadastro() {
             motivoBuscaAtiva: "",
             descricaoBusca: "",
             prazoDemanda: "",
-            pacienteId: "",
-            unidadeResponsavelId: "",
+            pacienteId: ""
         }
     });
+    const location = useLocation();
     const navigate = useNavigate();
     const { usuario } = useAuth();
     const [pacientes, setPacientes] = useState([]);
@@ -28,23 +28,29 @@ function DemandaCadastro() {
     const [ubsPaciente, setUbsPaciente] = useState("");
 
     useEffect(() => {
+        const paciente = pacientes.find(
+            p => String(p.id) === String(location.state?.pacienteId)
+        );
+
+        if (paciente) {
+            setValue("pacienteId", String(paciente.id));
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setUbsPaciente(paciente.unidadeSaudeNome || "");
+        }
+    }, [location.state, pacientes, setValue]);
+
+    useEffect(() => {
         async function carregarDados() {
             try {
                 const response = await api.get("/pacientes/all");
                 setPacientes(response.data);
-                if (usuario?.perfil === "USUARIO_APS") {
-                    setValue(
-                        "unidadeResponsavelId",
-                        usuario.unidadeSaudeId || ""
-                    );
-                }
             } catch {
                 setMensagem("Erro ao carregar dados.");
             }
         }
 
         void carregarDados();
-    }, [usuario, setValue]);
+    }, [usuario]);
 
     async function salvar(dados) {
         setMensagem("");
@@ -56,9 +62,6 @@ function DemandaCadastro() {
                 motivoBuscaAtiva: dados.motivoBuscaAtiva || null,
                 prazoDemanda: dados.prazoDemanda || null,
                 pacienteId: dados.pacienteId ? Number(dados.pacienteId) : null,
-                unidadeResponsavelId: dados.unidadeResponsavelId
-                    ? Number(dados.unidadeResponsavelId)
-                    : null,
             };
 
             await api.post("/demandas", payload);
@@ -86,17 +89,11 @@ function DemandaCadastro() {
 
         if (!pacienteSelecionado) {
             setUbsPaciente("");
-            setValue("unidadeResponsavelId", "");
             return;
         }
 
         setUbsPaciente(
             pacienteSelecionado.unidadeSaudeNome || ""
-        );
-
-        setValue(
-            "unidadeResponsavelId",
-            pacienteSelecionado.unidadeSaudeId || ""
         );
     }
 

@@ -211,7 +211,7 @@ function Pacientes() {
                                             Visualizar
                                         </button>
 
-                                        {usuario?.id === paciente.idUsuarioCadastro && (
+                                        {(usuario?.perfil !== "SOLICITANTE" || (usuario?.perfil === "SOLICITANTE" && usuario?.id === paciente.idUsuarioCadastro)) && (
                                             <button
                                                 className="btn-editar"
                                                 onClick={() => navigate(`/pacientes/${paciente.id}/editar`)}

@@ -49,7 +49,6 @@ function PacienteCadastro() {
     async function salvar(dados) {
         setMensagem("");
         setErros({});
-
         try {
             const payload = {
                 ...dados,
@@ -58,7 +57,14 @@ function PacienteCadastro() {
             };
 
             const response = await api.post("/pacientes", payload);
-            navigate(`/pacientes/${response.data.id}`);
+
+            if(response.data.id !== null){
+                navigate("/demandas/cadastro", {
+                    state: {
+                        pacienteId: response.data.id
+                    }
+                });
+            }
             setErros({});
         }catch (error) {
             if (error.response?.data?.errors) {
