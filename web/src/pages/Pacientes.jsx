@@ -24,20 +24,7 @@ function Pacientes() {
     const carregarDados = useCallback(async (paginaAtual = pagina) => {
         try {
             setCarregando(true);
-            let pacientesResponse;
-            if (usuario?.perfil === "GESTAO_MUNICIPAL") {
-                pacientesResponse = await api.get(
-                    `/pacientes?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-            } else if (usuario?.perfil === "USUARIO_APS") {
-                pacientesResponse = await api.get(
-                    `/pacientes/unidadeSaude/${usuario.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-            } else {
-                setMensagem("Seu perfil não possui acesso à lista de pacientes.");
-                setPacientes([]);
-                return;
-            }
+            const pacientesResponse = await api.get(`/pacientes?page=${paginaAtual}&size=${tamanhoPagina}`);
             setPacientes(pacientesResponse.data.content);
             setTotalPaginas(pacientesResponse.data.page.totalPages);
         } catch {
@@ -45,7 +32,7 @@ function Pacientes() {
         } finally {
             setCarregando(false);
         }
-    }, [usuario, pagina]);
+    }, [pagina]);
 
     const buscarPacientes = useCallback(async (paginaAtual = pagina) => {
         if (!filtro.trim()) {
@@ -53,20 +40,7 @@ function Pacientes() {
         }
         try {
             setCarregando(true);
-            let pacientesResponse;
-            if (usuario?.perfil === "GESTAO_MUNICIPAL") {
-                pacientesResponse = await api.get(
-                    `/pacientes/filtrados/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-            } else if (usuario?.perfil === "USUARIO_APS") {
-                pacientesResponse = await api.get(
-                    `/pacientes/filtrados/unidadeSaude/${usuario.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-            } else {
-                setMensagem("Seu perfil não possui acesso à lista de pacientes.");
-                setPacientes([]);
-                return;
-            }
+            const pacientesResponse = await api.get(`/pacientes/filtrados/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`);
             setPacientes(pacientesResponse.data.content);
             setTotalPaginas(pacientesResponse.data.page.totalPages);
         } catch {
@@ -74,7 +48,7 @@ function Pacientes() {
         } finally {
             setCarregando(false);
         }
-    }, [usuario, pagina, filtro]);
+    }, [pagina, filtro]);
 
     useEffect(() => {
         const executar = async () => {

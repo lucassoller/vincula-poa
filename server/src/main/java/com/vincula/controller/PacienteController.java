@@ -28,14 +28,14 @@ public class PacienteController {
         this.demandaService = demandaService;
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<PacienteResponseDTO> criar(@Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteCriado = pacienteService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(pacienteCriado);
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<Page<PacienteResponseDTO>> listarTodos(Pageable pageable) {
         return ResponseEntity.ok(pacienteService.listarTodos(pageable));
@@ -58,7 +58,7 @@ public class PacienteController {
         );
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/filtrados/{filtro}")
     public ResponseEntity<Page<PacienteResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
         return ResponseEntity.ok(pacienteService.listarTodosFiltrados(filtro, pageable));
@@ -77,21 +77,21 @@ public class PacienteController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> buscarPorId(@PathVariable Long id) {
         PacienteResponseDTO paciente = pacienteService.buscarPorId(id);
         return ResponseEntity.ok(paciente);
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PacienteDTO dto) {
         PacienteResponseDTO pacienteAtualizado = pacienteService.atualizar(id, dto);
         return ResponseEntity.ok(pacienteAtualizado);
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{id}/redirecionar-abertas")
     public ResponseEntity<Void> redirecionarDemandasAbertas(
             @PathVariable Long id,

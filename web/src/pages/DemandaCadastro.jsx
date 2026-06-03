@@ -25,13 +25,13 @@ function DemandaCadastro() {
     const [pacientes, setPacientes] = useState([]);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [ubsPaciente, setUbsPaciente] = useState("");
 
     useEffect(() => {
         async function carregarDados() {
             try {
                 const response = await api.get("/pacientes/all");
                 setPacientes(response.data);
-
                 if (usuario?.perfil === "USUARIO_APS") {
                     setValue(
                         "unidadeResponsavelId",
@@ -77,6 +77,29 @@ function DemandaCadastro() {
         }
     }
 
+    function handlePacienteChange(event) {
+        const pacienteId = Number(event.target.value);
+
+        const pacienteSelecionado = pacientes.find(
+            (p) => p.id === pacienteId
+        );
+
+        if (!pacienteSelecionado) {
+            setUbsPaciente("");
+            setValue("unidadeResponsavelId", "");
+            return;
+        }
+
+        setUbsPaciente(
+            pacienteSelecionado.unidadeSaudeNome || ""
+        );
+
+        setValue(
+            "unidadeResponsavelId",
+            pacienteSelecionado.unidadeSaudeId || ""
+        );
+    }
+
     return (
         <div className="cadastro-container">
             <div className="cadastro-page">
@@ -103,6 +126,7 @@ function DemandaCadastro() {
                             <select
                                 className="input-field"
                                 {...register("pacienteId")}
+                                onChange={handlePacienteChange}
                             >
                                 <option value="">Selecione</option>
                                 {pacientes.map((p) => (
@@ -112,6 +136,15 @@ function DemandaCadastro() {
                                 ))}
                             </select>
                             {erros.pacienteId && <small>{erros.pacienteId}</small>}
+                        </div>
+                        <div className="form-group">
+                            <label>UBS do paciente</label>
+                            <input
+                                type="text"
+                                className="input-field"
+                                value={ubsPaciente}
+                                disabled
+                            />
                         </div>
                     </div>
 

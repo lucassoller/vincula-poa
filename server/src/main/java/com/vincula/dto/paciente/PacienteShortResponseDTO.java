@@ -8,4 +8,6 @@ public class PacienteShortResponseDTO {
     private Long id;
     private String nomeCompleto;
     private String documento;
+    private String unidadeSaudeNome;
+    private Long unidadeSaudeId;
 }

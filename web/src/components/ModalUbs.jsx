@@ -1,8 +1,10 @@
 import CampoDetalhe from "./CampoDetalhe.jsx";
 import { useNavigate } from "react-router-dom";
+import {useAuth} from "../context/AuthContext.jsx";
 
 function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
     const navigate = useNavigate();
+    const { usuario } = useAuth();
 
     return (
         <div className="ubs-overlay">
@@ -71,17 +73,19 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                     </div>
                 </div>
 
-                <div className="ubs-actions">
-                    <button
-                        type="button"
-                        className="btn-editar"
-                        onClick={() =>
-                            navigate(`/unidades-saude/${ubsSelecionada.id}/editar`)
-                        }
-                    >
-                        Editar UBS
-                    </button>
-                </div>
+                {usuario?.perfil !== 'SOLICITANTE' && (
+                    <div className="ubs-actions">
+                        <button
+                            type="button"
+                            className="btn-editar"
+                            onClick={() =>
+                                navigate(`/unidades-saude/${ubsSelecionada.id}/editar`)
+                            }
+                        >
+                            Editar UBS
+                        </button>
+                    </div>
+                )}
 
             </div>
         </div>

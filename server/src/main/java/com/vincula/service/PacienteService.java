@@ -219,6 +219,8 @@ public class PacienteService {
         dto.setId(entity.getId());
         dto.setNomeCompleto(entity.getNomeCompleto());
         dto.setDocumento(entity.getDocumento());
+        dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
+        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
 
         return dto;
     }

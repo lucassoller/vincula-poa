@@ -61,7 +61,7 @@ function App() {
             <Route
               path="/pacientes"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                     <Layout>
                         <Pacientes />
                     </Layout>
@@ -82,7 +82,7 @@ function App() {
             <Route
                 path="/pacientes/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                         <Layout>
                             <PacienteCadastro />
                         </Layout>
@@ -92,7 +92,7 @@ function App() {
             <Route
                 path="/pacientes/:id"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                         <Layout>
                             <PacienteDetalhe />
                         </Layout>
@@ -102,7 +102,7 @@ function App() {
             <Route
                 path="/pacientes/:id/editar"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                         <Layout>
                             <PacienteEditar />
                         </Layout>
