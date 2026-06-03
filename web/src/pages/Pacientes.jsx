@@ -209,12 +209,14 @@ function Pacientes() {
                                             Visualizar
                                         </button>
 
-                                        <button
-                                            className="btn-editar"
-                                            onClick={() => navigate(`/pacientes/${paciente.id}/editar`)}
-                                        >
-                                            Editar
-                                        </button>
+                                        {usuario?.id === paciente.idUsuarioCadastro && (
+                                            <button
+                                                className="btn-editar"
+                                                onClick={() => navigate(`/pacientes/${paciente.id}/editar`)}
+                                            >
+                                                Editar
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

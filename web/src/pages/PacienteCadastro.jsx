@@ -4,6 +4,8 @@ import EnderecoForm from "../components/EnderecoForm";
 import "./pacienteCadastro.css";
 import {useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
+import {useAuth} from "../context/AuthContext.jsx";
+
 
 const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 
@@ -18,6 +20,7 @@ function PacienteCadastro() {
             documento: "",
             dataNascimento: "",
             sexo: "",
+            idUsuarioCadastro: "",
             endereco: {
                 rua: "",
                 numero: "",
@@ -27,7 +30,7 @@ function PacienteCadastro() {
             }
         }
     });
-
+    const { usuario } = useAuth();
     const navigate = useNavigate();
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
@@ -50,7 +53,8 @@ function PacienteCadastro() {
         try {
             const payload = {
                 ...dados,
-                sexo: dados.sexo || null
+                sexo: dados.sexo || null,
+                idUsuarioCadastro: usuario?.id,
             };
 
             const response = await api.post("/pacientes", payload);

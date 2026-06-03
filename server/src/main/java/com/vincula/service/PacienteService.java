@@ -176,6 +176,7 @@ public class PacienteService {
         entity.setDocumento(dto.getDocumento());
         entity.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
         entity.setEndereco(endereco);
+        entity.setIdUsuarioCadastro(dto.getIdUsuarioCadastro());
 
         geocodingService.preencherCoordenadas(entity.getEndereco());
 
@@ -208,6 +209,7 @@ public class PacienteService {
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
         dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
         dto.setSexo(entity.getSexo());
+        dto.setIdUsuarioCadastro(entity.getIdUsuarioCadastro());
 
         return dto;
     }

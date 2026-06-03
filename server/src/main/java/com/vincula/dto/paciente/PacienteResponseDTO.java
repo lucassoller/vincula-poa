@@ -20,6 +20,7 @@ public class PacienteResponseDTO {
     private String documento;
     private EnderecoResponseDTO endereco;
 
+    private Long idUsuarioCadastro;
     private Long unidadeSaudeId;
     private String unidadeSaudeNome;
 }

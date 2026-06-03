@@ -1,5 +1,6 @@
 package com.vincula.entity;
 
+import com.vincula.enums.PerfilUsuario;
 import com.vincula.enums.Sexo;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -29,6 +30,9 @@ public class Paciente {
 
     @Column(nullable = false, unique = true, length = 15)
     private String documento;
+
+    @Column(nullable = false)
+    private Long idUsuarioCadastro;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "endereco_id", nullable = false, unique = true)

@@ -25,6 +25,7 @@ public class PacienteDTO {
     private LocalDate dataNascimento;
 
     private Sexo sexo;
+    private Long idUsuarioCadastro;
 
     @NotBlank(message = "CPF ou CNS é obrigatório")
     @Pattern(regexp = "\\d{11,15}", message = "CPF ou CNS inválido")

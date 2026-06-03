@@ -4,7 +4,9 @@ import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm";
 import "./pacienteCadastro.css";
 import { useForm } from "react-hook-form";
+
 import ModalRedirecionarDemandas from "../components/ModalRedirecionarDemandas.jsx";
+import {useAuth} from "../context/AuthContext.jsx";
 
 const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 
@@ -20,6 +22,7 @@ function PacienteEditar() {
             documento: "",
             dataNascimento: "",
             sexo: "",
+            idUsuarioCadastro: "",
             endereco: {
                 rua: "",
                 numero: "",
@@ -31,6 +34,7 @@ function PacienteEditar() {
     });
     const { id } = useParams();
     const navigate = useNavigate();
+    const { usuario } = useAuth();
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
@@ -44,6 +48,10 @@ function PacienteEditar() {
             try {
                 const response = await api.get(`/pacientes/${id}`);
                 reset(response.data);
+                if(usuario?.perfil === 'SOLICITANTE' && usuario?.id !== response.data.idUsuarioCadastro){
+                    navigate("/pacientes");
+                    return;
+                }
                 setUnidadeOriginalId(response.data.unidadeSaudeId);
             } catch {
                 setMensagem("Erro ao carregar paciente.");
@@ -53,7 +61,7 @@ function PacienteEditar() {
         }
 
         void carregarPaciente();
-    }, [id, reset]);
+    }, [id, reset, usuario]);
 
     function voltarParaEtapaComErro(errors) {
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
