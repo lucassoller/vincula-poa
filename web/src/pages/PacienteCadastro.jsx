@@ -76,7 +76,6 @@ function PacienteCadastro() {
     return (
         <div className="cadastro-container">
             <div className="cadastro-page">
-
                 <div className="cadastro-header">
                     <div>
                         <h1>Novo paciente</h1>

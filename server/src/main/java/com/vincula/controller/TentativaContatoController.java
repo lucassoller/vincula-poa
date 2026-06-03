@@ -35,7 +35,7 @@ public class TentativaContatoController {
         return ResponseEntity.ok(tentativaService.atualizar(id, dto));
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/demanda/{demandaId}")
     public ResponseEntity<List<TentativaContatoResponseDTO>> listarPorDemanda(@PathVariable Long demandaId) {
         return ResponseEntity.ok(tentativaService.listarPorDemanda(demandaId));

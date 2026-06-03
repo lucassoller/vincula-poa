@@ -5,11 +5,13 @@ import "./pacientes.css";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Paginations.jsx";
 import { mascaraTelefone } from "../utils/mascaras.js";
+import ModalUbs from "../components/ModalUbs.jsx";
 
 function UnidadesSaude() {
     const navigate = useNavigate();
     const { usuario } = useAuth();
     const [unidades, setUnidades] = useState([]);
+    const [unidadeDetalhada, setUnidadeDetalhada] = useState(null);
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [filtro, setFiltro] = useState("");
@@ -88,6 +90,17 @@ function UnidadesSaude() {
             setPagina(0);
         } else {
             await carregarDados(0);
+        }
+    }
+
+    async function abrirDetalhes(u) {
+        try {
+
+            const response = await api.get(`/unidades-saude/${u.id}`);
+            setUnidadeDetalhada(response.data);
+
+        } catch {
+            setMensagem("Erro ao carregar detalhes da unidade de saúde.");
         }
     }
 
@@ -171,11 +184,9 @@ function UnidadesSaude() {
                             <th>CNES</th>
                             <th>Telefone</th>
                             <th>Telefone adicional</th>
-                            <th>Rua</th>
+
                             <th>Bairro</th>
-                            {usuario?.perfil === "GESTAO_MUNICIPAL" && (
-                                <th>Ações</th>
-                            )}
+                            <th>Ações</th>
                         </tr>
                         </thead>
 
@@ -192,10 +203,16 @@ function UnidadesSaude() {
                                 <td>{ubs.cnes}</td>
                                 <td>{mascaraTelefone(ubs.telefone) || "-"}</td>
                                 <td>{mascaraTelefone(ubs.telefone2) || "-"}</td>
-                                <td>{ubs.endereco?.rua + " - " + ubs.endereco?.numero || "-"}</td>
+
                                 <td>{ubs.endereco?.bairro || "-"}</td>
                                 <td>
                                     <div className="acoes-container">
+                                        <button
+                                            className="btn-visualizar"
+                                            onClick={() => abrirDetalhes(ubs)}
+                                        >
+                                            Ver mais
+                                        </button>
                                         {usuario?.perfil === "GESTAO_MUNICIPAL" && (
                                             <button
                                                 className="btn-editar"
@@ -227,6 +244,12 @@ function UnidadesSaude() {
                     />
                 </div>
             </div>
+            {unidadeDetalhada && (
+                <ModalUbs
+                    ubsSelecionada={unidadeDetalhada}
+                    setUbsSelecionada={setUnidadeDetalhada}
+                />
+            )}
         </div>
     );
 }
