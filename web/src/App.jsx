@@ -10,7 +10,6 @@ import PacienteCadastro from "./pages/PacienteCadastro";
 import PacienteEditar from "./pages/PacienteEditar";
 import UsuarioCadastro from "./pages/UsuarioCadastro";
 import UnidadeSaudeCadastro from "./pages/UnidadeSaudeCadastro";
-import PacienteDetalhe from "./pages/PacienteDetalhe";
 import UnidadeSaudeEditar from "./pages/UnidadeSaudeEditar";
 import GestaoListagem from "./pages/GestaoListagem.jsx";
 import MeuPerfil from "./pages/MeuPerfil.jsx";
@@ -51,7 +50,7 @@ function App() {
             <Route
               path="/indicadores"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
                     <Layout>
                         <Indicador />
                     </Layout>
@@ -89,16 +88,7 @@ function App() {
                     </ProtectedRoute>
                 }
             />
-            <Route
-                path="/pacientes/:id"
-                element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
-                        <Layout>
-                            <PacienteDetalhe />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
+
             <Route
                 path="/pacientes/:id/editar"
                 element={

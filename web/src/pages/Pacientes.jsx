@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import {mascaraDocumento, mascaraTelefone} from "../utils/mascaras.js";
 import ModalUbs from "../components/ModalUbs.jsx";
 import Pagination from "../components/Paginations.jsx";
+import ModalPaciente from "../components/ModalPaciente.jsx";
 
 function Pacientes() {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ function Pacientes() {
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [ubsSelecionada, setUbsSelecionada] = useState(null);
+    const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
     const [carregandoUbs, setCarregandoUbs] = useState(false);
     const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
@@ -204,7 +206,7 @@ function Pacientes() {
                                     <div className="acoes-container">
                                         <button
                                             className="btn-visualizar"
-                                            onClick={() => navigate(`/pacientes/${paciente.id}`)}
+                                            onClick={() => setPacienteSelecionado(paciente)}
                                         >
                                             Visualizar
                                         </button>
@@ -241,6 +243,13 @@ function Pacientes() {
                 <ModalUbs
                     ubsSelecionada={ubsSelecionada}
                     setUbsSelecionada={setUbsSelecionada}
+                />
+            )}
+
+            {pacienteSelecionado && (
+                <ModalPaciente
+                    pacienteSelecionado={pacienteSelecionado}
+                    setPacienteSelecionado={setPacienteSelecionado}
                 />
             )}
 

@@ -198,19 +198,29 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
 
     double countByUnidadeResponsavelId(Long unidadeRespondavelId);
 
+    double countByUsuarioCriadorId(Long usuarioCriadorId);
+
     double countByStatusAndUnidadeResponsavelId(StatusDemanda status, Long unidadeRespondavelId);
+
+    double countByStatusAndUsuarioCriadorId(StatusDemanda status, Long usuarioCriadorId);
 
     double countByDataHoraCriacaoBetween(LocalDateTime inicio, LocalDateTime fim);
 
     double countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(Long unidadeRespondavelId, LocalDateTime inicio, LocalDateTime fim);
 
+    double countByUsuarioCriadorIdAndDataHoraCriacaoBetween(Long usuarioCriadorId, LocalDateTime inicio, LocalDateTime fim);
+
     double countByDataHoraFinalizacaoBetween(LocalDateTime inicio, LocalDateTime fim);
 
     double countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(Long unidadeRespondavelId, LocalDateTime inicio, LocalDateTime fim);
 
+    double countByUsuarioCriadorIdAndDataHoraFinalizacaoBetween(Long usuarioCriadorId, LocalDateTime inicio, LocalDateTime fim);
+
     double countByStatusAndDataHoraCriacaoBetween(StatusDemanda status, LocalDateTime inicio, LocalDateTime fim);
 
     double countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda status, Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim);
+
+    double countByStatusAndUsuarioCriadorIdAndDataHoraCriacaoBetween(StatusDemanda status, Long usuarioCriadorId, LocalDateTime inicio, LocalDateTime fim);
 
     @Query(value = """
     SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
@@ -242,6 +252,15 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
     FROM demanda d
+    WHERE d.usuario_criador_id = :usuarioCriadorId
+        AND d.desfecho IN ('ENCONTRADO_VINCULADO', 'ENCONTRADO_RECUSOU', 'NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OBITO', 'OUTRO')
+    GROUP BY d.desfecho
+    """, nativeQuery = true)
+    List<DesfechoQuantidadeProjection> agruparPorDesfechoEUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+
+    @Query(value = """
+    SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
+    FROM demanda d
     WHERE d.unidade_responsavel_id = :unidadeResponsavelId
       AND d.data_hora_criacao BETWEEN :inicio AND :fim
       AND d.desfecho IN ('ENCONTRADO_VINCULADO', 'ENCONTRADO_RECUSOU', 'NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OBITO', 'OUTRO')
@@ -250,6 +269,19 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     List<DesfechoQuantidadeProjection> agruparPorDesfechoEUnidadePorPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
                                                                             @Param("inicio") LocalDateTime inicio,
                                                                             @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+    SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.usuario_criador_id = :usuarioCriadorId
+      AND d.data_hora_criacao BETWEEN :inicio AND :fim
+      AND d.desfecho IN ('ENCONTRADO_VINCULADO', 'ENCONTRADO_RECUSOU', 'NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OBITO', 'OUTRO')
+    GROUP BY d.desfecho
+    """, nativeQuery = true)
+    List<DesfechoQuantidadeProjection> agruparPorDesfechoEUsuarioPorPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+                                                                            @Param("inicio") LocalDateTime inicio,
+                                                                            @Param("fim") LocalDateTime fim);
+
     @Query(value = """
        SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
        FROM demanda d
@@ -269,6 +301,14 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
        SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
        FROM demanda d
        WHERE d.data_hora_finalizacao IS NOT NULL
+         AND d.usuario_criador_id = :usuarioCriadorId
+       """, nativeQuery = true)
+    Double calcularTempoMedioResolucaoEmSegundosPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+
+    @Query(value = """
+       SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
+       FROM demanda d
+       WHERE d.data_hora_finalizacao IS NOT NULL
          AND d.data_hora_criacao BETWEEN :inicio AND :fim
        """, nativeQuery = true)
     Double calcularTempoMedioResolucaoEmSegundosPorPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
@@ -281,6 +321,17 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
           AND d.data_hora_criacao BETWEEN :inicio AND :fim
         """, nativeQuery = true)
     Double calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
+                                                                   @Param("inicio") LocalDateTime inicio,
+                                                                   @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+        SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
+        FROM demanda d
+        WHERE d.data_hora_finalizacao IS NOT NULL
+          AND d.usuario_criador_id = :usuarioCriadorId
+          AND d.data_hora_criacao BETWEEN :inicio AND :fim
+        """, nativeQuery = true)
+    Double calcularTempoMedioResolucaoEmSegundosPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
                                                                    @Param("inicio") LocalDateTime inicio,
                                                                    @Param("fim") LocalDateTime fim);
 
@@ -307,6 +358,17 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
     WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
+      AND d.usuario_criador_id = :usuarioCriadorId
+    GROUP BY d.motivo_busca_ativa
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+
+
+    @Query(value = """
+    SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
       AND d.data_hora_criacao BETWEEN :inicio AND :fim
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
@@ -324,6 +386,19 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     ORDER BY quantidade DESC
     """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
+                                                                                        @Param("inicio") LocalDateTime inicio,
+                                                                                        @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+    SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
+      AND d.usuario_criador_id = :usuarioCriadorId
+      AND d.data_hora_criacao BETWEEN :inicio AND :fim
+    GROUP BY d.motivo_busca_ativa
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
                                                                                         @Param("inicio") LocalDateTime inicio,
                                                                                         @Param("fim") LocalDateTime fim);
 
@@ -347,6 +422,15 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.status AS status, COUNT(*) AS quantidade
     FROM demanda d
+    WHERE d.usuario_criador_id = :usuarioCriadorId
+        AND d.status IN ('FINALIZADA', 'ABERTA', 'EM_ANDAMENTO')
+    GROUP BY d.status
+""", nativeQuery = true)
+    List<StatusQuantidadeProjection> agruparPorStatusPorUsuario(Long usuarioCriadorId);
+
+    @Query(value = """
+    SELECT d.status AS status, COUNT(*) AS quantidade
+    FROM demanda d
     WHERE d.data_hora_criacao BETWEEN :inicio AND :fim
         AND d.status IN ('FINALIZADA', 'ABERTA', 'EM_ANDAMENTO')
     GROUP BY d.status
@@ -362,6 +446,18 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     GROUP BY d.status
 """, nativeQuery = true)
     List<StatusQuantidadeProjection> agruparPorStatusPorUnidadeEPeriodo(Long unidadeResponsavelId,
+                                                                        LocalDateTime inicio,
+                                                                        LocalDateTime fim);
+
+    @Query(value = """
+    SELECT d.status AS status, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.usuario_criador_id = :usuarioCriadorId
+      AND d.data_hora_criacao BETWEEN :inicio AND :fim
+      AND d.status IN ('FINALIZADA', 'ABERTA', 'EM_ANDAMENTO')
+    GROUP BY d.status
+""", nativeQuery = true)
+    List<StatusQuantidadeProjection> agruparPorStatusPorUsuarioEPeriodo(Long usuarioCriadorId,
                                                                         LocalDateTime inicio,
                                                                         LocalDateTime fim);
 
@@ -425,6 +521,16 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
+    WHERE usuario_criador_id = :usuarioCriadorId
+      AND (
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
+      )
+    """, nativeQuery = true)
+    long countDentroPrazoPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
     WHERE data_hora_criacao BETWEEN :inicio AND :fim
       AND (
         (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
@@ -435,12 +541,26 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE data_hora_criacao BETWEEN :inicio AND :fim
+    WHERE unidade_responsavel_id = :unidadeId
+    AND data_hora_criacao BETWEEN :inicio AND :fim
       AND (
         (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
       )
 """, nativeQuery = true)
     long countDentroPrazoPorUnidadeEPeriodo(@Param("unidadeId") Long unidadeId,
+                                            @Param("inicio") LocalDateTime inicio,
+                                            @Param("fim")LocalDateTime fim);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE usuario_criador_id = :usuarioCriadorId
+    AND data_hora_criacao BETWEEN :inicio AND :fim
+      AND (
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
+      )
+""", nativeQuery = true)
+    long countDentroPrazoPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
                                             @Param("inicio") LocalDateTime inicio,
                                             @Param("fim")LocalDateTime fim);
 
@@ -465,6 +585,16 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
+    WHERE usuario_criador_id = :usuarioCriadorId
+      AND (
+        (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
+      )
+    """, nativeQuery = true)
+    long countAtrasadasPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
     WHERE data_hora_criacao BETWEEN :inicio AND :fim
         AND (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
     """, nativeQuery = true)
@@ -485,6 +615,17 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
+          AND usuario_criador_id = :usuarioCriadorId
+        AND (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
+    """, nativeQuery = true)
+    long countDemandasAtrasadasPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+                                                  @Param("inicio") LocalDateTime inicio,
+                                                  @Param("fim")LocalDateTime fim);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
     WHERE status = 'FINALIZADA'
       AND data_hora_finalizacao > data_hora_limite
     """, nativeQuery = true)
@@ -498,6 +639,15 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
       AND data_hora_finalizacao > data_hora_limite
     """, nativeQuery = true)
     long countFinalizadasAtrasadasPorUnidade(@Param("unidadeId") Long unidadeId);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE usuario_criador_id = :usuarioCriadorId
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    long countFinalizadasAtrasadasPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
 
     @Query(value = """
     SELECT COUNT(*)
@@ -522,6 +672,18 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
                                                      @Param("fim")LocalDateTime fim);
 
     @Query(value = """
+    SELECT COUNT(*)
+    FROM demanda
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
+          AND usuario_criador_id = :usuarioCriadorId
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    long countFinalizadasAtrasadasPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+                                                     @Param("inicio") LocalDateTime inicio,
+                                                     @Param("fim")LocalDateTime fim);
+
+    @Query(value = """
     SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
     FROM demanda
     WHERE status = 'FINALIZADA'
@@ -541,6 +703,15 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
     FROM demanda
+    WHERE usuario_criador_id = :usuarioCriadorId
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+    """, nativeQuery = true)
+    Double tempoMedioAtrasoPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+
+    @Query(value = """
+    SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
+    FROM demanda
     WHERE data_hora_criacao BETWEEN :inicio AND :fim
       AND status = 'FINALIZADA'
       AND data_hora_finalizacao > data_hora_limite
@@ -556,6 +727,18 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
       AND data_hora_finalizacao > data_hora_limite
 """, nativeQuery = true)
     Double tempoMedioAtrasoEmSegundosPorUnidadeEPeriodo(@Param("unidadeId") Long unidadeId,
+                                                        @Param("inicio") LocalDateTime inicio,
+                                                        @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+    SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
+    FROM demanda
+    WHERE data_hora_criacao BETWEEN :inicio AND :fim
+      AND usuario_criador_id = :usuarioCriadorId
+      AND status = 'FINALIZADA'
+      AND data_hora_finalizacao > data_hora_limite
+""", nativeQuery = true)
+    Double tempoMedioAtrasoEmSegundosPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
                                                         @Param("inicio") LocalDateTime inicio,
                                                         @Param("fim") LocalDateTime fim);
 }

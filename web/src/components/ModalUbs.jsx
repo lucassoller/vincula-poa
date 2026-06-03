@@ -7,10 +7,10 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
     const { usuario } = useAuth();
 
     return (
-        <div className="ubs-overlay">
-            <div className="ubs-card">
+        <div className="modal-overlay">
+            <div className="demanda-detalhe-card">
 
-                <div className="ubs-card-header">
+                <div className="modal-header">
                     <div>
                         <h2>{ubsSelecionada.nome}</h2>
                         <p>Informações da Unidade Básica de Saúde</p>
@@ -18,14 +18,14 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
 
                     <button
                         type="button"
-                        className="ubs-close"
+                        className="modal-close"
                         onClick={() => setUbsSelecionada(null)}
                     >
                         ✕
                     </button>
                 </div>
 
-                <div className="ubs-info-grid">
+                <div className="detalhe-grid">
                     <CampoDetalhe
                         label="CNES"
                         valor={ubsSelecionada.cnes}
@@ -42,10 +42,10 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                     />
                 </div>
 
-                <div className="ubs-section">
+                <div className="detalhe-section">
                     <h3>Endereço</h3>
 
-                    <div className="ubs-info-grid">
+                    <div className="detalhe-grid">
                         <CampoDetalhe
                             label="Rua"
                             valor={ubsSelecionada.endereco?.rua}

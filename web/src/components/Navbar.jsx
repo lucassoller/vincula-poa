@@ -42,14 +42,12 @@ function Navbar() {
             </div>
 
             <div className="navbar-links">
-                {(usuario?.perfil === "GESTAO_MUNICIPAL" || usuario?.perfil === "USUARIO_APS") && (
                     <Link
                         to="/indicadores"
                         className="navbar-link"
                     >
                         Indicadores
                     </Link>
-                )}
 
                 {usuario?.perfil === "GESTAO_MUNICIPAL" && (
                     <Link

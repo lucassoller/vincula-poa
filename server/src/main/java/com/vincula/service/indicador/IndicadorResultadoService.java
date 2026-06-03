@@ -38,6 +38,17 @@ public class IndicadorResultadoService {
                 .toList();
     }
 
+    public List<IndicadorValorDTO> percentualPorDesfechoPorUsuario(Long usuarioId) {
+        double totalFinalizadas = demandaRepository.countByStatusAndUsuarioCriadorId(
+                StatusDemanda.FINALIZADA, usuarioId
+        );
+
+        return demandaRepository.agruparPorDesfechoEUsuario(usuarioId)
+                .stream()
+                .map(item -> toIndicador(item, totalFinalizadas))
+                .toList();
+    }
+
     public List<IndicadorValorDTO> percentualPorDesfechoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         double totalFinalizadas = demandaRepository.countByStatusAndDataHoraCriacaoBetween(
                 StatusDemanda.FINALIZADA, inicio, fim
@@ -57,6 +68,19 @@ public class IndicadorResultadoService {
         );
 
         return demandaRepository.agruparPorDesfechoEUnidadePorPeriodo(unidadeResponsavelId, inicio, fim)
+                .stream()
+                .map(item -> toIndicador(item, totalFinalizadas))
+                .toList();
+    }
+
+    public List<IndicadorValorDTO> percentualPorDesfechoPorUsuarioEPeriodo(Long usuarioId,
+                                                                           LocalDateTime inicio,
+                                                                           LocalDateTime fim) {
+        double totalFinalizadas = demandaRepository.countByStatusAndUsuarioCriadorIdAndDataHoraCriacaoBetween(
+                StatusDemanda.FINALIZADA, usuarioId, inicio, fim
+        );
+
+        return demandaRepository.agruparPorDesfechoEUsuarioPorPeriodo(usuarioId, inicio, fim)
                 .stream()
                 .map(item -> toIndicador(item, totalFinalizadas))
                 .toList();

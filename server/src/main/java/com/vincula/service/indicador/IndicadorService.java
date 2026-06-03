@@ -58,24 +58,33 @@ public class IndicadorService {
         );
     }
 
-    public IndicadorDTO indicadorGeral(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+    public IndicadorDTO indicadorGeral(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim, Long usuarioId) {
         if ((inicio == null && fim != null) || (inicio != null && fim == null)) {
             throw new BusinessException("Informe início e fim do período");
         }
 
         boolean temPeriodo = inicio != null;
         boolean temUnidade = unidadeSaudeId != null;
+        boolean temUsuario = usuarioId != null;
 
-        if (temUnidade && temPeriodo) {
-            return indicadorPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
-        }
+        if(temUsuario){
+            if (temPeriodo) {
+                return indicadorPorUsuarioEPeriodo(inicio, fim, usuarioId);
+            }
 
-        if (temUnidade) {
-            return indicadorPorUnidade(unidadeSaudeId);
-        }
+            return indicadorPorUsuario(usuarioId);
+        }else{
+            if (temUnidade && temPeriodo) {
+                return indicadorPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
+            }
 
-        if (temPeriodo) {
-            return indicadorPorPeriodo(inicio, fim);
+            if (temUnidade) {
+                return indicadorPorUnidade(unidadeSaudeId);
+            }
+
+            if (temPeriodo) {
+                return indicadorPorPeriodo(inicio, fim);
+            }
         }
 
         validarAcessoIndicadorGeral();
@@ -127,24 +136,61 @@ public class IndicadorService {
         );
     }
 
-    public String exportarIndicadorGeralCsv(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+    public IndicadorDTO indicadorPorUsuario(Long usuarioId) {
+        return new IndicadorDTO(
+                indicadorProducaoService.indicadoresPorUsuario(usuarioId),
+                indicadorProcessoService.montarProcessoPorUsuario(usuarioId),
+                indicadorResultadoService.percentualPorDesfechoPorUsuario(usuarioId),
+                indicadorInsucessoService.principaisMotivosInsucessoPorUsuario(usuarioId),
+                indicadorPrazoService.indicadoresPrazoPorUsuario(usuarioId),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of()
+        );
+    }
+
+    public IndicadorDTO indicadorPorUsuarioEPeriodo(LocalDateTime inicio, LocalDateTime fim, Long usuarioId) {
+        return new IndicadorDTO(
+                indicadorProducaoService.indicadoresPorUsuarioEPeriodo(usuarioId, inicio, fim),
+                indicadorProcessoService.montarProcessoPorUsuarioEPeriodo(usuarioId, inicio, fim),
+                indicadorResultadoService.percentualPorDesfechoPorUsuarioEPeriodo(usuarioId, inicio, fim),
+                indicadorInsucessoService.principaisMotivosInsucessoPorUsuarioEPeriodo(usuarioId, inicio, fim),
+                indicadorPrazoService.indicadoresPrazoPorUsuarioEPeriodo(usuarioId, inicio, fim),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of()
+        );
+    }
+
+    public String exportarIndicadorGeralCsv(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim, Long usuarioId) {
         if ((inicio == null && fim != null) || (inicio != null && fim == null)) {
             throw new BusinessException("Informe início e fim do período");
         }
 
         boolean temPeriodo = inicio != null;
         boolean temUnidade = unidadeSaudeId != null;
+        boolean temUsuario = usuarioId != null;
 
-        if (temUnidade && temPeriodo) {
-            return exportarIndicadorPorUnidadeEPeriodoCsv(unidadeSaudeId, inicio, fim);
-        }
+        if(temUsuario){
+            if (temPeriodo) {
+                return exportarIndicadorPorUsuarioEPeriodoCsv(usuarioId, inicio, fim);
+            }
+            auditoriaFacade.exportacaoCsvRealizada("Indicador geral do usuário criador de ID " + usuarioId + "exportado");
+            return csvExporter.exportar(indicadorPorUsuario(usuarioId));
+        }else{
+            if (temUnidade && temPeriodo) {
+                return exportarIndicadorPorUnidadeEPeriodoCsv(unidadeSaudeId, inicio, fim);
+            }
 
-        if (temUnidade) {
-            return exportarIndicadorPorUnidadeCsv(unidadeSaudeId);
-        }
+            if (temUnidade) {
+                return exportarIndicadorPorUnidadeCsv(unidadeSaudeId);
+            }
 
-        if (temPeriodo) {
-            return exportarIndicadorPorPeriodoCsv(inicio, fim);
+            if (temPeriodo) {
+                return exportarIndicadorPorPeriodoCsv(inicio, fim);
+            }
         }
 
         auditoriaFacade.exportacaoCsvRealizada("Indicador geral exportado");
@@ -165,6 +211,12 @@ public class IndicadorService {
         auditoriaFacade.exportacaoCsvRealizada("Indicador da unidade ID " +
                 unidadeSaudeId + "de "+ inicio + " até "+ fim +" exportado");
         return csvExporter.exportar(indicadorPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim));
+    }
+
+    public String exportarIndicadorPorUsuarioEPeriodoCsv(Long usuarioId, LocalDateTime inicio, LocalDateTime fim) {
+        auditoriaFacade.exportacaoCsvRealizada("Indicador do usuário criador de ID " +
+                usuarioId + "de "+ inicio + " até "+ fim +" exportado");
+        return csvExporter.exportar(indicadorPorUsuarioEPeriodo(inicio, fim, usuarioId));
     }
 
     private void validarAcessoIndicadorGeral() {

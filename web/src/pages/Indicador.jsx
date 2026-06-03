@@ -25,16 +25,18 @@ function Indicador() {
             ? String(usuario.unidadeSaudeId)
             : unidadeSelecionada;
 
+    const usuarioId =
+        usuario?.perfil === "SOLICITANTE"
+            ? String(usuario.id)
+            : "";
+
     useEffect(() => {
-        if(usuario?.perfil === "SOLICITANTE"){
-            navigate("/demandas");
-            return;
-        }
-        
         async function carregarUnidades() {
             try {
-                const response = await api.get("/unidades-saude/all");
-                setUnidades(response.data);
+                if(usuario?.perfil !== "SOLICITANTE") {
+                    const response = await api.get("/unidades-saude/all");
+                    setUnidades(response.data);
+                }
             } catch {
                 setErro("Erro ao carregar unidades.");
             }
@@ -47,12 +49,15 @@ function Indicador() {
     const carregarIndicador = useCallback(async (
         unidade = unidadeSaudeId,
         dataInicio = inicio,
-        dataFim = fim
+        dataFim = fim,
+        usuario = usuarioId
     ) => {
 
         try {
             const temInicio = dataInicio !== "";
             const temFim = dataFim !== "";
+            const temUnidade = unidade !== "";
+            const temUsuario = usuario !== "";
             if ((temInicio && !temFim) || (!temInicio && temFim)) {
                 setErro("Informe início e fim do período.");
                 return;
@@ -63,13 +68,17 @@ function Indicador() {
 
             const params = new URLSearchParams();
 
-            if (unidade) {
+            if (temUnidade) {
                 params.append("unidadeSaudeId", unidadeSaudeId);
             }
 
             if (temInicio && temFim) {
                 params.append("inicio", `${dataInicio}T00:00:00`);
                 params.append("fim", `${dataFim}T23:59:59`);
+            }
+
+            if(temUsuario){
+                params.append("usuarioId", usuarioId);
             }
 
             const response = await api.get(
@@ -104,6 +113,10 @@ function Indicador() {
 
             if (fim) {
                 params.append("fim", `${fim}T23:59:59`);
+            }
+
+            if(usuario){
+                params.append("usuarioId", usuarioId);
             }
 
             const response = await api.get(`/indicadores/exportar?${params.toString()}`,
@@ -230,30 +243,32 @@ function Indicador() {
                             }
                         />
 
-                        <select
-                            className="input-field"
-                            value={unidadeSaudeId}
-                            onChange={(e) =>
-                                setUnidadeSelecionada(e.target.value)
-                            }
-                            disabled={usuario?.perfil === "USUARIO_APS"}
-                        >
+                        {usuario?.perfil !== "SOLICITANTE" && (
+                            <select
+                                className="input-field"
+                                value={unidadeSaudeId}
+                                onChange={(e) =>
+                                    setUnidadeSelecionada(e.target.value)
+                                }
+                                disabled={usuario?.perfil === "USUARIO_APS"}
+                            >
 
-                            <option value="">
-                                Todas as UBS
-                            </option>
-
-                            {unidades.map((u) => (
-                                <option
-                                    key={u.id}
-                                    value={u.id}
-                                >
-                                    {u.nome}
+                                <option value="">
+                                    Todas as UBS
                                 </option>
 
-                            ))}
+                                {unidades.map((u) => (
+                                    <option
+                                        key={u.id}
+                                        value={u.id}
+                                    >
+                                        {u.nome}
+                                    </option>
 
-                        </select>
+                                ))}
+
+                            </select>
+                        )}
 
                         <div className="indicador-actions">
                             <button

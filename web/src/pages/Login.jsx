@@ -29,12 +29,7 @@ function Login() {
             });
 
             realizarLogin(response.data, response.data.token);
-
-            if(response.data.perfil === "SOLICITANTE"){
-                navigate("/demandas");
-            }else{
-                navigate("/indicadores");
-            }
+            navigate("/indicadores");
         } catch (error) {
             const mensagem = error.response?.data?.message;
             const erroLogin = error.response?.data?.errors?.login;

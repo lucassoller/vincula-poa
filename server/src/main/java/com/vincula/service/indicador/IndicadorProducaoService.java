@@ -41,6 +41,18 @@ public class IndicadorProducaoService {
         return lista;
     }
 
+    public List<IndicadorValorDTO> indicadoresPorUsuario(Long usuarioId) {
+        List<IndicadorValorDTO> lista = new ArrayList<>(
+                demandaRepository.agruparPorStatusPorUsuario(usuarioId)
+                        .stream()
+                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
+                        .toList()
+        );
+
+        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUsuarioCriadorId(usuarioId)));
+        return lista;
+    }
+
     public List<IndicadorValorDTO> indicadoresPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         List<IndicadorValorDTO> lista = new ArrayList<>(
                 demandaRepository.agruparPorStatusPorPeriodo(inicio, fim)
@@ -68,6 +80,23 @@ public class IndicadorProducaoService {
 
         lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim)));
         lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período indicado", demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(unidadeResponsavelId, inicio, fim)));
+
+        return lista;
+    }
+
+    public List<IndicadorValorDTO> indicadoresPorUsuarioEPeriodo(Long usuarioId,
+                                                                 LocalDateTime inicio,
+                                                                 LocalDateTime fim) {
+
+        List<IndicadorValorDTO> lista = new ArrayList<>(
+                demandaRepository.agruparPorStatusPorUsuarioEPeriodo(usuarioId, inicio, fim)
+                        .stream()
+                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
+                        .toList()
+        );
+
+        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUsuarioCriadorIdAndDataHoraCriacaoBetween(usuarioId, inicio, fim)));
+        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período indicado", demandaRepository.countByUsuarioCriadorIdAndDataHoraFinalizacaoBetween(usuarioId, inicio, fim)));
 
         return lista;
     }
