@@ -8,7 +8,7 @@ public class SecurityUtils {
     private SecurityUtils() {
     }
 
-    public static String getLoginUsuarioLogado() {
+    public static String getLoginServidorLogado() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getName() == null) {

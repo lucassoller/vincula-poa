@@ -1,8 +1,9 @@
 package com.vincula.entity;
 
-import com.vincula.enums.PerfilUsuario;
+import com.vincula.enums.Sexo;
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "usuario")
@@ -14,25 +15,29 @@ public class Usuario {
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String nome;
+    private String nomeCompleto;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String email;
+    @Column(length = 11)
+    private String telefone;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String login;
-
-    @Column(nullable = false)
-    private String senhaHash;
+    @Column
+    private LocalDate dataNascimento;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 16)
-    private PerfilUsuario perfil;
+    @Column(nullable = false, length = 13)
+    private Sexo sexo;
+
+    @Column(nullable = false, unique = true, length = 15)
+    private String documento;
 
     @Column(nullable = false)
-    private Boolean ativo;
+    private Long idServidorCadastro;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unidade_saude_id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "endereco_id", nullable = false, unique = true)
+    private Endereco endereco;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "unidade_saude_id", nullable = false)
     private UnidadeSaude unidadeSaude;
 }

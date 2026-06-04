@@ -1,11 +1,11 @@
 package com.vincula.service;
 
-import com.vincula.dto.paciente.PacienteResponseDTO;
+import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
 import com.vincula.entity.Endereco;
-import com.vincula.entity.Paciente;
+import com.vincula.entity.Usuario;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
@@ -58,10 +58,10 @@ public class UnidadeSaudeService {
                 .map(this::toDTO);
     }
 
-    public List<PacienteResponseDTO> listarPacientesPorUnidade(Long unidadeSaudeId) {
-        return unidadeSaudeRepository.findPacientesByUnidadeSaudeId(unidadeSaudeId)
+    public List<UsuarioResponseDTO> listarUsuariosPorUnidade(Long unidadeSaudeId) {
+        return unidadeSaudeRepository.findUsuariosByUnidadeSaudeId(unidadeSaudeId)
                 .stream()
-                .map(this::toPacienteDTO)
+                .map(this::toUsuarioDTO)
                 .toList();
     }
 
@@ -155,8 +155,8 @@ public class UnidadeSaudeService {
         return dto;
     }
 
-    private PacienteResponseDTO toPacienteDTO(Paciente entity) {
-        PacienteResponseDTO dto = new PacienteResponseDTO();
+    private UsuarioResponseDTO toUsuarioDTO(Usuario entity) {
+        UsuarioResponseDTO dto = new UsuarioResponseDTO();
 
         dto.setId(entity.getId());
         dto.setNomeCompleto(entity.getNomeCompleto());

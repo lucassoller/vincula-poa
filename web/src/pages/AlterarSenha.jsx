@@ -24,7 +24,7 @@ function AlterarSenha() {
 
     async function salvar(dados) {
         try {
-            await api.put("/usuarios/me/senha", dados);
+            await api.put("/servidores/me/senha", dados);
             setMensagem("Senha alterada com sucesso!");
             reset();
 

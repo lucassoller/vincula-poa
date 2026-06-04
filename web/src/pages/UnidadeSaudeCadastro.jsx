@@ -70,7 +70,7 @@ function UnidadeSaudeCadastro() {
                     <div>
                         <h1>Nova Unidade Básica de Saúde</h1>
                         <p>
-                            Cadastre uma unidade para vinculação de pacientes e equipes
+                            Cadastre uma unidade para vinculação de usuários e equipes
                         </p>
                     </div>
                 </div>
@@ -182,6 +182,7 @@ function UnidadeSaudeCadastro() {
                             <EnderecoForm
                                 register={register}
                                 erros={erros}
+
                             />
                             <div className="form-actions">
                                 <button

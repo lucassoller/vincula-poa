@@ -26,9 +26,9 @@ public class AuditoriaController {
         return ResponseEntity.ok(auditoriaService.listarTodos(pageable));
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<Page<AuditoriaDTO>> listarPorUsuario(@PathVariable Long usuarioId, Pageable pageable) {
-        return ResponseEntity.ok(auditoriaService.listarPorUsuario(usuarioId, pageable));
+    @GetMapping("/servidor/{servidorId}")
+    public ResponseEntity<Page<AuditoriaDTO>> listarPorServidor(@PathVariable Long servidorId, Pageable pageable) {
+        return ResponseEntity.ok(auditoriaService.listarPorServidor(servidorId, pageable));
     }
 
     @GetMapping("/periodo")
@@ -40,13 +40,13 @@ public class AuditoriaController {
         return ResponseEntity.ok(auditoriaService.listarPorPeriodo(inicio, fim, pageable));
     }
 
-    @GetMapping("/usuario/{usuarioId}/periodo")
-    public ResponseEntity<Page<AuditoriaDTO>> listarPorUsuarioEPeriodo(
-            @PathVariable Long usuarioId,
+    @GetMapping("/servidor/{servidorId}/periodo")
+    public ResponseEntity<Page<AuditoriaDTO>> listarPorServidorEPeriodo(
+            @PathVariable Long servidorId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(auditoriaService.listarPorUsuarioEPeriodo(usuarioId, inicio, fim, pageable));
+        return ResponseEntity.ok(auditoriaService.listarPorServidorEPeriodo(servidorId, inicio, fim, pageable));
     }
 }

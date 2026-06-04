@@ -4,7 +4,7 @@ import {useAuth} from "../context/AuthContext.jsx";
 
 function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
     const navigate = useNavigate();
-    const { usuario } = useAuth();
+    const { servidor } = useAuth();
 
     return (
         <div className="modal-overlay">
@@ -73,7 +73,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                     </div>
                 </div>
 
-                {usuario?.perfil === 'GESTAO_MUNICIPAL' && (
+                {servidor?.perfil === 'GESTAO_MUNICIPAL' && (
                     <div className="ubs-actions">
                         <button
                             type="button"

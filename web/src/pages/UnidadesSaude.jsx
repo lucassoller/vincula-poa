@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/api";
-import "./pacientes.css";
+import "./usuarios.css";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Paginations.jsx";
 import { mascaraTelefone } from "../utils/mascaras.js";
@@ -9,7 +9,7 @@ import ModalUbs from "../components/ModalUbs.jsx";
 
 function UnidadesSaude() {
     const navigate = useNavigate();
-    const { usuario } = useAuth();
+    const { servidor } = useAuth();
     const [unidades, setUnidades] = useState([]);
     const [unidadeDetalhada, setUnidadeDetalhada] = useState(null);
     const [mensagem, setMensagem] = useState("");
@@ -115,18 +115,18 @@ function UnidadesSaude() {
     }
 
     return (
-        <div className="pacientes-container">
-            <div className="pacientes-page">
-                <div className="pacientes-header">
+        <div className="usuarios-container">
+            <div className="usuarios-page">
+                <div className="usuarios-header">
                     <div>
-                        <h1 className="pacientes-title">Unidades de Saúde</h1>
-                        <p className="pacientes-subtitle">
+                        <h1 className="usuarios-title">Unidades de Saúde</h1>
+                        <p className="usuarios-subtitle">
                             Visualize e gerencie as UBS cadastradas
                         </p>
                     </div>
 
                     <div className="perfil-badge">
-                        {usuario?.perfil}
+                        {servidor?.perfil}
                     </div>
 
                 </div>
@@ -141,7 +141,7 @@ function UnidadesSaude() {
                     <div className="table-topbar">
                         <div className="search-container">
                             <input
-                                className="paciente-search"
+                                className="usuario-search"
                                 placeholder="Buscar UBS..."
                                 value={filtro}
                                 onChange={(e) => setFiltro(e.target.value)}
@@ -168,7 +168,7 @@ function UnidadesSaude() {
                             </button>
 
                         </div>
-                        {(usuario?.perfil === "GESTAO_MUNICIPAL") && (
+                        {(servidor?.perfil === "GESTAO_MUNICIPAL") && (
                             <button
                                 className="buscar-btn"
                                 onClick={() => navigate("/unidades-saude/cadastro")}
@@ -177,7 +177,7 @@ function UnidadesSaude() {
                             </button>
                         )}
                     </div>
-                    <table className="pacientes-table">
+                    <table className="usuarios-table">
                         <thead>
                         <tr>
                             <th>Nome</th>
@@ -196,7 +196,7 @@ function UnidadesSaude() {
 
                             <tr key={ubs.id}>
                                 <td>
-                                    <div className="paciente-nome">
+                                    <div className="usuario-nome">
                                         {ubs.nome}
                                     </div>
                                 </td>
@@ -213,7 +213,7 @@ function UnidadesSaude() {
                                         >
                                             Ver mais
                                         </button>
-                                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
                                             <button
                                                 className="btn-editar"
                                                 onClick={() =>

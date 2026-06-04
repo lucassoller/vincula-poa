@@ -4,7 +4,7 @@ import com.vincula.dto.tentativaContato.TentativaContatoDTO;
 import com.vincula.dto.tentativaContato.TentativaContatoResponseDTO;
 import com.vincula.entity.Demanda;
 import com.vincula.entity.TentativaContato;
-import com.vincula.entity.Usuario;
+import com.vincula.entity.Servidor;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
@@ -23,16 +23,16 @@ public class TentativaContatoService {
 
     private final TentativaContatoRepository tentativaRepository;
     private final DemandaRepository demandaRepository;
-    private final UsuarioService usuarioService;
+    private final ServidorService servidorService;
     private final AuditoriaFacade auditoriaFacade;
 
     public TentativaContatoService(TentativaContatoRepository tentativaRepository,
                                    DemandaRepository demandaRepository,
-                                   UsuarioService usuarioService,
+                                   ServidorService servidorService,
                                    AuditoriaFacade auditoriaFacade) {
         this.tentativaRepository = tentativaRepository;
         this.demandaRepository = demandaRepository;
-        this.usuarioService = usuarioService;
+        this.servidorService = servidorService;
         this.auditoriaFacade = auditoriaFacade;
     }
 
@@ -76,8 +76,8 @@ public class TentativaContatoService {
                 .toList();
     }
 
-    public List<TentativaContatoResponseDTO> listarPorUsuario(Long id) {
-        return tentativaRepository.findByUsuarioId(id)
+    public List<TentativaContatoResponseDTO> listarPorServidor(Long id) {
+        return tentativaRepository.findByServidorId(id)
                 .stream()
                 .map(this::toDTO)
                 .toList();
@@ -96,13 +96,13 @@ public class TentativaContatoService {
             throw new BusinessException("Não é possível registrar tentativa de contato em uma demanda finalizada");
         }
 
-        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+        Servidor servidor = servidorService.buscarServidorAutenticado();
 
         boolean primeiraTentativa = !tentativaRepository.existsByDemandaId(demanda.getId());
 
         TentativaContato entity = new TentativaContato();
         entity.setDemanda(demanda);
-        entity.setUsuario(usuario);
+        entity.setServidor(servidor);
         entity.setTipo(dto.getTipo());
         entity.setDescricao(dto.getDescricao());
         entity.setDataHora(LocalDateTime.now());
@@ -137,8 +137,8 @@ public class TentativaContatoService {
         dto.setTipo(entity.getTipo());
         dto.setDescricao(entity.getDescricao());
         dto.setDataHora(entity.getDataHora());
-        dto.setUsuarioId(entity.getUsuario().getId());
-        dto.setUsuarioNome(entity.getUsuario().getNome());
+        dto.setServidorId(entity.getServidor().getId());
+        dto.setServidorNome(entity.getServidor().getNome());
 
         return dto;
     }

@@ -1,14 +1,14 @@
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import Login from "./pages/Login";
 import Indicador from "./pages/Indicador.jsx";
-import Pacientes from "./pages/Pacientes";
+import Usuarios from "./pages/Usuarios.jsx";
 import Demandas from "./pages/Demandas";
 import Auditoria from "./pages/Auditoria";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
-import PacienteCadastro from "./pages/PacienteCadastro";
-import PacienteEditar from "./pages/PacienteEditar";
-import UsuarioCadastro from "./pages/UsuarioCadastro";
+import UsuarioCadastro from "./pages/UsuarioCadastro.jsx";
+import UsuarioEditar from "./pages/UsuarioEditar.jsx";
+import ServidorCadastro from "./pages/ServidorCadastro";
 import UnidadeSaudeCadastro from "./pages/UnidadeSaudeCadastro";
 import UnidadeSaudeEditar from "./pages/UnidadeSaudeEditar";
 import GestaoListagem from "./pages/GestaoListagem.jsx";
@@ -23,7 +23,7 @@ import EsqueciSenha from "./pages/EsqueciSenha.jsx";
 import RedefinirSenha from "./pages/RedefinirSenha.jsx";
 
 function App() {
-    const { usuario } = useAuth();
+    const { servidor } = useAuth();
     return (
       <BrowserRouter>
         <Routes>
@@ -50,7 +50,7 @@ function App() {
             <Route
               path="/indicadores"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                     <Layout>
                         <Indicador />
                     </Layout>
@@ -58,11 +58,11 @@ function App() {
               }
             />
             <Route
-              path="/pacientes"
+              path="/usuarios"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                     <Layout>
-                        <Pacientes />
+                        <Usuarios />
                     </Layout>
                 </ProtectedRoute>
               }
@@ -79,22 +79,22 @@ function App() {
             />
 
             <Route
-                path="/pacientes/cadastro"
+                path="/usuarios/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                         <Layout>
-                            <PacienteCadastro />
+                            <UsuarioCadastro />
                         </Layout>
                     </ProtectedRoute>
                 }
             />
 
             <Route
-                path="/pacientes/:id/editar"
+                path="/usuarios/:id/editar"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                         <Layout>
-                            <PacienteEditar />
+                            <UsuarioEditar />
                         </Layout>
                     </ProtectedRoute>
                 }
@@ -103,7 +103,7 @@ function App() {
             <Route
                 path="/demandas"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                         <Layout>
                             <Demandas />
                         </Layout>
@@ -114,7 +114,7 @@ function App() {
             <Route
                 path="/demandas/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                         <Layout>
                             <DemandaCadastro />
                         </Layout>
@@ -134,11 +134,11 @@ function App() {
             />
 
             <Route
-                path="/usuarios/cadastro"
+                path="/servidores/cadastro"
                 element={
                     <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
                         <Layout>
-                            <UsuarioCadastro />
+                            <ServidorCadastro />
                         </Layout>
                     </ProtectedRoute>
                 }
@@ -158,7 +158,7 @@ function App() {
             <Route
                 path="/unidades-saude"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                         <Layout>
                             <UnidadesSaude />
                         </Layout>
@@ -189,7 +189,7 @@ function App() {
             <Route
                 path="/meu-perfil"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                         <Layout>
                             <MeuPerfil />
                         </Layout>
@@ -199,7 +199,7 @@ function App() {
             <Route
                 path="/alterar-senha"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "USUARIO_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
                         <Layout>
                             <AlterarSenha />
                         </Layout>
@@ -209,7 +209,7 @@ function App() {
             <Route
                 path="*"
                 element={
-                    usuario
+                    servidor
                         ? <Navigate to="/indicadores" replace />
                         : <Navigate to="/" replace />
                 }

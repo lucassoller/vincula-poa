@@ -11,7 +11,7 @@ function ModalRedirecionarDemandas({
                         <h2>Redirecionar demandas abertas?</h2>
 
                         <p>
-                            A UBS vinculada ao paciente mudou.
+                            A UBS vinculada ao usuário mudou.
                             Deseja redirecionar as demandas abertas
                             e em andamento para a nova UBS?
                         </p>
@@ -32,7 +32,7 @@ function ModalRedirecionarDemandas({
                         className="limpar-btn"
                         onClick={onCancelar}
                     >
-                        Não, apenas salvar paciente
+                        Não, apenas salvar usuário
                     </button>
                 </div>
             </div>

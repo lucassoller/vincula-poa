@@ -26,7 +26,7 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                     <h3>Informações gerais</h3>
 
                     <div className="detalhe-grid">
-                        <CampoDetalhe label="Paciente" valor={demanda.pacienteNome} />
+                        <CampoDetalhe label="Usuário" valor={demanda.usuarioNome} />
                         <CampoDetalhe label="Motivo da busca" valor={motivoBuscaLabel[demanda.motivoBuscaAtiva]} />
                         <CampoDetalhe label="Status" valor={statusLabel[demanda.status]} />
                         <CampoDetalhe label="Prazo" valor={prazoLabel[demanda.prazoDemanda]} />
@@ -58,12 +58,12 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                 </div>
 
                 <div className="detalhe-section">
-                    <h3>Usuários</h3>
+                    <h3>Servidores</h3>
 
                     <div className="detalhe-grid">
-                        <CampoDetalhe label="Criada por" valor={demanda.usuarioCriadorNome} />
-                        <CampoDetalhe label="Redirecionada por" valor={demanda.usuarioRedirecionamentoNome} />
-                        <CampoDetalhe label="Finalizada por" valor={demanda.usuarioEncerramentoNome} />
+                        <CampoDetalhe label="Criada por" valor={demanda.servidorCriadorNome} />
+                        <CampoDetalhe label="Redirecionada por" valor={demanda.servidorRedirecionamentoNome} />
+                        <CampoDetalhe label="Finalizada por" valor={demanda.servidorEncerramentoNome} />
                     </div>
                 </div>
 
@@ -107,7 +107,7 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                                     <p>{t.descricao}</p>
 
                                     <small>
-                                        Registrado por: {t.usuarioNome}
+                                        Registrado por: {t.servidorNome}
                                     </small>
                                 </div>
                             ))}

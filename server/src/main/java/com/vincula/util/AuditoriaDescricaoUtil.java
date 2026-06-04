@@ -2,11 +2,11 @@ package com.vincula.util;
 
 import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.endereco.EnderecoDTO;
-import com.vincula.dto.paciente.PacienteDTO;
+import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.tentativaContato.TentativaContatoDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
-import com.vincula.dto.usuario.MeuPerfilDTO;
-import com.vincula.dto.usuario.UsuarioDTO;
+import com.vincula.dto.servidor.MeuPerfilDTO;
+import com.vincula.dto.servidor.ServidorDTO;
 import com.vincula.entity.*;
 
 import java.util.Objects;
@@ -26,7 +26,7 @@ public class AuditoriaDescricaoUtil {
         return sb.isEmpty() ? "Demanda atualizada sem alterações relevantes" : sb.toString();
     }
 
-    public static String pacienteAtualizado(Paciente entity, PacienteDTO dto) {
+    public static String usuarioAtualizado(Usuario entity, UsuarioDTO dto) {
         StringBuilder sb = new StringBuilder();
 
         adicionarAlteracao(sb, "Nome", entity.getNomeCompleto(), dto.getNomeCompleto());
@@ -43,7 +43,7 @@ public class AuditoriaDescricaoUtil {
             }
         }
 
-        return sb.isEmpty() ? "Paciente atualizado sem alterações relevantes" : sb.toString();
+        return sb.isEmpty() ? "Usuário atualizado sem alterações relevantes" : sb.toString();
     }
 
     public static String tentativaContatoAtualizada(TentativaContato entity, TentativaContatoDTO dto) {
@@ -94,7 +94,7 @@ public class AuditoriaDescricaoUtil {
         return enderecoAlteracao;
     }
 
-    public static String usuarioAtualizado(Usuario entity, UsuarioDTO dto) {
+    public static String servidorAtualizado(Servidor entity, ServidorDTO dto) {
         StringBuilder sb = new StringBuilder();
 
         adicionarAlteracao(sb, "Nome", entity.getNome(), dto.getNome());
@@ -106,17 +106,17 @@ public class AuditoriaDescricaoUtil {
         Long unidadeAntes = entity.getUnidadeSaude() != null ? entity.getUnidadeSaude().getId() : null;
         adicionarAlteracao(sb, "Unidade de saúde", unidadeAntes, dto.getUnidadeSaudeId());
 
-        return sb.isEmpty() ? "Usuário atualizado sem alterações relevantes" : sb.toString();
+        return sb.isEmpty() ? "Servidor atualizado sem alterações relevantes" : sb.toString();
     }
 
-    public static String usuarioAtualizado(Usuario entity, MeuPerfilDTO dto) {
+    public static String servidorAtualizado(Servidor entity, MeuPerfilDTO dto) {
         StringBuilder sb = new StringBuilder();
 
         adicionarAlteracao(sb, "Nome", entity.getNome(), dto.getNome());
         adicionarAlteracao(sb, "Email", entity.getEmail(), dto.getEmail());
         adicionarAlteracao(sb, "Login", entity.getLogin(), dto.getLogin());
 
-        return sb.isEmpty() ? "Usuário atualizado sem alterações relevantes" : sb.toString();
+        return sb.isEmpty() ? "Servidor atualizado sem alterações relevantes" : sb.toString();
     }
 
     private static String alterarEndereco(Endereco entity, EnderecoDTO dto){

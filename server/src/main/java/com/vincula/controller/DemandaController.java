@@ -33,7 +33,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.criar(dto));
     }
 
-    @PreAuthorize("hasRole('USUARIO_APS')")
+    @PreAuthorize("hasRole('SERVIDOR_APS')")
     @PutMapping("/{id}")
     public ResponseEntity<DemandaResponseDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody DemandaDTO dto) {
@@ -52,16 +52,16 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.buscarPorId(id));
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
-    @GetMapping("/paciente/{pacienteId}")
-    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorPaciente(
-            @PathVariable Long pacienteId,
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUsuario(
+            @PathVariable Long usuarioId,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(demandaService.listarPorPaciente(pacienteId, pageable));
+        return ResponseEntity.ok(demandaService.listarPorUsuario(usuarioId, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
     @GetMapping("/unidade/{unidadeSaudeId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaude(
             @PathVariable Long unidadeSaudeId,
@@ -71,12 +71,12 @@ public class DemandaController {
     }
 
     @PreAuthorize("hasAnyRole('SOLICITANTE','GESTAO_MUNICIPAL')")
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUsuarioCriador(
-            @PathVariable Long usuarioId,
+    @GetMapping("/servidor/{servidorId}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorServidorCriador(
+            @PathVariable Long servidorId,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(demandaService.listarPorUsuarioCriador(usuarioId, pageable));
+        return ResponseEntity.ok(demandaService.listarPorServidorCriador(servidorId, pageable));
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
@@ -94,7 +94,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));
     }
 
-    @PreAuthorize("hasRole('USUARIO_APS')")
+    @PreAuthorize("hasRole('SERVIDOR_APS')")
     @GetMapping("/filtradas/unidade/{unidadeSaudeId}/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaudeFiltradas(
             @PathVariable Long unidadeSaudeId,
@@ -105,23 +105,23 @@ public class DemandaController {
     }
 
     @PreAuthorize("hasRole('SOLICITANTE')")
-    @GetMapping("/filtradas/usuario/{usuarioCriadorId}/{filtro}")
-    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUsuarioFiltradas(
-            @PathVariable Long usuarioCriadorId,
+    @GetMapping("/filtradas/servidor/{servidorCriadorId}/{filtro}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorServidorFiltradas(
+            @PathVariable Long servidorCriadorId,
             @PathVariable String filtro,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(demandaService.listarPorUsuarioCriadorFiltradas(usuarioCriadorId, filtro, pageable));
+        return ResponseEntity.ok(demandaService.listarPorServidorCriadorFiltradas(servidorCriadorId, filtro, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/redirecionar")
     public ResponseEntity<DemandaResponseDTO> redirecionar(@PathVariable Long id,
                                                    @Valid @RequestBody RedirecionarDemandaDTO dto) {
         return ResponseEntity.ok(demandaService.redirecionar(id, dto));
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL')")
     @PatchMapping("/{id}/encerrar")
     public ResponseEntity<DemandaResponseDTO> encerrar(@PathVariable Long id,
                                                        @Valid @RequestBody EncerrarDemandaDTO dto) {
@@ -145,7 +145,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("hasRole('USUARIO_APS')")
+    @PreAuthorize("hasRole('SERVIDOR_APS')")
     @GetMapping(value = "/exportar/unidade/{unidadeId}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasPorUnidadeCsv(
             @PathVariable Long unidadeId
@@ -157,12 +157,12 @@ public class DemandaController {
     }
 
     @PreAuthorize("hasRole('SOLICITANTE')")
-    @GetMapping(value = "/exportar/usuario/{usuarioCriadorId}", produces = "text/csv")
-    public ResponseEntity<String> exportarDemandasPorUsuarioCsv(
-            @PathVariable Long usuarioCriadorId
+    @GetMapping(value = "/exportar/servidor/{servidorCriadorId}", produces = "text/csv")
+    public ResponseEntity<String> exportarDemandasPorServidorCsv(
+            @PathVariable Long servidorCriadorId
     ) {
 
-        String csv = demandaService.exportarDemandasPorUsuarioCsv(usuarioCriadorId);
+        String csv = demandaService.exportarDemandasPorServidorCsv(servidorCriadorId);
 
         return gerarRespostaCsv(csv);
     }
@@ -178,7 +178,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("hasRole('USUARIO_APS')")
+    @PreAuthorize("hasRole('SERVIDOR_APS')")
     @GetMapping(
             value = "/exportar/filtradas/unidade/{unidadeId}/{filtro}",
             produces = "text/csv"
@@ -196,16 +196,16 @@ public class DemandaController {
 
     @PreAuthorize("hasRole('SOLICITANTE')")
     @GetMapping(
-            value = "/exportar/filtradas/usuario/{usuarioCriadorId}/{filtro}",
+            value = "/exportar/filtradas/servidor/{servidorCriadorId}/{filtro}",
             produces = "text/csv"
     )
-    public ResponseEntity<String> exportarDemandasFiltradasPorUsuarioCsv(
-            @PathVariable Long usuarioCriadorId,
+    public ResponseEntity<String> exportarDemandasFiltradasPorServidorCsv(
+            @PathVariable Long servidorCriadorId,
             @PathVariable String filtro
     ) {
 
         String csv = demandaService
-                .exportarDemandasFiltradasPorUsuarioCsv(usuarioCriadorId, filtro);
+                .exportarDemandasFiltradasPorServidorCsv(servidorCriadorId, filtro);
 
         return gerarRespostaCsv(csv);
     }

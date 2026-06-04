@@ -30,8 +30,8 @@ public class DemandaResponseDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dataHoraFinalizacao;
 
-    private Long pacienteId;
-    private String pacienteNome;
+    private Long usuarioId;
+    private String usuarioNome;
 
     private Long unidadeSolicitanteId;
     private String unidadeSolicitanteNome;
@@ -39,11 +39,11 @@ public class DemandaResponseDTO {
     private Long unidadeResponsavelId;
     private String unidadeResponsavelNome;
 
-    private Long usuarioCriadorId;
-    private String usuarioCriadorNome;
+    private Long servidorCriadorId;
+    private String servidorCriadorNome;
 
-    private Long usuarioEncerramentoId;
-    private String usuarioEncerramentoNome;
+    private Long servidorEncerramentoId;
+    private String servidorEncerramentoNome;
 
     private Long unidadeResponsavelAnteriorId;
     private String unidadeResponsavelAnteriorNome;
@@ -53,6 +53,6 @@ public class DemandaResponseDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dataHoraRedirecionamento;
 
-    private Long usuarioRedirecionamentoId;
-    private String usuarioRedirecionamentoNome;
+    private Long servidorRedirecionamentoId;
+    private String servidorRedirecionamentoNome;
 }

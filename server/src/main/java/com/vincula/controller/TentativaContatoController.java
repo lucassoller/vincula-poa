@@ -22,13 +22,13 @@ public class TentativaContatoController {
         this.tentativaService = tentativaService;
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
     @PostMapping
     public ResponseEntity<TentativaContatoResponseDTO> criar(@Valid @RequestBody TentativaContatoDTO dto) {
         return ResponseEntity.ok(tentativaService.criar(dto));
     }
 
-    @PreAuthorize("hasAnyRole('USUARIO_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
     public ResponseEntity<TentativaContatoResponseDTO> atualizar(@PathVariable Long id,
                                                          @Valid @RequestBody TentativaContatoDTO dto) {

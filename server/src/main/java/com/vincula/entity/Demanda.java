@@ -57,8 +57,8 @@ public class Demanda {
     private String motivoRedirecionamento;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "paciente_id", nullable = false)
-    private Paciente paciente;
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unidade_solicitante_id")
@@ -73,15 +73,15 @@ public class Demanda {
     private UnidadeSaude unidadeResponsavelAnterior;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "usuario_criador_id", nullable = false)
-    private Usuario usuarioCriador;
+    @JoinColumn(name = "servidor_criador_id", nullable = false)
+    private Servidor servidorCriador;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_encerramento_id")
-    private Usuario usuarioEncerramento;
+    @JoinColumn(name = "servidor_encerramento_id")
+    private Servidor servidorEncerramento;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_redirecionamento_id")
-    private Usuario usuarioRedirecionamento;
+    @JoinColumn(name = "servidor_redirecionamento_id")
+    private Servidor servidorRedirecionamento;
 
 }

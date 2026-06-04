@@ -74,25 +74,25 @@
     overflow-x: auto;
 }
 
-.pacientes-table {
+.usuarios-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.pacientes-table th,
-.pacientes-table td {
+.usuarios-table th,
+.usuarios-table td {
     text-align: left;
     padding: 22px 18px;
 }
 
-.pacientes-table th {
+.usuarios-table th {
     background: #f8fafc;
     color: #334155;
     font-size: 14px;
     font-weight: 700;
 }
 
-.pacientes-table td {
+.usuarios-table td {
     color: #1e293b;
     border-top: 1px solid #e2e8f0;
     vertical-align: middle;

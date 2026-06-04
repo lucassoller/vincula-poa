@@ -1,6 +1,5 @@
 package com.vincula.controller;
 
-import com.vincula.dto.paciente.PacienteResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;

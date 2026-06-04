@@ -2,7 +2,6 @@ package com.vincula.repository;
 
 import com.vincula.dto.projection.*;
 import com.vincula.entity.Demanda;
-import com.vincula.entity.Paciente;
 import com.vincula.enums.StatusDemanda;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,27 +16,27 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     ORDER BY p.nomeCompleto ASC
 """)
-    Page<Demanda> findAllOrderByPacienteNome(Pageable pageable);
+    Page<Demanda> findAllOrderByUsuarioNome(Pageable pageable);
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     ORDER BY p.nomeCompleto ASC
 """)
-    List<Demanda> findAllOrderByPacienteNome();
+    List<Demanda> findAllOrderByUsuarioNome();
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     WHERE (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -49,11 +48,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     WHERE (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -65,30 +64,30 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     WHERE d.unidadeResponsavel.id = :unidadeSaudeId
     ORDER BY p.nomeCompleto ASC
 """)
-    Page<Demanda> findByUnidadeOrderByPacienteNome(@Param("unidadeSaudeId") Long unidadeSaudeId, Pageable pageable);
+    Page<Demanda> findByUnidadeOrderByUsuarioNome(@Param("unidadeSaudeId") Long unidadeSaudeId, Pageable pageable);
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     WHERE d.unidadeResponsavel.id = :unidadeSaudeId
     ORDER BY p.nomeCompleto ASC
 """)
-    List<Demanda> findByUnidadeOrderByPacienteNome(@Param("unidadeSaudeId") Long unidadeSaudeId);
+    List<Demanda> findByUnidadeOrderByUsuarioNome(@Param("unidadeSaudeId") Long unidadeSaudeId);
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     WHERE d.unidadeResponsavel.id = :unidadeSaudeId
     AND (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -102,12 +101,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     WHERE d.unidadeResponsavel.id = :unidadeSaudeId
     AND (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
@@ -120,77 +119,77 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
-    WHERE d.usuarioCriador.id = :usuarioCriadorId
+    JOIN d.usuario p
+    WHERE d.servidorCriador.id = :servidorCriadorId
     ORDER BY p.nomeCompleto ASC
 """)
-    Page<Demanda> findByUsuarioOrderByPacienteNome(@Param("usuarioCriadorId") Long usuarioCriadorId, Pageable pageable);
+    Page<Demanda> findByServidorOrderByUsuarioNome(@Param("servidorCriadorId") Long servidorCriadorId, Pageable pageable);
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
-    WHERE d.usuarioCriador.id = :usuarioCriadorId
+    JOIN d.usuario p
+    WHERE d.servidorCriador.id = :servidorCriadorId
     ORDER BY p.nomeCompleto ASC
 """)
-    List<Demanda> findByUsuarioOrderByPacienteNome(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    List<Demanda> findByServidorOrderByUsuarioNome(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
-    WHERE d.usuarioCriador.id = :usuarioCriadorId
+    JOIN d.usuario p
+    WHERE d.servidorCriador.id = :servidorCriadorId
     AND (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
     )
     ORDER BY p.nomeCompleto ASC
 """)
-    Page<Demanda> findFiltradasByUsuarioCriador(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    Page<Demanda> findFiltradasByServidorCriador(@Param("servidorCriadorId") Long servidorCriadorId,
                                                 @Param("filtro") String filtro,
                                                 Pageable pageable);
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
-    WHERE d.usuarioCriador.id = :usuarioCriadorId
+    JOIN d.usuario p
+    WHERE d.servidorCriador.id = :servidorCriadorId
     AND (
         LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.usuarioCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
     )
     ORDER BY p.nomeCompleto ASC
 """)
-    List<Demanda> findFiltradasByUsuarioCriador(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    List<Demanda> findFiltradasByServidorCriador(@Param("servidorCriadorId") Long servidorCriadorId,
                                                 @Param("filtro") String filtro);
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
-    WHERE d.paciente.id = :pacienteId
+    JOIN d.usuario p
+    WHERE d.usuario.id = :usuarioId
     ORDER BY p.nomeCompleto ASC
 """)
-    Page<Demanda> findByPacienteOrderByPacienteNome(@Param("pacienteId") Long pacienteId, Pageable pageable);
+    Page<Demanda> findByUsuarioOrderByUsuarioNome(@Param("usuarioId") Long usuarioId, Pageable pageable);
 
     @Query("""
     SELECT d
     FROM Demanda d
-    JOIN d.paciente p
+    JOIN d.usuario p
     WHERE d.status = :status
     ORDER BY p.nomeCompleto ASC
 """)
-    Page<Demanda> findByStatusOrderByPacienteNome(@Param("status") StatusDemanda status, Pageable pageable);
+    Page<Demanda> findByStatusOrderByUsuarioNome(@Param("status") StatusDemanda status, Pageable pageable);
 
-    List<Demanda> findByPacienteIdAndStatusIn(Long pacienteId, List<StatusDemanda> status);
+    List<Demanda> findByUsuarioIdAndStatusIn(Long usuarioId, List<StatusDemanda> status);
 
     double countBy();
 
@@ -198,29 +197,29 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
 
     double countByUnidadeResponsavelId(Long unidadeRespondavelId);
 
-    double countByUsuarioCriadorId(Long usuarioCriadorId);
+    double countByServidorCriadorId(Long servidorCriadorId);
 
     double countByStatusAndUnidadeResponsavelId(StatusDemanda status, Long unidadeRespondavelId);
 
-    double countByStatusAndUsuarioCriadorId(StatusDemanda status, Long usuarioCriadorId);
+    double countByStatusAndServidorCriadorId(StatusDemanda status, Long servidorCriadorId);
 
     double countByDataHoraCriacaoBetween(LocalDateTime inicio, LocalDateTime fim);
 
     double countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(Long unidadeRespondavelId, LocalDateTime inicio, LocalDateTime fim);
 
-    double countByUsuarioCriadorIdAndDataHoraCriacaoBetween(Long usuarioCriadorId, LocalDateTime inicio, LocalDateTime fim);
+    double countByServidorCriadorIdAndDataHoraCriacaoBetween(Long servidorCriadorId, LocalDateTime inicio, LocalDateTime fim);
 
     double countByDataHoraFinalizacaoBetween(LocalDateTime inicio, LocalDateTime fim);
 
     double countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(Long unidadeRespondavelId, LocalDateTime inicio, LocalDateTime fim);
 
-    double countByUsuarioCriadorIdAndDataHoraFinalizacaoBetween(Long usuarioCriadorId, LocalDateTime inicio, LocalDateTime fim);
+    double countByServidorCriadorIdAndDataHoraFinalizacaoBetween(Long servidorCriadorId, LocalDateTime inicio, LocalDateTime fim);
 
     double countByStatusAndDataHoraCriacaoBetween(StatusDemanda status, LocalDateTime inicio, LocalDateTime fim);
 
     double countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(StatusDemanda status, Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim);
 
-    double countByStatusAndUsuarioCriadorIdAndDataHoraCriacaoBetween(StatusDemanda status, Long usuarioCriadorId, LocalDateTime inicio, LocalDateTime fim);
+    double countByStatusAndServidorCriadorIdAndDataHoraCriacaoBetween(StatusDemanda status, Long servidorCriadorId, LocalDateTime inicio, LocalDateTime fim);
 
     @Query(value = """
     SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
@@ -252,11 +251,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.usuario_criador_id = :usuarioCriadorId
+    WHERE d.servidor_criador_id = :servidorCriadorId
         AND d.desfecho IN ('ENCONTRADO_VINCULADO', 'ENCONTRADO_RECUSOU', 'NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OBITO', 'OUTRO')
     GROUP BY d.desfecho
     """, nativeQuery = true)
-    List<DesfechoQuantidadeProjection> agruparPorDesfechoEUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    List<DesfechoQuantidadeProjection> agruparPorDesfechoEServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
     SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
@@ -273,12 +272,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.usuario_criador_id = :usuarioCriadorId
+    WHERE d.servidor_criador_id = :servidorCriadorId
       AND d.data_hora_criacao BETWEEN :inicio AND :fim
       AND d.desfecho IN ('ENCONTRADO_VINCULADO', 'ENCONTRADO_RECUSOU', 'NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OBITO', 'OUTRO')
     GROUP BY d.desfecho
     """, nativeQuery = true)
-    List<DesfechoQuantidadeProjection> agruparPorDesfechoEUsuarioPorPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    List<DesfechoQuantidadeProjection> agruparPorDesfechoEServidorPorPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                                             @Param("inicio") LocalDateTime inicio,
                                                                             @Param("fim") LocalDateTime fim);
 
@@ -301,9 +300,9 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
        SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
        FROM demanda d
        WHERE d.data_hora_finalizacao IS NOT NULL
-         AND d.usuario_criador_id = :usuarioCriadorId
+         AND d.servidor_criador_id = :servidorCriadorId
        """, nativeQuery = true)
-    Double calcularTempoMedioResolucaoEmSegundosPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    Double calcularTempoMedioResolucaoEmSegundosPorServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
        SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
@@ -328,10 +327,10 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
         SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
         FROM demanda d
         WHERE d.data_hora_finalizacao IS NOT NULL
-          AND d.usuario_criador_id = :usuarioCriadorId
+          AND d.servidor_criador_id = :servidorCriadorId
           AND d.data_hora_criacao BETWEEN :inicio AND :fim
         """, nativeQuery = true)
-    Double calcularTempoMedioResolucaoEmSegundosPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    Double calcularTempoMedioResolucaoEmSegundosPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                                    @Param("inicio") LocalDateTime inicio,
                                                                    @Param("fim") LocalDateTime fim);
 
@@ -358,11 +357,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
     WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
-      AND d.usuario_criador_id = :usuarioCriadorId
+      AND d.servidor_criador_id = :servidorCriadorId
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
-    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
 
     @Query(value = """
@@ -393,12 +392,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
     WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
-      AND d.usuario_criador_id = :usuarioCriadorId
+      AND d.servidor_criador_id = :servidorCriadorId
       AND d.data_hora_criacao BETWEEN :inicio AND :fim
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
-    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                                                         @Param("inicio") LocalDateTime inicio,
                                                                                         @Param("fim") LocalDateTime fim);
 
@@ -422,11 +421,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.status AS status, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.usuario_criador_id = :usuarioCriadorId
+    WHERE d.servidor_criador_id = :servidorCriadorId
         AND d.status IN ('FINALIZADA', 'ABERTA', 'EM_ANDAMENTO')
     GROUP BY d.status
 """, nativeQuery = true)
-    List<StatusQuantidadeProjection> agruparPorStatusPorUsuario(Long usuarioCriadorId);
+    List<StatusQuantidadeProjection> agruparPorStatusPorServidor(Long servidorCriadorId);
 
     @Query(value = """
     SELECT d.status AS status, COUNT(*) AS quantidade
@@ -452,12 +451,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.status AS status, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.usuario_criador_id = :usuarioCriadorId
+    WHERE d.servidor_criador_id = :servidorCriadorId
       AND d.data_hora_criacao BETWEEN :inicio AND :fim
       AND d.status IN ('FINALIZADA', 'ABERTA', 'EM_ANDAMENTO')
     GROUP BY d.status
 """, nativeQuery = true)
-    List<StatusQuantidadeProjection> agruparPorStatusPorUsuarioEPeriodo(Long usuarioCriadorId,
+    List<StatusQuantidadeProjection> agruparPorStatusPorServidorEPeriodo(Long servidorCriadorId,
                                                                         LocalDateTime inicio,
                                                                         LocalDateTime fim);
 
@@ -521,12 +520,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE usuario_criador_id = :usuarioCriadorId
+    WHERE servidor_criador_id = :servidorCriadorId
       AND (
         (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
       )
     """, nativeQuery = true)
-    long countDentroPrazoPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    long countDentroPrazoPorServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
     SELECT COUNT(*)
@@ -554,13 +553,13 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE usuario_criador_id = :usuarioCriadorId
+    WHERE servidor_criador_id = :servidorCriadorId
     AND data_hora_criacao BETWEEN :inicio AND :fim
       AND (
         (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() <= data_hora_limite)
       )
 """, nativeQuery = true)
-    long countDentroPrazoPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    long countDentroPrazoPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                             @Param("inicio") LocalDateTime inicio,
                                             @Param("fim")LocalDateTime fim);
 
@@ -585,12 +584,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE usuario_criador_id = :usuarioCriadorId
+    WHERE servidor_criador_id = :servidorCriadorId
       AND (
         (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
       )
     """, nativeQuery = true)
-    long countAtrasadasPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    long countAtrasadasPorServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
     SELECT COUNT(*)
@@ -616,10 +615,10 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT COUNT(*)
     FROM demanda
     WHERE data_hora_criacao BETWEEN :inicio AND :fim
-          AND usuario_criador_id = :usuarioCriadorId
+          AND servidor_criador_id = :servidorCriadorId
         AND (status IN ('ABERTA', 'EM_ANDAMENTO') AND NOW() > data_hora_limite)
     """, nativeQuery = true)
-    long countDemandasAtrasadasPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    long countDemandasAtrasadasPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                   @Param("inicio") LocalDateTime inicio,
                                                   @Param("fim")LocalDateTime fim);
 
@@ -643,11 +642,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT COUNT(*)
     FROM demanda
-    WHERE usuario_criador_id = :usuarioCriadorId
+    WHERE servidor_criador_id = :servidorCriadorId
       AND status = 'FINALIZADA'
       AND data_hora_finalizacao > data_hora_limite
     """, nativeQuery = true)
-    long countFinalizadasAtrasadasPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    long countFinalizadasAtrasadasPorServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
     SELECT COUNT(*)
@@ -675,11 +674,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT COUNT(*)
     FROM demanda
     WHERE data_hora_criacao BETWEEN :inicio AND :fim
-          AND usuario_criador_id = :usuarioCriadorId
+          AND servidor_criador_id = :servidorCriadorId
       AND status = 'FINALIZADA'
       AND data_hora_finalizacao > data_hora_limite
     """, nativeQuery = true)
-    long countFinalizadasAtrasadasPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    long countFinalizadasAtrasadasPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                      @Param("inicio") LocalDateTime inicio,
                                                      @Param("fim")LocalDateTime fim);
 
@@ -703,11 +702,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
     FROM demanda
-    WHERE usuario_criador_id = :usuarioCriadorId
+    WHERE servidor_criador_id = :servidorCriadorId
       AND status = 'FINALIZADA'
       AND data_hora_finalizacao > data_hora_limite
     """, nativeQuery = true)
-    Double tempoMedioAtrasoPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    Double tempoMedioAtrasoPorServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
     SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
@@ -734,11 +733,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     SELECT AVG(EXTRACT(EPOCH FROM (data_hora_finalizacao - data_hora_limite)))
     FROM demanda
     WHERE data_hora_criacao BETWEEN :inicio AND :fim
-      AND usuario_criador_id = :usuarioCriadorId
+      AND servidor_criador_id = :servidorCriadorId
       AND status = 'FINALIZADA'
       AND data_hora_finalizacao > data_hora_limite
 """, nativeQuery = true)
-    Double tempoMedioAtrasoEmSegundosPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    Double tempoMedioAtrasoEmSegundosPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                         @Param("inicio") LocalDateTime inicio,
                                                         @Param("fim") LocalDateTime fim);
 }

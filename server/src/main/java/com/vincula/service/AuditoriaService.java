@@ -2,10 +2,10 @@ package com.vincula.service;
 
 import com.vincula.dto.auditoria.AuditoriaDTO;
 import com.vincula.entity.Auditoria;
-import com.vincula.entity.Usuario;
+import com.vincula.entity.Servidor;
 import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.repository.AuditoriaRepository;
-import com.vincula.repository.UsuarioRepository;
+import com.vincula.repository.ServidorRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,19 +21,19 @@ import java.util.List;
 public class AuditoriaService {
 
     private final AuditoriaRepository auditoriaRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final ServidorRepository servidorRepository;
 
     public AuditoriaService(AuditoriaRepository auditoriaRepository,
-                            UsuarioRepository usuarioRepository) {
+                            ServidorRepository servidorRepository) {
         this.auditoriaRepository = auditoriaRepository;
-        this.usuarioRepository = usuarioRepository;
+        this.servidorRepository = servidorRepository;
     }
 
     public void registrar(TipoAcaoAuditoria acao,
                           String entidade,
                           Long entidadeId,
                           String descricao) {
-        Usuario usuario = buscarUsuarioLogadoOuNull();
+        Servidor servidor = buscarServidorLogadoOuNull();
 
         Auditoria log = new Auditoria();
         log.setAcao(acao);
@@ -41,14 +41,14 @@ public class AuditoriaService {
         log.setEntidadeId(entidadeId);
         log.setDescricao(descricao);
         log.setDataHora(LocalDateTime.now());
-        log.setUsuario(usuario);
+        log.setServidor(servidor);
         log.setIp(obterIp());
         log.setUserAgent(obterUserAgent());
 
         auditoriaRepository.save(log);
     }
 
-    public void registrarComUsuario(Usuario usuario,
+    public void registrarComServidor(Servidor servidor,
                                     TipoAcaoAuditoria acao,
                                     String entidade,
                                     Long entidadeId,
@@ -60,7 +60,7 @@ public class AuditoriaService {
         log.setEntidadeId(entidadeId);
         log.setDescricao(descricao);
         log.setDataHora(LocalDateTime.now());
-        log.setUsuario(usuario);
+        log.setServidor(servidor);
         log.setIp(obterIp());
         log.setUserAgent(obterUserAgent());
 
@@ -72,8 +72,8 @@ public class AuditoriaService {
                 .map(this::toDTO);
     }
 
-    public Page<AuditoriaDTO> listarPorUsuario(Long usuarioId, Pageable pageable) {
-        return auditoriaRepository.findByUsuarioIdOrderByDataHoraDesc(usuarioId, pageable)
+    public Page<AuditoriaDTO> listarPorServidor(Long servidorId, Pageable pageable) {
+        return auditoriaRepository.findByServidorIdOrderByDataHoraDesc(servidorId, pageable)
                 .map(this::toDTO);
     }
 
@@ -82,11 +82,11 @@ public class AuditoriaService {
                 .map(this::toDTO);
     }
 
-    public Page<AuditoriaDTO> listarPorUsuarioEPeriodo(Long usuarioId,
+    public Page<AuditoriaDTO> listarPorServidorEPeriodo(Long servidorId,
                                                        LocalDateTime inicio,
                                                        LocalDateTime fim,
                                                        Pageable pageable) {
-        return auditoriaRepository.findByUsuarioIdAndDataHoraBetweenOrderByDataHoraDesc(usuarioId, inicio, fim, pageable)
+        return auditoriaRepository.findByServidorIdAndDataHoraBetweenOrderByDataHoraDesc(servidorId, inicio, fim, pageable)
                 .map(this::toDTO);
     }
 
@@ -98,14 +98,14 @@ public class AuditoriaService {
                 log.getEntidadeId(),
                 log.getDescricao(),
                 log.getDataHora(),
-                log.getUsuario() != null ? log.getUsuario().getId() : null,
-                log.getUsuario() != null ? log.getUsuario().getNome() : null,
+                log.getServidor() != null ? log.getServidor().getId() : null,
+                log.getServidor() != null ? log.getServidor().getNome() : null,
                 log.getIp(),
                 log.getUserAgent()
         );
     }
 
-    private Usuario buscarUsuarioLogadoOuNull() {
+    private Servidor buscarServidorLogadoOuNull() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -119,7 +119,7 @@ public class AuditoriaService {
                 return null;
             }
 
-            return usuarioRepository.findByLogin(login).orElse(null);
+            return servidorRepository.findByLogin(login).orElse(null);
 
         } catch (Exception e) {
             return null;

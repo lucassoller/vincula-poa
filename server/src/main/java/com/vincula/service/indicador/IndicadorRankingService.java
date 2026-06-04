@@ -3,12 +3,12 @@ package com.vincula.service.indicador;
 import com.vincula.dto.projection.RankingQuantidadeProjection;
 import com.vincula.dto.indicador.IndicadorRankingDTO;
 import com.vincula.dto.projection.RankingValorProjection;
-import com.vincula.entity.Usuario;
-import com.vincula.enums.PerfilUsuario;
+import com.vincula.entity.Servidor;
+import com.vincula.enums.PerfilServidor;
 import com.vincula.exception.BusinessException;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.TentativaContatoRepository;
-import com.vincula.service.UsuarioService;
+import com.vincula.service.ServidorService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,14 +19,14 @@ import java.util.List;
 public class IndicadorRankingService {
 
     private final DemandaRepository demandaRepository;
-    private final UsuarioService usuarioService;
+    private final ServidorService servidorService;
     private final TentativaContatoRepository tentativaContatoRepository;
 
     public IndicadorRankingService(DemandaRepository demandaRepository,
-                                   UsuarioService usuarioService,
+                                   ServidorService servidorService,
                                    TentativaContatoRepository tentativaContatoRepository) {
         this.demandaRepository = demandaRepository;
-        this.usuarioService = usuarioService;
+        this.servidorService = servidorService;
         this.tentativaContatoRepository = tentativaContatoRepository;
     }
 
@@ -102,10 +102,10 @@ public class IndicadorRankingService {
     }
 
     private void validarAcessoGestao() {
-        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+        Servidor servidor = servidorService.buscarServidorAutenticado();
 
-        if (usuario.getPerfil() != PerfilUsuario.GESTAO_MUNICIPAL) {
-            throw new BusinessException("Usuário não pode acessar ranking de unidades");
+        if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL) {
+            throw new BusinessException("Servidor não pode acessar ranking de unidades");
         }
     }
 

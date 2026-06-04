@@ -1,6 +1,6 @@
 package com.vincula.dto.login;
 
-import com.vincula.enums.PerfilUsuario;
+import com.vincula.enums.PerfilServidor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,7 +13,7 @@ public class LoginResponseDTO {
     private String nome;
     private String login;
     private String email;
-    private PerfilUsuario perfil;
+    private PerfilServidor perfil;
     private Boolean ativo;
     private Long unidadeSaudeId;
     private String unidadeSaude;

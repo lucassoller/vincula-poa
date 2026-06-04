@@ -12,7 +12,7 @@ import Pagination from "../components/Paginations.jsx";
 
 function Demandas() {
     const navigate = useNavigate();
-    const { usuario } = useAuth();
+    const { servidor } = useAuth();
     const [demandas, setDemandas] = useState([]);
     const [unidades, setUnidades] = useState([]);
     const [demandaSelecionada, setDemandaSelecionada] = useState(null);
@@ -49,18 +49,18 @@ function Demandas() {
         try {
             setCarregando(true);
             let demandasResponse;
-            if (usuario?.perfil === "GESTAO_MUNICIPAL") {
+            if (servidor?.perfil === "GESTAO_MUNICIPAL") {
                 demandasResponse = await api.get(
                     `/demandas?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
 
-            } else if (usuario?.perfil === "USUARIO_APS") {
+            } else if (servidor?.perfil === "SERVIDOR_APS") {
                 demandasResponse = await api.get(
-                    `/demandas/unidade/${usuario.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    `/demandas/unidade/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
-            } else if (usuario?.perfil === "SOLICITANTE") {
+            } else if (servidor?.perfil === "SOLICITANTE") {
                 demandasResponse = await api.get(
-                    `/demandas/usuario/${usuario.id}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    `/demandas/servidor/${servidor.id}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
             }else {
                 demandasResponse = { data: { content: [], page: { totalPages: 0 } } };
@@ -74,7 +74,7 @@ function Demandas() {
             setCarregando(false);
         }
 
-    }, [usuario, pagina]);
+    }, [servidor, pagina]);
 
     const buscarDemandas = useCallback(async (paginaAtual = pagina) => {
 
@@ -85,19 +85,19 @@ function Demandas() {
             setCarregando(true);
             let demandasResponse;
 
-            if (usuario?.perfil === "GESTAO_MUNICIPAL") {
+            if (servidor?.perfil === "GESTAO_MUNICIPAL") {
                 demandasResponse = await api.get(
                     `/demandas/filtradas/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
 
-            } else if (usuario?.perfil === "USUARIO_APS") {
+            } else if (servidor?.perfil === "SERVIDOR_APS") {
                 demandasResponse = await api.get(
-                    `/demandas/filtradas/unidade/${usuario.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    `/demandas/filtradas/unidade/${servidor.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
 
-            }  else if (usuario?.perfil === "SOLICITANTE") {
+            }  else if (servidor?.perfil === "SOLICITANTE") {
                 demandasResponse = await api.get(
-                    `/demandas/filtradas/usuario/${usuario.id}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    `/demandas/filtradas/servidor/${servidor.id}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
 
             } else {
@@ -112,7 +112,7 @@ function Demandas() {
         } finally {
             setCarregando(false);
         }
-    }, [usuario, pagina, filtro]);
+    }, [servidor, pagina, filtro]);
 
     useEffect(() => {
 
@@ -300,48 +300,48 @@ function Demandas() {
 
             let response;
             if (modoFiltrado && filtro.trim()) {
-                if (usuario?.perfil === "GESTAO_MUNICIPAL") {
+                if (servidor?.perfil === "GESTAO_MUNICIPAL") {
                     response = await api.get(
                         `/demandas/exportar/filtradas/${filtro}`,
                         {
                             responseType: "blob",
                         }
                     );
-                } else if (usuario?.perfil === "USUARIO_APS") {
+                } else if (servidor?.perfil === "SERVIDOR_APS") {
                     response = await api.get(
-                        `/demandas/exportar/filtradas/unidade/${usuario.unidadeSaudeId}/${filtro}`,
+                        `/demandas/exportar/filtradas/unidade/${servidor.unidadeSaudeId}/${filtro}`,
                         {
                             responseType: "blob",
                         }
                     );
-                }else if (usuario?.perfil === "SOLICITANTE") {
+                }else if (servidor?.perfil === "SOLICITANTE") {
                     response = await api.get(
-                        `/demandas/exportar/filtradas/usuario/${usuario.id}/${filtro}`,
+                        `/demandas/exportar/filtradas/servidor/${servidor.id}/${filtro}`,
                         {
                             responseType: "blob",
                         }
                     );
                 }
             } else {
-                if (usuario?.perfil === "GESTAO_MUNICIPAL") {
+                if (servidor?.perfil === "GESTAO_MUNICIPAL") {
                     response = await api.get(
                         "/demandas/exportar",
                         {
                             responseType: "blob",
                         }
                     );
-                } else if (usuario?.perfil === "USUARIO_APS") {
+                } else if (servidor?.perfil === "SERVIDOR_APS") {
 
                     response = await api.get(
-                        `/demandas/exportar/unidade/${usuario.unidadeSaudeId}`,
+                        `/demandas/exportar/unidade/${servidor.unidadeSaudeId}`,
                         {
                             responseType: "blob",
                         }
                     );
-                } else if (usuario?.perfil === "SOLICITANTE") {
+                } else if (servidor?.perfil === "SOLICITANTE") {
 
                     response = await api.get(
-                        `/demandas/exportar/usuario/${usuario.id}`,
+                        `/demandas/exportar/servidor/${servidor.id}`,
                         {
                             responseType: "blob",
                         }
@@ -404,7 +404,7 @@ function Demandas() {
                         </p>
                     </div>
 
-                    <span className="perfil-badge">{usuario?.perfil}</span>
+                    <span className="perfil-badge">{servidor?.perfil}</span>
                 </div>
 
                 {mensagemSucesso && (
@@ -423,7 +423,7 @@ function Demandas() {
                     <div className="table-topbar">
                         <div className="search-container">
                             <input
-                                className="paciente-search"
+                                className="usuario-search"
                                 placeholder="Buscar demanda..."
                                 value={filtro}
                                 onChange={(e) => setFiltro(e.target.value)}
@@ -470,7 +470,7 @@ function Demandas() {
                     <table className="demandas-table">
                         <thead>
                         <tr>
-                            <th>Paciente</th>
+                            <th>Usuário</th>
                             <th>Motivo</th>
                             <th>Criador</th>
                             <th>Data de abertura</th>
@@ -487,9 +487,9 @@ function Demandas() {
 
                             <tr key={d.id}>
 
-                                <td><b>{d.pacienteNome || d.pacienteId}</b></td>
+                                <td><b>{d.usuarioNome || d.usuarioId}</b></td>
                                 <td>{motivoBuscaLabel[d.motivoBuscaAtiva]}</td>
-                                <td>{d.usuarioCriadorNome || d.usuarioCriadorId}</td>
+                                <td>{d.servidorCriadorNome || d.servidorCriadorId}</td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
                                 <td>{formatarDataHora(d.dataHoraFinalizacao) || "-"}</td>
 
@@ -510,7 +510,7 @@ function Demandas() {
                                             Ver mais
                                         </button>
 
-                                        {d.status !== "FINALIZADA" && usuario?.perfil !== "SOLICITANTE" && (
+                                        {d.status !== "FINALIZADA" && servidor?.perfil !== "SOLICITANTE" && (
                                             <>
                                                 <button
                                                     className="btn-tentativa"

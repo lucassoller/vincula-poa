@@ -6,7 +6,7 @@ import "./navbar.css";
 function Navbar() {
 
     const navigate = useNavigate();
-    const { usuario, logout } = useAuth();
+    const { servidor, logout } = useAuth();
     const [menuAberto, setMenuAberto] = useState(false);
     const menuRef = useRef(null);
     const location = useLocation();
@@ -33,7 +33,7 @@ function Navbar() {
     }, []);
 
     const inicial =
-        usuario?.nome?.charAt(0)?.toUpperCase() || "U";
+        servidor?.nome?.charAt(0)?.toUpperCase() || "U";
 
     return (
         <nav className="navbar">
@@ -49,7 +49,7 @@ function Navbar() {
                         Indicadores
                     </Link>
 
-                {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                {servidor?.perfil === "GESTAO_MUNICIPAL" && (
                     <Link
                         to="/auditoria"
                         className="navbar-link"
@@ -58,7 +58,7 @@ function Navbar() {
                     </Link>
                 )}
 
-                {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                {servidor?.perfil === "GESTAO_MUNICIPAL" && (
                     <Link
                         to="/gestao/listar"
                         className="navbar-link"
@@ -69,21 +69,21 @@ function Navbar() {
 
                 <div className="nav-dropdown">
                     <span className="navbar-link">
-                        Pacientes ▾
+                        Usuários ▾
                     </span>
 
                     <div className="nav-dropdown-menu">
                         <Link
-                            to="/pacientes"
+                            to="/usuarios"
                             className="dropdown-link"
                         >
-                            Listar pacientes
+                            Listar usuários
                         </Link>
                         <Link
-                            to="/pacientes/cadastro"
+                            to="/usuarios/cadastro"
                             className="dropdown-link"
                         >
-                            Cadastrar paciente
+                            Cadastrar usuário
                         </Link>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ function Navbar() {
                             Listar UBS
                         </Link>
 
-                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
                         <Link
                             to="/unidades-saude/cadastro"
                             className="dropdown-link"
@@ -132,12 +132,12 @@ function Navbar() {
                         </Link>
                         )}
 
-                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
                             <Link
-                                to="/usuarios/cadastro"
+                                to="/servidores/cadastro"
                                 className="dropdown-link"
                             >
-                                Cadastrar usuário
+                                Cadastrar servidor
                             </Link>
 
                         )}
@@ -160,7 +160,7 @@ function Navbar() {
                         >
                             Visualizar mapa
                         </Link>
-                        {usuario?.perfil === "GESTAO_MUNICIPAL" && (
+                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
                         <Link
                             to="/mapa/importar"
                             className="dropdown-link"
@@ -192,7 +192,7 @@ function Navbar() {
                     </span>
 
                     <span className="user-name">
-                        {usuario?.nome || "Usuário"}
+                        {servidor?.nome || "Servidor"}
                     </span>
 
                     <span className="arrow">

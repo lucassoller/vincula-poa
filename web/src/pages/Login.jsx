@@ -7,7 +7,7 @@ import api from "../api/api";
 function Login() {
     const navigate = useNavigate();
     const { login: realizarLogin , logout} = useAuth();
-    const [loginUsuario, setLoginUsuario] = useState("");
+    const [loginServidor, setLoginServidor] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
     const [carregando, setCarregando] = useState(false);
@@ -24,7 +24,7 @@ function Login() {
 
         try {
             const response = await api.post("/auth/login", {
-                login: loginUsuario,
+                login: loginServidor,
                 senha,
             });
 
@@ -54,8 +54,8 @@ function Login() {
                     <label className="label">Login</label>
                     <input
                         className="form-control input"
-                        value={loginUsuario}
-                        onChange={(e) => setLoginUsuario(e.target.value)}
+                        value={loginServidor}
+                        onChange={(e) => setLoginServidor(e.target.value)}
                     />
 
                     <label className="label">Senha</label>

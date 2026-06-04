@@ -1,40 +1,37 @@
 package com.vincula.dto.usuario;
 
-import com.vincula.enums.PerfilUsuario;
-import jakarta.validation.constraints.Email;
+import com.vincula.dto.endereco.EnderecoDTO;
+import com.vincula.enums.Sexo;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 @Data
 public class UsuarioDTO {
-
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
-    private String nome;
+    private String nomeCompleto;
 
-    @NotBlank(message = "Email é obrigatório")
-    @Email(message = "Email inválido")
-    @Size(max = 50, message = "Email deve ter no máximo 50 caracteres")
-    private String email;
+    @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
+    private String telefone;
 
-    @NotBlank(message = "Login é obrigatório")
-    @Size(max = 50, message = "Login deve ter no máximo 50 caracteres")
-    private String login;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate dataNascimento;
 
-    @NotBlank(message = "Senha é obrigatória")
-    @Size(max = 255, message = "Senha deve ter no máximo 255 caracteres")
-    private String senha;
+    private Sexo sexo;
+    private Long idServidorCadastro;
 
-    @NotBlank(message = "Confirmar a senha é obrigatório")
-    @Size(max = 255, message = "Senha deve ter no máximo 255 caracteres")
-    private String confirmarSenha;
+    @NotBlank(message = "CPF ou CNS é obrigatório")
+    @Pattern(regexp = "\\d{11,15}", message = "CPF ou CNS inválido")
+    private String documento;
 
-    @NotNull(message = "Perfil é obrigatório")
-    private PerfilUsuario perfil;
-
-    private Long unidadeSaudeId;
-
-    private Boolean ativo;
+    @NotNull(message = "Endereço é obrigatório")
+    @Valid
+    private EnderecoDTO endereco;
 }

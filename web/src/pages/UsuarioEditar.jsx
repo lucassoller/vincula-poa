@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm";
-import "./pacienteCadastro.css";
+import "./usuarioCadastro.css";
 import { useForm } from "react-hook-form";
 
 import ModalRedirecionarDemandas from "../components/ModalRedirecionarDemandas.jsx";
@@ -10,11 +10,12 @@ import {useAuth} from "../context/AuthContext.jsx";
 
 const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 
-function PacienteEditar() {
+function UsuarioEditar() {
     const {
         register,
         handleSubmit,
         reset,
+        watch,
     } = useForm({
         defaultValues: {
             nomeCompleto: "",
@@ -22,7 +23,8 @@ function PacienteEditar() {
             documento: "",
             dataNascimento: "",
             sexo: "",
-            idUsuarioCadastro: "",
+            idServidorCadastro: "",
+            unidadeSaudeNome: "",
             endereco: {
                 rua: "",
                 numero: "",
@@ -34,34 +36,35 @@ function PacienteEditar() {
     });
     const { id } = useParams();
     const navigate = useNavigate();
-    const { usuario } = useAuth();
+    const { servidor } = useAuth();
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [unidadeOriginalId, setUnidadeOriginalId] = useState(null);
     const [mostrarConfirmacaoRedirecionamento, setMostrarConfirmacaoRedirecionamento] = useState(false);
-    const [pacienteAtualizado, setPacienteAtualizado] = useState(null);
+    const [usuarioAtualizado, setUsuarioAtualizado] = useState(null);
+    const unidadeSaudeNome = watch("unidadeSaudeNome");
 
     useEffect(() => {
-        async function carregarPaciente() {
+        async function carregarUsuario() {
             try {
-                const response = await api.get(`/pacientes/${id}`);
+                const response = await api.get(`/usuarios/${id}`);
                 reset(response.data);
-                if(usuario?.perfil === 'SOLICITANTE' && usuario?.id !== response.data.idUsuarioCadastro){
-                    navigate("/pacientes");
+                if(servidor?.perfil === 'SOLICITANTE' && servidor?.id !== response.data.idServidorCadastro){
+                    navigate("/usuarios");
                     return;
                 }
                 setUnidadeOriginalId(response.data.unidadeSaudeId);
             } catch {
-                setMensagem("Erro ao carregar paciente.");
+                setMensagem("Erro ao carregar usuário.");
             } finally {
                 setCarregando(false);
             }
         }
 
-        void carregarPaciente();
-    }, [id, reset, usuario]);
+        void carregarUsuario();
+    }, [id, reset, servidor]);
 
     function voltarParaEtapaComErro(errors) {
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
@@ -83,21 +86,21 @@ function PacienteEditar() {
                 sexo: dados.sexo || null
             };
 
-            const response = await api.put(`/pacientes/${id}`, payload);
+            const response = await api.put(`/usuarios/${id}`, payload);
 
-            setPacienteAtualizado(response.data);
+            setUsuarioAtualizado(response.data);
 
             const mudouUnidade =
                 Number(unidadeOriginalId) !== Number(response.data.unidadeSaudeId);
 
             if (mudouUnidade) {
                 setMostrarConfirmacaoRedirecionamento(true);
-                setMensagem("Paciente atualizado. A UBS vinculada mudou.");
+                setMensagem("Usuário atualizado. A UBS vinculada mudou.");
                 return;
             }
 
-            setMensagem("Paciente atualizado com sucesso e vinculado na Unidade " + response.data.unidadeSaudeNome);
-            navigate(`/pacientes/${id}`);
+            setMensagem("Usuário atualizado com sucesso e vinculado na Unidade " + response.data.unidadeSaudeNome);
+            navigate(`/usuarios/${id}`);
 
         } catch (error) {
             if (error.response?.data?.errors) {
@@ -113,13 +116,13 @@ function PacienteEditar() {
 
     async function confirmarRedirecionamentoDemandas() {
         try {
-            await api.patch(`/pacientes/${id}/redirecionar-abertas`, {
-                novaUnidadeResponsavelId: pacienteAtualizado.unidadeSaudeId,
+            await api.patch(`/usuarios/${id}/redirecionar-abertas`, {
+                novaUnidadeResponsavelId: usuarioAtualizado.unidadeSaudeId,
                 motivoRedirecionamento: "Atualização de endereço/território",
             });
 
-            setMensagem("Paciente atualizado e demandas abertas redirecionadas com sucesso!");
-            navigate(`/pacientes/${id}`);
+            setMensagem("Usuário atualizado e demandas abertas redirecionadas com sucesso!");
+            navigate(`/usuarios/${id}`);
         } catch (error) {
             setMensagem(
                 error.response?.data?.message ||
@@ -129,11 +132,11 @@ function PacienteEditar() {
     }
 
     function negarRedirecionamentoDemandas() {
-        navigate(`/pacientes/${id}`);
+        navigate(`/usuarios/${id}`);
     }
 
     if (carregando) {
-        return <p>Carregando paciente...</p>;
+        return <p>Carregando usuário...</p>;
     }
 
     return (
@@ -141,8 +144,8 @@ function PacienteEditar() {
             <div className="cadastro-page">
                 <div className="cadastro-header">
                     <div>
-                        <h1>Editar paciente</h1>
-                        <p>Atualize os dados cadastrais do paciente</p>
+                        <h1>Editar usuário</h1>
+                        <p>Atualize os dados cadastrais do usuário</p>
                     </div>
                 </div>
 
@@ -216,7 +219,7 @@ function PacienteEditar() {
                                     Próximo
                                 </button>
 
-                                <button type="button" className="buscar-btn" onClick={() => navigate("/pacientes")}>
+                                <button type="button" className="buscar-btn" onClick={() => navigate("/usuarios")}>
                                     Cancelar
                                 </button>
                             </div>
@@ -228,6 +231,7 @@ function PacienteEditar() {
                             <EnderecoForm
                                 register={register}
                                 erros={erros}
+                                unidadeSaude={unidadeSaudeNome}
                             />
 
                             <div className="form-actions">
@@ -253,4 +257,4 @@ function PacienteEditar() {
     );
 }
 
-export default PacienteEditar;
+export default UsuarioEditar;

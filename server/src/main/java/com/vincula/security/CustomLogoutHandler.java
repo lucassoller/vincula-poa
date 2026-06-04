@@ -1,6 +1,6 @@
 package com.vincula.security;
 
-import com.vincula.repository.UsuarioRepository;
+import com.vincula.repository.ServidorRepository;
 import com.vincula.util.AuditoriaFacade;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 public class CustomLogoutHandler implements LogoutHandler {
 
     private final AuditoriaFacade auditoriaFacade;
-    private final UsuarioRepository usuarioRepository;
+    private final ServidorRepository servidorRepository;
 
     public CustomLogoutHandler(AuditoriaFacade auditoriaFacade,
-                               UsuarioRepository usuarioRepository) {
+                               ServidorRepository servidorRepository) {
         this.auditoriaFacade = auditoriaFacade;
-        this.usuarioRepository = usuarioRepository;
+        this.servidorRepository = servidorRepository;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class CustomLogoutHandler implements LogoutHandler {
                 return;
             }
 
-            usuarioRepository.findByLogin(authentication.getName()).ifPresent(auditoriaFacade::logoutRealizado);
+            servidorRepository.findByLogin(authentication.getName()).ifPresent(auditoriaFacade::logoutRealizado);
 
         } catch (Exception ignored) {
         }

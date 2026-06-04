@@ -20,8 +20,8 @@ public class AuditoriaDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDateTime dataHora;
 
-    private Long usuarioId;
-    private String usuarioNome;
+    private Long servidorId;
+    private String servidorNome;
 
     private String ip;
     private String userAgent;

@@ -58,8 +58,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
-                        //PARA CADASTRAR UM USUARIO E TESTAR DESCOMENTAR ESSA LINHA E COMENTAR TUDO ATÉ ANTES DO RETURN
-                        //COMENTAR A ROLE NO PUT/POST DO USUARIO CONTROLLER
+                        //PARA CADASTRAR UM SERVIDOR E TESTAR DESCOMENTAR ESSA LINHA E COMENTAR TUDO ATÉ ANTES DO RETURN
+                        //COMENTAR A ROLE NO PUT/POST DO SERVIDOR CONTROLLER
                         //.anyRequest().permitAll());
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())

@@ -4,9 +4,9 @@ import CampoDetalhe from "./CampoDetalhe.jsx";
 import { mascaraDocumento, mascaraTelefone } from "../utils/mascaras";
 import { sexoLabel } from "../utils/utils.js";
 
-function ModalPaciente({ pacienteSelecionado, setPacienteSelecionado }) {
+function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
     const navigate = useNavigate();
-    const { usuario } = useAuth();
+    const { servidor } = useAuth();
 
     return (
         <div className="modal-overlay">
@@ -14,14 +14,14 @@ function ModalPaciente({ pacienteSelecionado, setPacienteSelecionado }) {
 
                 <div className="modal-header">
                     <div>
-                        <h2>{pacienteSelecionado.nomeCompleto}</h2>
-                        <p>Informações do paciente</p>
+                        <h2>{usuárioSelecionado.nomeCompleto}</h2>
+                        <p>Informações do usuário</p>
                     </div>
 
                     <button
                         type="button"
                         className="modal-close"
-                        onClick={() => setPacienteSelecionado(null)}
+                        onClick={() => setUsuarioSelecionado(null)}
                     >
                         ✕
                     </button>
@@ -34,14 +34,14 @@ function ModalPaciente({ pacienteSelecionado, setPacienteSelecionado }) {
                         <CampoDetalhe
                             label="CPF/CNS"
                             valor={mascaraDocumento(
-                                pacienteSelecionado.documento
+                                usuarioSelecionado.documento
                             )}
                         />
 
                         <CampoDetalhe
                             label="Telefone"
                             valor={mascaraTelefone(
-                                pacienteSelecionado.telefone
+                                usuarioSelecionado.telefone
                             )}
                         />
 
@@ -49,14 +49,14 @@ function ModalPaciente({ pacienteSelecionado, setPacienteSelecionado }) {
                             label="Sexo"
                             valor={
                                 sexoLabel[
-                                    pacienteSelecionado.sexo
+                                    usuarioSelecionado.sexo
                                     ]
                             }
                         />
 
                         <CampoDetalhe
                             label="Data de nascimento"
-                            valor={pacienteSelecionado.dataNascimento
+                            valor={usuarioSelecionado.dataNascimento
                                 ?.split("-")
                                 .reverse()
                                 .join("/")}
@@ -71,7 +71,7 @@ function ModalPaciente({ pacienteSelecionado, setPacienteSelecionado }) {
                         <CampoDetalhe
                             label="UBS"
                             valor={
-                                pacienteSelecionado.unidadeSaudeNome
+                                usuarioSelecionado.unidadeSaudeNome
                             }
                         />
                     </div>
@@ -84,52 +84,52 @@ function ModalPaciente({ pacienteSelecionado, setPacienteSelecionado }) {
                         <CampoDetalhe
                             label="Rua"
                             valor={
-                                pacienteSelecionado.endereco?.rua
+                                usuarioSelecionado.endereco?.rua
                             }
                         />
 
                         <CampoDetalhe
                             label="Número"
                             valor={
-                                pacienteSelecionado.endereco?.numero
+                                usuarioSelecionado.endereco?.numero
                             }
                         />
 
                         <CampoDetalhe
                             label="Bairro"
                             valor={
-                                pacienteSelecionado.endereco?.bairro
+                                usuarioSelecionado.endereco?.bairro
                             }
                         />
 
                         <CampoDetalhe
                             label="Cidade"
                             valor={
-                                pacienteSelecionado.endereco?.cidade
+                                usuarioSelecionado.endereco?.cidade
                             }
                         />
 
                         <CampoDetalhe
                             label="Estado"
                             valor={
-                                pacienteSelecionado.endereco?.estado
+                                usuarioSelecionado.endereco?.estado
                             }
                         />
                     </div>
                 </div>
 
-                {(usuario?.perfil !== "SOLICITANTE" || (usuario?.perfil === "SOLICITANTE" && usuario?.id === pacienteSelecionado.idUsuarioCadastro)) && (
+                {(servidor?.perfil !== "SOLICITANTE" || (servidor?.perfil === "SOLICITANTE" && servidor?.id === usuarioSelecionado.idServidorCadastro)) && (
                     <div className="ubs-actions">
                         <button
                             type="button"
                             className="btn-editar"
                             onClick={() =>
                                 navigate(
-                                    `/pacientes/${pacienteSelecionado.id}/editar`
+                                    `/usuarios/${usuarioSelecionado.id}/editar`
                                 )
                             }
                         >
-                            Editar paciente
+                            Editar usuario
                         </button>
                     </div>
                 )}
@@ -139,4 +139,4 @@ function ModalPaciente({ pacienteSelecionado, setPacienteSelecionado }) {
     );
 }
 
-export default ModalPaciente;
+export default ModalUsuario;

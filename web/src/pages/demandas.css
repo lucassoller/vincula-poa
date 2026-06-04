@@ -250,7 +250,7 @@
     background: #1d4ed8;
 }
 
-.paciente-search {
+.usuario-search {
     width: 320px;
     padding: 12px 14px;
     border-radius: 10px;
@@ -259,7 +259,7 @@
     transition: 0.2s;
 }
 
-.paciente-search:focus {
+.usuario-search:focus {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);

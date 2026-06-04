@@ -47,10 +47,10 @@ public class IndicadorPrazoService {
         );
     }
 
-    public List<IndicadorValorDTO> indicadoresPrazoPorUsuario(Long usuarioId) {
-        long dentroPrazo = demandaRepository.countDentroPrazoPorUsuario(usuarioId);
-        long abertasAtrasadas = demandaRepository.countAtrasadasPorUsuario(usuarioId);
-        long finalizadasComAtraso = demandaRepository.countFinalizadasAtrasadasPorUsuario(usuarioId);
+    public List<IndicadorValorDTO> indicadoresPrazoPorServidor(Long servidorId) {
+        long dentroPrazo = demandaRepository.countDentroPrazoPorServidor(servidorId);
+        long abertasAtrasadas = demandaRepository.countAtrasadasPorServidor(servidorId);
+        long finalizadasComAtraso = demandaRepository.countFinalizadasAtrasadasPorServidor(servidorId);
 
         double totalPrazos = dentroPrazo + abertasAtrasadas + finalizadasComAtraso;
 
@@ -58,7 +58,7 @@ public class IndicadorPrazoService {
                 new IndicadorValorDTO("Demandas dentro do prazo", percentual(totalPrazos, dentroPrazo)),
                 new IndicadorValorDTO("Demandas atrasadas", percentual(totalPrazos, abertasAtrasadas)),
                 new IndicadorValorDTO("Demandas finalizadas com atraso", percentual(totalPrazos, finalizadasComAtraso)),
-                new IndicadorValorDTO("Tempo médio de atraso", formatarTempo(demandaRepository.tempoMedioAtrasoPorUsuario(usuarioId)))
+                new IndicadorValorDTO("Tempo médio de atraso", formatarTempo(demandaRepository.tempoMedioAtrasoPorServidor(servidorId)))
         );
     }
 
@@ -100,14 +100,14 @@ public class IndicadorPrazoService {
         );
     }
 
-    public List<IndicadorValorDTO> indicadoresPrazoPorUsuarioEPeriodo(
+    public List<IndicadorValorDTO> indicadoresPrazoPorServidorEPeriodo(
             Long unidadeId,
             LocalDateTime inicio,
             LocalDateTime fim
     ) {
-        long dentroPrazo = demandaRepository.countDentroPrazoPorUsuarioEPeriodo(unidadeId, inicio, fim);
-        long abertasAtrasadas = demandaRepository.countDemandasAtrasadasPorUsuarioEPeriodo(unidadeId, inicio, fim);
-        long finalizadasComAtraso = demandaRepository.countFinalizadasAtrasadasPorUsuarioEPeriodo(unidadeId, inicio, fim);
+        long dentroPrazo = demandaRepository.countDentroPrazoPorServidorEPeriodo(unidadeId, inicio, fim);
+        long abertasAtrasadas = demandaRepository.countDemandasAtrasadasPorServidorEPeriodo(unidadeId, inicio, fim);
+        long finalizadasComAtraso = demandaRepository.countFinalizadasAtrasadasPorServidorEPeriodo(unidadeId, inicio, fim);
 
         double totalPrazos = dentroPrazo + abertasAtrasadas + finalizadasComAtraso;
 
@@ -116,7 +116,7 @@ public class IndicadorPrazoService {
                 new IndicadorValorDTO("Demandas atrasadas", percentual(totalPrazos, abertasAtrasadas)),
                 new IndicadorValorDTO("Demandas finalizadas com atraso", percentual(totalPrazos, finalizadasComAtraso)),
                 new IndicadorValorDTO("Tempo médio de atraso", formatarTempo(
-                        demandaRepository.tempoMedioAtrasoEmSegundosPorUsuarioEPeriodo(unidadeId, inicio, fim)
+                        demandaRepository.tempoMedioAtrasoEmSegundosPorServidorEPeriodo(unidadeId, inicio, fim)
                 ))
         );
     }

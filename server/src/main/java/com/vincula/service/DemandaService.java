@@ -4,16 +4,13 @@ import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.demanda.EncerrarDemandaDTO;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.demanda.DemandaResponseDTO;
-import com.vincula.entity.Demanda;
-import com.vincula.entity.Paciente;
-import com.vincula.entity.UnidadeSaude;
-import com.vincula.entity.Usuario;
+import com.vincula.entity.*;
 import com.vincula.enums.*;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.export.DemandaExporter;
 import com.vincula.repository.DemandaRepository;
-import com.vincula.repository.PacienteRepository;
+import com.vincula.repository.UsuarioRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
@@ -28,21 +25,21 @@ import java.util.List;
 public class DemandaService {
 
     private final DemandaRepository demandaRepository;
-    private final PacienteRepository pacienteRepository;
+    private final UsuarioRepository usuarioRepository;
     private final UnidadeSaudeRepository unidadeSaudeRepository;
-    private final UsuarioService usuarioService;
+    private final ServidorService servidorService;
     private final AuditoriaFacade auditoriaFacade;
     private final DemandaExporter demandaExporter;
 
     public DemandaService(DemandaRepository demandaRepository,
-                          PacienteRepository pacienteRepository,
+                          UsuarioRepository usuarioRepository,
                           UnidadeSaudeRepository unidadeSaudeRepository,
-                          UsuarioService usuarioService,
+                          ServidorService servidorService,
                           AuditoriaFacade auditoriaFacade, DemandaExporter demandaExporter) {
         this.demandaRepository = demandaRepository;
-        this.pacienteRepository = pacienteRepository;
+        this.usuarioRepository = usuarioRepository;
         this.unidadeSaudeRepository = unidadeSaudeRepository;
-        this.usuarioService = usuarioService;
+        this.servidorService = servidorService;
         this.auditoriaFacade = auditoriaFacade;
         this.demandaExporter = demandaExporter;
     }
@@ -52,13 +49,13 @@ public class DemandaService {
 
         Demanda salvo = demandaRepository.save(entity);
 
-        auditoriaFacade.demandaCriada(salvo.getId(), salvo.getPaciente().getId());
+        auditoriaFacade.demandaCriada(salvo.getId(), salvo.getUsuario().getId());
 
         return toDTO(salvo);
     }
 
     public Page<DemandaResponseDTO> listarTodas(Pageable pageable) {
-        return demandaRepository.findAllOrderByPacienteNome(pageable)
+        return demandaRepository.findAllOrderByUsuarioNome(pageable)
                 .map(this::toDTO);
     }
 
@@ -67,13 +64,13 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
-    public Page<DemandaResponseDTO> listarPorPaciente(Long pacienteId, Pageable pageable) {
-        return demandaRepository.findByPacienteOrderByPacienteNome(pacienteId, pageable)
+    public Page<DemandaResponseDTO> listarPorUsuario(Long usuarioId, Pageable pageable) {
+        return demandaRepository.findByUsuarioOrderByUsuarioNome(usuarioId, pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarPorUnidadeSaude(Long unidadeResponsavelId, Pageable pageable) {
-        return demandaRepository.findByUnidadeOrderByPacienteNome(unidadeResponsavelId, pageable)
+        return demandaRepository.findByUnidadeOrderByUsuarioNome(unidadeResponsavelId, pageable)
                 .map(this::toDTO);
     }
 
@@ -82,18 +79,18 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
-    public Page<DemandaResponseDTO> listarPorUsuarioCriador(Long usuarioId, Pageable pageable) {
-        return demandaRepository.findByUsuarioOrderByPacienteNome(usuarioId, pageable)
+    public Page<DemandaResponseDTO> listarPorServidorCriador(Long servidorId, Pageable pageable) {
+        return demandaRepository.findByServidorOrderByUsuarioNome(servidorId, pageable)
                 .map(this::toDTO);
     }
 
-    public Page<DemandaResponseDTO> listarPorUsuarioCriadorFiltradas(Long usuarioId, String filtro, Pageable pageable) {
-        return demandaRepository.findFiltradasByUsuarioCriador(usuarioId, filtro, pageable)
+    public Page<DemandaResponseDTO> listarPorServidorCriadorFiltradas(Long servidorId, String filtro, Pageable pageable) {
+        return demandaRepository.findFiltradasByServidorCriador(servidorId, filtro, pageable)
                 .map(this::toDTO);
     }
 
     public Page<DemandaResponseDTO> listarPorStatus(StatusDemanda status, Pageable pageable) {
-        return demandaRepository.findByStatusOrderByPacienteNome(status, pageable)
+        return demandaRepository.findByStatusOrderByUsuarioNome(status, pageable)
                 .map(this::toDTO);
     }
 
@@ -129,13 +126,13 @@ public class DemandaService {
             throw new BusinessException("Desfecho é obrigatório");
         }
 
-        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+        Servidor servidor = servidorService.buscarServidorAutenticado();
 
         entity.setStatus(StatusDemanda.FINALIZADA);
         entity.setDesfecho(dto.getDesfechoDemanda());
         entity.setDescricaoDesfecho(dto.getDescricaoDesfecho());
         entity.setDataHoraFinalizacao(LocalDateTime.now());
-        entity.setUsuarioEncerramento(usuario);
+        entity.setServidorEncerramento(servidor);
 
         Demanda atualizado = demandaRepository.save(entity);
 
@@ -158,14 +155,14 @@ public class DemandaService {
             throw new BusinessException("A nova unidade responsável deve ser diferente da atual");
         }
 
-        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+        Servidor servidor = servidorService.buscarServidorAutenticado();
 
         demanda.setUnidadeResponsavelAnterior(demanda.getUnidadeResponsavel());
         demanda.setUnidadeResponsavel(novaUnidade);
         demanda.setFoiRedirecionada(true);
         demanda.setMotivoRedirecionamento(dto.getMotivoRedirecionamento());
         demanda.setDataHoraRedirecionamento(LocalDateTime.now());
-        demanda.setUsuarioRedirecionamento(usuario);
+        demanda.setServidorRedirecionamento(servidor);
 
         Demanda atualizada = demandaRepository.save(demanda);
 
@@ -176,24 +173,24 @@ public class DemandaService {
         return toDTO(atualizada);
     }
 
-    public void redirecionarDemandasAbertasDoPaciente(Long pacienteId, RedirecionarDemandaDTO dto) {
-        Paciente paciente = buscarPacientePorId(pacienteId);
+    public void redirecionarDemandasAbertasDoUsuario(Long usuarioId, RedirecionarDemandaDTO dto) {
+        Usuario usuario = buscarUsuarioPorId(usuarioId);
 
-        Usuario usuario = usuarioService.buscarUsuarioAutenticado();
+        Servidor servidor = servidorService.buscarServidorAutenticado();
 
         List<Demanda> demandas = demandaRepository
-                .findByPacienteIdAndStatusIn(
-                        pacienteId,
+                .findByUsuarioIdAndStatusIn(
+                        usuarioId,
                         List.of(StatusDemanda.ABERTA, StatusDemanda.EM_ANDAMENTO)
                 );
 
         for (Demanda demanda : demandas) {
-            if (!demanda.getUnidadeResponsavel().getId().equals(paciente.getUnidadeSaude().getId())) {
+            if (!demanda.getUnidadeResponsavel().getId().equals(usuario.getUnidadeSaude().getId())) {
                 demanda.setUnidadeResponsavelAnterior(demanda.getUnidadeResponsavel());
-                demanda.setUnidadeResponsavel(paciente.getUnidadeSaude());
+                demanda.setUnidadeResponsavel(usuario.getUnidadeSaude());
                 demanda.setFoiRedirecionada(true);
                 demanda.setMotivoRedirecionamento(dto.getMotivoRedirecionamento());
-                demanda.setUsuarioRedirecionamento(usuario);
+                demanda.setServidorRedirecionamento(servidor);
                 demanda.setDataHoraRedirecionamento(LocalDateTime.now());
             }
         }
@@ -217,7 +214,7 @@ public class DemandaService {
     }
 
     public String exportarDemandasCsv(){
-        List<Demanda> demandas = demandaRepository.findAllOrderByPacienteNome();
+        List<Demanda> demandas = demandaRepository.findAllOrderByUsuarioNome();
         auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas exportadas");
         return demandaExporter.exportar(demandas);
     }
@@ -229,7 +226,7 @@ public class DemandaService {
     }
 
     public String exportarDemandasPorUnidadeCsv(Long unidadeId){
-        List<Demanda> demandas = demandaRepository.findByUnidadeOrderByPacienteNome(unidadeId);
+        List<Demanda> demandas = demandaRepository.findByUnidadeOrderByUsuarioNome(unidadeId);
         auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas da unidade " + unidadeId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
@@ -240,15 +237,15 @@ public class DemandaService {
         return demandaExporter.exportar(demandas);
     }
 
-    public String exportarDemandasPorUsuarioCsv(Long usuarioCriadorId){
-        List<Demanda> demandas = demandaRepository.findByUsuarioOrderByPacienteNome(usuarioCriadorId);
-        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas do usuário criador " + usuarioCriadorId + " exportadas");
+    public String exportarDemandasPorServidorCsv(Long servidorCriadorId){
+        List<Demanda> demandas = demandaRepository.findByServidorOrderByUsuarioNome(servidorCriadorId);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas do servidor criador " + servidorCriadorId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 
-    public String exportarDemandasFiltradasPorUsuarioCsv(Long usuarioCriadorId, String filtro){
-        List<Demanda> demandas = demandaRepository.findFiltradasByUsuarioCriador(usuarioCriadorId, filtro);
-        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas do usuário criador " + usuarioCriadorId + " exportadas");
+    public String exportarDemandasFiltradasPorServidorCsv(Long servidorCriadorId, String filtro){
+        List<Demanda> demandas = demandaRepository.findFiltradasByServidorCriador(servidorCriadorId, filtro);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas do servidor criador " + servidorCriadorId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 
@@ -257,9 +254,9 @@ public class DemandaService {
                 .orElseThrow(() -> new NotFoundException("Demanda não encontrada"));
     }
 
-    private Paciente buscarPacientePorId(Long id) {
-        return pacienteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Paciente não encontrado"));
+    private Usuario buscarUsuarioPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
     }
 
     private UnidadeSaude buscarUnidadeSaudePorId(Long id) {
@@ -268,19 +265,19 @@ public class DemandaService {
     }
 
     private Demanda toEntity(DemandaDTO dto) {
-        Paciente paciente = buscarPacientePorId(dto.getPacienteId());
+        Usuario usuario = buscarUsuarioPorId(dto.getUsuarioId());
 
-        Usuario usuarioCriador = usuarioService.buscarUsuarioAutenticado();
+        Servidor servidorCriador = servidorService.buscarServidorAutenticado();
 
         Demanda entity = new Demanda();
-        entity.setPaciente(paciente);
-        entity.setUsuarioCriador(usuarioCriador);
+        entity.setUsuario(usuario);
+        entity.setServidorCriador(servidorCriador);
 
-        if(usuarioCriador.getUnidadeSaude() != null){
-            entity.setUnidadeSolicitante(usuarioCriador.getUnidadeSaude());
+        if(servidorCriador.getUnidadeSaude() != null){
+            entity.setUnidadeSolicitante(servidorCriador.getUnidadeSaude());
         }
 
-        entity.setUnidadeResponsavel(paciente.getUnidadeSaude());
+        entity.setUnidadeResponsavel(usuario.getUnidadeSaude());
         entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
         entity.setDescricaoBusca(dto.getDescricaoBusca());
         entity.setPrazoDemanda(dto.getPrazoDemanda());
@@ -295,8 +292,8 @@ public class DemandaService {
         DemandaResponseDTO dto = new DemandaResponseDTO();
 
         dto.setId(entity.getId());
-        dto.setPacienteId(entity.getPaciente().getId());
-        dto.setPacienteNome(entity.getPaciente().getNomeCompleto());
+        dto.setUsuarioId(entity.getUsuario().getId());
+        dto.setUsuarioNome(entity.getUsuario().getNomeCompleto());
 
         if (entity.getUnidadeSolicitante() != null) {
             dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
@@ -314,16 +311,16 @@ public class DemandaService {
         dto.setDataHoraCriacao(entity.getDataHoraCriacao());
         dto.setDataHoraLimite(entity.getDataHoraLimite());
 
-        dto.setUsuarioCriadorId(entity.getUsuarioCriador().getId());
-        dto.setUsuarioCriadorNome(entity.getUsuarioCriador().getNome());
+        dto.setServidorCriadorId(entity.getServidorCriador().getId());
+        dto.setServidorCriadorNome(entity.getServidorCriador().getNome());
 
         dto.setDesfecho(entity.getDesfecho());
         dto.setDescricaoDesfecho(entity.getDescricaoDesfecho());
         dto.setDataHoraFinalizacao(entity.getDataHoraFinalizacao());
 
-        if (entity.getUsuarioEncerramento() != null) {
-            dto.setUsuarioEncerramentoId(entity.getUsuarioEncerramento().getId());
-            dto.setUsuarioEncerramentoNome(entity.getUsuarioEncerramento().getNome());
+        if (entity.getServidorEncerramento() != null) {
+            dto.setServidorEncerramentoId(entity.getServidorEncerramento().getId());
+            dto.setServidorEncerramentoNome(entity.getServidorEncerramento().getNome());
         }
 
         dto.setFoiRedirecionada(entity.getFoiRedirecionada());
@@ -336,9 +333,9 @@ public class DemandaService {
         dto.setMotivoRedirecionamento(entity.getMotivoRedirecionamento());
         dto.setDataHoraRedirecionamento(entity.getDataHoraRedirecionamento());
 
-        if (entity.getUsuarioRedirecionamento() != null) {
-            dto.setUsuarioRedirecionamentoId(entity.getUsuarioRedirecionamento().getId());
-            dto.setUsuarioRedirecionamentoNome(entity.getUsuarioRedirecionamento().getNome());
+        if (entity.getServidorRedirecionamento() != null) {
+            dto.setServidorRedirecionamentoId(entity.getServidorRedirecionamento().getId());
+            dto.setServidorRedirecionamentoNome(entity.getServidorRedirecionamento().getNome());
         }
 
         return dto;

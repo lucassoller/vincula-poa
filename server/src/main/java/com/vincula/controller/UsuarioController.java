@@ -1,11 +1,10 @@
 package com.vincula.controller;
 
-import com.vincula.dto.senha.MudancaSenhaDTO;
-import com.vincula.dto.usuario.MeuPerfilDTO;
+import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.usuario.UsuarioShortResponseDTO;
-import com.vincula.enums.PerfilUsuario;
+import com.vincula.service.DemandaService;
 import com.vincula.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -22,90 +21,84 @@ import java.util.List;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final DemandaService demandaService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, DemandaService demandaService) {
         this.usuarioService = usuarioService;
+        this.demandaService = demandaService;
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioDTO dto) {
-        UsuarioResponseDTO criado = usuarioService.criar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(criado);
+        UsuarioResponseDTO usuarioCriado = usuarioService.criar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCriado);
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<Page<UsuarioResponseDTO>> listarTodos(Pageable pageable) {
         return ResponseEntity.ok(usuarioService.listarTodos(pageable));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
-    @GetMapping("/perfil/{perfil}")
-    public ResponseEntity<Page<UsuarioResponseDTO>> listarTodos(@PathVariable PerfilUsuario perfil, Pageable pageable) {
-        return ResponseEntity.ok(usuarioService.listarTodosPorPerfil(perfil, pageable));
-    }
-
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/all")
     public ResponseEntity<List<UsuarioShortResponseDTO>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL')")
+    @GetMapping("/unidadeSaude/{unidadeSaudeId}")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidade(
+            @PathVariable Long unidadeSaudeId,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                usuarioService.listarTodosPorUnidade(unidadeSaudeId, pageable)
+        );
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtrados/{filtro}")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
+        return ResponseEntity.ok(usuarioService.listarTodosFiltrados(filtro, pageable));
+    }
+
+
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL')")
+    @GetMapping("/filtrados/unidadeSaude/{unidadeSaudeId}/{filtro}")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidade(
+            @PathVariable Long unidadeSaudeId,
+            @PathVariable String filtro,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                usuarioService.listarTodosPorUnidadeFiltrados(unidadeSaudeId, filtro, pageable)
+        );
+    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.buscarPorId(id));
+        UsuarioResponseDTO usuario = usuarioService.buscarPorId(id);
+        return ResponseEntity.ok(usuario);
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/email/{email}")
-    public ResponseEntity<UsuarioResponseDTO> buscarPorEmail(@PathVariable String email) {
-        return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/login/{login}")
-    public ResponseEntity<UsuarioResponseDTO> buscarPorLogin(@PathVariable String login) {
-        return ResponseEntity.ok(usuarioService.buscarPorLogin(login));
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/me")
-    public ResponseEntity<UsuarioResponseDTO> getUsuarioLogado() {
-        return ResponseEntity.ok(usuarioService.getUsuarioAutenticadoDTO());
-    }
-
-    // COMENTAR ROLE PARA CADASTRAR USUARIO
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id,
-                                                @Valid @RequestBody UsuarioDTO dto) {
-        return ResponseEntity.ok(usuarioService.atualizar(id, dto));
+    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioDTO dto) {
+        UsuarioResponseDTO usuarioAtualizado = usuarioService.atualizar(id, dto);
+        return ResponseEntity.ok(usuarioAtualizado);
     }
 
-    @PutMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UsuarioResponseDTO> atualizarMeuPerfil(
-            @Valid @RequestBody MeuPerfilDTO dto
+    @PatchMapping("/{id}/redirecionar-abertas")
+    public ResponseEntity<Void> redirecionarDemandasAbertas(
+            @PathVariable Long id,
+            @Valid @RequestBody RedirecionarDemandaDTO dto
     ) {
-        return ResponseEntity.ok(usuarioService.atualizarMeuPerfil(dto));
-    }
-
-    @PutMapping("/me/senha")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UsuarioResponseDTO> alterarMinhaSenha(@Valid @RequestBody MudancaSenhaDTO dto)
-    {
-        return ResponseEntity.ok(usuarioService.atualizarMinhaSenha(dto));
-    }
-
-    @PutMapping("/usuarios/{id}/senha")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> alterarSenha(@PathVariable Long id,
-                                             @RequestBody MudancaSenhaDTO dto) {
-
-        usuarioService.alterarSenha(id, dto);
-        return ResponseEntity.ok().build();
+        demandaService.redirecionarDemandasAbertasDoUsuario(id, dto);
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")

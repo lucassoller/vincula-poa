@@ -2,10 +2,10 @@ package com.vincula.service;
 
 import com.vincula.dto.login.LoginRequestDTO;
 import com.vincula.dto.login.LoginResponseDTO;
-import com.vincula.entity.Usuario;
+import com.vincula.entity.Servidor;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
-import com.vincula.repository.UsuarioRepository;
+import com.vincula.repository.ServidorRepository;
 import com.vincula.security.CustomUserDetailsService;
 import com.vincula.security.JwtService;
 import com.vincula.util.AuditoriaFacade;
@@ -21,18 +21,18 @@ public class LoginService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
-    private final UsuarioRepository usuarioRepository;
+    private final ServidorRepository servidorRepository;
     private final AuditoriaFacade auditoriaFacade;
 
     public LoginService(AuthenticationManager authenticationManager,
                         JwtService jwtService,
                         CustomUserDetailsService customUserDetailsService,
-                        UsuarioRepository usuarioRepository,
+                        ServidorRepository servidorRepository,
                         AuditoriaFacade auditoriaFacade) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
-        this.usuarioRepository = usuarioRepository;
+        this.servidorRepository = servidorRepository;
         this.auditoriaFacade = auditoriaFacade;
     }
 
@@ -45,38 +45,38 @@ public class LoginService {
                     )
             );
         } catch (DisabledException ex) {
-            throw new BusinessException("Usuário inativo");
+            throw new BusinessException("Servidor inativo");
         } catch (AuthenticationException ex) {
             throw new BusinessException("Login ou senha inválidos");
         }
 
-        Usuario usuario = buscarUsuarioPorLogin(dto.getLogin());
+        Servidor servidor = buscarServidorPorLogin(dto.getLogin());
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(usuario.getLogin());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(servidor.getLogin());
         String token = jwtService.generateToken(userDetails);
 
-        auditoriaFacade.loginRealizado(usuario);
+        auditoriaFacade.loginRealizado(servidor);
 
         return new LoginResponseDTO(
                 token,
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getLogin(),
-                usuario.getEmail(),
-                usuario.getPerfil(),
-                usuario.getAtivo(),
-                usuario.getUnidadeSaude() != null
-                        ? usuario.getUnidadeSaude().getId()
+                servidor.getId(),
+                servidor.getNome(),
+                servidor.getLogin(),
+                servidor.getEmail(),
+                servidor.getPerfil(),
+                servidor.getAtivo(),
+                servidor.getUnidadeSaude() != null
+                        ? servidor.getUnidadeSaude().getId()
                         : null,
 
-                usuario.getUnidadeSaude() != null
-                        ? usuario.getUnidadeSaude().getNome()
+                servidor.getUnidadeSaude() != null
+                        ? servidor.getUnidadeSaude().getNome()
                         : null
         );
     }
 
-    private Usuario buscarUsuarioPorLogin(String login){
-        return usuarioRepository.findByLogin(login)
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+    private Servidor buscarServidorPorLogin(String login){
+        return servidorRepository.findByLogin(login)
+                .orElseThrow(() -> new NotFoundException("Servidor não encontrado"));
     }
 }

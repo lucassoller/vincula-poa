@@ -38,6 +38,6 @@ public class Auditoria {
     private LocalDateTime dataHora;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
+    @JoinColumn(name = "servidor_id")
+    private Servidor servidor;
 }

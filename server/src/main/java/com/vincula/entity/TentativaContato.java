@@ -30,6 +30,6 @@ public class TentativaContato {
     private Demanda demanda;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "servidor_id", nullable = false)
+    private Servidor servidor;
 }

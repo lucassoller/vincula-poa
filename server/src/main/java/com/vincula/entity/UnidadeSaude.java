@@ -30,7 +30,7 @@ public class UnidadeSaude {
     private Endereco endereco;
 
     @OneToMany(mappedBy = "unidadeSaude", fetch = FetchType.LAZY)
-    private List<Paciente> pacientes;
+    private List<Usuario> usuarios;
 
     @OneToMany(mappedBy = "unidadeSaude", fetch = FetchType.LAZY)
     private List<TerritorioUbs> territorios;

@@ -14,7 +14,7 @@ import java.util.List;
 public interface TentativaContatoRepository extends JpaRepository<TentativaContato, Long> {
 
     List<TentativaContato> findByDemandaId(Long demandaId);
-    List<TentativaContato> findByUsuarioId(Long usuarioId);
+    List<TentativaContato> findByServidorId(Long servidorId);
     Page<TentativaContato> findAllByOrderByDemandaIdAsc(Pageable pageable);
     boolean existsByDemandaId(Long demandaId);
 
@@ -50,11 +50,11 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
                MIN(t.data_hora) AS primeira_tentativa
         FROM demanda d
         JOIN tentativa_contato t ON t.demanda_id = d.id
-        WHERE d.usuario_criador_id = :usuarioCriadorId
+        WHERE d.servidor_criador_id = :servidorCriadorId
         GROUP BY d.id, d.data_hora_criacao
     ) sub
     """, nativeQuery = true)
-    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
         SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
@@ -92,12 +92,12 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
                    MIN(t.data_hora) AS primeira_tentativa
             FROM demanda d
             JOIN tentativa_contato t ON t.demanda_id = d.id
-            WHERE d.usuario_criador_id = :usuarioCriadorId
+            WHERE d.servidor_criador_id = :servidorCriadorId
               AND d.data_hora_criacao BETWEEN :inicio AND :fim
             GROUP BY d.id, d.data_hora_criacao
         ) sub
         """, nativeQuery = true)
-    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                                            @Param("inicio") LocalDateTime inicio,
                                                                            @Param("fim") LocalDateTime fim);
 
@@ -129,11 +129,11 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
         SELECT COUNT(*) AS qtd
         FROM tentativa_contato t
         JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.usuario_criador_id = :usuarioCriadorId
+        WHERE d.servidor_criador_id = :servidorCriadorId
         GROUP BY t.demanda_id
     ) sub
     """, nativeQuery = true)
-    Double calcularMediaTentativasPorDemandaPorUsuario(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    Double calcularMediaTentativasPorDemandaPorServidor(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
     SELECT AVG(qtd)
@@ -169,12 +169,12 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
         SELECT COUNT(*) AS qtd
         FROM tentativa_contato t
         JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.usuario_criador_id = :usuarioCriadorId
+        WHERE d.servidor_criador_id = :servidorCriadorId
           AND d.data_hora_criacao BETWEEN :inicio AND :fim
         GROUP BY t.demanda_id
     ) sub
     """, nativeQuery = true)
-    Double calcularMediaTentativasPorDemandaPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    Double calcularMediaTentativasPorDemandaPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                                @Param("inicio") LocalDateTime inicio,
                                                                @Param("fim") LocalDateTime fim);
 
@@ -183,75 +183,75 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
     FROM (
         SELECT COUNT(*) AS qtd
         FROM tentativa_contato
-        GROUP BY usuario_id
+        GROUP BY servidor_id
     ) sub
     """, nativeQuery = true)
-    Double calcularMediaTentativasPorUsuario();
+    Double calcularMediaTentativasPorServidor();
 
     @Query(value = """
     SELECT AVG(qtd)
     FROM (
-        SELECT t.usuario_id, COUNT(*) AS qtd
+        SELECT t.servidor_id, COUNT(*) AS qtd
         FROM tentativa_contato t
         JOIN demanda d ON d.id = t.demanda_id
         WHERE d.unidade_responsavel_id = :unidadeResponsavelId
-        GROUP BY t.usuario_id
+        GROUP BY t.servidor_id
     ) sub
     """, nativeQuery = true)
-    Double calcularMediaTentativasPorUsuarioPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
+    Double calcularMediaTentativasPorServidorPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
 
     @Query(value = """
     SELECT AVG(qtd)
     FROM (
-        SELECT t.usuario_id, COUNT(*) AS qtd
+        SELECT t.servidor_id, COUNT(*) AS qtd
         FROM tentativa_contato t
         JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.usuario_criador_id = :usuarioCriadorId
-        GROUP BY t.usuario_id
+        WHERE d.servidor_criador_id = :servidorCriadorId
+        GROUP BY t.servidor_id
     ) sub
     """, nativeQuery = true)
-    Double calcularMediaTentativasPorUsuarioPorCriador(@Param("usuarioCriadorId") Long usuarioCriadorId);
+    Double calcularMediaTentativasPorServidorPorCriador(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query(value = """
     SELECT AVG(qtd)
     FROM (
-        SELECT t.usuario_id, COUNT(*) AS qtd
+        SELECT t.servidor_id, COUNT(*) AS qtd
         FROM tentativa_contato t
         JOIN demanda d ON d.id = t.demanda_id
         WHERE d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.usuario_id
+        GROUP BY t.servidor_id
     ) sub
     """, nativeQuery = true)
-    Double calcularMediaTentativasPorUsuarioPorPeriodo(@Param("inicio") LocalDateTime inicio,
+    Double calcularMediaTentativasPorServidorPorPeriodo(@Param("inicio") LocalDateTime inicio,
                                                        @Param("fim") LocalDateTime fim);
 
     @Query(value = """
     SELECT AVG(qtd)
     FROM (
-        SELECT t.usuario_id, COUNT(*) AS qtd
+        SELECT t.servidor_id, COUNT(*) AS qtd
         FROM tentativa_contato t
         JOIN demanda d ON d.id = t.demanda_id
         WHERE d.unidade_responsavel_id = :unidadeResponsavelId
           AND d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.usuario_id
+        GROUP BY t.servidor_id
     ) sub
     """, nativeQuery = true)
-    Double calcularMediaTentativasPorUsuarioPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
+    Double calcularMediaTentativasPorServidorPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
                                                                @Param("inicio") LocalDateTime inicio,
                                                                @Param("fim") LocalDateTime fim);
 
     @Query(value = """
     SELECT AVG(qtd)
     FROM (
-        SELECT t.usuario_id, COUNT(*) AS qtd
+        SELECT t.servidor_id, COUNT(*) AS qtd
         FROM tentativa_contato t
         JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.usuario_criador_id = :usuarioCriadorId
+        WHERE d.servidor_criador_id = :servidorCriadorId
           AND d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.usuario_id
+        GROUP BY t.servidor_id
     ) sub
     """, nativeQuery = true)
-    Double calcularMediaTentativasPorUsuarioPorUsuarioEPeriodo(@Param("usuarioCriadorId") Long usuarioCriadorId,
+    Double calcularMediaTentativasPorServidorPorServidorEPeriodo(@Param("servidorCriadorId") Long servidorCriadorId,
                                                                @Param("inicio") LocalDateTime inicio,
                                                                @Param("fim") LocalDateTime fim);
 

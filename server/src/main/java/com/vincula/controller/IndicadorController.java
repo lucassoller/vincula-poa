@@ -27,8 +27,8 @@ public class IndicadorController {
             @RequestParam(required = false) Long unidadeSaudeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
-            @RequestParam(required = false) Long usuarioId) {
-        return ResponseEntity.ok(indicadorService.indicadorGeral(unidadeSaudeId, inicio, fim, usuarioId));
+            @RequestParam(required = false) Long servidorId) {
+        return ResponseEntity.ok(indicadorService.indicadorGeral(unidadeSaudeId, inicio, fim, servidorId));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -37,9 +37,9 @@ public class IndicadorController {
             @RequestParam(required = false) Long unidadeSaudeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
-            @RequestParam(required = false) Long usuarioId
+            @RequestParam(required = false) Long servidorId
     ) {
-        String csv = indicadorService.exportarIndicadorGeralCsv(unidadeSaudeId, inicio, fim, usuarioId);
+        String csv = indicadorService.exportarIndicadorGeralCsv(unidadeSaudeId, inicio, fim, servidorId);
         String dataHora = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm"));
 

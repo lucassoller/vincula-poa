@@ -1,6 +1,6 @@
 package com.vincula.util;
 
-import com.vincula.entity.Usuario;
+import com.vincula.entity.Servidor;
 import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.service.AuditoriaService;
 import org.springframework.stereotype.Component;
@@ -21,24 +21,24 @@ public class AuditoriaFacade {
         auditoriaService.registrar(acao, entidade, entidadeId, descricao);
     }
 
-    public void registrarComUsuario(Usuario usuario,
+    public void registrarComServidor(Servidor servidor,
                                     TipoAcaoAuditoria acao,
                                     String entidade,
                                     Long entidadeId,
                                     String descricao) {
-        auditoriaService.registrarComUsuario(usuario, acao, entidade, entidadeId, descricao);
+        auditoriaService.registrarComServidor(servidor, acao, entidade, entidadeId, descricao);
     }
 
-    public void pacienteCriado(Long id) {
-        registrar(TipoAcaoAuditoria.PACIENTE_CRIADO, "Paciente", id, "Paciente criado");
+    public void usuarioCriado(Long id) {
+        registrar(TipoAcaoAuditoria.USUARIO_CRIADO, "Usuario", id, "Usuário criado");
     }
 
-    public void pacienteAtualizado(Long id, String descricao) {
-        registrar(TipoAcaoAuditoria.PACIENTE_ATUALIZADO, "Paciente", id, descricao);
+    public void usuarioAtualizado(Long id, String descricao) {
+        registrar(TipoAcaoAuditoria.USUARIO_ATUALIZADO, "Usuario", id, descricao);
     }
 
-    public void pacienteDeletado(Long id) {
-        registrar(TipoAcaoAuditoria.PACIENTE_DELETADO, "Paciente", id, "Paciente deletado");
+    public void usuarioDeletado(Long id) {
+        registrar(TipoAcaoAuditoria.USUARIO_DELETADO, "Usuario", id, "Usuário deletado");
     }
 
     public void enderecoCriado(Long id) {
@@ -53,8 +53,8 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.ENDERECO_ATUALIZADO, "Endereco", id, "Endereco deletado");
     }
 
-    public void demandaCriada(Long id, Long pacienteID) {
-        registrar(TipoAcaoAuditoria.DEMANDA_CRIADA, "Demanda", id, "Demanda criada para o paciente " + pacienteID);
+    public void demandaCriada(Long id, Long usuarioID) {
+        registrar(TipoAcaoAuditoria.DEMANDA_CRIADA, "Demanda", id, "Demanda criada para o usuário " + usuarioID);
     }
 
     public void demandaAtualizada(Long id, String descricao) {
@@ -94,24 +94,24 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.TENTATIVA_CONTATO_DELETADA, "TentativaContato", id, "Tentativa contato deledada");
     }
 
-    public void usuarioCriado(Long id) {
-        registrar(TipoAcaoAuditoria.USUARIO_CRIADO, "Usuario", id, "Usuário criado");
+    public void servidorCriado(Long id) {
+        registrar(TipoAcaoAuditoria.SERVIDOR_CRIADO, "Servidor", id, "Servidor criado");
     }
 
-    public void usuarioAtualizado(Long id, String descricao) {
-        registrar(TipoAcaoAuditoria.USUARIO_ATUALIZADO, "Usuario", id, descricao);
+    public void servidorAtualizado(Long id, String descricao) {
+        registrar(TipoAcaoAuditoria.SERVIDOR_ATUALIZADO, "Servidor", id, descricao);
     }
 
-    public void usuarioDeletado(Long id) {
-        registrar(TipoAcaoAuditoria.USUARIO_DELETADO, "Usuario", id, "Usuário deletado");
+    public void servidorDeletado(Long id) {
+        registrar(TipoAcaoAuditoria.SERVIDOR_DELETADO, "Servidor", id, "Servidor deletado");
     }
 
-    public void usuarioSenhaAlteradaDeslogado(Long id) {
-        registrarComUsuario(null, TipoAcaoAuditoria.USUARIO_SENHA_ALTERADA, "Usuario", id, "Senha alterada");
+    public void servidorSenhaAlteradaDeslogado(Long id) {
+        registrarComServidor(null, TipoAcaoAuditoria.SERVIDOR_SENHA_ALTERADA, "Servidor", id, "Senha alterada");
     }
 
-    public void usuarioSenhaAlteradaLogado(Long id) {
-        registrar(TipoAcaoAuditoria.USUARIO_SENHA_ALTERADA, "Usuario", id, "Senha alterada");
+    public void servidorSenhaAlteradaLogado(Long id) {
+        registrar(TipoAcaoAuditoria.SERVIDOR_SENHA_ALTERADA, "Servidor", id, "Senha alterada");
     }
 
     public void unidadeSaudeCriada(Long id) {
@@ -126,38 +126,38 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.UNIDADE_SAUDE_DELETADA, "UnidadeSaude", id, "Unidade de saúde deletada");
     }
 
-    public void loginRealizado(Usuario usuario) {
-        registrarComUsuario(
-                usuario,
+    public void loginRealizado(Servidor servidor) {
+        registrarComServidor(
+                servidor,
                 TipoAcaoAuditoria.LOGIN_REALIZADO,
-                "Usuario",
-                usuario.getId(),
-                "Login realizado pelo usuário " + usuario.getLogin()
+                "Servidor",
+                servidor.getId(),
+                "Login realizado pelo servidor " + servidor.getLogin()
         );
     }
 
-    public void logoutRealizado(Usuario usuario) {
-        registrarComUsuario(
-                usuario,
+    public void logoutRealizado(Servidor servidor) {
+        registrarComServidor(
+                servidor,
                 TipoAcaoAuditoria.LOGOUT_REALIZADO,
-                "Usuario",
-                usuario.getId(),
-                "Logout realizado pelo usuário " + usuario.getLogin()
+                "Servidor",
+                servidor.getId(),
+                "Logout realizado pelo servidor " + servidor.getLogin()
         );
     }
 
     public void emailEnviado(String email) {
         registrar(
                 TipoAcaoAuditoria.EMAIL_ENVIADO,
-                "Usuario",
+                "Servidor",
                 0L,
-                "Email enviado para recuperação de senha do usuario " + email
+                "Email enviado para recuperação de senha do servidor " + email
         );
     }
 
 
     public void emailFalhou(String email) {
-        registrar(TipoAcaoAuditoria.EMAIL_FALHOU, "Usuario", 0L, "Email de recuperação falhou do usuario " + email);
+        registrar(TipoAcaoAuditoria.EMAIL_FALHOU, "Servidor", 0L, "Email de recuperação falhou do servidor " + email);
     }
 
     public void exportacaoCsvRealizada(String descricao) {

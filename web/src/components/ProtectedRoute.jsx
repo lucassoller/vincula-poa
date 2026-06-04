@@ -2,16 +2,16 @@ import { Navigate } from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 
 function ProtectedRoute({ children,  perfisPermitidos = []}) {
-    const { usuario } = useAuth();
+    const { servidor } = useAuth();
 
-    if (!usuario) {
+    if (!servidor) {
         return <Navigate to="/" replace />;
     }
 
-    const permitido = perfisPermitidos.includes(usuario.perfil);
+    const permitido = perfisPermitidos.includes(servidor.perfil);
 
     if (!permitido) {
-        if(usuario.perfil === "SOLICITANTE"){
+        if(servidor.perfil === "SOLICITANTE"){
             return <Navigate to="/demandas" replace />;
         }else{
             return <Navigate to="/indicadores" replace />;

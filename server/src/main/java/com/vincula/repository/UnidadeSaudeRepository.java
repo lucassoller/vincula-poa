@@ -1,6 +1,6 @@
 package com.vincula.repository;
 
-import com.vincula.entity.Paciente;
+import com.vincula.entity.Usuario;
 import com.vincula.entity.UnidadeSaude;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,9 +42,9 @@ public interface UnidadeSaudeRepository extends JpaRepository<UnidadeSaude, Long
 
     @Query("""
        SELECT p
-       FROM Paciente p
+       FROM Usuario p
        LEFT JOIN FETCH p.endereco
        WHERE p.unidadeSaude.id = :unidadeSaudeId
        """)
-    List<Paciente> findPacientesByUnidadeSaudeId(Long unidadeSaudeId);
+    List<Usuario> findUsuariosByUnidadeSaudeId(Long unidadeSaudeId);
 }

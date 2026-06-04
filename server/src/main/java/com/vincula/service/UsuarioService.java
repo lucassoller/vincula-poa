@@ -1,50 +1,52 @@
 package com.vincula.service;
 
-import com.vincula.dto.senha.MudancaSenhaDTO;
-import com.vincula.dto.usuario.MeuPerfilDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.usuario.UsuarioShortResponseDTO;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Endereco;
 import com.vincula.entity.Usuario;
-import com.vincula.enums.PerfilUsuario;
+import com.vincula.entity.UnidadeSaude;
+import com.vincula.enums.Sexo;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
-import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.UsuarioRepository;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final UnidadeSaudeRepository unidadeSaudeRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final EnderecoMapper enderecoMapper;
     private final AuditoriaFacade auditoriaFacade;
+    private final TerritorializacaoService territorializacaoService;
+    private final GeocodingService geocodingService;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
-                          UnidadeSaudeRepository unidadeSaudeRepository,
-                          PasswordEncoder passwordEncoder,
-                          AuditoriaFacade auditoriaFacade) {
+                          EnderecoMapper enderecoMapper,
+                          AuditoriaFacade auditoriaFacade,
+                          TerritorializacaoService territorializacaoService,
+                          GeocodingService geocodingService) {
         this.usuarioRepository = usuarioRepository;
-        this.unidadeSaudeRepository = unidadeSaudeRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.enderecoMapper = enderecoMapper;
         this.auditoriaFacade = auditoriaFacade;
+        this.territorializacaoService = territorializacaoService;
+        this.geocodingService = geocodingService;
     }
 
     public UsuarioResponseDTO criar(UsuarioDTO dto) {
-        validarDuplicidadeCreate(dto);
+        validarDocumentoCreate(dto);
 
         Usuario entity = toEntity(dto);
+
         Usuario salvo = usuarioRepository.save(entity);
 
         auditoriaFacade.usuarioCriado(salvo.getId());
@@ -53,246 +55,175 @@ public class UsuarioService {
     }
 
     public Page<UsuarioResponseDTO> listarTodos(Pageable pageable) {
-        return usuarioRepository.findAllByOrderByNomeAsc(pageable)
+        return usuarioRepository.findAllByOrderByNomeCompletoAsc(pageable)
                 .map(this::toDTO);
     }
 
     public List<UsuarioShortResponseDTO> listarTodos() {
-        return usuarioRepository.findAllByOrderByNomeAsc()
+        return usuarioRepository.findAllByOrderByNomeCompletoAsc()
                 .stream()
                 .map(this::toShortDTO)
                 .toList();
     }
 
-    public Page<UsuarioResponseDTO> listarTodosPorPerfil(PerfilUsuario perfil, Pageable pageable) {
-        return usuarioRepository.findByPerfilOrderByNomeAsc(perfil, pageable)
+    public Page<UsuarioResponseDTO> listarTodosPorUnidade(Long unidadeSaudeId, Pageable pageable) {
+        return usuarioRepository.findByUnidadeSaudeIdOrderByNomeCompletoAsc(unidadeSaudeId, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<UsuarioResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
+        return usuarioRepository.findFiltrados(filtro, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<UsuarioResponseDTO> listarTodosPorUnidadeFiltrados(Long unidadeSaudeId, String filtro, Pageable pageable) {
+        return usuarioRepository.findFiltradosByUnidade(unidadeSaudeId, filtro, pageable)
                 .map(this::toDTO);
     }
 
     public UsuarioResponseDTO buscarPorId(Long id) {
-        Usuario entity = buscarUsuarioPorId(id);
-        return toDTO(entity);
+        Usuario usuario = buscarUsuarioPorId(id);
+        return toDTO(usuario);
     }
 
-    public UsuarioResponseDTO buscarPorEmail(String email) {
-        Usuario entity = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
-        return toDTO(entity);
-    }
+    public UsuarioResponseDTO buscarPorDocumento(String documento) {
+        Usuario usuario = usuarioRepository.findByDocumento(documento)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
-    public UsuarioResponseDTO buscarPorLogin(String login) {
-        Usuario entity = usuarioRepository.findByLogin(login)
-                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
-        return toDTO(entity);
+        return toDTO(usuario);
     }
 
     public UsuarioResponseDTO atualizar(Long id, UsuarioDTO dto) {
-        Usuario entity = buscarUsuarioPorId(id);
+        Usuario usuario = buscarUsuarioPorId(id);
 
-        validarDuplicidadeUpdate(dto, id);
+        validarDocumentoUpdate(id, dto);
 
-        String descricaoLog = AuditoriaDescricaoUtil.usuarioAtualizado(entity, dto);
-
-        entity.setNome(dto.getNome());
-        entity.setEmail(dto.getEmail());
-        entity.setLogin(dto.getLogin());
-        entity.setPerfil(dto.getPerfil());
-        entity.setAtivo(dto.getAtivo());
-        entity.setUnidadeSaude(resolverUnidadeSaude(dto));
-
-        if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
-            entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
+        if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
+            throw new BusinessException("Data de nascimento não pode ser futura");
         }
 
-        Usuario atualizado = usuarioRepository.save(entity);
+        String descricaoLog = AuditoriaDescricaoUtil.usuarioAtualizado(usuario, dto);
 
-        auditoriaFacade.usuarioAtualizado(atualizado.getId(), descricaoLog);
+        usuario.setNomeCompleto(dto.getNomeCompleto());
+        usuario.setTelefone(dto.getTelefone());
+        usuario.setDataNascimento(dto.getDataNascimento());
+        usuario.setDocumento(dto.getDocumento());
+        usuario.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
 
-        return toDTO(atualizado);
-    }
+        enderecoMapper.updateEntityFromDto(dto.getEndereco(), usuario.getEndereco());
 
-    public UsuarioResponseDTO atualizarMeuPerfil(MeuPerfilDTO dto) {
-        Usuario entity = buscarUsuarioAutenticado();
+        geocodingService.preencherCoordenadas(usuario.getEndereco());
 
-        validarDuplicidadeUpdate(dto, entity.getId());
-
-        String descricaoLog = AuditoriaDescricaoUtil.usuarioAtualizado(entity, dto);
-
-        entity.setNome(dto.getNome());
-        entity.setEmail(dto.getEmail());
-        entity.setLogin(dto.getLogin());
-
-        Usuario atualizado = usuarioRepository.save(entity);
-
-        auditoriaFacade.usuarioAtualizado(atualizado.getId(), descricaoLog);
-
-        return toDTO(atualizado);
-    }
-
-    public UsuarioResponseDTO atualizarMinhaSenha(MudancaSenhaDTO dto) {
-        Usuario entity = buscarUsuarioAutenticado();
-
-        if (!passwordEncoder.matches(dto.getSenhaAtual(), entity.getSenhaHash())) {
-            throw new BusinessException("Senha atual inválida");
+        if(usuario.getEndereco().getLatitude() == null || usuario.getEndereco().getLongitude() == null){
+            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
         }
 
-        if(!Objects.equals(dto.getNovaSenha(), dto.getConfirmarSenha())){
-            throw new BusinessException("As senhas não coincidem");
+        UnidadeSaude unidade = territorializacaoService.buscarUbsPorCoordenada(
+                usuario.getEndereco().getLatitude(),
+                usuario.getEndereco().getLongitude());
+
+        if(unidade == null){
+            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
         }
 
-        entity.setSenhaHash(passwordEncoder.encode(dto.getNovaSenha()));
-
-        Usuario atualizado = usuarioRepository.save(entity);
-
-        auditoriaFacade.usuarioAtualizado(atualizado.getId(), "Senha atualizada");
-
-        return toDTO(atualizado);
-    }
-
-    public void alterarSenha(Long usuarioId, MudancaSenhaDTO dto) {
-
-        Usuario usuario = buscarUsuarioAutenticado();
-        if(!Objects.equals(usuario.getId(), usuarioId)){
-            throw new BusinessException("Não é possível alterar a senha de outro usuário");
-        }
-
-        if (!passwordEncoder.matches(dto.getSenhaAtual(), usuario.getSenhaHash())) {
-            throw new BusinessException("Senha atual inválida");
-        }
-
-        usuario.setSenhaHash(passwordEncoder.encode(dto.getNovaSenha()));
+        usuario.setUnidadeSaude(unidade);
 
         Usuario atualizado = usuarioRepository.save(usuario);
 
-        auditoriaFacade.usuarioSenhaAlteradaLogado(atualizado.getId());
+        auditoriaFacade.usuarioAtualizado(atualizado.getId(), descricaoLog);
+
+        return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
-        Usuario entity = buscarUsuarioPorId(id);
+        Usuario usuario = buscarUsuarioPorId(id);
 
-        Long usuarioId = entity.getId();
+        Long usuarioId = usuario.getId();
 
-        usuarioRepository.delete(entity);
+        usuarioRepository.delete(usuario);
 
         auditoriaFacade.usuarioDeletado(usuarioId);
     }
 
-    private void validarDuplicidadeCreate(UsuarioDTO dto) {
-        if (usuarioRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("Email já cadastrado");
-        }
-
-        if (usuarioRepository.existsByLogin(dto.getLogin())) {
-            throw new ConflictException("Login já cadastrado");
+    private void validarDocumentoCreate(UsuarioDTO dto) {
+        if (usuarioRepository.existsByDocumento(dto.getDocumento())) {
+            throw new ConflictException("CPF já cadastrado");
         }
     }
 
-    private void validarDuplicidadeUpdate(UsuarioDTO dto, Long id) {
-        if (usuarioRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
-            throw new ConflictException("Email já cadastrado");
+    private void validarDocumentoUpdate(Long id, UsuarioDTO dto) {
+        if (usuarioRepository.existsByDocumentoAndIdNot(dto.getDocumento(), id)) {
+            throw new ConflictException("CPF já cadastrado");
         }
-
-        if (usuarioRepository.existsByLoginAndIdNot(dto.getLogin(), id)) {
-            throw new ConflictException("Login já cadastrado");
-        }
-    }
-
-
-    private void validarDuplicidadeUpdate(MeuPerfilDTO dto, Long id) {
-        if (usuarioRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
-            throw new ConflictException("Email já cadastrado");
-        }
-
-        if (usuarioRepository.existsByLoginAndIdNot(dto.getLogin(), id)) {
-            throw new ConflictException("Login já cadastrado");
-        }
-    }
-
-    public Usuario buscarUsuarioAutenticado() {
-        String login = com.vincula.security.SecurityUtils.getLoginUsuarioLogado();
-
-        if (login == null) {
-            throw new BusinessException("Usuário não autenticado");
-        }
-
-        return usuarioRepository.findByLogin(login)
-                .orElseThrow(() -> new NotFoundException("Usuário autenticado não encontrado"));
     }
 
     private Usuario buscarUsuarioPorId(Long id){
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuário do sistema não encontrado"));
-    }
-
-    private UnidadeSaude resolverUnidadeSaude(UsuarioDTO dto) {
-
-        if (dto.getUnidadeSaudeId() != null) {
-
-            if (dto.getPerfil() == PerfilUsuario.SOLICITANTE ||
-                    dto.getPerfil() == PerfilUsuario.GESTAO_MUNICIPAL) {
-                throw new BusinessException(dto.getPerfil() + " não deve estar vinculado a uma unidade de saúde");
-            }
-
-            return unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
-                    .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
-
-        } else {
-
-            if (dto.getPerfil() == PerfilUsuario.USUARIO_APS) {
-                throw new BusinessException(dto.getPerfil() + " deve estar vinculado a uma unidade de saúde");
-            }
-
-            return null;
-        }
-    }
-
-    public UsuarioResponseDTO getUsuarioAutenticadoDTO() {
-        Usuario usuario = buscarUsuarioAutenticado();
-        return toDTO(usuario);
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
     }
 
     private Usuario toEntity(UsuarioDTO dto) {
-        if(!Objects.equals(dto.getSenha(), dto.getConfirmarSenha())){
-            throw new BusinessException("As senhas não coincidem");
-        }
-        Usuario entity = new Usuario();
+        Endereco endereco = enderecoMapper.toEntity(dto.getEndereco());
 
-        entity.setNome(dto.getNome());
-        entity.setEmail(dto.getEmail());
-        entity.setLogin(dto.getLogin());
-        entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
-        entity.setPerfil(dto.getPerfil());
-        entity.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : true);
-        entity.setUnidadeSaude(resolverUnidadeSaude(dto));
+        if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
+            throw new BusinessException("Data de nascimento não pode ser futura");
+        }
+
+        Usuario entity = new Usuario();
+        entity.setNomeCompleto(dto.getNomeCompleto());
+        entity.setTelefone(dto.getTelefone());
+        entity.setDataNascimento(dto.getDataNascimento());
+        entity.setDocumento(dto.getDocumento());
+        entity.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
+        entity.setEndereco(endereco);
+        entity.setIdServidorCadastro(dto.getIdServidorCadastro());
+
+        geocodingService.preencherCoordenadas(entity.getEndereco());
+
+        if(entity.getEndereco().getLatitude() == null || entity.getEndereco().getLongitude() == null){
+            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+        }
+
+        UnidadeSaude unidade = territorializacaoService.buscarUbsPorCoordenada(
+                entity.getEndereco().getLatitude(),
+                entity.getEndereco().getLongitude());
+
+        if(unidade == null){
+            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+        }
+        entity.setUnidadeSaude(unidade);
 
         return entity;
     }
 
     private UsuarioResponseDTO toDTO(Usuario entity) {
+
         UsuarioResponseDTO dto = new UsuarioResponseDTO();
 
         dto.setId(entity.getId());
-        dto.setNome(entity.getNome());
-        dto.setEmail(entity.getEmail());
-        dto.setLogin(entity.getLogin());
-        dto.setPerfil(entity.getPerfil());
-        dto.setAtivo(entity.getAtivo());
-        if (entity.getUnidadeSaude() != null) {
-            dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
-            dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
-        } else {
-            dto.setUnidadeSaudeId(null);
-            dto.setUnidadeSaudeNome(null);
-        }
+        dto.setNomeCompleto(entity.getNomeCompleto());
+        dto.setTelefone(entity.getTelefone());
+        dto.setDataNascimento(entity.getDataNascimento());
+        dto.setDocumento(entity.getDocumento());
+        dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
+        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+        dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
+        dto.setSexo(entity.getSexo());
+        dto.setIdServidorCadastro(entity.getIdServidorCadastro());
 
         return dto;
     }
 
     private UsuarioShortResponseDTO toShortDTO(Usuario entity) {
+
         UsuarioShortResponseDTO dto = new UsuarioShortResponseDTO();
+
         dto.setId(entity.getId());
-        dto.setNome(entity.getNome());
-        dto.setEmail(entity.getEmail());
+        dto.setNomeCompleto(entity.getNomeCompleto());
+        dto.setDocumento(entity.getDocumento());
+        dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
+        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+
         return dto;
     }
 }

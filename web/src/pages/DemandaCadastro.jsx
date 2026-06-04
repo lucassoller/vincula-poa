@@ -16,41 +16,41 @@ function DemandaCadastro() {
             motivoBuscaAtiva: "",
             descricaoBusca: "",
             prazoDemanda: "",
-            pacienteId: ""
+            usuarioId: ""
         }
     });
     const location = useLocation();
     const navigate = useNavigate();
-    const { usuario } = useAuth();
-    const [pacientes, setPacientes] = useState([]);
+    const { servidor } = useAuth();
+    const [usuarios, setUsuarios] = useState([]);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
-    const [ubsPaciente, setUbsPaciente] = useState("");
+    const [ubsUsuario, setUbsUsuario] = useState("");
 
     useEffect(() => {
-        const paciente = pacientes.find(
-            p => String(p.id) === String(location.state?.pacienteId)
+        const usuario = usuarios.find(
+            p => String(p.id) === String(location.state?.usuarioId)
         );
 
-        if (paciente) {
-            setValue("pacienteId", String(paciente.id));
+        if (usuario) {
+            setValue("usuarioId", String(usuario.id));
             // eslint-disable-next-line react-hooks/set-state-in-effect
-            setUbsPaciente(paciente.unidadeSaudeNome || "");
+            setUbsUsuario(usuario.unidadeSaudeNome || "");
         }
-    }, [location.state, pacientes, setValue]);
+    }, [location.state, usuarios, setValue]);
 
     useEffect(() => {
         async function carregarDados() {
             try {
-                const response = await api.get("/pacientes/all");
-                setPacientes(response.data);
+                const response = await api.get("/usuarios/all");
+                setUsuarios(response.data);
             } catch {
                 setMensagem("Erro ao carregar dados.");
             }
         }
 
         void carregarDados();
-    }, [usuario]);
+    }, [servidor]);
 
     async function salvar(dados) {
         setMensagem("");
@@ -61,7 +61,7 @@ function DemandaCadastro() {
                 ...dados,
                 motivoBuscaAtiva: dados.motivoBuscaAtiva || null,
                 prazoDemanda: dados.prazoDemanda || null,
-                pacienteId: dados.pacienteId ? Number(dados.pacienteId) : null,
+                usuarioId: dados.usuarioId ? Number(dados.usuarioId) : null,
             };
 
             await api.post("/demandas", payload);
@@ -80,20 +80,20 @@ function DemandaCadastro() {
         }
     }
 
-    function handlePacienteChange(event) {
-        const pacienteId = Number(event.target.value);
+    function handleUsuarioChange(event) {
+        const usuarioId = Number(event.target.value);
 
-        const pacienteSelecionado = pacientes.find(
-            (p) => p.id === pacienteId
+        const usuarioSelecionado = usuarios.find(
+            (p) => p.id === usuarioId
         );
 
-        if (!pacienteSelecionado) {
-            setUbsPaciente("");
+        if (!usuarioSelecionado) {
+            setUbsUsuario("");
             return;
         }
 
-        setUbsPaciente(
-            pacienteSelecionado.unidadeSaudeNome || ""
+        setUbsUsuario(
+            usuarioSelecionado.unidadeSaudeNome || ""
         );
     }
 
@@ -119,27 +119,27 @@ function DemandaCadastro() {
 
                     <div className="form-grid two">
                         <div className="form-group">
-                            <label>Paciente <span>*</span></label>
+                            <label>Usuário <span>*</span></label>
                             <select
                                 className="input-field"
-                                {...register("pacienteId")}
-                                onChange={handlePacienteChange}
+                                {...register("usuarioId")}
+                                onChange={handleUsuarioChange}
                             >
                                 <option value="">Selecione</option>
-                                {pacientes.map((p) => (
+                                {usuarios.map((p) => (
                                     <option key={p.id} value={p.id}>
                                         {p.nomeCompleto} - {p.documento}
                                     </option>
                                 ))}
                             </select>
-                            {erros.pacienteId && <small>{erros.pacienteId}</small>}
+                            {erros.usuarioId && <small>{erros.usuarioId}</small>}
                         </div>
                         <div className="form-group">
-                            <label>UBS do paciente</label>
+                            <label>UBS do usuário</label>
                             <input
                                 type="text"
                                 className="input-field"
-                                value={ubsPaciente}
+                                value={ubsUsuario}
                                 disabled
                             />
                         </div>

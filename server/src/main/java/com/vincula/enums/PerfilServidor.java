@@ -1,7 +1,7 @@
 package com.vincula.enums;
 
-public enum PerfilUsuario {
+public enum PerfilServidor {
     SOLICITANTE,
-    USUARIO_APS,
+    SERVIDOR_APS,
     GESTAO_MUNICIPAL
 }

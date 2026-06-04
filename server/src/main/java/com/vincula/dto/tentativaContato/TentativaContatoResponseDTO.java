@@ -11,6 +11,6 @@ public class TentativaContatoResponseDTO {
     private TipoTentativaContato tipo;
     private String descricao;
     private LocalDateTime dataHora;
-    private Long usuarioId;
-    private String usuarioNome;
+    private Long servidorId;
+    private String servidorNome;
 }

@@ -17,12 +17,12 @@ public class DemandaExporter {
         StringBuilder sb = new StringBuilder();
 
         sb.append(
-                "id,paciente,motivo_busca,descricao_busca,prazo,status," +
+                "id,usuario,motivo_busca,descricao_busca,prazo,status," +
                         "data_criacao,data_limite,data_finalizacao," +
                         "desfecho,descricao_desfecho," +
                         "foi_redirecionada,motivo_redirecionamento," +
                         "unidade_solicitante,unidade_responsavel," +
-                        "usuario_criador\n"
+                        "servidor_criador\n"
         );
 
         for (Demanda d : demandas) {
@@ -30,8 +30,8 @@ public class DemandaExporter {
             sb.append(d.getId()).append(",")
 
                     .append(escapar(
-                            d.getPaciente() != null
-                                    ? d.getPaciente().getNomeCompleto()
+                            d.getUsuario() != null
+                                    ? d.getUsuario().getNomeCompleto()
                                     : ""
                     ))
                     .append(",")
@@ -100,8 +100,8 @@ public class DemandaExporter {
                     .append(",")
 
                     .append(escapar(
-                            d.getUsuarioCriador() != null
-                                    ? d.getUsuarioCriador().getNome()
+                            d.getServidorCriador() != null
+                                    ? d.getServidorCriador().getNome()
                                     : ""
                     ))
                     .append("\n");

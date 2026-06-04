@@ -7,8 +7,8 @@ import {formatarDataHora, formatarEnum} from "../utils/utils.js";
 function Auditoria() {
 
     const [logs, setLogs] = useState([]);
-    const [usuarios, setUsuarios] = useState([]);
-    const [usuarioId, setUsuarioId] = useState("");
+    const [servidores, setServidores] = useState([]);
+    const [servidorId, setServidorId] = useState("");
     const [inicio, setInicio] = useState("");
     const [fim, setFim] = useState("");
     const [mensagem, setMensagem] = useState("");
@@ -20,7 +20,7 @@ function Auditoria() {
     async function carregarAuditoria(
         paginaAtual = pagina,
         filtros = {
-            usuarioId,
+            servidorId,
             inicio,
             fim
         }
@@ -31,23 +31,23 @@ function Auditoria() {
             setCarregando(true);
             setMensagem("");
 
-            const temUsuario = filtros.usuarioId !== "";
+            const temServidor = filtros.servidorId !== "";
             const temPeriodo = filtros.inicio !== "" && filtros.fim !== "";
 
             let url = `/auditoria?page=${paginaAtual}&size=${tamanhoPagina}`;
 
-            if (temUsuario && temPeriodo) {
+            if (temServidor && temPeriodo) {
 
                 url =
-                    `/auditoria/usuario/${filtros.usuarioId}/periodo` +
+                    `/auditoria/servidor/${filtros.servidorId}/periodo` +
                     `?inicio=${filtros.inicio}T00:00:00` +
                     `&fim=${filtros.fim}T23:59:59` +
                     `&page=${paginaAtual}&size=${tamanhoPagina}`;
 
-            } else if (temUsuario) {
+            } else if (temServidor) {
 
                 url =
-                    `/auditoria/usuario/${filtros.usuarioId}` +
+                    `/auditoria/servidor/${filtros.servidorId}` +
                     `?page=${paginaAtual}&size=${tamanhoPagina}`;
 
             } else if (temPeriodo) {
@@ -70,16 +70,16 @@ function Auditoria() {
     }
 
     useEffect(() => {
-        async function carregarUsuarios() {
+        async function carregarServidores() {
             try {
-                const usuariosResponse = await api.get("/usuarios/all");
-                setUsuarios(usuariosResponse.data);
+                const servidoresResponse = await api.get("/servidores/all");
+                setServidores(servidoresResponse.data);
             } catch {
-                setMensagem("Erro ao carregar usuários.");
+                setMensagem("Erro ao carregar servidores.");
             }
         }
 
-        void carregarUsuarios();
+        void carregarServidores();
 
     }, []);
 
@@ -102,14 +102,14 @@ function Auditoria() {
         }
 
         await carregarAuditoria(0, {
-            usuarioId,
+            servidorId,
             inicio,
             fim
         });
     }
 
     async function limparFiltros() {
-        setUsuarioId("");
+        setServidorId("");
         setInicio("");
         setFim("");
 
@@ -119,7 +119,7 @@ function Auditoria() {
         }
 
         await carregarAuditoria(0, {
-            usuarioId: "",
+            servidorId: "",
             inicio: "",
             fim: ""
         });
@@ -162,15 +162,15 @@ function Auditoria() {
                 <div className="auditoria-filtros">
                     <select
                         className="input-field"
-                        value={usuarioId}
-                        onChange={(e) => setUsuarioId(e.target.value)}
+                        value={servidorId}
+                        onChange={(e) => setServidorId(e.target.value)}
                     >
 
                         <option value="">
-                            Todos os usuários
+                            Todos os servidores
                         </option>
 
-                        {usuarios.map((u) => (
+                        {servidores.map((u) => (
                             <option
                                 key={u.id}
                                 value={u.id}
@@ -211,7 +211,7 @@ function Auditoria() {
                         <thead>
                         <tr>
                             <th>Data/Hora</th>
-                            <th>Usuário</th>
+                            <th>Servidor</th>
                             <th>Ação</th>
                             <th>Entidade</th>
                             <th>ID</th>
@@ -227,7 +227,7 @@ function Auditoria() {
                                     {formatarDataHora(log.dataHora)}
                                 </td>
                                 <td>
-                                    {log.usuarioNome || "-"}
+                                    {log.servidorNome || "-"}
                                 </td>
                                 <td>
                                     <span className="acao-badge">

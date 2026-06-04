@@ -12,7 +12,7 @@ import SecaoCards from "../components/SecaoCards.jsx";
 
 function Indicador() {
     const navigate = useNavigate();
-    const { usuario } = useAuth();
+    const { servidor } = useAuth();
     const [indicador, setIndicador] = useState(null);
     const [erro, setErro] = useState("");
     const [carregando, setCarregando] = useState(true);
@@ -21,19 +21,19 @@ function Indicador() {
     const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
     const [unidades, setUnidades] = useState([]);
     const unidadeSaudeId =
-        usuario?.perfil === "USUARIO_APS"
-            ? String(usuario.unidadeSaudeId)
+        servidor?.perfil === "SERVIDOR_APS"
+            ? String(servidor.unidadeSaudeId)
             : unidadeSelecionada;
 
-    const usuarioId =
-        usuario?.perfil === "SOLICITANTE"
-            ? String(usuario.id)
+    const servidorId =
+        servidor?.perfil === "SOLICITANTE"
+            ? String(servidor.id)
             : "";
 
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                if(usuario?.perfil !== "SOLICITANTE") {
+                if(servidor?.perfil !== "SOLICITANTE") {
                     const response = await api.get("/unidades-saude/all");
                     setUnidades(response.data);
                 }
@@ -44,20 +44,20 @@ function Indicador() {
         
         void carregarUnidades();
 
-    }, [navigate, usuario]);
+    }, [navigate, servidor]);
 
     const carregarIndicador = useCallback(async (
         unidade = unidadeSaudeId,
         dataInicio = inicio,
         dataFim = fim,
-        usuario = usuarioId
+        servidor = servidorId
     ) => {
 
         try {
             const temInicio = dataInicio !== "";
             const temFim = dataFim !== "";
             const temUnidade = unidade !== "";
-            const temUsuario = usuario !== "";
+            const temServidor = servidor !== "";
             if ((temInicio && !temFim) || (!temInicio && temFim)) {
                 setErro("Informe início e fim do período.");
                 return;
@@ -77,8 +77,8 @@ function Indicador() {
                 params.append("fim", `${dataFim}T23:59:59`);
             }
 
-            if(temUsuario){
-                params.append("usuarioId", usuarioId);
+            if(temServidor){
+                params.append("servidorId", servidorId);
             }
 
             const response = await api.get(
@@ -115,8 +115,8 @@ function Indicador() {
                 params.append("fim", `${fim}T23:59:59`);
             }
 
-            if(usuario){
-                params.append("usuarioId", usuarioId);
+            if(servidor){
+                params.append("servidorId", servidorId);
             }
 
             const response = await api.get(`/indicadores/exportar?${params.toString()}`,
@@ -167,11 +167,11 @@ function Indicador() {
         setFim("");
 
         const unidade =
-            usuario?.perfil === "USUARIO_APS"
-                ? String(usuario.unidadeSaudeId)
+            servidor?.perfil === "SERVIDOR_APS"
+                ? String(servidor.unidadeSaudeId)
                 : "";
 
-        if (usuario?.perfil !== "USUARIO_APS") {
+        if (servidor?.perfil !== "SERVIDOR_APS") {
             setUnidadeSelecionada("");
         }
 
@@ -219,7 +219,7 @@ function Indicador() {
                         </div>
 
                         <div className="perfil-badge">
-                            {usuario?.perfil}
+                            {servidor?.perfil}
                         </div>
                     </div>
 
@@ -243,14 +243,14 @@ function Indicador() {
                             }
                         />
 
-                        {usuario?.perfil !== "SOLICITANTE" && (
+                        {servidor?.perfil !== "SOLICITANTE" && (
                             <select
                                 className="input-field"
                                 value={unidadeSaudeId}
                                 onChange={(e) =>
                                     setUnidadeSelecionada(e.target.value)
                                 }
-                                disabled={usuario?.perfil === "USUARIO_APS"}
+                                disabled={servidor?.perfil === "SERVIDOR_APS"}
                             >
 
                                 <option value="">

@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/api";
-import "./pacientes.css";
+import "./usuarios.css";
 import { useNavigate } from "react-router-dom";
 import {mascaraDocumento, mascaraTelefone} from "../utils/mascaras.js";
 import ModalUbs from "../components/ModalUbs.jsx";
 import Pagination from "../components/Paginations.jsx";
-import ModalPaciente from "../components/ModalPaciente.jsx";
+import ModalUsuario from "../components/ModalUsuario.jsx";
 
-function Pacientes() {
+function Usuarios() {
     const navigate = useNavigate();
-    const { usuario } = useAuth();
-    const [pacientes, setPacientes] = useState([]);
+    const { servidor } = useAuth();
+    const [usuarios, setUsuarios] = useState([]);
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [ubsSelecionada, setUbsSelecionada] = useState(null);
-    const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
+    const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
     const [carregandoUbs, setCarregandoUbs] = useState(false);
     const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
@@ -26,27 +26,27 @@ function Pacientes() {
     const carregarDados = useCallback(async (paginaAtual = pagina) => {
         try {
             setCarregando(true);
-            const pacientesResponse = await api.get(`/pacientes?page=${paginaAtual}&size=${tamanhoPagina}`);
-            setPacientes(pacientesResponse.data.content);
-            setTotalPaginas(pacientesResponse.data.page.totalPages);
+            const usuariosResponse = await api.get(`/usuarios?page=${paginaAtual}&size=${tamanhoPagina}`);
+            setUsuarios(usuariosResponse.data.content);
+            setTotalPaginas(usuariosResponse.data.page.totalPages);
         } catch {
-            setMensagem("Erro ao carregar pacientes.");
+            setMensagem("Erro ao carregar usuários.");
         } finally {
             setCarregando(false);
         }
     }, [pagina]);
 
-    const buscarPacientes = useCallback(async (paginaAtual = pagina) => {
+    const buscarUsuarios = useCallback(async (paginaAtual = pagina) => {
         if (!filtro.trim()) {
             return;
         }
         try {
             setCarregando(true);
-            const pacientesResponse = await api.get(`/pacientes/filtrados/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`);
-            setPacientes(pacientesResponse.data.content);
-            setTotalPaginas(pacientesResponse.data.page.totalPages);
+            const usuariosResponse = await api.get(`/usuarios/filtrados/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`);
+            setUsuarios(usuariosResponse.data.content);
+            setTotalPaginas(usuariosResponse.data.page.totalPages);
         } catch {
-            setMensagem("Erro ao buscar pacientes.");
+            setMensagem("Erro ao buscar usuários.");
         } finally {
             setCarregando(false);
         }
@@ -55,7 +55,7 @@ function Pacientes() {
     useEffect(() => {
         const executar = async () => {
             if (modoFiltrado) {
-                await buscarPacientes(pagina);
+                await buscarUsuarios(pagina);
             } else {
                 await carregarDados(pagina);
             }
@@ -72,7 +72,7 @@ function Pacientes() {
         if (pagina !== 0) {
             setPagina(0);
         } else {
-            await buscarPacientes(0);
+            await buscarUsuarios(0);
         }
     }
 
@@ -102,25 +102,25 @@ function Pacientes() {
         return (
             <div className="loading-container">
                 <div className="loading-card">
-                    Carregando pacientes...
+                    Carregando usuários...
                 </div>
             </div>
         );
     }
     return (
-        <div className="pacientes-container">
-            <div className="pacientes-page">
-                <div className="pacientes-header">
+        <div className="usuarios-container">
+            <div className="usuarios-page">
+                <div className="usuarios-header">
                     <div>
-                        <h1 className="pacientes-title">
-                            Pacientes
+                        <h1 className="usuarios-title">
+                            Usuários
                         </h1>
-                        <p className="pacientes-subtitle">
-                            Visualize e gerencie os pacientes cadastrados
+                        <p className="usuarios-subtitle">
+                            Visualize e gerencie os usuários cadastrados
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {usuario?.perfil}
+                        {servidor?.perfil}
                     </div>
                 </div>
                 {mensagem && (
@@ -132,8 +132,8 @@ function Pacientes() {
                     <div className="table-topbar">
                         <div className="search-container">
                             <input
-                                className="paciente-search"
-                                placeholder="Buscar paciente..."
+                                className="usuario-search"
+                                placeholder="Buscar usuário..."
                                 value={filtro}
                                 onChange={(e) => setFiltro(e.target.value)}
                                 onKeyDown={(e) => {
@@ -160,14 +160,14 @@ function Pacientes() {
                         </div>
                         <button
                             className="buscar-btn"
-                            onClick={() => navigate("/pacientes/cadastro")}
+                            onClick={() => navigate("/usuarios/cadastro")}
                         >
-                            + Novo paciente
+                            + Novo usuário
                         </button>
 
                     </div>
 
-                    <table className="pacientes-table">
+                    <table className="usuarios-table">
                         <thead>
                         <tr>
                             <th>Nome</th>
@@ -179,42 +179,42 @@ function Pacientes() {
                         </thead>
                         <tbody>
 
-                        {pacientes.map((paciente) => (
+                        {usuarios.map((usuario) => (
 
-                            <tr key={paciente.id}>
+                            <tr key={usuario.id}>
                                 <td>
-                                    <div className="paciente-nome">
-                                        {paciente.nomeCompleto}
+                                    <div className="usuario-nome">
+                                        {usuario.nomeCompleto}
                                     </div>
                                 </td>
                                 <td>
-                                    {mascaraDocumento(paciente.documento)}
+                                    {mascaraDocumento(usuario.documento)}
                                 </td>
                                 <td>
-                                    {mascaraTelefone(paciente.telefone) || "-"}
+                                    {mascaraTelefone(usuario.telefone) || "-"}
                                 </td>
                                 <td>
                                     <button
                                         type="button"
                                         className="ubs-badge ubs-clickable"
-                                        onClick={() => abrirCardUbs(paciente.unidadeSaudeId)}
+                                        onClick={() => abrirCardUbs(usuario.unidadeSaudeId)}
                                     >
-                                        {paciente.unidadeSaudeNome}
+                                        {usuario.unidadeSaudeNome}
                                     </button>
                                 </td>
                                 <td>
                                     <div className="acoes-container">
                                         <button
                                             className="btn-visualizar"
-                                            onClick={() => setPacienteSelecionado(paciente)}
+                                            onClick={() => setUsuarioSelecionado(usuario)}
                                         >
                                             Visualizar
                                         </button>
 
-                                        {(usuario?.perfil !== "SOLICITANTE" || (usuario?.perfil === "SOLICITANTE" && usuario?.id === paciente.idUsuarioCadastro)) && (
+                                        {(servidor?.perfil !== "SOLICITANTE" || (servidor?.perfil === "SOLICITANTE" && servidor?.id === usuario.idServidorCadastro)) && (
                                             <button
                                                 className="btn-editar"
-                                                onClick={() => navigate(`/pacientes/${paciente.id}/editar`)}
+                                                onClick={() => navigate(`/usuarios/${usuario.id}/editar`)}
                                             >
                                                 Editar
                                             </button>
@@ -226,9 +226,9 @@ function Pacientes() {
                         </tbody>
                     </table>
 
-                    {pacientes.length === 0 && !mensagem && (
+                    {usuarios.length === 0 && !mensagem && (
                         <div className="empty-state">
-                            Nenhum paciente encontrado.
+                            Nenhum usuário encontrado.
                         </div>
                     )}
                     <Pagination
@@ -246,10 +246,10 @@ function Pacientes() {
                 />
             )}
 
-            {pacienteSelecionado && (
-                <ModalPaciente
-                    pacienteSelecionado={pacienteSelecionado}
-                    setPacienteSelecionado={setPacienteSelecionado}
+            {usuarioSelecionado && (
+                <ModalUsuario
+                    usuarioSelecionado={usuarioSelecionado}
+                    setUsuarioSelecionado={setUsuarioSelecionado}
                 />
             )}
 
@@ -264,4 +264,4 @@ function Pacientes() {
     );
 }
 
-export default Pacientes;
+export default Usuarios;

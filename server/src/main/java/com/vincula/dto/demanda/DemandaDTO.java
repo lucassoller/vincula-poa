@@ -17,6 +17,6 @@ public class DemandaDTO {
     @NotNull(message = "Prazo pra demanda é obrigatório")
     private PrazoDemanda prazoDemanda;
 
-    @NotNull(message = "Paciente é obrigatório")
-    private Long pacienteId;
+    @NotNull(message = "Usuário é obrigatório")
+    private Long usuarioId;
 }

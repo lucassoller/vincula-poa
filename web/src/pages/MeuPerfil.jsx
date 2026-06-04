@@ -5,15 +5,15 @@ import api from "../api/api.js";
 import {useForm} from "react-hook-form";
 
 function MeuPerfil() {
-    const {usuario, setUsuario} = useAuth();
+    const {servidor, setServidor} = useAuth();
     const {
         register,
         handleSubmit,
     } = useForm({
         defaultValues: {
-            nome: usuario?.nome,
-            email: usuario?.email,
-            login: usuario?.login,
+            nome: servidor?.nome,
+            email: servidor?.email,
+            login: servidor?.login,
         }
     });
     const navigate = useNavigate();
@@ -23,9 +23,9 @@ function MeuPerfil() {
 
     async function salvar(dados) {
         try {
-            const response = await api.put("/usuarios/me", dados);
-            setUsuario(response.data);
-            localStorage.setItem("usuario", JSON.stringify(response.data));
+            const response = await api.put("/servidores/me", dados);
+            setServidor(response.data);
+            localStorage.setItem("servidor", JSON.stringify(response.data));
             setMensagem("Perfil atualizado com sucesso!");
         } catch (error) {
             const errors = error.response.data.errors;

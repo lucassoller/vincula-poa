@@ -1,12 +1,12 @@
-function EnderecoForm({register, erros}) {
+function EnderecoForm({register, erros, unidadeSaude}) {
     return (
         <>
             <div className="endereco-header">
                 <h2>Endereço</h2>
-                <p>Informe os dados de localização do paciente</p>
+                <p>Informe os dados de localização do usuário</p>
             </div>
 
-            <div className="form-grid full">
+            <div className="form-grid two">
 
                 <div className="form-group">
                     <label>
@@ -23,6 +23,20 @@ function EnderecoForm({register, erros}) {
                         <small>{erros["endereco.rua"]}</small>
                     )}
                 </div>
+
+                {unidadeSaude && unidadeSaude !== "" &&(
+                    <div className="form-group">
+                        <label>
+                            UBS do usuário
+                        </label>
+
+                        <input
+                            className="input-field"
+                            value={unidadeSaude}
+                            disabled
+                        />
+                    </div>
+                )}
 
             </div>
 

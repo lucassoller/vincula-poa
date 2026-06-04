@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 public interface AuditoriaRepository extends JpaRepository<Auditoria, Long> {
     Page<Auditoria> findAllByOrderByDataHoraDesc(Pageable pageable);
 
-    Page<Auditoria> findByUsuarioIdOrderByDataHoraDesc(Long usuarioId, Pageable pageable);
+    Page<Auditoria> findByServidorIdOrderByDataHoraDesc(Long servidorId, Pageable pageable);
 
     Page<Auditoria> findByDataHoraBetweenOrderByDataHoraDesc(LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
 
-    Page<Auditoria> findByUsuarioIdAndDataHoraBetweenOrderByDataHoraDesc(
-            Long usuarioId,
+    Page<Auditoria> findByServidorIdAndDataHoraBetweenOrderByDataHoraDesc(
+            Long servidorId,
             LocalDateTime inicio,
             LocalDateTime fim,
             Pageable pageable

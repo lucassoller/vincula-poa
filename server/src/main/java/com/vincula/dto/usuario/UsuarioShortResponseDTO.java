@@ -6,6 +6,8 @@ import lombok.Data;
 public class UsuarioShortResponseDTO {
 
     private Long id;
-    private String nome;
-    private String email;
+    private String nomeCompleto;
+    private String documento;
+    private String unidadeSaudeNome;
+    private Long unidadeSaudeId;
 }
