@@ -24,23 +24,21 @@ public class LoginService {
     private final CustomUserDetailsService customUserDetailsService;
     private final ServidorRepository servidorRepository;
     private final AuditoriaFacade auditoriaFacade;
-    private final PasswordEncoder passwordEncoder;
 
     public LoginService(AuthenticationManager authenticationManager,
                         JwtService jwtService,
                         CustomUserDetailsService customUserDetailsService,
                         ServidorRepository servidorRepository,
-                        AuditoriaFacade auditoriaFacade, PasswordEncoder passwordEncoder) {
+                        AuditoriaFacade auditoriaFacade) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
         this.servidorRepository = servidorRepository;
         this.auditoriaFacade = auditoriaFacade;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public LoginResponseDTO login(LoginRequestDTO dto) {
-    /*    try {
+    try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             dto.getLogin(),
@@ -51,7 +49,7 @@ public class LoginService {
             throw new BusinessException("Servidor inativo");
         } catch (AuthenticationException ex) {
             throw new BusinessException("Login ou senha inválidos");
-        }*/
+        }
 
         Servidor servidor = buscarServidorPorLogin(dto.getLogin());
 
@@ -60,8 +58,8 @@ public class LoginService {
 
         auditoriaFacade.loginRealizado(servidor);
 
-        servidor.setSenhaHash(passwordEncoder.encode(servidor.getSenhaHash()));
-        servidorRepository.save(servidor);
+        //servidor.setSenhaHash(passwordEncoder.encode(servidor.getSenhaHash()));
+        //servidorRepository.save(servidor);
 
         return new LoginResponseDTO(
                 token,

@@ -27,8 +27,7 @@ public class ServidorController {
         this.servidorService = servidorService;
     }
 
-    //@PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PostMapping
     public ResponseEntity<ServidorResponseDTO> criar(@Valid @RequestBody ServidorDTO dto) {
         ServidorResponseDTO criado = servidorService.criar(dto);
@@ -94,6 +93,7 @@ public class ServidorController {
     }
 
     @PutMapping("/me/senha")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ServidorResponseDTO> alterarMinhaSenha(@Valid @RequestBody MudancaSenhaDTO dto)
     {
         return ResponseEntity.ok(servidorService.atualizarMinhaSenha(dto));
