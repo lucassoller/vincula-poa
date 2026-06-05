@@ -37,7 +37,7 @@ public class LoginService {
     }
 
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        /*try {
+    /*    try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             dto.getLogin(),

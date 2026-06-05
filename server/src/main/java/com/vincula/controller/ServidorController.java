@@ -94,7 +94,6 @@ public class ServidorController {
     }
 
     @PutMapping("/me/senha")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ServidorResponseDTO> alterarMinhaSenha(@Valid @RequestBody MudancaSenhaDTO dto)
     {
         return ResponseEntity.ok(servidorService.atualizarMinhaSenha(dto));
