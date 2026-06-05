@@ -14,6 +14,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,17 +24,19 @@ public class LoginService {
     private final CustomUserDetailsService customUserDetailsService;
     private final ServidorRepository servidorRepository;
     private final AuditoriaFacade auditoriaFacade;
+    private final PasswordEncoder passwordEncoder;
 
     public LoginService(AuthenticationManager authenticationManager,
                         JwtService jwtService,
                         CustomUserDetailsService customUserDetailsService,
                         ServidorRepository servidorRepository,
-                        AuditoriaFacade auditoriaFacade) {
+                        AuditoriaFacade auditoriaFacade, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
         this.servidorRepository = servidorRepository;
         this.auditoriaFacade = auditoriaFacade;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public LoginResponseDTO login(LoginRequestDTO dto) {
@@ -56,6 +59,9 @@ public class LoginService {
         String token = jwtService.generateToken(userDetails);
 
         auditoriaFacade.loginRealizado(servidor);
+
+        servidor.setSenhaHash(passwordEncoder.encode(servidor.getSenhaHash()));
+        servidorRepository.save(servidor);
 
         return new LoginResponseDTO(
                 token,
