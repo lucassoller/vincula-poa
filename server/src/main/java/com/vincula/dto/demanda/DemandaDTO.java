@@ -8,15 +8,15 @@ import lombok.Data;
 
 @Data
 public class DemandaDTO {
-    @NotNull(message = "Motivo da busca é obrigatório")
+    @NotNull(message = "O motivo da busca é obrigatório")
     private MotivoBuscaAtiva motivoBuscaAtiva;
 
-    @Size(max = 500, message = "Descrição da busca deve ter no máximo 500 caracteres")
+    @Size(max = 500, message = "A descrição da busca deve ter no máximo 500 caracteres")
     private String descricaoBusca;
 
-    @NotNull(message = "Prazo pra demanda é obrigatório")
+    @NotNull(message = "O prazo da demanda é obrigatório")
     private PrazoDemanda prazoDemanda;
 
-    @NotNull(message = "Usuário é obrigatório")
+    @NotNull(message = "O usuário é obrigatório")
     private Long usuarioId;
 }

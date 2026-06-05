@@ -8,10 +8,10 @@ import lombok.Data;
 @Data
 public class RedirecionarDemandaDTO {
 
-    @NotNull(message = "Nova unidade responsável é obrigatória")
+    @NotNull(message = "A nova unidade responsável é obrigatória")
     private Long novaUnidadeResponsavelId;
 
-    @NotBlank(message = "Motivo do redirecionamento é obrigatório")
-    @Size(max = 500, message = "Motivo deve ter no máximo 500 caracteres")
+    @NotBlank(message = "O motivo do redirecionamento é obrigatório")
+    @Size(max = 500, message = "O motivo deve ter no máximo 500 caracteres")
     private String motivoRedirecionamento;
 }

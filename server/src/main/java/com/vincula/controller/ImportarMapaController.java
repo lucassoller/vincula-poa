@@ -25,9 +25,10 @@ public class ImportarMapaController {
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @PostMapping("/importar")
-    public void importar(@RequestBody Map<String, Object> geojson) {
+    public ResponseEntity<Void> importar(@RequestBody Map<String, Object> geojson) {
         JsonNode node = objectMapper.valueToTree(geojson);
         importarTerritorioService.importar(node);
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("isAuthenticated()")

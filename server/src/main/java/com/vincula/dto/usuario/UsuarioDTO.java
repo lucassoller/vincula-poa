@@ -14,8 +14,8 @@ import java.time.LocalDate;
 
 @Data
 public class UsuarioDTO {
-    @NotBlank(message = "Nome é obrigatório")
-    @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
+    @NotBlank(message = "O nome é obrigatório")
+    @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
     private String nomeCompleto;
 
     @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
@@ -27,11 +27,11 @@ public class UsuarioDTO {
     private Sexo sexo;
     private Long idServidorCadastro;
 
-    @NotBlank(message = "CPF ou CNS é obrigatório")
+    @NotBlank(message = "O CPF ou CNS é obrigatório")
     @Pattern(regexp = "\\d{11,15}", message = "CPF ou CNS inválido")
     private String documento;
 
-    @NotNull(message = "Endereço é obrigatório")
+    @NotNull(message = "O endereço é obrigatório")
     @Valid
     private EnderecoDTO endereco;
 }

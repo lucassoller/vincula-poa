@@ -119,11 +119,11 @@ public class DemandaService {
         Demanda entity = buscarDemandaPorId(id);
 
         if (entity.getStatus() == StatusDemanda.FINALIZADA) {
-            throw new BusinessException("Demanda já está finalizada");
+            throw new BusinessException("A demanda já está finalizada");
         }
 
         if (dto.getDesfechoDemanda() == null) {
-            throw new BusinessException("Desfecho é obrigatório");
+            throw new BusinessException("O desfecho é obrigatório");
         }
 
         Servidor servidor = servidorService.buscarServidorAutenticado();

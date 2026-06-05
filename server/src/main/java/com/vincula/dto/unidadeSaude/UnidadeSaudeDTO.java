@@ -11,11 +11,11 @@ import lombok.Data;
 @Data
 public class UnidadeSaudeDTO {
 
-    @NotBlank(message = "Nome é obrigatório")
-    @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
+    @NotBlank(message = "O nome é obrigatório")
+    @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
     private String nome;
 
-    @NotBlank(message = "CNES é obrigatório")
+    @NotBlank(message = "O CNES é obrigatório")
     @Pattern(regexp = "\\d{7}", message = "CNES inválido")
     private String cnes;
 
@@ -25,7 +25,7 @@ public class UnidadeSaudeDTO {
     @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
     private String telefone2;
 
-    @NotNull(message = "Endereço é obrigatório")
+    @NotNull(message = "O endereço é obrigatório")
     @Valid
     private EnderecoDTO endereco;
 }

@@ -7,7 +7,7 @@ function ImportarMapa() {
 
     const [url, setUrl] = useState("");
     const [mensagem, setMensagem] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [carregando, setCarregando] = useState(false);
 
     async function importar(e) {
 
@@ -20,7 +20,7 @@ function ImportarMapa() {
         }
 
         try {
-            setLoading(true);
+            setCarregando(true);
             const geojson = await converterGoogleMaps(url);
             await api.post("/territorios/importar", geojson);
 
@@ -33,7 +33,7 @@ function ImportarMapa() {
             );
 
         } finally {
-            setLoading(false);
+            setCarregando(false);
         }
     }
 
@@ -85,9 +85,9 @@ function ImportarMapa() {
                         <button
                             type="submit"
                             className="buscar-btn"
-                            disabled={loading}
+                            disabled={carregando}
                         >
-                            {loading
+                            {carregando
                                 ? "Importando..."
                                 : "Importar mapa"}
                         </button>

@@ -99,7 +99,7 @@ public class UsuarioService {
         validarDocumentoUpdate(id, dto);
 
         if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
-            throw new BusinessException("Data de nascimento não pode ser futura");
+            throw new BusinessException("A data de nascimento não pode ser futura");
         }
 
         String descricaoLog = AuditoriaDescricaoUtil.usuarioAtualizado(usuario, dto);
@@ -166,7 +166,7 @@ public class UsuarioService {
         Endereco endereco = enderecoMapper.toEntity(dto.getEndereco());
 
         if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
-            throw new BusinessException("Data de nascimento não pode ser futura");
+            throw new BusinessException("A data de nascimento não pode ser futura");
         }
 
         Usuario entity = new Usuario();

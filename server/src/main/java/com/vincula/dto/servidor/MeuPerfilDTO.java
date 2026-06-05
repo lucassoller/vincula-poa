@@ -7,16 +7,16 @@ import lombok.Data;
 
 @Data
 public class MeuPerfilDTO {
-    @NotBlank(message = "Nome é obrigatório")
-    @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
+    @NotBlank(message = "O nome é obrigatório")
+    @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
     private String nome;
 
-    @NotBlank(message = "Email é obrigatório")
+    @NotBlank(message = "O email é obrigatório")
     @Email(message = "Email inválido")
-    @Size(max = 50, message = "Email deve ter no máximo 50 caracteres")
+    @Size(max = 50, message = "O email deve ter no máximo 50 caracteres")
     private String email;
 
-    @NotBlank(message = "Login é obrigatório")
-    @Size(max = 50, message = "Login deve ter no máximo 50 caracteres")
+    @NotBlank(message = "O login é obrigatório")
+    @Size(max = 50, message = "O login deve ter no máximo 50 caracteres")
     private String login;
 }

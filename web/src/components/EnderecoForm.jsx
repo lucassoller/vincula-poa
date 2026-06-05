@@ -97,13 +97,14 @@ function EnderecoForm({register, erros, unidadeSaude}) {
 
                 <div className="form-group">
                     <label>
-                        Estado <span>*</span>
+                        Estado
                     </label>
 
                     <input
                         className="input-field"
                         {...register("endereco.estado")}
                         placeholder="Estado"
+                        disabled={true}
                     />
 
                     {erros["endereco.estado"] && (

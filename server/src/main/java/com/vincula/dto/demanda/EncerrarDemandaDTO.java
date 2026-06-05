@@ -9,10 +9,10 @@ import lombok.Data;
 @Data
 public class EncerrarDemandaDTO {
 
-    @NotNull(message = "Desfecho da demanda é obrigatório")
+    @NotNull(message = "O desfecho da demanda é obrigatório")
     private DesfechoDemanda desfechoDemanda;
 
-    @NotBlank(message = "Descrição do desfecho da demanda é obrigatório")
-    @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
+    @NotBlank(message = "A descrição é obrigatória")
+    @Size(max = 500, message = "A descrição deve ter no máximo 500 caracteres")
     private String descricaoDesfecho;
 }

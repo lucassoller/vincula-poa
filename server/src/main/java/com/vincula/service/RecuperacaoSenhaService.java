@@ -9,8 +9,10 @@ import com.vincula.exception.NotFoundException;
 import com.vincula.repository.RecuperacaoSenhaRepository;
 import com.vincula.repository.ServidorRepository;
 import jakarta.mail.MessagingException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -67,6 +69,14 @@ public class RecuperacaoSenhaService {
 
         recuperacao.setUsado(true);
         recuperacaoSenhaRepository.save(recuperacao);
+    }
+
+    @Scheduled(fixedRate = 3600000) // a cada 1 hora
+    @Transactional
+    public void limparTokensExpirados() {
+        recuperacaoSenhaRepository.deleteByExpiracaoBefore(
+                LocalDateTime.now().minusHours(24)
+        );
     }
 
     private RecuperacaoSenha findRecuperacao(String token) {

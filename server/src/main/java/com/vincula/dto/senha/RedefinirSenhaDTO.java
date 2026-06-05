@@ -9,8 +9,8 @@ public class RedefinirSenhaDTO {
 
     private String token;
 
-    @NotBlank(message = "Nova senha é obrigatória")
-    @Size(max = 255, message = "Nova senha deve ter no máximo 255 caracteres")
+    @NotBlank(message = "A nova senha é obrigatória")
+    @Size(max = 255, message = "A nova senha deve ter no máximo 255 caracteres")
     private String novaSenha;
 
 }

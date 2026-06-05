@@ -25,6 +25,8 @@ function ServidorCadastro() {
     const [unidades, setUnidades] = useState([]);
     const navigate = useNavigate();
     const [mensagem, setMensagem] = useState("");
+    const [mostrarSenha, setMostrarSenha] = useState(false);
+    const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
     useEffect(() => {
         async function carregarUnidades() {
@@ -136,11 +138,30 @@ function ServidorCadastro() {
                             <label>
                                 Senha <span>*</span>
                             </label>
-                            <input
-                                type="password"
-                                className="input-field"
-                                {...register("senha")}
-                            />
+                            <div className="input-wrapper">
+                                <input
+                                    className="input-field senha-input"
+                                    type={mostrarSenha ? "text" : "password"}
+                                    {...register("senha")}
+                                />
+
+                                <span
+                                    className="eye"
+                                    onClick={() =>
+                                        setMostrarSenha(!mostrarSenha)
+                                    }
+                                >
+                                    <img
+                                        src={
+                                            mostrarSenha
+                                                ? "/eye2.svg"
+                                                : "/eye.svg"
+                                        }
+                                        alt="mostrar senha"
+                                        width={20}
+                                    />
+                                </span>
+                            </div>
                             {erros.senha && (
                                 <small>{erros.senha}</small>
                             )}
@@ -149,11 +170,30 @@ function ServidorCadastro() {
                             <label>
                                 Confirmar senha <span>*</span>
                             </label>
-                            <input
-                                type="password"
-                                className="input-field"
-                                {...register("confirmarSenha")}
-                            />
+                            <div className="input-wrapper">
+                                <input
+                                    className="input-field senha-input"
+                                    type={mostrarConfirmarSenha ? "text" : "password"}
+                                    {...register("confirmarSenha")}
+                                />
+
+                                <span
+                                    className="eye"
+                                    onClick={() =>
+                                        setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+                                    }
+                                >
+                                    <img
+                                        src={
+                                            mostrarConfirmarSenha
+                                                ? "/eye2.svg"
+                                                : "/eye.svg"
+                                        }
+                                        alt="mostrar senha"
+                                        width={20}
+                                    />
+                                </span>
+                            </div>
                             {erros.confirmarSenha && (
                                 <small>{erros.confirmarSenha}</small>
                             )}
