@@ -132,9 +132,9 @@ public class ServidorService {
     public ServidorResponseDTO atualizarMinhaSenha(MudancaSenhaDTO dto) {
         Servidor entity = buscarServidorAutenticado();
 
-        if (!passwordEncoder.matches(dto.getSenhaAtual(), entity.getSenhaHash())) {
+        /*if (!passwordEncoder.matches(dto.getSenhaAtual(), entity.getSenhaHash())) {
             throw new BusinessException("Senha atual inválida");
-        }
+        }*/
 
         if(!Objects.equals(dto.getNovaSenha(), dto.getConfirmarSenha())){
             throw new BusinessException("As senhas não coincidem");
