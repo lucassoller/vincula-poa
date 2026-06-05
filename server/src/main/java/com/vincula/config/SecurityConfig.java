@@ -60,8 +60,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //PARA CADASTRAR UM SERVIDOR E TESTAR DESCOMENTAR ESSA LINHA E COMENTAR TUDO ATÉ ANTES DO RETURN
                         //COMENTAR A ROLE NO PUT/POST DO SERVIDOR CONTROLLER
-                        //.anyRequest().permitAll());
-                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().permitAll());
+                        /*.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(
@@ -70,7 +70,7 @@ public class SecurityConfig {
                         .logoutUrl("/auth/logout")
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((req, res, auth) -> res.setStatus(200)))
-                .cors(Customizer.withDefaults());;
+                .cors(Customizer.withDefaults());;*/
         return http.build();
 
     }

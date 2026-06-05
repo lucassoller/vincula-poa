@@ -27,7 +27,8 @@ public class ServidorController {
         this.servidorService = servidorService;
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    //@PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<ServidorResponseDTO> criar(@Valid @RequestBody ServidorDTO dto) {
         ServidorResponseDTO criado = servidorService.criar(dto);
