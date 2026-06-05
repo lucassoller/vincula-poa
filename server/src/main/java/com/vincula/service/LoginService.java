@@ -37,7 +37,7 @@ public class LoginService {
     }
 
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        try {
+        /*try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             dto.getLogin(),
@@ -48,7 +48,7 @@ public class LoginService {
             throw new BusinessException("Servidor inativo");
         } catch (AuthenticationException ex) {
             throw new BusinessException("Login ou senha inválidos");
-        }
+        }*/
 
         Servidor servidor = buscarServidorPorLogin(dto.getLogin());
 
