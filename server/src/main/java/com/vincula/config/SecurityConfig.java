@@ -49,7 +49,7 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    /*@Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
@@ -60,9 +60,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults());
 
         return http.build();
-    }*/
+    }
 
-    @Bean
+   /* @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
@@ -86,7 +86,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults());
         return http.build();
 
-    }
+    }*/
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
