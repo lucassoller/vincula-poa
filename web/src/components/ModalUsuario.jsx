@@ -14,7 +14,7 @@ function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
 
                 <div className="modal-header">
                     <div>
-                        <h2>{usuárioSelecionado.nomeCompleto}</h2>
+                        <h2>{usuarioSelecionado.nomeCompleto}</h2>
                         <p>Informações do usuário</p>
                     </div>
 
