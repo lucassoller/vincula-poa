@@ -136,8 +136,8 @@ function UsuarioEditar() {
     }
 
     if (carregando) {
-        return (<div className="ubs-overlay">
-                    <div className="ubs-card">
+        return (<div className="loading-container">
+                    <div className="loading-card">
                         <p>Carregando usuário...</p>
                     </div>
                 </div>
