@@ -28,7 +28,7 @@ public class Auditoria {
     @Column(length = 1000)
     private String descricao;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 100)
     private String ip;
 
     @Column(length = 200)
