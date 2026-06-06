@@ -82,9 +82,8 @@ function UnidadeSaudeEditar() {
     }
 
     if (carregando) {
-        return (
-            <div className="cadastro-container">
-                <div className="cadastro-page">
+        return (<div className="ubs-overlay">
+                <div className="ubs-card">
                     <p>Carregando unidade de saúde...</p>
                 </div>
             </div>
