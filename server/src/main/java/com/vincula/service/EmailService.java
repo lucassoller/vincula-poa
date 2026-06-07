@@ -3,6 +3,7 @@ package com.vincula.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vincula.util.AuditoriaFacade;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,9 +16,11 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class EmailService {
     private final AuditoriaFacade auditoriaFacade;
+    private final Environment env;
 
-    public EmailService(AuditoriaFacade auditoriaFacade) {
+    public EmailService(AuditoriaFacade auditoriaFacade, Environment env) {
         this.auditoriaFacade = auditoriaFacade;
+        this.env = env;
     }
 
     public void enviarEmail(String endereco, String link) throws IOException {
@@ -35,7 +38,7 @@ public class EmailService {
 
         html = html.replace("{{LINK_REDEFINICAO}}", link);
 
-        String apiKey = "re_ebjLxpEu_BR18XkDCkX5c6wrdcfJWBPSo";
+        String apiKey = env.getProperty("mail.token");
 
         ObjectMapper mapper = new ObjectMapper();
 
