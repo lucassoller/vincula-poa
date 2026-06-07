@@ -32,7 +32,7 @@ public class RecuperacaoSenhaController {
         try (Socket socket = new Socket()) {
             socket.connect(
                     new InetSocketAddress("smtp.gmail.com", 587),
-                    10000
+                    30000
             );
             return "OK";
         } catch (Exception e) {
