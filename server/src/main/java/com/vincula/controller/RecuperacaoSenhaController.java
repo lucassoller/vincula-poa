@@ -31,7 +31,7 @@ public class RecuperacaoSenhaController {
     public String teste() {
         try (Socket socket = new Socket()) {
             socket.connect(
-                    new InetSocketAddress("smtp.gmail.com", 587),
+                    new InetSocketAddress("smtp.gmail.com", 465),
                     30000
             );
             return "OK";

@@ -31,6 +31,8 @@ public class EmailService {
                 InetAddress.getByName("smtp.gmail.com").getHostAddress()
         );
 
+        System.out.println(InetAddress.getByName("smtp.gmail.com"));
+
         InputStream inputStream = getClass()
                 .getResourceAsStream("/templates/redefinir-senha.html");
 
