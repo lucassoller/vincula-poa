@@ -130,8 +130,10 @@ function Demandas() {
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                const response = await api.get("/unidades-saude/all");
-                setUnidades(response.data);
+                if(servidor?.perfil !== 'SOLICITANTE'){
+                    const response = await api.get("/unidades-saude/all");
+                    setUnidades(response.data);
+                }
             } catch {
                 setMensagemSucesso("Erro ao carregar unidades.");
             }
@@ -273,10 +275,7 @@ function Demandas() {
 
     async function abrirDetalhes(d) {
         try {
-
-            const response = await api.get(`/demandas/${d.id}`);
-
-            setDemandaDetalhada(response.data);
+            setDemandaDetalhada(d);
             const tentativasResponse = await api.get(
                 `/tentativas-contato/demanda/${d.id}`
             );
