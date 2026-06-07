@@ -52,7 +52,7 @@ public class EmailService {
             auditoriaFacade.emailEnviado(endereco);
         } catch (MailException e) {
             auditoriaFacade.emailFalhou(endereco);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 }
