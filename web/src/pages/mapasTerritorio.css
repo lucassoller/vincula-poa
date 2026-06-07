@@ -9,3 +9,7 @@
 .leaflet-marker-pane {
     z-index: 700 !important;
 }
+
+.mapa-page {
+    width: 70%;
+}
