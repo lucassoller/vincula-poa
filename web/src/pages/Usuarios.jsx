@@ -254,8 +254,8 @@ function Usuarios() {
             )}
 
             {carregandoUbs && (
-                <div className="ubs-overlay">
-                    <div className="ubs-card">
+                <div className="loading-container">
+                    <div className="loading-card">
                         <p>Carregando dados da UBS...</p>
                     </div>
                 </div>

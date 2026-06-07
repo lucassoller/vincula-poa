@@ -1,4 +1,4 @@
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useEffect, useRef, useState } from "react";
 import "./navbar.css";
@@ -9,7 +9,6 @@ function Navbar() {
     const { servidor, logout } = useAuth();
     const [menuAberto, setMenuAberto] = useState(false);
     const menuRef = useRef(null);
-    const location = useLocation();
 
     useEffect(() => {
         function fecharAoClicarFora(event) {
