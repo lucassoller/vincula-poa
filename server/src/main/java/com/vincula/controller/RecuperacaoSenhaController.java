@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -30,10 +31,8 @@ public class RecuperacaoSenhaController {
     @GetMapping("/teste-smtp")
     public String teste() {
         try (Socket socket = new Socket()) {
-            socket.connect(
-                    new InetSocketAddress("smtp.gmail.com", 465),
-                    30000
-            );
+            System.out.println(InetAddress.getByName("smtp.gmail.com"));
+            socket.connect(new InetSocketAddress("google.com", 443), 10000);
             return "OK";
         } catch (Exception e) {
             return e.getMessage();
