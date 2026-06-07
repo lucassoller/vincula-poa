@@ -7,13 +7,14 @@ function EsqueciSenha() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [mensagem, setMensagem] = useState("");
+    const [carregando, setCarregando] = useState(false);
 
     async function recuperarSenha(e) {
         e.preventDefault();
         setMensagem("");
 
         try {
-
+            setCarregando(true);
             await api.post("/auth/esqueci-senha", {
                 email
             });
@@ -26,6 +27,8 @@ function EsqueciSenha() {
             } else {
                 setMensagem(error.response?.data?.message || "Erro ao redefinir senha");
             }
+        } finally {
+            setCarregando(false);
         }
     }
 
@@ -77,8 +80,11 @@ function EsqueciSenha() {
                         <button
                             type="submit"
                             className="buscar-btn"
+                            disabled={carregando}
                         >
-                            Receber link
+                            {carregando
+                                ? "Carregando..."
+                                : "Enviar email de recuperação"}
                         </button>
 
                         <button
