@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
 @Service
@@ -26,6 +27,10 @@ public class EmailService {
     }
 
     public void enviarEmail(String endereco, String link) throws MessagingException, IOException {
+        System.out.println(
+                InetAddress.getByName("smtp.gmail.com").getHostAddress()
+        );
+
         InputStream inputStream = getClass()
                 .getResourceAsStream("/templates/redefinir-senha.html");
 

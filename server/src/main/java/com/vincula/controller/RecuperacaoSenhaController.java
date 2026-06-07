@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 @RestController
 @RequestMapping("/auth")
@@ -23,6 +25,19 @@ public class RecuperacaoSenhaController {
     public ResponseEntity<Void> recuperarSenha(@Valid @RequestBody RecuperarSenhaDTO dto) throws MessagingException, IOException {
         recuperacaoSenhaService.recuperarSenha(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/teste-smtp")
+    public String teste() {
+        try (Socket socket = new Socket()) {
+            socket.connect(
+                    new InetSocketAddress("smtp.gmail.com", 587),
+                    10000
+            );
+            return "OK";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
     @PostMapping("/redefinir-senha")
