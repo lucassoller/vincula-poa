@@ -1,42 +1,36 @@
 package com.vincula.service;
 
-import com.vincula.exception.BusinessException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vincula.util.AuditoriaFacade;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 @Service
 public class EmailService {
-
-    private final JavaMailSender mailSender;
     private final AuditoriaFacade auditoriaFacade;
 
-    public EmailService(JavaMailSender mailSender,
-                        AuditoriaFacade auditoriaFacade) {
-        this.mailSender = mailSender;
+    public EmailService(AuditoriaFacade auditoriaFacade) {
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public void enviarEmail(String endereco, String link) throws MessagingException, IOException {
-        System.out.println(
-                InetAddress.getByName("smtp.gmail.com").getHostAddress()
-        );
+    public void enviarEmail(String endereco, String link) throws IOException {
 
-        System.out.println(InetAddress.getByName("smtp.gmail.com"));
+        System.out.println("Enviando email via Resend para: " + endereco);
 
         InputStream inputStream = getClass()
                 .getResourceAsStream("/templates/redefinir-senha.html");
 
-        assert inputStream != null;
+        if (inputStream == null) {
+            throw new RuntimeException("Template não encontrado");
+        }
+
         String html = new String(
                 inputStream.readAllBytes(),
                 StandardCharsets.UTF_8
@@ -44,23 +38,43 @@ public class EmailService {
 
         html = html.replace("{{LINK_REDEFINICAO}}", link);
 
-        MimeMessage message = mailSender.createMimeMessage();
+        String apiKey = "re_ebjLxpEu_BR18XkDCkX5c6wrdcfJWBPSo";
 
-        MimeMessageHelper helper =
-                new MimeMessageHelper(message, true, "UTF-8");
+        ObjectMapper mapper = new ObjectMapper();
 
-        helper.setTo(endereco);
+        ObjectNode json = mapper.createObjectNode();
+        json.put("from", "Vincula POA <onboarding@resend.dev>");
+        json.putArray("to").add(endereco);
+        json.put("subject", "Redefinição de senha - Vincula POA");
+        json.put("html", html);
 
-        helper.setSubject("Redefinição de senha - Vincula POA");
+        String body = mapper.writeValueAsString(json);
 
-        helper.setText(html, true);
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.resend.com/emails"))
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
 
-        try{
-            mailSender.send(message);
-            auditoriaFacade.emailEnviado(endereco);
-        } catch (MailException e) {
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println("Resposta Resend: " + response.body());
+
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                auditoriaFacade.emailEnviado(endereco);
+            } else {
+                auditoriaFacade.emailFalhou(endereco);
+                throw new RuntimeException("Falha ao enviar email: " + response.body());
+            }
+
+        } catch (Exception e) {
             auditoriaFacade.emailFalhou(endereco);
-            throw new BusinessException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }
@@ -68,3 +82,4 @@ public class EmailService {
 //etku jyil mqla ctca
 //cfsx tuec tjgg jooe
 //anvb rvmi kuhm qxkp
+//re_ebjLxpEu_BR18XkDCkX5c6wrdcfJWBPSo"

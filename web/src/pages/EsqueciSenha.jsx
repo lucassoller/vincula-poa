@@ -15,11 +15,9 @@ function EsqueciSenha() {
 
         try {
             setCarregando(true);
-            /*await api.post("/auth/esqueci-senha", {
+            await api.post("/auth/esqueci-senha", {
                 email
-            });*/
-
-            await api.get("/auth/teste-smtp");
+            });
 
             setMensagem("Email de recuperação enviado com sucesso.");
 

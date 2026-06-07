@@ -8,12 +8,11 @@ import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.RecuperacaoSenhaRepository;
 import com.vincula.repository.ServidorRepository;
-import jakarta.mail.MessagingException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.core.env.Environment;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,18 +24,20 @@ public class RecuperacaoSenhaService {
     private final ServidorRepository servidorRepository;
     private final PasswordEncoder encoder;
     private final EmailService emailService;
+    private final Environment env;
 
     public RecuperacaoSenhaService(RecuperacaoSenhaRepository recuperacaoSenhaRepository,
                                    ServidorRepository servidorRepository,
                                    PasswordEncoder encoder,
-                                   EmailService emailService){
+                                   EmailService emailService, Environment env){
         this.recuperacaoSenhaRepository = recuperacaoSenhaRepository;
         this.servidorRepository = servidorRepository;
         this.encoder = encoder;
         this.emailService = emailService;
+        this.env = env;
     }
 
-    public void recuperarSenha(RecuperarSenhaDTO dto) throws MessagingException, IOException {
+    public void recuperarSenha(RecuperarSenhaDTO dto) throws IOException {
         Servidor servidor = findServidor(dto.getEmail());
         String token = UUID.randomUUID().toString();
 
@@ -47,7 +48,8 @@ public class RecuperacaoSenhaService {
         recuperacao.setUsado(false);
 
         recuperacaoSenhaRepository.save(recuperacao);
-        String link = "http://localhost:5173/redefinir-senha?token=" + token;
+        String baseUrl = env.getProperty("frontend.url");
+        String link = baseUrl + "/redefinir-senha?token=" + token;
 
         emailService.enviarEmail(servidor.getEmail(), link);
     }
