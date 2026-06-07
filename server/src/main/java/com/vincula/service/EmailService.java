@@ -1,5 +1,6 @@
 package com.vincula.service;
 
+import com.vincula.exception.BusinessException;
 import com.vincula.util.AuditoriaFacade;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -52,7 +53,7 @@ public class EmailService {
             auditoriaFacade.emailEnviado(endereco);
         } catch (MailException e) {
             auditoriaFacade.emailFalhou(endereco);
-            throw new RuntimeException(e);
+            throw new BusinessException(e.getMessage());
         }
     }
 }

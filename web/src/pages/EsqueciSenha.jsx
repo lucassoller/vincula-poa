@@ -24,7 +24,7 @@ function EsqueciSenha() {
             if (error.response?.data?.errors) {
                 setMensagem(error.response.data.errors.email || "Dados inválidos");
             } else {
-                setMensagem(error.response?.data?.message || "Erro ao redefinor senha");
+                setMensagem(error.response?.data?.message || "Erro ao redefinir senha");
             }
         }
     }
