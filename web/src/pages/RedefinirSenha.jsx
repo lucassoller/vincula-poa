@@ -22,6 +22,7 @@ function RedefinirSenha() {
             });
 
             setMensagem("Senha redefinida com sucesso.");
+            setNovaSenha("");
 
         } catch (error){
             if (error.response?.data?.errors) {

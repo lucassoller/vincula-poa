@@ -21,9 +21,6 @@ public class EmailService {
     }
 
     public void enviarEmail(String endereco, String link) throws IOException {
-
-        System.out.println("Enviando email via Resend para: " + endereco);
-
         InputStream inputStream = getClass()
                 .getResourceAsStream("/templates/redefinir-senha.html");
 
@@ -62,8 +59,6 @@ public class EmailService {
 
             HttpResponse<String> response =
                     client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println("Resposta Resend: " + response.body());
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 auditoriaFacade.emailEnviado(endereco);

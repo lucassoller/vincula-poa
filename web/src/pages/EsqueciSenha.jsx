@@ -20,6 +20,7 @@ function EsqueciSenha() {
             });
 
             setMensagem("Email de recuperação enviado com sucesso.");
+            setEmail("");
 
         } catch (error){
             if (error.response?.data?.errors) {
