@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class AuditoriaService {
@@ -43,7 +42,6 @@ public class AuditoriaService {
         log.setDataHora(LocalDateTime.now());
         log.setServidor(servidor);
         log.setIp(obterIp());
-        log.setUserAgent(obterUserAgent());
 
         auditoriaRepository.save(log);
     }
@@ -62,7 +60,6 @@ public class AuditoriaService {
         log.setDataHora(LocalDateTime.now());
         log.setServidor(servidor);
         log.setIp(obterIp());
-        log.setUserAgent(obterUserAgent());
 
         auditoriaRepository.save(log);
     }
@@ -100,8 +97,7 @@ public class AuditoriaService {
                 log.getDataHora(),
                 log.getServidor() != null ? log.getServidor().getId() : null,
                 log.getServidor() != null ? log.getServidor().getNome() : null,
-                log.getIp(),
-                log.getUserAgent()
+                log.getIp()
         );
     }
 
@@ -144,20 +140,6 @@ public class AuditoriaService {
             }
 
             return ip;
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private String obterUserAgent() {
-        try {
-            ServletRequestAttributes attr =
-                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
-            if (attr == null) return null;
-
-            return attr.getRequest().getHeader("User-Agent");
 
         } catch (Exception e) {
             return null;

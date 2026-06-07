@@ -24,5 +24,4 @@ public class AuditoriaDTO {
     private String servidorNome;
 
     private String ip;
-    private String userAgent;
 }

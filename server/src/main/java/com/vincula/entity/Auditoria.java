@@ -31,9 +31,6 @@ public class Auditoria {
     @Column(nullable = false, length = 100)
     private String ip;
 
-    @Column(length = 200)
-    private String userAgent;
-
     @Column(nullable = false)
     private LocalDateTime dataHora;
 
