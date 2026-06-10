@@ -6,7 +6,15 @@
 
 .autocomplete-container {
     position: relative;
-    width: 100%;
+}
+
+
+.autocomplete-loading {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
 .autocomplete-list {

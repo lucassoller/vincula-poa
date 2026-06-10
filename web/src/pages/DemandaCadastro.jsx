@@ -82,6 +82,10 @@ function DemandaCadastro() {
 
     useEffect(() => {
 
+        if (usuarioSelecionado) {
+            return;
+        }
+
         if (!buscaUsuario.trim()) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setSugestoes([]);
@@ -113,7 +117,7 @@ function DemandaCadastro() {
 
         return () => clearTimeout(timeout);
 
-    }, [buscaUsuario, setValue]);
+    }, [buscaUsuario, setValue, usuarioSelecionado]);
 
     function selecionarUsuario(usuario) {
 
