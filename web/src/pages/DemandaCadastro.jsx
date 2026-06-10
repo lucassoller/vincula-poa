@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -29,6 +29,30 @@ function DemandaCadastro() {
     const [buscaUsuario, setBuscaUsuario] = useState("");
     const [sugestoes, setSugestoes] = useState([]);
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+    const autocompleteRef = useRef(null);
+
+    useEffect(() => {
+
+        function handleClickOutside(event) {
+
+            if (
+                autocompleteRef.current &&
+                !autocompleteRef.current.contains(event.target)
+            ) {
+                setSugestoes([]);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutside
+            );
+        };
+
+    }, []);
 
     useEffect(() => {
         const usuario = usuarios.find(
@@ -58,6 +82,11 @@ function DemandaCadastro() {
     useEffect(() => {
 
         if (!buscaUsuario.trim()) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setSugestoes([]);
+            setUsuarioSelecionado(null);
+            setUbsUsuario("");
+            setValue("usuarioId", "");
             return;
         }
 
@@ -151,7 +180,7 @@ function DemandaCadastro() {
                     <div className="form-grid two">
                         <div className="form-group">
                             <label>Usuário <span>*</span></label>
-                            <div className="autocomplete-container">
+                            <div className="autocomplete-container" ref={autocompleteRef}>
                                 <input
                                     type="text"
                                     className="input-field"
