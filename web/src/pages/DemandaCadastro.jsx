@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./demandaCadastro.css";
-import {useForm, useWatch} from "react-hook-form";
+import {useForm} from "react-hook-form";
 
 function DemandaCadastro() {
     const {
@@ -33,17 +33,11 @@ function DemandaCadastro() {
     const [carregandoSugestoes, setCarregandoSugestoes] = useState(false);
 
     useEffect(() => {
-
         function handleClickOutside(event) {
-
-            if (
-                autocompleteRef.current &&
-                !autocompleteRef.current.contains(event.target)
-            ) {
+            if (autocompleteRef.current && !autocompleteRef.current.contains(event.target)) {
                 setSugestoes([]);
             }
         }
-
         document.addEventListener("mousedown", handleClickOutside);
 
         return () => {
@@ -56,14 +50,15 @@ function DemandaCadastro() {
     }, []);
 
     useEffect(() => {
-        const usuario = usuarios.find(
-            p => String(p.id) === String(location.state?.usuarioId)
-        );
+        const usuario = usuarios.find(p => String(p.id) === String(location.state?.usuarioId));
 
         if (usuario) {
             setValue("usuarioId", String(usuario.id));
+
             // eslint-disable-next-line react-hooks/set-state-in-effect
+            setBuscaUsuario(`${usuario.nomeCompleto} - ${usuario.documento}`);
             setUbsUsuario(usuario.unidadeSaudeNome || "");
+            setUsuarioSelecionado(usuario);
         }
     }, [location.state, usuarios, setValue]);
 
@@ -120,19 +115,10 @@ function DemandaCadastro() {
     }, [buscaUsuario, setValue, usuarioSelecionado]);
 
     function selecionarUsuario(usuario) {
-
         setUsuarioSelecionado(usuario);
-
         setValue("usuarioId", usuario.id);
-
-        setBuscaUsuario(
-            `${usuario.nomeCompleto} - ${usuario.documento}`
-        );
-
-        setUbsUsuario(
-            usuario.unidadeSaudeNome || ""
-        );
-
+        setBuscaUsuario(`${usuario.nomeCompleto} - ${usuario.documento}`);
+        setUbsUsuario(usuario.unidadeSaudeNome || "");
         setSugestoes([]);
     }
 
@@ -152,6 +138,9 @@ function DemandaCadastro() {
 
             setMensagem("Demanda cadastrada com sucesso!");
             reset();
+            setBuscaUsuario("");
+            setUsuarioSelecionado(null);
+            setSugestoes([]);
             setUbsUsuario("");
             setErros({});
         } catch (error) {
