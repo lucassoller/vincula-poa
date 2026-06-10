@@ -93,17 +93,6 @@ function UnidadesSaude() {
         }
     }
 
-    async function abrirDetalhes(u) {
-        try {
-
-            const response = await api.get(`/unidades-saude/${u.id}`);
-            setUnidadeDetalhada(response.data);
-
-        } catch {
-            setMensagem("Erro ao carregar detalhes da unidade de saúde.");
-        }
-    }
-
     if (carregando) {
         return (
             <div className="loading-container">
@@ -209,7 +198,7 @@ function UnidadesSaude() {
                                     <div className="acoes-container">
                                         <button
                                             className="btn-visualizar"
-                                            onClick={() => abrirDetalhes(ubs)}
+                                            onClick={() => setUnidadeDetalhada(ubs)}
                                         >
                                             Ver mais
                                         </button>
