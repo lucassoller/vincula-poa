@@ -76,6 +76,13 @@ public class UsuarioService {
                 .map(this::toDTO);
     }
 
+    public List<UsuarioShortResponseDTO> listarTodosFiltradosPorNomeOuDocumento(String filtro) {
+        return usuarioRepository.buscarPorNomeOuDocumento(filtro)
+                .stream()
+                .map(this::toShortDTO)
+                .toList();
+    }
+
     public Page<UsuarioResponseDTO> listarTodosPorUnidadeFiltrados(Long unidadeSaudeId, String filtro, Pageable pageable) {
         return usuarioRepository.findFiltradosByUnidade(unidadeSaudeId, filtro, pageable)
                 .map(this::toDTO);

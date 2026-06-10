@@ -26,6 +26,9 @@ function DemandaCadastro() {
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
     const [ubsUsuario, setUbsUsuario] = useState("");
+    const [buscaUsuario, setBuscaUsuario] = useState("");
+    const [sugestoes, setSugestoes] = useState([]);
+    const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
 
     useEffect(() => {
         const usuario = usuarios.find(
@@ -52,6 +55,50 @@ function DemandaCadastro() {
         void carregarDados();
     }, [servidor]);
 
+    useEffect(() => {
+
+        if (!buscaUsuario.trim()) {
+            return;
+        }
+
+        const timeout = setTimeout(async () => {
+
+            try {
+                const response = await api.get(
+                    `/usuarios/filtrados/busca/${buscaUsuario}`
+                );
+                setSugestoes(response.data);
+
+            } catch {
+                setSugestoes([]);
+                setUsuarioSelecionado(null);
+                setUbsUsuario("");
+                setValue("usuarioId", "");
+            }
+
+        }, 300);
+
+        return () => clearTimeout(timeout);
+
+    }, [buscaUsuario, setValue]);
+
+    function selecionarUsuario(usuario) {
+
+        setUsuarioSelecionado(usuario);
+
+        setValue("usuarioId", usuario.id);
+
+        setBuscaUsuario(
+            `${usuario.nomeCompleto} - ${usuario.documento}`
+        );
+
+        setUbsUsuario(
+            usuario.unidadeSaudeNome || ""
+        );
+
+        setSugestoes([]);
+    }
+
     async function salvar(dados) {
         setMensagem("");
         setErros({});
@@ -68,6 +115,7 @@ function DemandaCadastro() {
 
             setMensagem("Demanda cadastrada com sucesso!");
             reset();
+            setUbsUsuario("");
             setErros({});
         } catch (error) {
             if (error.response?.data?.errors) {
@@ -78,23 +126,6 @@ function DemandaCadastro() {
                 setMensagem(error.response.data.message);
             }
         }
-    }
-
-    function handleUsuarioChange(event) {
-        const usuarioId = Number(event.target.value);
-
-        const usuarioSelecionado = usuarios.find(
-            (p) => p.id === usuarioId
-        );
-
-        if (!usuarioSelecionado) {
-            setUbsUsuario("");
-            return;
-        }
-
-        setUbsUsuario(
-            usuarioSelecionado.unidadeSaudeNome || ""
-        );
     }
 
     return (
@@ -120,18 +151,43 @@ function DemandaCadastro() {
                     <div className="form-grid two">
                         <div className="form-group">
                             <label>Usuário <span>*</span></label>
-                            <select
-                                className="input-field"
-                                {...register("usuarioId")}
-                                onChange={handleUsuarioChange}
-                            >
-                                <option value="">Selecione</option>
-                                {usuarios.map((p) => (
-                                    <option key={p.id} value={p.id}>
-                                        {p.nomeCompleto} - {p.documento}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="autocomplete-container">
+                                <input
+                                    type="text"
+                                    className="input-field"
+                                    value={buscaUsuario}
+                                    onChange={(e) => {
+
+                                        const valor = e.target.value;
+
+                                        setBuscaUsuario(valor);
+
+                                        if (
+                                            usuarioSelecionado &&
+                                            valor !== `${usuarioSelecionado.nomeCompleto} - ${usuarioSelecionado.documento}`
+                                        ) {
+                                            setUsuarioSelecionado(null);
+                                            setValue("usuarioId", "");
+                                            setUbsUsuario("");
+                                        }
+                                    }}
+                                    placeholder="Digite nome ou CPF"
+                                />
+
+                                {Array.isArray(sugestoes) && sugestoes.length > 0 && (
+                                    <div className="autocomplete-list">
+                                        {sugestoes.map(usuario => (
+                                            <div
+                                                key={usuario.id}
+                                                className="autocomplete-item"
+                                                onClick={() => selecionarUsuario(usuario)}
+                                            >
+                                                {usuario.nomeCompleto} - {usuario.documento}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                             {erros.usuarioId && <small>{erros.usuarioId}</small>}
                         </div>
                         <div className="form-group">

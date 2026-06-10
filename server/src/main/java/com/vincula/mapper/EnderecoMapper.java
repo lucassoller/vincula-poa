@@ -18,6 +18,7 @@ public class EnderecoMapper {
         entity.setNumero(dto.getNumero());
         entity.setBairro(dto.getBairro());
         entity.setCidade(dto.getCidade());
+        entity.setComplemento(dto.getComplemento());
         entity.setEstado(dto.getEstado());
         return entity;
     }
@@ -33,6 +34,7 @@ public class EnderecoMapper {
         dto.setNumero(entity.getNumero());
         dto.setBairro(entity.getBairro());
         dto.setCidade(entity.getCidade());
+        dto.setComplemento(entity.getComplemento());
         dto.setEstado(entity.getEstado());
         return dto;
     }
@@ -42,6 +44,7 @@ public class EnderecoMapper {
         entity.setNumero(dto.getNumero());
         entity.setBairro(dto.getBairro());
         entity.setCidade(dto.getCidade());
+        entity.setComplemento(dto.getComplemento());
         entity.setEstado(dto.getEstado());
     }
 }

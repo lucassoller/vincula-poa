@@ -17,6 +17,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     List<Usuario> findAllByOrderByNomeCompletoAsc();
 
     @Query("""
+    SELECT u
+    FROM Usuario u
+    WHERE
+        LOWER(u.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR u.documento LIKE CONCAT('%', :filtro, '%')
+""")
+    List<Usuario> buscarPorNomeOuDocumento(
+            @Param("filtro") String filtro
+    );
+
+    @Query("""
     SELECT p
     FROM Usuario p
     WHERE (

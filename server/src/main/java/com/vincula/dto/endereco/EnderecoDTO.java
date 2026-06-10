@@ -24,6 +24,9 @@ public class EnderecoDTO {
     @Size(max = 100, message = "A cidade deve ter no máximo 100 caracteres")
     private String cidade;
 
+    @Size(max = 100, message = "O complemento deve ter no máximo 100 caracteres")
+    private String complemento;
+
     @NotBlank(message = "O estado é obrigatório")
     @Pattern(regexp = "[A-Z]{2}", message = "O estado deve ter 2 letras maiúsculas")
     private String estado;

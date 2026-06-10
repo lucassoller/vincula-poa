@@ -22,6 +22,7 @@ function UnidadeSaudeCadastro() {
                 numero: "",
                 bairro: "",
                 cidade: "Porto Alegre",
+                complemento: "",
                 estado: "RS",
             }
         }
@@ -45,7 +46,6 @@ function UnidadeSaudeCadastro() {
     async function salvar(dados) {
         setMensagem("");
         setErros({});
-
         try {
             await api.post("/unidades-saude", dados);
             setMensagem("Unidade de saúde cadastrada com sucesso!");

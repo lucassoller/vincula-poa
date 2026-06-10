@@ -103,6 +103,13 @@ function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
                         />
 
                         <CampoDetalhe
+                            label="Complemento"
+                            valor={
+                                usuarioSelecionado.endereco?.complemento
+                            }
+                        />
+
+                        <CampoDetalhe
                             label="Cidade"
                             valor={
                                 usuarioSelecionado.endereco?.cidade
