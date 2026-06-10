@@ -30,6 +30,7 @@ function DemandaCadastro() {
     const [sugestoes, setSugestoes] = useState([]);
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
     const autocompleteRef = useRef(null);
+    const [carregandoSugestoes, setCarregandoSugestoes] = useState(false);
 
     useEffect(() => {
 
@@ -93,6 +94,7 @@ function DemandaCadastro() {
         const timeout = setTimeout(async () => {
 
             try {
+                setCarregandoSugestoes(true);
                 const response = await api.get(
                     `/usuarios/filtrados/busca/${buscaUsuario}`
                 );
@@ -103,6 +105,8 @@ function DemandaCadastro() {
                 setUsuarioSelecionado(null);
                 setUbsUsuario("");
                 setValue("usuarioId", "");
+            } finally {
+                setCarregandoSugestoes(false);
             }
 
         }, 300);
@@ -202,6 +206,12 @@ function DemandaCadastro() {
                                     }}
                                     placeholder="Digite nome ou CPF"
                                 />
+
+                                {carregandoSugestoes && (
+                                    <div className="autocomplete-loading">
+                                        <div className="mini-spinner"></div>
+                                    </div>
+                                )}
 
                                 {Array.isArray(sugestoes) && sugestoes.length > 0 && (
                                     <div className="autocomplete-list">
