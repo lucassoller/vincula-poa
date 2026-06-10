@@ -62,6 +62,11 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                         />
 
                         <CampoDetalhe
+                            label="Complemento"
+                            valor={ubsSelecionada.endereco?.complemento}
+                        />
+
+                        <CampoDetalhe
                             label="Cidade"
                             valor={ubsSelecionada.endereco?.cidade}
                         />

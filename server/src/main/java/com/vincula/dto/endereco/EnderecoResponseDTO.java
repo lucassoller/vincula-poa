@@ -10,5 +10,6 @@ public class EnderecoResponseDTO {
     private String numero;
     private String bairro;
     private String cidade;
+    private String complemento;
     private String estado;
 }

@@ -64,6 +64,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarTodosFiltrados(filtro, pageable));
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtrados/busca/{filtro}")
+    public ResponseEntity<List<UsuarioShortResponseDTO>> listarTodosFiltradosPorNomeOuDocumento(@PathVariable String filtro) {
+        return ResponseEntity.ok(usuarioService.listarTodosFiltradosPorNomeOuDocumento(filtro));
+    }
 
     @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL')")
     @GetMapping("/filtrados/unidadeSaude/{unidadeSaudeId}/{filtro}")

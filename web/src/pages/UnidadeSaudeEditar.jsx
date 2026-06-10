@@ -22,6 +22,7 @@ function UnidadeSaudeEditar() {
                 numero: "",
                 bairro: "",
                 cidade: "Porto Alegre",
+                complemento: "",
                 estado: "RS",
             }
         }

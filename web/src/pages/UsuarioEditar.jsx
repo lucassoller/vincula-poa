@@ -30,6 +30,7 @@ function UsuarioEditar() {
                 numero: "",
                 bairro: "",
                 cidade: "Porto Alegre",
+                complemento: "",
                 estado: "RS",
             }
         }
@@ -100,7 +101,7 @@ function UsuarioEditar() {
             }
 
             setMensagem("Usuário atualizado com sucesso e vinculado na Unidade " + response.data.unidadeSaudeNome);
-            navigate(`/usuarios/${id}`);
+            setEtapa(1);
 
         } catch (error) {
             if (error.response?.data?.errors) {

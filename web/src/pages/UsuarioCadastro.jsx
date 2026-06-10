@@ -26,6 +26,7 @@ function UsuarioCadastro() {
                 numero: "",
                 bairro: "",
                 cidade: "Porto Alegre",
+                complemento: "",
                 estado: "RS",
             }
         }
@@ -43,7 +44,7 @@ function UsuarioCadastro() {
         } else{
             setEtapa(2);
         }
-            setMensagem("Dados inválidos.");
+        setMensagem("Dados inválidos.");
     }
 
     async function salvar(dados) {
