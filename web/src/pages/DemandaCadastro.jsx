@@ -197,7 +197,7 @@ function DemandaCadastro() {
                                             setUbsUsuario("");
                                         }
                                     }}
-                                    placeholder="Digite nome ou CPF"
+                                    placeholder="Digite nome ou número do documento de identificação"
                                 />
 
                                 {carregandoSugestoes && (
