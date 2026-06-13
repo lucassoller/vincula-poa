@@ -17,10 +17,12 @@ import java.nio.charset.StandardCharsets;
 public class EmailService {
     private final AuditoriaFacade auditoriaFacade;
     private final Environment env;
+    private final HttpClient httpClient;
 
-    public EmailService(AuditoriaFacade auditoriaFacade, Environment env) {
+    public EmailService(AuditoriaFacade auditoriaFacade, Environment env, HttpClient httpClient) {
         this.auditoriaFacade = auditoriaFacade;
         this.env = env;
+        this.httpClient = httpClient;
     }
 
     public void enviarEmail(String endereco, String link) throws IOException {
@@ -33,8 +35,7 @@ public class EmailService {
 
         String html = new String(
                 inputStream.readAllBytes(),
-                StandardCharsets.UTF_8
-        );
+                StandardCharsets.UTF_8);
 
         html = html.replace("{{LINK_REDEFINICAO}}", link);
 
@@ -58,10 +59,11 @@ public class EmailService {
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
 
-            HttpClient client = HttpClient.newHttpClient();
-
             HttpResponse<String> response =
-                    client.send(request, HttpResponse.BodyHandlers.ofString());
+                    httpClient.send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 auditoriaFacade.emailEnviado(endereco);

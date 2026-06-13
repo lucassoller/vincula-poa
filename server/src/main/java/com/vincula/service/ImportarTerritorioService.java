@@ -263,6 +263,7 @@ public class ImportarTerritorioService {
             endereco.setRua("Não informado");
             endereco.setNumero("S/N");
             endereco.setBairro("Não informado");
+            return;
         }
 
         String rua = enderecoTexto;
