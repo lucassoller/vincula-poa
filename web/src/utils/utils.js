@@ -33,7 +33,7 @@ export const desfechoLabel = {
 
 export const tentativaContatoLabe = {
     "LIGACAO": "Ligação",
-    "VISITA": "Visita",
+    "VISITA": "Visita domiciliar",
     "WHATSAPP": "WhatsApp",
     "OUTRO": "Outro",
 };

@@ -32,9 +32,9 @@ function ModalTentativaContato({ demanda, tentativa, setTentativa, erros, onSalv
                             onChange={(e) => setTentativa({ ...tentativa, tipo: e.target.value })}
                         >
                             <option value="">Selecione</option>
-                            <option value="TELEFONE">Telefone</option>
+                            <option value="LIGACAO">Ligação</option>
                             <option value="WHATSAPP">WhatsApp</option>
-                            <option value="VISITA_DOMICILIAR">Visita domiciliar</option>
+                            <option value="VISITA">Visita domiciliar</option>
                             <option value="OUTRO">Outro</option>
                         </select>
                         {erros.tipo && <small>{erros.tipo}</small>}
