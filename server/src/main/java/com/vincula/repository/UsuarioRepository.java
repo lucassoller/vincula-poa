@@ -20,8 +20,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     SELECT u
     FROM Usuario u
     WHERE
-        LOWER(u.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR u.documento LIKE CONCAT('%', :filtro, '%')
+        LOWER(u.nomeCompleto) LIKE LOWER(:filtro)
+        OR u.documento LIKE :filtro
 """)
     List<Usuario> buscarPorNomeOuDocumento(
             @Param("filtro") String filtro

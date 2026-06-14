@@ -210,7 +210,7 @@ function DemandaCadastro() {
                                             setUbsUsuario("");
                                         }
                                     }}
-                                    placeholder="Digite nome ou número do documento de identificação"
+                                    placeholder="Digite o nome completo ou o número do documento de identificação"
                                 />
 
                                 {carregandoSugestoes && (

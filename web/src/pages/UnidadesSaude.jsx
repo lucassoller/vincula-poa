@@ -192,7 +192,12 @@ function UnidadesSaude() {
                                     </div>
                                 </td>
                                 <td>{ubs.cnes}</td>
-                                <td>{ubs.tipoServico}</td>
+                                <td>
+                                    <span className="ubs-badge">
+                                        {ubs.tipoServico}
+                                    </span>
+                                </td>
+
                                 <td>{mascaraTelefone(ubs.telefone) || "-"}</td>
                                 <td>{mascaraTelefone(ubs.telefone2) || "-"}</td>
 

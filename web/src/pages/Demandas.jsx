@@ -9,6 +9,7 @@ import ModalEncerrarDemanda from "../components/ModalEncerrarDemanda";
 import ModalDetalhesDemanda from "../components/ModalDetalhesDemanda";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Paginations.jsx";
+import ModalUbs from "../components/ModalUbs.jsx";
 
 function Demandas() {
     const navigate = useNavigate();
@@ -27,6 +28,8 @@ function Demandas() {
     const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
+    const [ubsSelecionada, setUbsSelecionada] = useState(null);
+    const [carregandoUbs, setCarregandoUbs] = useState(false);
     const [modoFiltrado, setModoFiltrado] = useState(false);
     const tamanhoPagina = 10;
 
@@ -170,6 +173,18 @@ function Demandas() {
             setPagina(0);
         } else {
             await carregarDados(0);
+        }
+    }
+
+    async function abrirCardUbs(unidadeSaudeId) {
+        try {
+            setCarregandoUbs(true);
+            const response = await api.get(`/unidades-saude/${unidadeSaudeId}`);
+            setUbsSelecionada(response.data);
+        } catch {
+            setMensagem("Erro ao carregar dados do serviço.");
+        } finally {
+            setCarregandoUbs(false);
         }
     }
 
@@ -496,8 +511,8 @@ function Demandas() {
                         <thead>
                         <tr>
                             <th>Usuário</th>
-                            <th>Motivo</th>
-                            <th>Criador</th>
+                            <th>Motivo da busca</th>
+                            <th>Servidor solicitante</th>
                             <th>Serviço solicitante</th>
                             <th>Data de abertura</th>
                             <th>Data de encerramento</th>
@@ -516,7 +531,13 @@ function Demandas() {
                                 <td><b>{d.usuarioNome || d.usuarioId}</b></td>
                                 <td>{motivoBuscaLabel[d.motivoBuscaAtiva]}</td>
                                 <td>{d.servidorCriadorNome || d.servidorCriadorId}</td>
-                                <td>{d.unidadeSolicitanteNome || d.unidadeSolicitanteId || "-"}</td>
+                                <td>
+                                    <button type="button"
+                                            className="ubs-badge ubs-clickable"
+                                            onClick={() => abrirCardUbs(d.unidadeSolicitanteId)}>
+                                        {d.unidadeSolicitanteNome || d.unidadeSolicitanteId || "-"}
+                                    </button>
+                                </td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
                                 <td>{formatarDataHora(d.dataHoraFinalizacao) || "-"}</td>
 
@@ -527,7 +548,13 @@ function Demandas() {
                                 </td>
 
                                 <td>{prazoLabel[d.prazoDemanda] || "-"}</td>
-                                <td>{d.unidadeResponsavelNome || d.unidadeResponsavelId}</td>
+                                <td>
+                                    <button type="button"
+                                            className="ubs-badge ubs-clickable"
+                                            onClick={() => abrirCardUbs(d.unidadeResponsavelId)}>
+                                        {d.unidadeResponsavelNome || d.unidadeResponsavelId || "-"}
+                                    </button>
+                                </td>
                                 <td>
                                     <div className="acoes-container">
                                         <button
@@ -632,6 +659,21 @@ function Demandas() {
                         setTentativasContato([]);
                     }}
                 />
+            )}
+
+            {ubsSelecionada && (
+                <ModalUbs
+                    ubsSelecionada={ubsSelecionada}
+                    setUbsSelecionada={setUbsSelecionada}
+                />
+            )}
+
+            {carregandoUbs && (
+                <div className="ubs-overlay">
+                    <div className="loading-card">
+                        <p>Carregando dados do serviço...</p>
+                    </div>
+                </div>
             )}
         </div>
     );
