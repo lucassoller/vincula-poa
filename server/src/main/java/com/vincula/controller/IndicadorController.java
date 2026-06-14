@@ -37,8 +37,7 @@ public class IndicadorController {
             @RequestParam(required = false) Long unidadeSaudeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
-            @RequestParam(required = false) Long unidadeSolicitanteId
-    ) {
+            @RequestParam(required = false) Long unidadeSolicitanteId) {
         String csv = indicadorService.exportarIndicadorGeralCsv(unidadeSaudeId, inicio, fim, unidadeSolicitanteId);
         String dataHora = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm"));

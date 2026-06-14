@@ -34,7 +34,7 @@ function Indicador() {
         async function carregarUnidades() {
             try {
                 if(servidor?.perfil !== "SOLICITANTE") {
-                    const response = await api.get("/unidades-saude/ubs");
+                    const response = await api.get("/unidades-saude/all");
                     setUnidades(response.data);
                 }
             } catch {
@@ -116,7 +116,7 @@ function Indicador() {
             }
 
             if(unidadeSolicitanteId){
-                params.append("unidadeSolicitante", unidadeSolicitanteId);
+                params.append("unidadeSolicitanteId", unidadeSolicitanteId);
             }
 
             const response = await api.get(`/indicadores/exportar?${params.toString()}`,

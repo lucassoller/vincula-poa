@@ -35,6 +35,10 @@
     border-collapse: collapse;
 }
 
+.table-card {
+    overflow-x: auto;
+}
+
 .demandas-table th,
 .demandas-table td {
     text-align: left;
@@ -48,6 +52,7 @@
     font-size: 14px;
     font-weight: 700;
 }
+
 
 .status-badge {
     padding: 6px 12px;
