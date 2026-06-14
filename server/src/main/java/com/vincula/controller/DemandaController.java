@@ -79,15 +79,6 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitante(unidadeSolicitanteId, pageable));
     }
 
-    /*@PreAuthorize("hasAnyRole('SOLICITANTE','GESTAO_MUNICIPAL')")
-    @GetMapping("/servidor/{servidorId}")
-    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorServidorCriador(
-            @PathVariable Long servidorId,
-            Pageable pageable
-    ) {
-        return ResponseEntity.ok(demandaService.listarPorServidorCriador(servidorId, pageable));
-    }*/
-
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping("/status/{status}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorStatus(
@@ -121,16 +112,6 @@ public class DemandaController {
             Pageable pageable
     ) {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitanteFiltradas(unidadeSolicitanteId, filtro, pageable));
-    }
-
-    @PreAuthorize("hasRole('SOLICITANTE')")
-    @GetMapping("/filtradas/servidor/{servidorCriadorId}/{filtro}")
-    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorServidorFiltradas(
-            @PathVariable Long servidorCriadorId,
-            @PathVariable String filtro,
-            Pageable pageable
-    ) {
-        return ResponseEntity.ok(demandaService.listarPorServidorCriadorFiltradas(servidorCriadorId, filtro, pageable));
     }
 
     @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
@@ -181,7 +162,7 @@ public class DemandaController {
             @PathVariable Long servidorCriadorId
     ) {
 
-        String csv = demandaService.exportarDemandasPorServidorCsv(servidorCriadorId);
+        String csv = demandaService.exportarDemandasPorUnidadeSolicitanteCsv(servidorCriadorId);
 
         return gerarRespostaCsv(csv);
     }
@@ -224,7 +205,7 @@ public class DemandaController {
     ) {
 
         String csv = demandaService
-                .exportarDemandasFiltradasPorServidorCsv(servidorCriadorId, filtro);
+                .exportarDemandasFiltradasPorUnidadeSolicitanteCsv(servidorCriadorId, filtro);
 
         return gerarRespostaCsv(csv);
     }

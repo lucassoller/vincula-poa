@@ -751,7 +751,7 @@ class DemandaServiceTest {
                 .thenReturn("csv");
 
         String resultado =
-                demandaService.exportarDemandasPorServidorCsv(1L);
+                demandaService.exportarDemandasPorUnidadeSolicitanteCsv(1L);
 
         assertEquals("csv", resultado);
 
@@ -775,7 +775,7 @@ class DemandaServiceTest {
                 .thenReturn("csv");
 
         String resultado =
-                demandaService.exportarDemandasFiltradasPorServidorCsv(
+                demandaService.exportarDemandasFiltradasPorUnidadeSolicitanteCsv(
                         1L,
                         "abc"
                 );

@@ -69,7 +69,7 @@ public class IndicadorService {
 
         if(temUnidadeSolicitante){
             if (temPeriodo) {
-                return indicadorPorServidorEPeriodo(inicio, fim, unidadeSolicitanteId);
+                return indicadorPorUnidadeSolicitanteEPeriodo(inicio, fim, unidadeSolicitanteId);
             }
 
             return indicadorPorUnidadeSolicitante(unidadeSolicitanteId);
@@ -150,13 +150,13 @@ public class IndicadorService {
         );
     }
 
-    public IndicadorDTO indicadorPorServidorEPeriodo(LocalDateTime inicio, LocalDateTime fim, Long servidorId) {
+    public IndicadorDTO indicadorPorUnidadeSolicitanteEPeriodo(LocalDateTime inicio, LocalDateTime fim, Long unidadeSolicitanteId) {
         return new IndicadorDTO(
-                indicadorProducaoService.indicadoresPorServidorEPeriodo(servidorId, inicio, fim),
-                indicadorProcessoService.montarProcessoPorServidorEPeriodo(servidorId, inicio, fim),
-                indicadorResultadoService.percentualPorDesfechoPorServidorEPeriodo(servidorId, inicio, fim),
-                indicadorInsucessoService.principaisMotivosInsucessoPorServidorEPeriodo(servidorId, inicio, fim),
-                indicadorPrazoService.indicadoresPrazoPorServidorEPeriodo(servidorId, inicio, fim),
+                indicadorProducaoService.indicadoresPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
+                indicadorProcessoService.montarProcessoPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
+                indicadorResultadoService.percentualPorDesfechoPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
+                indicadorInsucessoService.principaisMotivosInsucessoPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
+                indicadorPrazoService.indicadoresPrazoPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
                 List.of(),
                 List.of(),
                 List.of(),
@@ -175,7 +175,7 @@ public class IndicadorService {
 
         if(temUnidadeSolicitante){
             if (temPeriodo) {
-                return exportarIndicadorPorServidorEPeriodoCsv(unidadeSolicitanteId, inicio, fim);
+                return exportarIndicadorPorUnidadeSolicitanteEPeriodoCsv(unidadeSolicitanteId, inicio, fim);
             }
             auditoriaFacade.exportacaoCsvRealizada("Indicador geral do servidor criador de ID " + unidadeSolicitanteId + "exportado");
             return csvExporter.exportar(indicadorPorUnidadeSolicitante(unidadeSolicitanteId));
@@ -213,10 +213,10 @@ public class IndicadorService {
         return csvExporter.exportar(indicadorPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim));
     }
 
-    public String exportarIndicadorPorServidorEPeriodoCsv(Long servidorId, LocalDateTime inicio, LocalDateTime fim) {
-        auditoriaFacade.exportacaoCsvRealizada("Indicador do servidor criador de ID " +
-                servidorId + "de "+ inicio + " até "+ fim +" exportado");
-        return csvExporter.exportar(indicadorPorServidorEPeriodo(inicio, fim, servidorId));
+    public String exportarIndicadorPorUnidadeSolicitanteEPeriodoCsv(Long unidadeSolicitanteId, LocalDateTime inicio, LocalDateTime fim) {
+        auditoriaFacade.exportacaoCsvRealizada("Indicador da unidade ID " +
+                unidadeSolicitanteId + "de "+ inicio + " até "+ fim +" exportado");
+        return csvExporter.exportar(indicadorPorUnidadeSolicitanteEPeriodo(inicio, fim, unidadeSolicitanteId));
     }
 
     private void validarAcessoIndicadorGeral() {
@@ -230,17 +230,10 @@ public class IndicadorService {
     private void validarAcessoUnidade(Long unidadeSaudeId) {
         Servidor servidor = servidorService.buscarServidorAutenticado();
 
-        if (servidor.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL) {
-            return;
-        }
-
-        if (servidor.getPerfil() == PerfilServidor.SERVIDOR_APS) {
+        if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL) {
             if (servidor.getUnidadeSaude() == null || !servidor.getUnidadeSaude().getId().equals(unidadeSaudeId)) {
                 throw new BusinessException("Servidor não pode acessar indicadores de outra unidade");
             }
-            return;
         }
-
-        throw new BusinessException("Servidor não pode acessar indicadores por unidade");
     }
 }

@@ -242,15 +242,15 @@ public class DemandaService {
         return demandaExporter.exportar(demandas);
     }
 
-    public String exportarDemandasPorServidorCsv(Long servidorCriadorId){
-        List<Demanda> demandas = demandaRepository.findByServidorOrderByUsuarioNome(servidorCriadorId);
-        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas do servidor criador " + servidorCriadorId + " exportadas");
+    public String exportarDemandasPorUnidadeSolicitanteCsv(Long unidadeSolicitanteId){
+        List<Demanda> demandas = demandaRepository.findByServidorOrderByUsuarioNome(unidadeSolicitanteId);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas da unidade " + unidadeSolicitanteId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 
-    public String exportarDemandasFiltradasPorServidorCsv(Long servidorCriadorId, String filtro){
-        List<Demanda> demandas = demandaRepository.findFiltradasByServidorCriador(servidorCriadorId, filtro);
-        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas do servidor criador " + servidorCriadorId + " exportadas");
+    public String exportarDemandasFiltradasPorUnidadeSolicitanteCsv(Long unidadeSolicitanteId, String filtro){
+        List<Demanda> demandas = demandaRepository.findFiltradasByServidorCriador(unidadeSolicitanteId, filtro);
+        auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas da unidade " + unidadeSolicitanteId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 

@@ -151,15 +151,6 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     WHERE d.servidorCriador.id = :servidorCriadorId
     ORDER BY p.nomeCompleto ASC
 """)
-    Page<Demanda> findByServidorOrderByUsuarioNome(@Param("servidorCriadorId") Long servidorCriadorId, Pageable pageable);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE d.servidorCriador.id = :servidorCriadorId
-    ORDER BY p.nomeCompleto ASC
-""")
     List<Demanda> findByServidorOrderByUsuarioNome(@Param("servidorCriadorId") Long servidorCriadorId);
 
     @Query("""

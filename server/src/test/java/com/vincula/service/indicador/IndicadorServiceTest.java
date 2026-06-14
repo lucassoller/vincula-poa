@@ -239,13 +239,13 @@ class IndicadorServiceTest {
 
 
     @Test
-    void deveBuscarIndicadorPorServidorEPeriodo() {
+    void deveBuscarIndicadorPorUnidadeSolicitanteEPeriodo() {
         IndicadorDTO dto = mock(IndicadorDTO.class);
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
         doReturn(dto).when(spy)
-                .indicadorPorServidorEPeriodo(inicio, fim, 1L);
+                .indicadorPorUnidadeSolicitanteEPeriodo(inicio, fim, 1L);
 
         IndicadorDTO resultado =
                 spy.indicadorGeral(null, inicio, fim, 1L);
@@ -354,18 +354,18 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveExportarIndicadorPorServidorEPeriodo() {
+    void deveExportarIndicadorPorUnidadeSolicitanteEPeriodo() {
         IndicadorDTO dto = mock(IndicadorDTO.class);
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
         doReturn(dto).when(spy)
-                .indicadorPorServidorEPeriodo(inicio, fim, 1L);
+                .indicadorPorUnidadeSolicitanteEPeriodo(inicio, fim, 1L);
 
         when(csvExporter.exportar(dto)).thenReturn("csv");
 
         String resultado =
-                spy.exportarIndicadorPorServidorEPeriodoCsv(1L, inicio, fim);
+                spy.exportarIndicadorPorUnidadeSolicitanteEPeriodoCsv(1L, inicio, fim);
 
         assertEquals("csv", resultado);
 
@@ -462,7 +462,7 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveMontarIndicadorPorServidorEPeriodo() {
+    void deveMontarIndicadorPorUnidadeSolicitanteEPeriodo() {
         Long servidorId = 1L;
 
         LocalDateTime ini = LocalDateTime.now().minusDays(1);
@@ -472,7 +472,7 @@ class IndicadorServiceTest {
                 .thenReturn(List.of());
 
         IndicadorDTO result =
-                indicadorService.indicadorPorServidorEPeriodo(ini, fim, servidorId);
+                indicadorService.indicadorPorUnidadeSolicitanteEPeriodo(ini, fim, servidorId);
 
         assertNotNull(result);
     }
@@ -487,7 +487,7 @@ class IndicadorServiceTest {
 
         doReturn("csv-servidor-periodo")
                 .when(spy)
-                .exportarIndicadorPorServidorEPeriodoCsv(servidorId, ini, fim);
+                .exportarIndicadorPorUnidadeSolicitanteEPeriodoCsv(servidorId, ini, fim);
 
         String result = spy.exportarIndicadorGeralCsv(null, ini, fim, servidorId);
 

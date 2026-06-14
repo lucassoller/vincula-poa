@@ -30,9 +30,6 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 15)
     private String documento;
 
-    @Column(nullable = false)
-    private Long idServidorCadastro;
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "endereco_id", nullable = false, unique = true)
     private Endereco endereco;
