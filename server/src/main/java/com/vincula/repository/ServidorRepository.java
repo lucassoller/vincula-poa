@@ -19,10 +19,11 @@ public interface ServidorRepository extends JpaRepository<Servidor, Long> {
     @Query("""
     SELECT p
     FROM Servidor p
+    LEFT JOIN p.unidadeSaude us
     WHERE (
         LOWER(p.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(p.email) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(p.unidadeSaude.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(COALESCE(us.nome, '')) LIKE LOWER(CONCAT('%', :filtro, '%'))
     )
     ORDER BY p.nome ASC
 """)

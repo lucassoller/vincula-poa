@@ -134,7 +134,7 @@ function Demandas() {
         async function carregarUnidades() {
             try {
                 if(servidor?.perfil !== 'SOLICITANTE'){
-                    const response = await api.get("/unidades-saude/all");
+                    const response = await api.get("/unidades-saude/ubs");
                     setUnidades(response.data);
                 }
             } catch {
