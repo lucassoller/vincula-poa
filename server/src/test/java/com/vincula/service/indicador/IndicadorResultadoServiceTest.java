@@ -131,7 +131,7 @@ class IndicadorResultadoServiceTest {
     void deveRetornarPercentualPorDesfechoPorServidor() {
         Long servidorId = 1L;
 
-        when(demandaRepository.countByStatusAndServidorCriadorId(
+        when(demandaRepository.countByStatusAndUnidadeSolicitanteId(
                 StatusDemanda.FINALIZADA,
                 servidorId
         )).thenReturn(10.0);
@@ -144,7 +144,7 @@ class IndicadorResultadoServiceTest {
         when(projection.getQuantidade())
                 .thenReturn(3L);
 
-        when(demandaRepository.agruparPorDesfechoEServidor(servidorId))
+        when(demandaRepository.agruparPorDesfechoEUnidadeSolicitante(servidorId))
                 .thenReturn(List.of(projection));
 
         List<IndicadorValorDTO> resultado =
@@ -232,7 +232,7 @@ class IndicadorResultadoServiceTest {
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .countByStatusAndServidorCriadorIdAndDataHoraCriacaoBetween(
+                .countByStatusAndUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
                         StatusDemanda.FINALIZADA,
                         servidorId,
                         inicio,
@@ -249,7 +249,7 @@ class IndicadorResultadoServiceTest {
                 .thenReturn(2L);
 
         when(demandaRepository
-                .agruparPorDesfechoEServidorPorPeriodo(
+                .agruparPorDesfechoEUnidadeSolicitantePorPeriodo(
                         servidorId,
                         inicio,
                         fim

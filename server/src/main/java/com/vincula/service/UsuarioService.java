@@ -4,8 +4,10 @@ import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.usuario.UsuarioShortResponseDTO;
 import com.vincula.entity.Endereco;
+import com.vincula.entity.Servidor;
 import com.vincula.entity.Usuario;
 import com.vincula.entity.UnidadeSaude;
+import com.vincula.enums.PerfilServidor;
 import com.vincula.enums.Sexo;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
@@ -29,17 +31,19 @@ public class UsuarioService {
     private final AuditoriaFacade auditoriaFacade;
     private final TerritorializacaoService territorializacaoService;
     private final GeocodingService geocodingService;
+    private final ServidorService servidorService;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                           EnderecoMapper enderecoMapper,
                           AuditoriaFacade auditoriaFacade,
                           TerritorializacaoService territorializacaoService,
-                          GeocodingService geocodingService) {
+                          GeocodingService geocodingService, ServidorService servidorService) {
         this.usuarioRepository = usuarioRepository;
         this.enderecoMapper = enderecoMapper;
         this.auditoriaFacade = auditoriaFacade;
         this.territorializacaoService = territorializacaoService;
         this.geocodingService = geocodingService;
+        this.servidorService = servidorService;
     }
 
     public UsuarioResponseDTO criar(UsuarioDTO dto) {
@@ -71,6 +75,11 @@ public class UsuarioService {
                 .map(this::toDTO);
     }
 
+    public Page<UsuarioResponseDTO> listarTodosPorUnidadeSolicitante(Long unidadeSaudeId, Pageable pageable) {
+        return usuarioRepository.findByUnidadeSolicitanteIdOrderByNomeCompletoAsc(unidadeSaudeId, pageable)
+                .map(this::toDTO);
+    }
+
     public Page<UsuarioResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
         return usuarioRepository.findFiltrados(filtro, pageable)
                 .map(this::toDTO);
@@ -83,8 +92,14 @@ public class UsuarioService {
                 .toList();
     }
 
+
     public Page<UsuarioResponseDTO> listarTodosPorUnidadeFiltrados(Long unidadeSaudeId, String filtro, Pageable pageable) {
         return usuarioRepository.findFiltradosByUnidade(unidadeSaudeId, filtro, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<UsuarioResponseDTO> listarTodosPorUnidadeSolicitanteFiltrados(Long unidadeSaudeId, String filtro, Pageable pageable) {
+        return usuarioRepository.findFiltradosByUnidadeSolicitante(unidadeSaudeId, filtro, pageable)
                 .map(this::toDTO);
     }
 
@@ -171,6 +186,7 @@ public class UsuarioService {
 
     private Usuario toEntity(UsuarioDTO dto) {
         Endereco endereco = enderecoMapper.toEntity(dto.getEndereco());
+        Servidor servidor = servidorService.buscarServidorAutenticado();
 
         if (dto.getDataNascimento() != null && dto.getDataNascimento().isAfter(ChronoLocalDate.from(LocalDate.now()))) {
             throw new BusinessException("A data de nascimento não pode ser futura");
@@ -200,6 +216,10 @@ public class UsuarioService {
         }
         entity.setUnidadeSaude(unidade);
 
+        if(servidor.getPerfil() == PerfilServidor.SOLICITANTE){
+            entity.setUnidadeSolicitante(servidor.getUnidadeSaude());
+        }
+
         return entity;
     }
 
@@ -218,6 +238,11 @@ public class UsuarioService {
         dto.setSexo(entity.getSexo());
         dto.setIdServidorCadastro(entity.getIdServidorCadastro());
 
+        if(entity.getUnidadeSolicitante() != null){
+            dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
+            dto.setUnidadeSolicitanteNome(entity.getUnidadeSolicitante().getNome());
+        }
+
         return dto;
     }
 
@@ -230,6 +255,12 @@ public class UsuarioService {
         dto.setDocumento(entity.getDocumento());
         dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
         dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+
+
+        if(entity.getUnidadeSolicitante() != null){
+            dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
+            dto.setUnidadeSolicitanteNome(entity.getUnidadeSolicitante().getNome());
+        }
 
         return dto;
     }

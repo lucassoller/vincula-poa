@@ -3,8 +3,9 @@ import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm.jsx";
 import {useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
+import {useAuth} from "../context/AuthContext.jsx";
 
-const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2"];
+const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2", "tipoServico"];
 
 function UnidadeSaudeCadastro() {
     const {
@@ -17,6 +18,7 @@ function UnidadeSaudeCadastro() {
             cnes: "",
             telefone: "",
             telefone2: "",
+            tipoServico: 'UBS',
             endereco: {
                 rua: "",
                 numero: "",
@@ -32,6 +34,8 @@ function UnidadeSaudeCadastro() {
     const [erros, setErros] = useState({});
     const navigate = useNavigate();
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
+    const { servidor } = useAuth();
 
     function voltarParaEtapaComErro(errors) {
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
@@ -41,14 +45,16 @@ function UnidadeSaudeCadastro() {
             setEtapa(2);
         }
         setMensagem("Dados inválidos.");
+        setMensagemSucesso("")
     }
 
     async function salvar(dados) {
         setMensagem("");
+        setMensagemSucesso("")
         setErros({});
         try {
             await api.post("/unidades-saude", dados);
-            setMensagem("Unidade de saúde cadastrada com sucesso!");
+            setMensagemSucesso("Serviço de saúde cadastrado com sucesso!");
             reset();
             setErros({});
         }catch (error) {
@@ -68,10 +74,13 @@ function UnidadeSaudeCadastro() {
             <div className="cadastro-page">
                 <div className="cadastro-header">
                     <div>
-                        <h1>Nova Unidade Básica de Saúde</h1>
+                        <h1>Novo serviço</h1>
                         <p>
-                            Cadastre uma unidade para vinculação de usuários e equipes
+                            Cadastre um serviço para vinculação de usuários e equipes
                         </p>
+                    </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
                     </div>
                 </div>
                 {mensagem && (
@@ -85,10 +94,16 @@ function UnidadeSaudeCadastro() {
                         </button>
                     </div>
                 )}
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
+                    </div>
+                )}
                 <div className="stepper">
                     <div className={`step ${etapa === 1 ? "active" : ""}`}>
                         <span>1</span>
-                        Dados da unidade
+                        Dados do serviço
                     </div>
                     <div className="step-line"></div>
                     <div className={`step ${etapa === 2 ? "active" : ""}`}>
@@ -102,7 +117,7 @@ function UnidadeSaudeCadastro() {
                             <div className="form-grid full">
                                 <div className="form-group">
                                     <label>
-                                        Nome <span>*</span>
+                                        Nome do serviço<span>*</span>
                                     </label>
                                     <input
                                         className="input-field"
@@ -113,7 +128,7 @@ function UnidadeSaudeCadastro() {
                                     )}
                                 </div>
                             </div>
-                            <div className="form-grid full">
+                            <div className="form-grid two">
                                 <div className="form-group">
                                     <label>
                                         CNES <span>*</span>
@@ -127,7 +142,20 @@ function UnidadeSaudeCadastro() {
                                         <small>{erros.cnes}</small>
                                     )}
                                 </div>
+                                <div className="form-group">
+                                    <label>Tipo de serviço <span>*</span> </label>
+                                    <select
+                                        className="input-field"
+                                        {...register("tipoServico")}
+
+                                    >
+                                        <option value="UBS">UBS</option>
+                                        <option value="OUTRO">Outro</option>
+                                    </select>
+                                    {erros.tipoServico && <small>{erros.tipoServico}</small>}
+                                </div>
                             </div>
+
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>

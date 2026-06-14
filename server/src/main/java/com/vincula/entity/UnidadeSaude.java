@@ -1,5 +1,6 @@
 package com.vincula.entity;
 
+import com.vincula.enums.TipoServico;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
@@ -21,6 +22,10 @@ public class UnidadeSaude {
 
     @Column(length = 11)
     private String telefone2;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 5)
+    private TipoServico tipoServico;
 
     @Column(nullable = false, unique = true, length = 7)
     private String cnes;

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Paginations.jsx";
 import { mascaraTelefone } from "../utils/mascaras.js";
 import ModalUbs from "../components/ModalUbs.jsx";
+import {tipoServico} from "../utils/utils.js";
 
 function UnidadesSaude() {
     const navigate = useNavigate();
@@ -31,7 +32,7 @@ function UnidadesSaude() {
             setTotalPaginas(response.data.page.totalPages);
 
         } catch {
-            setMensagem("Erro ao carregar unidades de saúde.");
+            setMensagem("Erro ao carregar serviço.");
         } finally {
             setCarregando(false);
         }
@@ -51,7 +52,7 @@ function UnidadesSaude() {
             setTotalPaginas(response.data.page.totalPages);
 
         } catch {
-            setMensagem("Erro ao buscar unidades.");
+            setMensagem("Erro ao buscar serviços.");
         } finally {
             setCarregando(false);
         }
@@ -97,7 +98,7 @@ function UnidadesSaude() {
         return (
             <div className="loading-container">
                 <div className="loading-card">
-                    Carregando unidades de saúde...
+                    Carregando serviços de saúde...
                 </div>
             </div>
         );
@@ -108,21 +109,22 @@ function UnidadesSaude() {
             <div className="usuarios-page">
                 <div className="usuarios-header">
                     <div>
-                        <h1 className="usuarios-title">Unidades de Saúde</h1>
+                        <h1 className="usuarios-title">Serviços de saúde</h1>
                         <p className="usuarios-subtitle">
-                            Visualize e gerencie as UBS cadastradas
+                            Visualize e gerencie os serviços cadastrados
                         </p>
                     </div>
 
                     <div className="perfil-badge">
-                        {servidor?.perfil}
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
                     </div>
 
                 </div>
 
                 {mensagem && (
-                    <div className="alerta-geral">
-                        {mensagem}
+                    <div className="alert-card">
+                        <span>{mensagem}</span>
+                        <button type="button" onClick={() => setMensagem("")}>✕</button>
                     </div>
                 )}
 
@@ -131,7 +133,7 @@ function UnidadesSaude() {
                         <div className="search-container">
                             <input
                                 className="usuario-search"
-                                placeholder="Buscar UBS..."
+                                placeholder="Buscar serviço..."
                                 value={filtro}
                                 onChange={(e) => setFiltro(e.target.value)}
                                 onKeyDown={(e) => {
@@ -162,7 +164,7 @@ function UnidadesSaude() {
                                 className="buscar-btn"
                                 onClick={() => navigate("/unidades-saude/cadastro")}
                             >
-                                + Nova UBS
+                                + Novo serviço
                             </button>
                         )}
                     </div>
@@ -171,9 +173,9 @@ function UnidadesSaude() {
                         <tr>
                             <th>Nome</th>
                             <th>CNES</th>
+                            <th>Tipo de serviço</th>
                             <th>Telefone</th>
                             <th>Telefone adicional</th>
-
                             <th>Bairro</th>
                             <th>Ações</th>
                         </tr>
@@ -190,6 +192,7 @@ function UnidadesSaude() {
                                     </div>
                                 </td>
                                 <td>{ubs.cnes}</td>
+                                <td>{ubs.tipoServico}</td>
                                 <td>{mascaraTelefone(ubs.telefone) || "-"}</td>
                                 <td>{mascaraTelefone(ubs.telefone2) || "-"}</td>
 
@@ -222,7 +225,7 @@ function UnidadesSaude() {
 
                     {unidades.length === 0 && !mensagem && (
                         <div className="empty-state">
-                            Nenhuma UBS encontrada.
+                            Nenhum serviço encontrado.
                         </div>
                     )}
 

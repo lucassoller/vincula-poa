@@ -3,19 +3,16 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api/api";
 import "./usuarios.css";
 import { useNavigate } from "react-router-dom";
-import {mascaraDocumento, mascaraTelefone} from "../utils/mascaras.js";
 import ModalUbs from "../components/ModalUbs.jsx";
 import Pagination from "../components/Paginations.jsx";
-import ModalUsuario from "../components/ModalUsuario.jsx";
 
-function Usuarios() {
+function Servidores() {
     const navigate = useNavigate();
     const { servidor } = useAuth();
-    const [usuarios, setUsuarios] = useState([]);
+    const [servidores, setServidores] = useState([]);
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [ubsSelecionada, setUbsSelecionada] = useState(null);
-    const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
     const [carregandoUbs, setCarregandoUbs] = useState(false);
     const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
@@ -26,19 +23,11 @@ function Usuarios() {
     const carregarDados = useCallback(async (paginaAtual = pagina) => {
         try {
             setCarregando(true);
-            let usuariosResponse;
-            if(servidor?.perfil === 'SERVIDOR_APS'){
-                usuariosResponse = await api.get(`/usuarios/unidadeSaude/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`);
-            }else if(servidor?.perfil === 'SOLICITANTE'){
-                usuariosResponse = await api.get(`/usuarios/unidadeSolicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`);
-            }else{
-                usuariosResponse = await api.get(`/usuarios?page=${paginaAtual}&size=${tamanhoPagina}`);
-            }
-
-            setUsuarios(usuariosResponse.data.content);
-            setTotalPaginas(usuariosResponse.data.page.totalPages);
+            const response = await api.get(`/servidores?page=${paginaAtual}&size=${tamanhoPagina}`);
+            setServidores(response.data.content);
+            setTotalPaginas(response.data.page.totalPages);
         } catch {
-            setMensagem("Erro ao carregar usuários.");
+            setMensagem("Erro ao carregar servidores.");
         } finally {
             setCarregando(false);
         }
@@ -50,19 +39,11 @@ function Usuarios() {
         }
         try {
             setCarregando(true);
-            let usuariosResponse;
-            if(servidor?.perfil === 'SERVIDOR_APS'){
-                usuariosResponse = await api.get(`/usuarios/filtrados/unidadeSaude/${servidor.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`);
-            }else if(servidor?.perfil === 'SOLICITANTE'){
-                usuariosResponse = await api.get(`/usuarios/filtrados/unidadeSolicitante/${servidor.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`);
-            }else{
-                usuariosResponse = await api.get(`/usuarios/filtrados/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`);
-            }
-
-            setUsuarios(usuariosResponse.data.content);
-            setTotalPaginas(usuariosResponse.data.page.totalPages);
+            const response = await api.get(`/servidores/filtrados/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`);
+            setServidores(response.data.content);
+            setTotalPaginas(response.data.page.totalPages);
         } catch {
-            setMensagem("Erro ao buscar usuários.");
+            setMensagem("Erro ao buscar servidores.");
         } finally {
             setCarregando(false);
         }
@@ -94,7 +75,6 @@ function Usuarios() {
 
     async function limparFiltro() {
         setFiltro("");
-        setMensagem("");
         setModoFiltrado(false);
         if (pagina !== 0) {
             setPagina(0);
@@ -109,7 +89,7 @@ function Usuarios() {
             const response = await api.get(`/unidades-saude/${unidadeSaudeId}`);
             setUbsSelecionada(response.data);
         } catch {
-            setMensagem("Erro ao carregar dados da UBS.");
+            setMensagem("Erro ao carregar dados do serviço.");
         } finally {
             setCarregandoUbs(false);
         }
@@ -119,7 +99,7 @@ function Usuarios() {
         return (
             <div className="loading-container">
                 <div className="loading-card">
-                    Carregando usuários...
+                    Carregando servidores...
                 </div>
             </div>
         );
@@ -130,10 +110,10 @@ function Usuarios() {
                 <div className="usuarios-header">
                     <div>
                         <h1 className="usuarios-title">
-                            Usuários
+                            Servidores
                         </h1>
                         <p className="usuarios-subtitle">
-                            Visualize e gerencie os usuários cadastrados
+                            Visualize e gerencie os servidores cadastrados
                         </p>
                     </div>
                     <div className="perfil-badge">
@@ -146,12 +126,13 @@ function Usuarios() {
                         <button type="button" onClick={() => setMensagem("")}>✕</button>
                     </div>
                 )}
+
                 <div className="table-card">
                     <div className="table-topbar">
                         <div className="search-container">
                             <input
                                 className="usuario-search"
-                                placeholder="Buscar usuário..."
+                                placeholder="Buscar servidor..."
                                 value={filtro}
                                 onChange={(e) => setFiltro(e.target.value)}
                                 onKeyDown={(e) => {
@@ -178,9 +159,9 @@ function Usuarios() {
                         </div>
                         <button
                             className="buscar-btn"
-                            onClick={() => navigate("/usuarios/cadastro")}
+                            onClick={() => navigate("/servidores/cadastro")}
                         >
-                            + Novo usuário
+                            + Novo servidor
                         </button>
 
                     </div>
@@ -189,64 +170,44 @@ function Usuarios() {
                         <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>Documento</th>
-                            <th>Telefone</th>
-                            <th>UBS</th>
-                            <th>Ações</th>
+                            <th>Email</th>
+                            <th>Serviço vinculado</th>
                         </tr>
                         </thead>
                         <tbody>
+                            {servidores.map((s) => (
 
-                        {usuarios.map((usuario) => (
+                                <tr key={s.id}>
+                                    <td>
+                                        <div className="usuario-nome">
+                                            {s.nome}
+                                        </div>
+                                    </td>
+                                    <td>{s.email}</td>
 
-                            <tr key={usuario.id}>
-                                <td>
-                                    <div className="usuario-nome">
-                                        {usuario.nomeCompleto}
-                                    </div>
-                                </td>
-                                <td>
-                                    {mascaraDocumento(usuario.documento)}
-                                </td>
-                                <td>
-                                    {mascaraTelefone(usuario.telefone) || "-"}
-                                </td>
-                                <td>
-                                    <button
-                                        type="button"
-                                        className="ubs-badge ubs-clickable"
-                                        onClick={() => abrirCardUbs(usuario.unidadeSaudeId)}
-                                    >
-                                        {usuario.unidadeSaudeNome}
-                                    </button>
-                                </td>
-                                <td>
-                                    <div className="acoes-container">
-                                        <button
-                                            className="btn-visualizar"
-                                            onClick={() => setUsuarioSelecionado(usuario)}
-                                        >
-                                            Visualizar
-                                        </button>
-
-
+                                    <td>
+                                        {s.unidadeSaudeId !== null ? (
                                             <button
-                                                className="btn-editar"
-                                                onClick={() => navigate(`/usuarios/${usuario.id}/editar`)}
+                                                type="button"
+                                                className="ubs-badge ubs-clickable"
+                                                onClick={() => abrirCardUbs(s.unidadeSaudeId)}
                                             >
-                                                Editar
+                                                {s.unidadeSaudeNome}
                                             </button>
+                                        ) : (
+                                            "-"
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
 
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+
                         </tbody>
                     </table>
 
-                    {usuarios.length === 0 && !mensagem && (
+                    {servidores.length === 0 && !mensagem && (
                         <div className="empty-state">
-                            Nenhum usuário encontrado.
+                            Nenhum servidor encontrado.
                         </div>
                     )}
                     <Pagination
@@ -264,17 +225,11 @@ function Usuarios() {
                 />
             )}
 
-            {usuarioSelecionado && (
-                <ModalUsuario
-                    usuarioSelecionado={usuarioSelecionado}
-                    setUsuarioSelecionado={setUsuarioSelecionado}
-                />
-            )}
 
             {carregandoUbs && (
                 <div className="ubs-overlay">
                     <div className="loading-card">
-                        <p>Carregando dados da UBS...</p>
+                        <p>Carregando dados do serviço...</p>
                     </div>
                 </div>
             )}
@@ -282,4 +237,4 @@ function Usuarios() {
     );
 }
 
-export default Usuarios;
+export default Servidores;

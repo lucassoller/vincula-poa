@@ -23,7 +23,6 @@ function UsuarioEditar() {
             documento: "",
             dataNascimento: "",
             sexo: "",
-            idServidorCadastro: "",
             unidadeSaudeNome: "",
             endereco: {
                 rua: "",
@@ -41,6 +40,7 @@ function UsuarioEditar() {
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [unidadeOriginalId, setUnidadeOriginalId] = useState(null);
     const [mostrarConfirmacaoRedirecionamento, setMostrarConfirmacaoRedirecionamento] = useState(false);
@@ -52,12 +52,16 @@ function UsuarioEditar() {
             try {
                 const response = await api.get(`/usuarios/${id}`);
                 reset(response.data);
-                if(servidor?.perfil === 'SOLICITANTE' && servidor?.id !== response.data.idServidorCadastro){
+                if(servidor?.perfil === 'SOLICITANTE' && servidor?.unidadeSaudeId !== response.data.unidadeSolicitanteId){
+                    navigate("/usuarios");
+                    return;
+                }else if(servidor?.perfil === 'SERVIDOR_APS' && servidor?.unidadeSaudeId !== response.data.unidadeSaudeId){
                     navigate("/usuarios");
                     return;
                 }
                 setUnidadeOriginalId(response.data.unidadeSaudeId);
             } catch {
+                setMensagemSucesso("")
                 setMensagem("Erro ao carregar usuário.");
             } finally {
                 setCarregando(false);
@@ -74,11 +78,13 @@ function UsuarioEditar() {
         } else{
             setEtapa(2);
         }
+        setMensagemSucesso("")
         setMensagem("Dados inválidos.");
     }
 
     async function salvar(dados) {
         setMensagem("");
+        setMensagemSucesso("")
         setErros({});
 
         try {
@@ -96,14 +102,15 @@ function UsuarioEditar() {
 
             if (mudouUnidade) {
                 setMostrarConfirmacaoRedirecionamento(true);
-                setMensagem("Usuário atualizado. A UBS vinculada mudou.");
+                setMensagemSucesso("Usuário atualizado. A UBS vinculada mudou.");
                 return;
             }
 
-            setMensagem("Usuário atualizado com sucesso e vinculado na Unidade " + response.data.unidadeSaudeNome);
+            setMensagemSucesso("Usuário atualizado com sucesso e vinculado na Unidade " + response.data.unidadeSaudeNome);
             setEtapa(1);
 
         } catch (error) {
+            setMensagemSucesso("")
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 setErros(errors);
@@ -122,9 +129,10 @@ function UsuarioEditar() {
                 motivoRedirecionamento: "Atualização de endereço/território",
             });
 
-            setMensagem("Usuário atualizado e demandas abertas redirecionadas com sucesso!");
+            setMensagemSucesso("Usuário atualizado e demandas abertas redirecionadas com sucesso!");
             navigate(`/usuarios/${id}`);
         } catch (error) {
+            setMensagemSucesso("")
             setMensagem(
                 error.response?.data?.message ||
                 "Erro ao redirecionar demandas abertas."
@@ -153,12 +161,22 @@ function UsuarioEditar() {
                         <h1>Editar usuário</h1>
                         <p>Atualize os dados cadastrais do usuário</p>
                     </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                    </div>
                 </div>
 
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
                         <button type="button" onClick={() => setMensagem("")}>✕</button>
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
                     </div>
                 )}
 

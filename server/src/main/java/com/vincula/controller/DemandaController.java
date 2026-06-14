@@ -71,13 +71,22 @@ public class DemandaController {
     }
 
     @PreAuthorize("hasAnyRole('SOLICITANTE','GESTAO_MUNICIPAL')")
+    @GetMapping("/unidadeSolicitante/{unidadeSolicitanteId}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSolicitante(
+            @PathVariable Long unidadeSolicitanteId,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitante(unidadeSolicitanteId, pageable));
+    }
+
+    /*@PreAuthorize("hasAnyRole('SOLICITANTE','GESTAO_MUNICIPAL')")
     @GetMapping("/servidor/{servidorId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorServidorCriador(
             @PathVariable Long servidorId,
             Pageable pageable
     ) {
         return ResponseEntity.ok(demandaService.listarPorServidorCriador(servidorId, pageable));
-    }
+    }*/
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
     @GetMapping("/status/{status}")
@@ -102,6 +111,16 @@ public class DemandaController {
             Pageable pageable
     ) {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSaudeFiltradas(unidadeSaudeId, filtro, pageable));
+    }
+
+    @PreAuthorize("hasRole('SOLICITANTE')")
+    @GetMapping("/filtradas/unidadeSolicitante/{unidadeSolicitanteId}/{filtro}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSolicitanteFiltradas(
+            @PathVariable Long unidadeSolicitanteId,
+            @PathVariable String filtro,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitanteFiltradas(unidadeSolicitanteId, filtro, pageable));
     }
 
     @PreAuthorize("hasRole('SOLICITANTE')")

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api.js";
 import { useForm } from "react-hook-form";
+import {useAuth} from "../context/AuthContext.jsx";
 
 function AlterarSenha() {
     const {
@@ -18,17 +19,21 @@ function AlterarSenha() {
     const navigate = useNavigate();
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [mostrarSenhaAtual, setMostrarSenhaAtual] = useState(false);
     const [mostrarNovaSenha, setMostrarNovaSenha] = useState(false);
     const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
+    const { servidor } = useAuth();
 
     async function salvar(dados) {
         try {
             await api.put("/servidores/me/senha", dados);
-            setMensagem("Senha alterada com sucesso!");
+            setMensagemSucesso("Senha alterada com sucesso!");
+            setMensagem("");
             reset();
 
         } catch (error) {
+            setMensagemSucesso("");
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 setErros(errors);
@@ -47,6 +52,9 @@ function AlterarSenha() {
                         <h1>Alterar senha</h1>
                         <p>Atualize sua senha de acesso ao sistema</p>
                     </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                    </div>
                 </div>
 
                 {mensagem && (
@@ -58,6 +66,13 @@ function AlterarSenha() {
                         >
                             ✕
                         </button>
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
                     </div>
                 )}
 

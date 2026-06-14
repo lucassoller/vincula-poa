@@ -3,7 +3,7 @@ function EnderecoForm({register, erros, unidadeSaude}) {
         <>
             <div className="endereco-header">
                 <h2>Endereço</h2>
-                <p>Informe os dados de localização do usuário</p>
+                <p>Informe os dados de localização</p>
             </div>
 
             <div className="form-grid two">

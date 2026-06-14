@@ -30,7 +30,7 @@ public class IndicadorInsucessoService {
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorServidor(Long servidorId) {
-        return demandaRepository.listarPrincipaisMotivosInsucessoPorServidor(servidorId)
+        return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidadeSolicitante(servidorId)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
@@ -51,7 +51,7 @@ public class IndicadorInsucessoService {
     }
 
     public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorServidorEPeriodo(Long servidorId, LocalDateTime inicio, LocalDateTime fim) {
-        return demandaRepository.listarPrincipaisMotivosInsucessoPorServidorEPeriodo(servidorId, inicio, fim)
+        return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();

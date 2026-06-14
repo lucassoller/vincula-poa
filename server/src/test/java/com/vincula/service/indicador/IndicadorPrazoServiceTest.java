@@ -112,16 +112,16 @@ class IndicadorPrazoServiceTest {
     @Test
     void deveListarIndicadoresPorServidor() {
 
-        when(demandaRepository.countDentroPrazoPorServidor(1L))
+        when(demandaRepository.countDentroPrazoPorUnidadeSolicitante(1L))
                 .thenReturn(2L);
 
-        when(demandaRepository.countAtrasadasPorServidor(1L))
+        when(demandaRepository.countAtrasadasPorUnidadeSolicitante(1L))
                 .thenReturn(1L);
 
-        when(demandaRepository.countFinalizadasAtrasadasPorServidor(1L))
+        when(demandaRepository.countFinalizadasAtrasadasPorUnidadeSolicitante(1L))
                 .thenReturn(1L);
 
-        when(demandaRepository.tempoMedioAtrasoPorServidor(1L))
+        when(demandaRepository.tempoMedioAtrasoPorUnidadeSolicitante(1L))
                 .thenReturn(3600.0);
 
         List<IndicadorValorDTO> resultado =
@@ -130,16 +130,16 @@ class IndicadorPrazoServiceTest {
         assertEquals(4, resultado.size());
 
         verify(demandaRepository)
-                .countDentroPrazoPorServidor(1L);
+                .countDentroPrazoPorUnidadeSolicitante(1L);
 
         verify(demandaRepository)
-                .countAtrasadasPorServidor(1L);
+                .countAtrasadasPorUnidadeSolicitante(1L);
 
         verify(demandaRepository)
-                .countFinalizadasAtrasadasPorServidor(1L);
+                .countFinalizadasAtrasadasPorUnidadeSolicitante(1L);
 
         verify(demandaRepository)
-                .tempoMedioAtrasoPorServidor(1L);
+                .tempoMedioAtrasoPorUnidadeSolicitante(1L);
     }
 
     @Test
@@ -218,31 +218,31 @@ class IndicadorPrazoServiceTest {
         LocalDateTime inicio = LocalDateTime.now().minusDays(30);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countDentroPrazoPorServidorEPeriodo(servidorId, inicio, fim))
+        when(demandaRepository.countDentroPrazoPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim))
                 .thenReturn(2L);
 
-        when(demandaRepository.countDemandasAtrasadasPorServidorEPeriodo(servidorId, inicio, fim))
+        when(demandaRepository.countDemandasAtrasadasPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim))
                 .thenReturn(1L);
 
-        when(demandaRepository.countFinalizadasAtrasadasPorServidorEPeriodo(servidorId, inicio, fim))
+        when(demandaRepository.countFinalizadasAtrasadasPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim))
                 .thenReturn(1L);
 
-        when(demandaRepository.tempoMedioAtrasoEmSegundosPorServidorEPeriodo(servidorId, inicio, fim))
+        when(demandaRepository.tempoMedioAtrasoEmSegundosPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim))
                 .thenReturn(120.0);
 
         service.indicadoresPrazoPorServidorEPeriodo(servidorId, inicio, fim);
 
         verify(demandaRepository)
-                .countDentroPrazoPorServidorEPeriodo(servidorId, inicio, fim);
+                .countDentroPrazoPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
 
         verify(demandaRepository)
-                .countDemandasAtrasadasPorServidorEPeriodo(servidorId, inicio, fim);
+                .countDemandasAtrasadasPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
 
         verify(demandaRepository)
-                .countFinalizadasAtrasadasPorServidorEPeriodo(servidorId, inicio, fim);
+                .countFinalizadasAtrasadasPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
 
         verify(demandaRepository)
-                .tempoMedioAtrasoEmSegundosPorServidorEPeriodo(servidorId, inicio, fim);
+                .tempoMedioAtrasoEmSegundosPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
     }
 
 }

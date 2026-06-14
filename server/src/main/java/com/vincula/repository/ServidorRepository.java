@@ -1,10 +1,13 @@
 package com.vincula.repository;
 
 import com.vincula.entity.Servidor;
+import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilServidor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +15,18 @@ import java.util.Optional;
 public interface ServidorRepository extends JpaRepository<Servidor, Long> {
 
     Page<Servidor> findAllByOrderByNomeAsc(Pageable pageable);
+
+    @Query("""
+    SELECT p
+    FROM Servidor p
+    WHERE (
+        LOWER(p.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(p.email) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(p.unidadeSaude.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
+    )
+    ORDER BY p.nome ASC
+""")
+    Page<Servidor> findFiltrados(@Param("filtro") String filtro, Pageable pageable);
 
     List<Servidor> findAllByOrderByNomeAsc();
 

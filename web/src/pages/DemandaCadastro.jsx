@@ -25,6 +25,7 @@ function DemandaCadastro() {
     const [usuarios, setUsuarios] = useState([]);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [ubsUsuario, setUbsUsuario] = useState("");
     const [buscaUsuario, setBuscaUsuario] = useState("");
     const [sugestoes, setSugestoes] = useState([]);
@@ -68,6 +69,7 @@ function DemandaCadastro() {
                 const response = await api.get("/usuarios/all");
                 setUsuarios(response.data);
             } catch {
+                setMensagemSucesso("");
                 setMensagem("Erro ao carregar dados.");
             }
         }
@@ -123,7 +125,6 @@ function DemandaCadastro() {
     }
 
     async function salvar(dados) {
-        setMensagem("");
         setErros({});
 
         try {
@@ -136,7 +137,8 @@ function DemandaCadastro() {
 
             await api.post("/demandas", payload);
 
-            setMensagem("Demanda cadastrada com sucesso!");
+            setMensagemSucesso("Demanda cadastrada com sucesso!");
+            setMensagem("");
             reset();
             setBuscaUsuario("");
             setUsuarioSelecionado(null);
@@ -144,6 +146,7 @@ function DemandaCadastro() {
             setUbsUsuario("");
             setErros({});
         } catch (error) {
+            setMensagemSucesso("");
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 setErros(errors);
@@ -163,12 +166,22 @@ function DemandaCadastro() {
                         <h1>Nova demanda</h1>
                         <p>Cadastre uma solicitação de busca ativa para acompanhamento</p>
                     </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                    </div>
                 </div>
 
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
                         <button type="button" onClick={() => setMensagem("")}>✕</button>
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
                     </div>
                 )}
 

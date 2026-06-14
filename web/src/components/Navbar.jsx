@@ -57,15 +57,6 @@ function Navbar() {
                     </Link>
                 )}
 
-                {servidor?.perfil === "GESTAO_MUNICIPAL" && (
-                    <Link
-                        to="/gestao/listar"
-                        className="navbar-link"
-                    >
-                        Listar tudo
-                    </Link>
-                )}
-
                 <div className="nav-dropdown">
                     <span className="navbar-link">
                         Usuários ▾
@@ -111,7 +102,7 @@ function Navbar() {
 
                 <div className="nav-dropdown">
                     <span className="navbar-link">
-                        UBS ▾
+                        Serviços ▾
                     </span>
 
                     <div className="nav-dropdown-menu">
@@ -119,7 +110,7 @@ function Navbar() {
                             to="/unidades-saude"
                             className="dropdown-link"
                         >
-                            Listar UBS
+                            Listar serviços
                         </Link>
 
                         {servidor?.perfil === "GESTAO_MUNICIPAL" && (
@@ -127,8 +118,18 @@ function Navbar() {
                             to="/unidades-saude/cadastro"
                             className="dropdown-link"
                         >
-                            Cadastrar UBS
+                            Cadastrar serviço
                         </Link>
+                        )}
+
+                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
+                            <Link
+                                to="/servidores"
+                                className="dropdown-link"
+                            >
+                                Listar servidores
+                            </Link>
+
                         )}
 
                         {servidor?.perfil === "GESTAO_MUNICIPAL" && (

@@ -125,21 +125,19 @@ function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
                     </div>
                 </div>
 
-                {(servidor?.perfil !== "SOLICITANTE" || (servidor?.perfil === "SOLICITANTE" && servidor?.id === usuarioSelecionado.idServidorCadastro)) && (
-                    <div className="ubs-actions">
-                        <button
-                            type="button"
-                            className="btn-editar"
-                            onClick={() =>
-                                navigate(
-                                    `/usuarios/${usuarioSelecionado.id}/editar`
-                                )
-                            }
-                        >
-                            Editar usuario
-                        </button>
-                    </div>
-                )}
+                <div className="ubs-actions">
+                    <button
+                        type="button"
+                        className="btn-editar"
+                        onClick={() =>
+                            navigate(
+                                `/usuarios/${usuarioSelecionado.id}/editar`
+                            )
+                        }
+                    >
+                        Editar usuario
+                    </button>
+                </div>
 
             </div>
         </div>

@@ -74,13 +74,18 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
+    public Page<DemandaResponseDTO> listarPorUnidadeSolicitante(Long unidadeSolicitanteId, Pageable pageable) {
+        return demandaRepository.findByUnidadeSolicitanteOrderByUsuarioNome(unidadeSolicitanteId, pageable)
+                .map(this::toDTO);
+    }
+
     public Page<DemandaResponseDTO> listarPorUnidadeSaudeFiltradas(Long unidadeResponsavelId, String filtro, Pageable pageable) {
         return demandaRepository.findFiltradasByUnidade(unidadeResponsavelId, filtro, pageable)
                 .map(this::toDTO);
     }
 
-    public Page<DemandaResponseDTO> listarPorServidorCriador(Long servidorId, Pageable pageable) {
-        return demandaRepository.findByServidorOrderByUsuarioNome(servidorId, pageable)
+    public Page<DemandaResponseDTO> listarPorUnidadeSolicitanteFiltradas(Long unidadeSolicitanteId, String filtro, Pageable pageable) {
+        return demandaRepository.findFiltradasByUnidadeSolicitante(unidadeSolicitanteId, filtro, pageable)
                 .map(this::toDTO);
     }
 
