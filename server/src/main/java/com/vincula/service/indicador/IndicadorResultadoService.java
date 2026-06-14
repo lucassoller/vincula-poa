@@ -39,11 +39,11 @@ public class IndicadorResultadoService {
     }
 
     public List<IndicadorValorDTO> percentualPorDesfechoPorServidor(Long servidorId) {
-        double totalFinalizadas = demandaRepository.countByStatusAndServidorCriadorId(
+        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSolicitanteId(
                 StatusDemanda.FINALIZADA, servidorId
         );
 
-        return demandaRepository.agruparPorDesfechoEServidor(servidorId)
+        return demandaRepository.agruparPorDesfechoEUnidadeSolicitante(servidorId)
                 .stream()
                 .map(item -> toIndicador(item, totalFinalizadas))
                 .toList();
@@ -76,11 +76,11 @@ public class IndicadorResultadoService {
     public List<IndicadorValorDTO> percentualPorDesfechoPorServidorEPeriodo(Long servidorId,
                                                                            LocalDateTime inicio,
                                                                            LocalDateTime fim) {
-        double totalFinalizadas = demandaRepository.countByStatusAndServidorCriadorIdAndDataHoraCriacaoBetween(
+        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
                 StatusDemanda.FINALIZADA, servidorId, inicio, fim
         );
 
-        return demandaRepository.agruparPorDesfechoEServidorPorPeriodo(servidorId, inicio, fim)
+        return demandaRepository.agruparPorDesfechoEUnidadeSolicitantePorPeriodo(servidorId, inicio, fim)
                 .stream()
                 .map(item -> toIndicador(item, totalFinalizadas))
                 .toList();

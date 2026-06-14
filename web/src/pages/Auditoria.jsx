@@ -3,6 +3,7 @@ import api from "../api/api";
 import "./auditoria.css";
 import Pagination from "../components/Paginations.jsx";
 import {formatarDataHora, formatarEnum} from "../utils/utils.js";
+import {useAuth} from "../context/AuthContext.jsx";
 
 function Auditoria() {
 
@@ -16,6 +17,7 @@ function Auditoria() {
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const tamanhoPagina = 10;
+    const { servidor } = useAuth();
 
     async function carregarAuditoria(
         paginaAtual = pagina,
@@ -138,13 +140,17 @@ function Auditoria() {
     return (
         <div className="auditoria-container">
             <div className="auditoria-page">
-                <div className="auditoria-header">
+                <div className="cadastro-header">
                     <div>
                         <h1>Auditoria</h1>
                         <p>
                             Visualize registros de ações realizadas no sistema
                         </p>
                     </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                    </div>
+
                 </div>
 
                 {mensagem && (

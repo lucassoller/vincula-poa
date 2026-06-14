@@ -11,7 +11,6 @@ import UsuarioEditar from "./pages/UsuarioEditar.jsx";
 import ServidorCadastro from "./pages/ServidorCadastro";
 import UnidadeSaudeCadastro from "./pages/UnidadeSaudeCadastro";
 import UnidadeSaudeEditar from "./pages/UnidadeSaudeEditar";
-import GestaoListagem from "./pages/GestaoListagem.jsx";
 import MeuPerfil from "./pages/MeuPerfil.jsx";
 import AlterarSenha from "./pages/AlterarSenha.jsx";
 import DemandaCadastro from "./pages/DemandaCadastro.jsx";
@@ -21,6 +20,7 @@ import UnidadesSaude from "./pages/UnidadesSaude.jsx";
 import {useAuth} from "./context/AuthContext.jsx";
 import EsqueciSenha from "./pages/EsqueciSenha.jsx";
 import RedefinirSenha from "./pages/RedefinirSenha.jsx";
+import Servidores from "./pages/Servidores.jsx";
 
 function App() {
     const { servidor } = useAuth();
@@ -134,6 +134,17 @@ function App() {
             />
 
             <Route
+                path="/servidores"
+                element={
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
+                        <Layout>
+                            <Servidores />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
                 path="/servidores/cadastro"
                 element={
                     <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
@@ -172,16 +183,6 @@ function App() {
                     <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
                         <Layout>
                             <UnidadeSaudeEditar />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/gestao/listar"
-                element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
-                        <Layout>
-                            <GestaoListagem />
                         </Layout>
                     </ProtectedRoute>
                 }

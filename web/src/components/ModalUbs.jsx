@@ -13,7 +13,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                 <div className="modal-header">
                     <div>
                         <h2>{ubsSelecionada.nome}</h2>
-                        <p>Informações da Unidade Básica de Saúde</p>
+                        <p>Informações do Serviço de Saúde</p>
                     </div>
 
                     <button
@@ -29,6 +29,11 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                     <CampoDetalhe
                         label="CNES"
                         valor={ubsSelecionada.cnes}
+                    />
+
+                    <CampoDetalhe
+                        label="Tipo de serviço"
+                        valor={ubsSelecionada.tipoServico}
                     />
 
                     <CampoDetalhe
@@ -87,7 +92,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                                 navigate(`/unidades-saude/${ubsSelecionada.id}/editar`)
                             }
                         >
-                            Editar UBS
+                            Editar Serviço
                         </button>
                     </div>
                 )}

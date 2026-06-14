@@ -37,11 +37,11 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                 </div>
 
                 <div className="detalhe-section">
-                    <h3>Unidades</h3>
+                    <h3>Serviços de Saúde</h3>
 
                     <div className="detalhe-grid">
                         <CampoDetalhe
-                            label="Unidade solicitante"
+                            label="Serviço solicitante"
                             valor={demanda.unidadeSolicitanteNome}
                         />
 

@@ -40,4 +40,8 @@ public class Usuario {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "unidade_saude_id", nullable = false)
     private UnidadeSaude unidadeSaude;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unidade_solicitante_id")
+    private UnidadeSaude unidadeSolicitante;
 }

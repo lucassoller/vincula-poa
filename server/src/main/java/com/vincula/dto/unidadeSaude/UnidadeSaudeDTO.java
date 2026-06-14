@@ -1,6 +1,7 @@
 package com.vincula.dto.unidadeSaude;
 
 import com.vincula.dto.endereco.EnderecoDTO;
+import com.vincula.enums.TipoServico;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,9 @@ public class UnidadeSaudeDTO {
 
     @Pattern(regexp = "^$|\\d{10,11}", message = "Telefone inválido")
     private String telefone2;
+
+    @NotNull(message = "O tipo de serviço é obrigatório")
+    private TipoServico tipoServico;
 
     @NotNull(message = "O endereço é obrigatório")
     @Valid

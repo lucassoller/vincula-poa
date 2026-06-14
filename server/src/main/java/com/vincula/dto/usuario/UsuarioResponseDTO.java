@@ -23,4 +23,7 @@ public class UsuarioResponseDTO {
     private Long idServidorCadastro;
     private Long unidadeSaudeId;
     private String unidadeSaudeNome;
+
+    private Long unidadeSolicitanteId;
+    private String unidadeSolicitanteNome;
 }

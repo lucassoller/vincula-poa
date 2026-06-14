@@ -58,21 +58,21 @@ public class IndicadorService {
         );
     }
 
-    public IndicadorDTO indicadorGeral(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim, Long servidorId) {
+    public IndicadorDTO indicadorGeral(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim, Long unidadeSolicitanteId) {
         if ((inicio == null && fim != null) || (inicio != null && fim == null)) {
             throw new BusinessException("Informe início e fim do período");
         }
 
         boolean temPeriodo = inicio != null;
         boolean temUnidade = unidadeSaudeId != null;
-        boolean temServidor = servidorId != null;
+        boolean temUnidadeSolicitante = unidadeSolicitanteId != null;
 
-        if(temServidor){
+        if(temUnidadeSolicitante){
             if (temPeriodo) {
-                return indicadorPorServidorEPeriodo(inicio, fim, servidorId);
+                return indicadorPorServidorEPeriodo(inicio, fim, unidadeSolicitanteId);
             }
 
-            return indicadorPorServidor(servidorId);
+            return indicadorPorUnidadeSolicitante(unidadeSolicitanteId);
         }else{
             if (temUnidade && temPeriodo) {
                 return indicadorPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
@@ -136,13 +136,13 @@ public class IndicadorService {
         );
     }
 
-    public IndicadorDTO indicadorPorServidor(Long servidorId) {
+    public IndicadorDTO indicadorPorUnidadeSolicitante(Long unidadeSolicitante) {
         return new IndicadorDTO(
-                indicadorProducaoService.indicadoresPorServidor(servidorId),
-                indicadorProcessoService.montarProcessoPorServidor(servidorId),
-                indicadorResultadoService.percentualPorDesfechoPorServidor(servidorId),
-                indicadorInsucessoService.principaisMotivosInsucessoPorServidor(servidorId),
-                indicadorPrazoService.indicadoresPrazoPorServidor(servidorId),
+                indicadorProducaoService.indicadoresPorUnidadeSolicitante(unidadeSolicitante),
+                indicadorProcessoService.montarProcessoPorServidor(unidadeSolicitante),
+                indicadorResultadoService.percentualPorDesfechoPorServidor(unidadeSolicitante),
+                indicadorInsucessoService.principaisMotivosInsucessoPorServidor(unidadeSolicitante),
+                indicadorPrazoService.indicadoresPrazoPorServidor(unidadeSolicitante),
                 List.of(),
                 List.of(),
                 List.of(),
@@ -164,21 +164,21 @@ public class IndicadorService {
         );
     }
 
-    public String exportarIndicadorGeralCsv(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim, Long servidorId) {
+    public String exportarIndicadorGeralCsv(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim, Long unidadeSolicitanteId) {
         if ((inicio == null && fim != null) || (inicio != null && fim == null)) {
             throw new BusinessException("Informe início e fim do período");
         }
 
         boolean temPeriodo = inicio != null;
         boolean temUnidade = unidadeSaudeId != null;
-        boolean temServidor = servidorId != null;
+        boolean temUnidadeSolicitante = unidadeSolicitanteId != null;
 
-        if(temServidor){
+        if(temUnidadeSolicitante){
             if (temPeriodo) {
-                return exportarIndicadorPorServidorEPeriodoCsv(servidorId, inicio, fim);
+                return exportarIndicadorPorServidorEPeriodoCsv(unidadeSolicitanteId, inicio, fim);
             }
-            auditoriaFacade.exportacaoCsvRealizada("Indicador geral do servidor criador de ID " + servidorId + "exportado");
-            return csvExporter.exportar(indicadorPorServidor(servidorId));
+            auditoriaFacade.exportacaoCsvRealizada("Indicador geral do servidor criador de ID " + unidadeSolicitanteId + "exportado");
+            return csvExporter.exportar(indicadorPorUnidadeSolicitante(unidadeSolicitanteId));
         }else{
             if (temUnidade && temPeriodo) {
                 return exportarIndicadorPorUnidadeEPeriodoCsv(unidadeSaudeId, inicio, fim);

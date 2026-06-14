@@ -3,8 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/api";
 import EnderecoForm from "../components/EnderecoForm";
 import { useForm } from "react-hook-form";
+import {useAuth} from "../context/AuthContext.jsx";
 
-const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2"];
+const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2", "tipoServico"];
 
 function UnidadeSaudeEditar() {
     const {
@@ -17,6 +18,7 @@ function UnidadeSaudeEditar() {
             cnes: "",
             telefone: "",
             telefone2: "",
+            tipoServico: 'UBS',
             endereco: {
                 rua: "",
                 numero: "",
@@ -32,7 +34,9 @@ function UnidadeSaudeEditar() {
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [carregando, setCarregando] = useState(true);
+    const { servidor } = useAuth();
 
     useEffect(() => {
         async function carregarUnidade() {
@@ -40,8 +44,8 @@ function UnidadeSaudeEditar() {
                 const response = await api.get(`/unidades-saude/${id}`);
                 reset(response.data);
             } catch {
-                setMensagem("Erro ao carregar unidade de saúde.");
-
+                setMensagem("Erro ao carregar serviço de saúde.");
+                setMensagemSucesso("")
             } finally {
                 setCarregando(false);
             }
@@ -52,6 +56,7 @@ function UnidadeSaudeEditar() {
     }, [id, reset]);
 
     function voltarParaEtapaComErro(errors) {
+        setMensagemSucesso("")
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
         if (temErroEtapa1) {
             setEtapa(1);
@@ -63,11 +68,12 @@ function UnidadeSaudeEditar() {
 
     async function salvar(dados) {
         setMensagem("");
+        setMensagemSucesso("")
         setErros({});
 
         try {
             await api.put(`/unidades-saude/${id}`, dados);
-            setMensagem("Unidade de saúde editada com sucesso!");
+            setMensagem("Serviço de saúde editado com sucesso!");
             setEtapa(1);
         } catch (error) {
             if (error.response?.data?.errors) {
@@ -85,7 +91,7 @@ function UnidadeSaudeEditar() {
     if (carregando) {
         return (<div className="loading-container">
                 <div className="loading-card">
-                    <p>Carregando unidade de saúde...</p>
+                    <p>Carregando serviço de saúde...</p>
                 </div>
             </div>
         );
@@ -96,10 +102,13 @@ function UnidadeSaudeEditar() {
             <div className="cadastro-page">
                 <div className="cadastro-header">
                     <div>
-                        <h1>Editar Unidade Básica de Saúde</h1>
+                        <h1>Editar Serviço de Saúde</h1>
                         <p>
-                            Atualize os dados cadastrais da unidade
+                            Atualize os dados cadastrais do serviço
                         </p>
+                    </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
                     </div>
                 </div>
                 {mensagem && (
@@ -113,10 +122,16 @@ function UnidadeSaudeEditar() {
                         </button>
                     </div>
                 )}
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
+                    </div>
+                )}
                 <div className="stepper">
                     <div className={`step ${etapa === 1 ? "active" : ""}`}>
                         <span>1</span>
-                        Dados da unidade
+                        Dados do serviço
                     </div>
                     <div className="step-line"></div>
                     <div className={`step ${etapa === 2 ? "active" : ""}`}>
@@ -141,7 +156,7 @@ function UnidadeSaudeEditar() {
                                     )}
                                 </div>
                             </div>
-                            <div className="form-grid full">
+                            <div className="form-grid two">
                                 <div className="form-group">
                                     <label>
                                         CNES <span>*</span>
@@ -154,6 +169,18 @@ function UnidadeSaudeEditar() {
                                     {erros.cnes && (
                                         <small>{erros.cnes}</small>
                                     )}
+                                </div>
+                                <div className="form-group">
+                                    <label>Tipo de serviço <span>*</span> </label>
+                                    <select
+                                        className="input-field"
+                                        {...register("tipoServico")}
+
+                                    >
+                                        <option value="UBS">UBS</option>
+                                        <option value="OUTRO">Outro</option>
+                                    </select>
+                                    {erros.tipoServico && <small>{erros.tipoServico}</small>}
                                 </div>
                             </div>
                             <div className="form-grid two">

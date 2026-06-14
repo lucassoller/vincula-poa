@@ -20,7 +20,6 @@ function UsuarioCadastro() {
             documento: "",
             dataNascimento: "",
             sexo: "",
-            idServidorCadastro: "",
             endereco: {
                 rua: "",
                 numero: "",
@@ -31,13 +30,15 @@ function UsuarioCadastro() {
             }
         }
     });
-    const { servidor } = useAuth();
     const navigate = useNavigate();
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
+    const { servidor } = useAuth();
 
     function voltarParaEtapaComErro(errors) {
+        setMensagemSucesso("")
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
         if (temErroEtapa1) {
             setEtapa(1);
@@ -49,12 +50,12 @@ function UsuarioCadastro() {
 
     async function salvar(dados) {
         setMensagem("");
+        setMensagemSucesso("")
         setErros({});
         try {
             const payload = {
                 ...dados,
                 sexo: dados.sexo || null,
-                idServidorCadastro: servidor?.id,
             };
 
             const response = await api.post("/usuarios", payload);
@@ -68,6 +69,7 @@ function UsuarioCadastro() {
             }
             setErros({});
         }catch (error) {
+            setMensagemSucesso("")
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
 
@@ -88,12 +90,22 @@ function UsuarioCadastro() {
                         <h1>Novo usuário</h1>
                         <p>Preencha os dados do usuário para iniciar o acompanhamento</p>
                     </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                    </div>
                 </div>
 
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
                         <button type="button" onClick={() => setMensagem("")}>✕</button>
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
                     </div>
                 )}
 

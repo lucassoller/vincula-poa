@@ -1,6 +1,7 @@
 import {useNavigate, useSearchParams} from "react-router-dom";
 import { useState } from "react";
 import api from "../api/api";
+import {useAuth} from "../context/AuthContext.jsx";
 
 function RedefinirSenha() {
     const navigate = useNavigate();
@@ -8,7 +9,9 @@ function RedefinirSenha() {
     const token = searchParams.get("token");
     const [novaSenha, setNovaSenha] = useState("");
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [mostrarSenha, setMostrarSenha] = useState(false);
+    const { servidor } = useAuth();
 
     async function redefinirSenha(e) {
         e.preventDefault();
@@ -21,10 +24,12 @@ function RedefinirSenha() {
                 novaSenha
             });
 
-            setMensagem("Senha redefinida com sucesso.");
+            setMensagemSucesso("Senha redefinida com sucesso.");
+            setMensagem("")
             setNovaSenha("");
 
         } catch (error){
+            setMensagemSucesso("")
             if (error.response?.data?.errors) {
                 setMensagem(error.response.data.errors.novaSenha || "Dados inválidos");
             } else {
@@ -43,6 +48,9 @@ function RedefinirSenha() {
                             Digite sua nova senha
                         </p>
                     </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                    </div>
                 </div>
                 {mensagem && (
                     <div className="alert-card">
@@ -56,6 +64,13 @@ function RedefinirSenha() {
                             ✕
                         </button>
 
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
                     </div>
                 )}
                 <form

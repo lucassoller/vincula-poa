@@ -50,6 +50,18 @@ public class UnidadeSaudeController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/ubs")
+    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodasUbs() {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodasUbs());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/outro")
+    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosOutro() {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodosOutros());
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<UnidadeSaudeResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(unidadeSaudeService.buscarPorId(id));

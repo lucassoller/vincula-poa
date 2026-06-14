@@ -25,9 +25,9 @@ function Indicador() {
             ? String(servidor.unidadeSaudeId)
             : unidadeSelecionada;
 
-    const servidorId =
+    const unidadeSolicitanteId =
         servidor?.perfil === "SOLICITANTE"
-            ? String(servidor.id)
+            ? String(servidor.unidadeSaudeId)
             : "";
 
     useEffect(() => {
@@ -48,16 +48,16 @@ function Indicador() {
 
     const carregarIndicador = useCallback(async (
         unidade = unidadeSaudeId,
+        unidadeSolicitante = unidadeSolicitanteId,
         dataInicio = inicio,
         dataFim = fim,
-        servidor = servidorId
     ) => {
 
         try {
             const temInicio = dataInicio !== "";
             const temFim = dataFim !== "";
             const temUnidade = unidade !== "";
-            const temServidor = servidor !== "";
+            const temUnidadeSolicitante = unidadeSolicitante !== "";
             if ((temInicio && !temFim) || (!temInicio && temFim)) {
                 setErro("Informe início e fim do período.");
                 return;
@@ -77,8 +77,8 @@ function Indicador() {
                 params.append("fim", `${dataFim}T23:59:59`);
             }
 
-            if(temServidor){
-                params.append("servidorId", servidorId);
+            if(temUnidadeSolicitante){
+                params.append("unidadeSolicitanteId", unidadeSolicitanteId);
             }
 
             const response = await api.get(
@@ -91,7 +91,7 @@ function Indicador() {
         } finally {
             setCarregando(false);
         }
-    }, [unidadeSaudeId, inicio, fim]);
+    }, [unidadeSaudeId, unidadeSolicitanteId, inicio, fim]);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -115,8 +115,8 @@ function Indicador() {
                 params.append("fim", `${fim}T23:59:59`);
             }
 
-            if(servidor){
-                params.append("servidorId", servidorId);
+            if(unidadeSolicitanteId){
+                params.append("unidadeSolicitante", unidadeSolicitanteId);
             }
 
             const response = await api.get(`/indicadores/exportar?${params.toString()}`,
@@ -171,6 +171,11 @@ function Indicador() {
                 ? String(servidor.unidadeSaudeId)
                 : "";
 
+        const unidadeSolicitante =
+            servidor?.perfil === "SOLICITANTE"
+                ? String(servidor.unidadeSaudeId)
+                : "";
+
         if (servidor?.perfil !== "SERVIDOR_APS") {
             setUnidadeSelecionada("");
         }
@@ -179,6 +184,7 @@ function Indicador() {
 
         await carregarIndicador(
             unidade,
+            unidadeSolicitante,
             "",
             ""
         );
@@ -219,7 +225,7 @@ function Indicador() {
                         </div>
 
                         <div className="perfil-badge">
-                            {servidor?.perfil}
+                            {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
                         </div>
                     </div>
 

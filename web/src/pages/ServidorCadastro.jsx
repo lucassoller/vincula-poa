@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import api from "../api/api";
 import {useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
+import {useAuth} from "../context/AuthContext.jsx";
 
 function ServidorCadastro() {
     const {
@@ -23,27 +24,35 @@ function ServidorCadastro() {
     const perfil = watch("perfil");
     const [erros, setErros] = useState({});
     const [unidades, setUnidades] = useState([]);
+    const [servicos, setServicos] = useState([]);
     const navigate = useNavigate();
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
+    const { servidor } = useAuth();
 
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                const response = await api.get("/unidades-saude/all");
+                const response = await api.get("/unidades-saude/ubs");
                 setUnidades(response.data);
+                const response2 = await api.get("/unidades-saude/outro");
+                setServicos(response2.data);
             } catch {
-                setMensagem("Erro ao carregar unidades");
+                setMensagem("Erro ao carregar serviços");
+                setMensagemSucesso("")
             }
         }
 
         void carregarUnidades();
     }, []);
 
+
+
     async function salvar(dados) {
         setMensagem("");
-
+        setMensagemSucesso("")
         try {
             const payload = {
                 ...dados,
@@ -55,7 +64,7 @@ function ServidorCadastro() {
                     : null
             };
             await api.post("/servidores", payload);
-            setMensagem("Servidor cadastrado com sucesso!");
+            setMensagemSucesso("Servidor cadastrado com sucesso!");
             reset();
             setErros({});
         }catch (error) {
@@ -79,6 +88,9 @@ function ServidorCadastro() {
                             Cadastre servidores para acesso ao sistema
                         </p>
                     </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                    </div>
                 </div>
                 {mensagem && (
                     <div className="alert-card">
@@ -89,6 +101,13 @@ function ServidorCadastro() {
                         >
                             ✕
                         </button>
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
                     </div>
                 )}
                 <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
@@ -248,6 +267,29 @@ function ServidorCadastro() {
                                 )}
                             </div>
                         )}
+                        {perfil === "SOLICITANTE" && (
+                            <div className="form-group">
+                                <label>
+                                    Serviço de Saúde <span>*</span>
+                                </label>
+                                <select
+                                    className="input-field"
+                                    {...register("unidadeSaudeId")}
+                                >
+                                    <option value="">
+                                        Selecione
+                                    </option>
+                                    {servicos.map((u) => (
+                                        <option key={u.id} value={u.id}>
+                                            {u.nome}
+                                        </option>
+                                    ))}
+                                </select>
+                                {erros.unidadeSaudeId && (
+                                    <small>{erros.unidadeSaudeId}</small>
+                                )}
+                            </div>
+                        )}
                     </div>
                     <div className="form-actions">
                         <button
@@ -259,7 +301,7 @@ function ServidorCadastro() {
                         <button
                             type="button"
                             className="buscar-btn"
-                            onClick={() => navigate("/indicadores")}
+                            onClick={() => navigate("/servidores")}
                         >
                             Cancelar
                         </button>

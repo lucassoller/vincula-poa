@@ -6,7 +6,6 @@ import com.vincula.entity.UnidadeSaude;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.exception.BusinessException;
 import com.vincula.export.IndicadorExporter;
-import com.vincula.repository.DemandaRepository;
 import com.vincula.service.ServidorService;
 import com.vincula.util.AuditoriaFacade;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -231,7 +229,7 @@ class IndicadorServiceTest {
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
-        doReturn(dto).when(spy).indicadorPorServidor(1L);
+        doReturn(dto).when(spy).indicadorPorUnidadeSolicitante(1L);
 
         IndicadorDTO resultado =
                 spy.indicadorGeral(null, null, null, 1L);
@@ -397,10 +395,10 @@ class IndicadorServiceTest {
     void deveMontarIndicadorPorServidor() {
         Long servidorId = 1L;
 
-        when(indicadorProducaoService.indicadoresPorServidor(servidorId))
+        when(indicadorProducaoService.indicadoresPorUnidadeSolicitante(servidorId))
                 .thenReturn(List.of());
 
-        IndicadorDTO result = indicadorService.indicadorPorServidor(servidorId);
+        IndicadorDTO result = indicadorService.indicadorPorUnidadeSolicitante(servidorId);
 
         assertNotNull(result);
     }
@@ -504,7 +502,7 @@ class IndicadorServiceTest {
 
         IndicadorDTO dtoMock = mock(IndicadorDTO.class);
 
-        doReturn(dtoMock).when(spy).indicadorPorServidor(servidorId);
+        doReturn(dtoMock).when(spy).indicadorPorUnidadeSolicitante(servidorId);
         when(csvExporter.exportar(dtoMock)).thenReturn("csv-servidor");
 
         String result = spy.exportarIndicadorGeralCsv(null, null, null, servidorId);

@@ -135,7 +135,7 @@ class IndicadorInsucessoServiceTest {
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .listarPrincipaisMotivosInsucessoPorServidorEPeriodo(
+                .listarPrincipaisMotivosInsucessoPorUnidadeSolicitanteEPeriodo(
                         1L,
                         inicio,
                         fim))
@@ -147,7 +147,7 @@ class IndicadorInsucessoServiceTest {
                 fim);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosInsucessoPorServidorEPeriodo(
+                .listarPrincipaisMotivosInsucessoPorUnidadeSolicitanteEPeriodo(
                         1L,
                         inicio,
                         fim);
@@ -157,13 +157,13 @@ class IndicadorInsucessoServiceTest {
     void deveListarMotivosPorServidor() {
 
         when(demandaRepository
-                .listarPrincipaisMotivosInsucessoPorServidor(1L))
+                .listarPrincipaisMotivosInsucessoPorUnidadeSolicitante(1L))
                 .thenReturn(List.of());
 
         service.principaisMotivosInsucessoPorServidor(1L);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosInsucessoPorServidor(1L);
+                .listarPrincipaisMotivosInsucessoPorUnidadeSolicitante(1L);
     }
 
 }

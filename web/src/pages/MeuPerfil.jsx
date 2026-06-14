@@ -19,6 +19,7 @@ function MeuPerfil() {
     const navigate = useNavigate();
     const [erros, setErros] = useState({});
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
 
 
     async function salvar(dados) {
@@ -26,8 +27,10 @@ function MeuPerfil() {
             const response = await api.put("/servidores/me", dados);
             setServidor(response.data);
             localStorage.setItem("servidor", JSON.stringify(response.data));
-            setMensagem("Perfil atualizado com sucesso!");
+            setMensagemSucesso("Perfil atualizado com sucesso!");
+            setMensagem("")
         } catch (error) {
+            setMensagemSucesso("")
             const errors = error.response.data.errors;
             setErros(errors);
             setMensagem(
@@ -46,6 +49,9 @@ function MeuPerfil() {
                         <h1>Meu perfil</h1>
                         <p>Atualize seus dados de acesso ao sistema</p>
                     </div>
+                    <div className="perfil-badge">
+                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                    </div>
                 </div>
 
                 {mensagem && (
@@ -54,6 +60,13 @@ function MeuPerfil() {
                         <button type="button" onClick={() => setMensagem("")}>
                             ✕
                         </button>
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
                     </div>
                 )}
 

@@ -7,6 +7,7 @@ import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Usuario;
 import com.vincula.entity.UnidadeSaude;
+import com.vincula.enums.TipoServico;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
@@ -46,6 +47,20 @@ public class UnidadeSaudeService {
                 .map(this::toDTO);
     }
 
+    public List<UnidadeSaudeShortResponseDTO> listarTodasUbs() {
+        return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS)
+                .stream()
+                .map(this::toShortDTO)
+                .toList();
+    }
+
+    public List<UnidadeSaudeShortResponseDTO> listarTodosOutros() {
+        return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.OUTRO)
+                .stream()
+                .map(this::toShortDTO)
+                .toList();
+    }
+
     public List<UnidadeSaudeShortResponseDTO> listarTodos() {
         return unidadeSaudeRepository.findAllByOrderByNomeAsc()
                 .stream()
@@ -83,6 +98,7 @@ public class UnidadeSaudeService {
         entity.setNome(dto.getNome());
         entity.setCnes(dto.getCnes());
         entity.setTelefone(dto.getTelefone());
+        entity.setTipoServico(dto.getTipoServico());
         enderecoMapper.updateEntityFromDto(dto.getEndereco(), entity.getEndereco());
         UnidadeSaude atualizado = unidadeSaudeRepository.save(entity);
         auditoriaFacade.unidadeSaudeAtualizada(atualizado.getId(), descricaoLog);
@@ -131,6 +147,7 @@ public class UnidadeSaudeService {
         entity.setTelefone(dto.getTelefone());
         entity.setTelefone2(dto.getTelefone2());
         entity.setEndereco(endereco);
+        entity.setTipoServico(dto.getTipoServico());
 
         return entity;
     }
@@ -143,6 +160,7 @@ public class UnidadeSaudeService {
         dto.setTelefone(entity.getTelefone());
         dto.setTelefone2(entity.getTelefone2());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
+        dto.setTipoServico(entity.getTipoServico());
         return dto;
     }
 

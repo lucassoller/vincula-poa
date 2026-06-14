@@ -7,6 +7,7 @@ function EsqueciSenha() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [mensagem, setMensagem] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [carregando, setCarregando] = useState(false);
 
     async function recuperarSenha(e) {
@@ -19,10 +20,12 @@ function EsqueciSenha() {
                 email
             });
 
-            setMensagem("Email de recuperação enviado com sucesso.");
+            setMensagemSucesso("Email de recuperação enviado com sucesso.");
+            setMensagem("")
             setEmail("");
 
         } catch (error){
+            setMensagemSucesso("")
             if (error.response?.data?.errors) {
                 setMensagem(error.response.data.errors.email || "Dados inválidos");
             } else {
@@ -56,6 +59,13 @@ function EsqueciSenha() {
                             ✕
                         </button>
 
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
                     </div>
                 )}
                 <form

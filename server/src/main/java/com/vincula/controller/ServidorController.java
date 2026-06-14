@@ -5,6 +5,7 @@ import com.vincula.dto.servidor.MeuPerfilDTO;
 import com.vincula.dto.servidor.ServidorDTO;
 import com.vincula.dto.servidor.ServidorResponseDTO;
 import com.vincula.dto.servidor.ServidorShortResponseDTO;
+import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.service.ServidorService;
 import jakarta.validation.Valid;
@@ -38,6 +39,12 @@ public class ServidorController {
     @GetMapping
     public ResponseEntity<Page<ServidorResponseDTO>> listarTodos(Pageable pageable) {
         return ResponseEntity.ok(servidorService.listarTodos(pageable));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtrados/{filtro}")
+    public ResponseEntity<Page<ServidorResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
+        return ResponseEntity.ok(servidorService.listarTodosFiltrados(filtro, pageable));
     }
 
     @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")

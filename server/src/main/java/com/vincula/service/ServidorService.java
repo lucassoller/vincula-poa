@@ -57,6 +57,11 @@ public class ServidorService {
                 .map(this::toDTO);
     }
 
+    public Page<ServidorResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
+        return servidorRepository.findFiltrados(filtro, pageable)
+                .map(this::toDTO);
+    }
+
     public List<ServidorShortResponseDTO> listarTodos() {
         return servidorRepository.findAllByOrderByNomeAsc()
                 .stream()
@@ -228,9 +233,8 @@ public class ServidorService {
 
         if (dto.getUnidadeSaudeId() != null) {
 
-            if (dto.getPerfil() == PerfilServidor.SOLICITANTE ||
-                    dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL) {
-                throw new BusinessException(dto.getPerfil() + " não deve estar vinculado a uma unidade de saúde");
+            if (dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL) {
+                throw new BusinessException("Gestão Municipal não deve estar vinculado a uma unidade de saúde");
             }
 
             return unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
@@ -238,8 +242,8 @@ public class ServidorService {
 
         } else {
 
-            if (dto.getPerfil() == PerfilServidor.SERVIDOR_APS) {
-                throw new BusinessException(dto.getPerfil() + " deve estar vinculado a uma unidade de saúde");
+            if (dto.getPerfil() == PerfilServidor.SOLICITANTE || dto.getPerfil() == PerfilServidor.SERVIDOR_APS) {
+                throw new BusinessException(dto.getPerfil() + " deve estar vinculado a um serviço de saúde");
             }
 
             return null;

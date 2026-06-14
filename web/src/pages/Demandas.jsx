@@ -19,6 +19,7 @@ function Demandas() {
     const [acao, setAcao] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [mensagemSucesso, setMensagemSucesso] = useState("");
+    const [mensagemErro, setMensagemErro] = useState("");
     const [erros, setErros] = useState({});
     const [demandaDetalhada, setDemandaDetalhada] = useState(null);
     const [tentativasContato, setTentativasContato] = useState([]);
@@ -60,7 +61,7 @@ function Demandas() {
                 );
             } else if (servidor?.perfil === "SOLICITANTE") {
                 demandasResponse = await api.get(
-                    `/demandas/servidor/${servidor.id}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    `/demandas/unidadeSolicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
             }else {
                 demandasResponse = { data: { content: [], page: { totalPages: 0 } } };
@@ -69,7 +70,8 @@ function Demandas() {
             setDemandas(demandasResponse.data.content);
             setTotalPaginas(demandasResponse.data.page.totalPages);
         } catch {
-            setMensagemSucesso("Erro ao carregar demandas.");
+            setMensagemErro("Erro ao carregar demandas.");
+            setMensagemSucesso("");
         } finally {
             setCarregando(false);
         }
@@ -97,7 +99,7 @@ function Demandas() {
 
             }  else if (servidor?.perfil === "SOLICITANTE") {
                 demandasResponse = await api.get(
-                    `/demandas/filtradas/servidor/${servidor.id}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    `/demandas/filtradas/unidadeSolicitante/${servidor.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
 
             } else {
@@ -108,7 +110,8 @@ function Demandas() {
             setTotalPaginas(demandasResponse.data.page.totalPages);
 
         } catch {
-            setMensagemSucesso("Erro ao buscar demandas.");
+            setMensagemErro("Erro ao buscar demandas.");
+            setMensagemSucesso("");
         } finally {
             setCarregando(false);
         }
@@ -135,7 +138,8 @@ function Demandas() {
                     setUnidades(response.data);
                 }
             } catch {
-                setMensagemSucesso("Erro ao carregar unidades.");
+                setMensagemErro("Erro ao carregar unidades.");
+                setMensagemSucesso("");
             }
         }
 
@@ -157,6 +161,9 @@ function Demandas() {
 
     async function limparFiltro() {
         setFiltro("");
+        setMensagem("");
+        setMensagemSucesso("");
+        setMensagemErro("");
         setModoFiltrado(false);
 
         if (pagina !== 0) {
@@ -206,6 +213,7 @@ function Demandas() {
         try {
             await api.post("/tentativas-contato", payload);
             setMensagemSucesso("Tentativa registrada com sucesso!");
+            setMensagemErro("");
             fecharModal();
 
             if (modoFiltrado) {
@@ -235,6 +243,7 @@ function Demandas() {
                 payload
             );
             setMensagemSucesso("Demanda redirecionada com sucesso!");
+            setMensagemErro("")
             fecharModal();
 
             if (modoFiltrado) {
@@ -262,6 +271,7 @@ function Demandas() {
                 payload
             );
             setMensagemSucesso("Demanda encerrada com sucesso!");
+            setMensagemErro("")
             fecharModal();
             if (modoFiltrado) {
                 await buscarDemandas(pagina);
@@ -281,11 +291,13 @@ function Demandas() {
             );
             setTentativasContato(tentativasResponse.data);
         } catch {
-            setMensagemSucesso("Erro ao carregar detalhes da demanda.");
+            setMensagemErro("Erro ao carregar detalhes da demanda.");
+            setMensagemSucesso("");
         }
     }
 
     function tratarErro(error) {
+        setMensagemSucesso("");
         if (error.response?.data?.errors) {
             setErros(error.response.data.errors);
             setMensagem(error.response.data.message || "Dados inválidos.");
@@ -376,7 +388,8 @@ function Demandas() {
             window.URL.revokeObjectURL(url);
 
         } catch {
-            setMensagem("Erro ao exportar CSV.");
+            setMensagemErro("Erro ao exportar CSV.");
+            setMensagemSucesso("");
         }
     }
 
@@ -401,17 +414,30 @@ function Demandas() {
                             Gerencie buscas ativas, tentativas,
                             redirecionamentos e encerramentos
                         </p>
+
                     </div>
 
-                    <span className="perfil-badge">{servidor?.perfil}</span>
+                    <span className="perfil-badge">{servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}</span>
                 </div>
 
                 {mensagemSucesso && (
-                    <div className="alert-card">
+                    <div className="success-card">
                         <span>{mensagemSucesso}</span>
                         <button
                             type="button"
                             onClick={() => setMensagemSucesso("")}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
+
+                {mensagemErro && (
+                    <div className="alert-card">
+                        <span>{mensagemErro}</span>
+                        <button
+                            type="button"
+                            onClick={() => setMensagemErro("")}
                         >
                             ✕
                         </button>
@@ -472,11 +498,12 @@ function Demandas() {
                             <th>Usuário</th>
                             <th>Motivo</th>
                             <th>Criador</th>
+                            <th>Serviço solicitante</th>
                             <th>Data de abertura</th>
                             <th>Data de encerramento</th>
                             <th>Status</th>
                             <th>Prazo</th>
-                            <th>Unidade</th>
+                            <th>Unidade responsável</th>
                             <th>Ações</th>
                         </tr>
                         </thead>
@@ -489,6 +516,7 @@ function Demandas() {
                                 <td><b>{d.usuarioNome || d.usuarioId}</b></td>
                                 <td>{motivoBuscaLabel[d.motivoBuscaAtiva]}</td>
                                 <td>{d.servidorCriadorNome || d.servidorCriadorId}</td>
+                                <td>{d.unidadeSolicitanteNome || d.unidadeSolicitanteId || "-"}</td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
                                 <td>{formatarDataHora(d.dataHoraFinalizacao) || "-"}</td>
 

@@ -2,6 +2,7 @@ package com.vincula.repository;
 
 import com.vincula.entity.Usuario;
 import com.vincula.entity.UnidadeSaude;
+import com.vincula.enums.TipoServico;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,8 @@ public interface UnidadeSaudeRepository extends JpaRepository<UnidadeSaude, Long
     Page<UnidadeSaude> findAllByOrderByNomeAsc(Pageable pageable);
 
     List<UnidadeSaude> findAllByOrderByNomeAsc();
+
+    List<UnidadeSaude> findAllByTipoServicoOrderByNomeAsc(TipoServico tipoServico);
 
     @Query("""
     SELECT u

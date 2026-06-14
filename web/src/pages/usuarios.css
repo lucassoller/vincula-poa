@@ -176,14 +176,6 @@
     color: #64748b;
 }
 
-.alerta-geral{
-    background: #fef3c7;
-    color: #92400e;
-    padding: 14px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
 .loading-container{
     height: 100vh;
     display: flex;

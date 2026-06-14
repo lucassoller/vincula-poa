@@ -45,6 +45,11 @@ export const sexoLabel = {
     "OUTRO": "Outro",
 };
 
+export const tipoServico = {
+    "UBS": "UBS",
+    "OUTRO": "Outro",
+};
+
 export function formatarDataHora(data) {
     if (!data) return "-";
 

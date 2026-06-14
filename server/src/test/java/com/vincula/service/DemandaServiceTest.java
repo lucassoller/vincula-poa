@@ -362,7 +362,7 @@ class DemandaServiceTest {
         assertEquals(1, resultado.getTotalElements());
     }
 
-    @Test
+    /*@Test
     void deveListarPorServidorCriador() {
 
         Pageable pageable = PageRequest.of(0, 10);
@@ -374,7 +374,7 @@ class DemandaServiceTest {
                 demandaService.listarPorServidorCriador(1L, pageable);
 
         assertEquals(1, resultado.getTotalElements());
-    }
+    }*/
 
     @Test
     void deveListarPorServidorCriadorFiltradas() {

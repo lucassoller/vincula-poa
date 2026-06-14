@@ -142,21 +142,21 @@ class IndicadorProducaoServiceTest {
     }
 
     @Test
-    void deveListarIndicadoresPorServidor() {
+    void deveListarIndicadoresPorUnidadeSolicitante() {
 
-        when(demandaRepository.agruparPorStatusPorServidor(1L))
+        when(demandaRepository.agruparPorStatusPorUnidadeSolicitante(1L))
                 .thenReturn(List.of());
 
-        when(demandaRepository.countByServidorCriadorId(1L))
+        when(demandaRepository.countByUnidadeSolicitanteId(1L))
                 .thenReturn(10.0);
 
-        service.indicadoresPorServidor(1L);
+        service.indicadoresPorUnidadeSolicitante(1L);
 
         verify(demandaRepository)
-                .agruparPorStatusPorServidor(1L);
+                .agruparPorStatusPorUnidadeSolicitante(1L);
 
         verify(demandaRepository)
-                .countByServidorCriadorId(1L);
+                .countByUnidadeSolicitanteId(1L);
     }
 
     @Test
@@ -202,23 +202,23 @@ class IndicadorProducaoServiceTest {
     }
 
     @Test
-    void deveListarIndicadoresPorServidorEPeriodo() {
+    void deveListarIndicadoresPorUnidadeSolicitanteEPeriodo() {
 
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.agruparPorStatusPorServidorEPeriodo(1L, inicio, fim))
+        when(demandaRepository.agruparPorStatusPorUnidadeSolicitanteEPeriodo(1L, inicio, fim))
                 .thenReturn(List.of());
 
-        when(demandaRepository.countByServidorCriadorIdAndDataHoraCriacaoBetween(1L, inicio, fim))
+        when(demandaRepository.countByUnidadeSolicitanteIdAndDataHoraCriacaoBetween(1L, inicio, fim))
                 .thenReturn(5.0);
 
-        when(demandaRepository.countByServidorCriadorIdAndDataHoraFinalizacaoBetween(1L, inicio, fim))
+        when(demandaRepository.countByUnidadeSolicitanteIdAndDataHoraFinalizacaoBetween(1L, inicio, fim))
                 .thenReturn(2.0);
 
         service.indicadoresPorServidorEPeriodo(1L, inicio, fim);
 
         verify(demandaRepository)
-                .agruparPorStatusPorServidorEPeriodo(1L, inicio, fim);
+                .agruparPorStatusPorUnidadeSolicitanteEPeriodo(1L, inicio, fim);
     }
 }

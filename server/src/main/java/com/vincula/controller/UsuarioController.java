@@ -58,6 +58,17 @@ public class UsuarioController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('SOLICITANTE', 'GESTAO_MUNICIPAL')")
+    @GetMapping("/unidadeSolicitante/{unidadeSolicitanteId}")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidadeSolicitante(
+            @PathVariable Long unidadeSolicitanteId,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                usuarioService.listarTodosPorUnidadeSolicitante(unidadeSolicitanteId, pageable)
+        );
+    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/filtrados/{filtro}")
     public ResponseEntity<Page<UsuarioResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
@@ -79,6 +90,18 @@ public class UsuarioController {
     ) {
         return ResponseEntity.ok(
                 usuarioService.listarTodosPorUnidadeFiltrados(unidadeSaudeId, filtro, pageable)
+        );
+    }
+
+    @PreAuthorize("hasAnyRole('SOLICITANTE', 'GESTAO_MUNICIPAL')")
+    @GetMapping("/filtrados/unidadeSolicitante/{unidadeSolicitanteId}/{filtro}")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidadeSolicitante(
+            @PathVariable Long unidadeSolicitanteId,
+            @PathVariable String filtro,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                usuarioService.listarTodosPorUnidadeSolicitanteFiltrados(unidadeSolicitanteId, filtro, pageable)
         );
     }
 

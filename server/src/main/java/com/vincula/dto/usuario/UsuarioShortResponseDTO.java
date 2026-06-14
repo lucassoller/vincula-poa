@@ -10,4 +10,7 @@ public class UsuarioShortResponseDTO {
     private String documento;
     private String unidadeSaudeNome;
     private Long unidadeSaudeId;
+    private Long unidadeSolicitanteId;
+    private String unidadeSolicitanteNome;
+
 }
