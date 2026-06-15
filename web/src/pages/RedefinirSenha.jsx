@@ -1,7 +1,6 @@
 import {useNavigate, useSearchParams} from "react-router-dom";
 import { useState } from "react";
 import api from "../api/api";
-import {useAuth} from "../context/AuthContext.jsx";
 
 function RedefinirSenha() {
     const navigate = useNavigate();
@@ -11,7 +10,6 @@ function RedefinirSenha() {
     const [mensagem, setMensagem] = useState("");
     const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [mostrarSenha, setMostrarSenha] = useState(false);
-    const { servidor } = useAuth();
 
     async function redefinirSenha(e) {
         e.preventDefault();
@@ -48,29 +46,19 @@ function RedefinirSenha() {
                             Digite sua nova senha
                         </p>
                     </div>
-                    <div className="perfil-badge">
-                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
-                    </div>
                 </div>
                 {mensagem && (
                     <div className="alert-card">
-
                         <span>{mensagem}</span>
-
-                        <button
-                            type="button"
-                            onClick={() => setMensagem("")}
-                        >
-                            ✕
-                        </button>
-
+                        <span onClick={() => setMensagem("")}>✕
+                        </span>
                     </div>
                 )}
 
                 {mensagemSucesso && (
                     <div className="success-card">
                         <span>{mensagemSucesso}</span>
-                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
+                        <span onClick={() => setMensagemSucesso("")}>✕</span>
                     </div>
                 )}
                 <form
@@ -106,20 +94,18 @@ function RedefinirSenha() {
                     </div>
                     <div className="form-actions">
 
-                        <button
-                            type="submit"
+                        <span
+                            onClick={redefinirSenha}
                             className="buscar-btn"
                         >
                             Redefinir senha
-                        </button>
-
-                        <button
-                            type="button"
+                        </span>
+                        <span
                             className="buscar-btn"
                             onClick={() => navigate("/")}
                         >
                             Voltar
-                        </button>
+                        </span>
                     </div>
                 </form>
             </div>

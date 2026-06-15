@@ -177,6 +177,9 @@ function Demandas() {
     }
 
     async function abrirCardUbs(unidadeSaudeId) {
+        if(unidadeSaudeId === null){
+            return
+        }
         try {
             setCarregandoUbs(true);
             const response = await api.get(`/unidades-saude/${unidadeSaudeId}`);
@@ -227,7 +230,7 @@ function Demandas() {
 
         try {
             await api.post("/tentativas-contato", payload);
-            setMensagemSucesso("Tentativa registrada com sucesso!");
+            setMensagemSucesso("Tentativa de contato registrada com sucesso!");
             setMensagemErro("");
             fecharModal();
 
@@ -438,24 +441,14 @@ function Demandas() {
                 {mensagemSucesso && (
                     <div className="success-card">
                         <span>{mensagemSucesso}</span>
-                        <button
-                            type="button"
-                            onClick={() => setMensagemSucesso("")}
-                        >
-                            ✕
-                        </button>
+                        <span onClick={() => setMensagemSucesso("")}>✕</span>
                     </div>
                 )}
 
                 {mensagemErro && (
                     <div className="alert-card">
                         <span>{mensagemErro}</span>
-                        <button
-                            type="button"
-                            onClick={() => setMensagemErro("")}
-                        >
-                            ✕
-                        </button>
+                        <span onClick={() => setMensagemErro("")}>✕</span>
                     </div>
                 )}
 
@@ -475,36 +468,33 @@ function Demandas() {
                                 }}
                             />
 
-                            <button
-                                type="button"
+                            <span
                                 className="buscar-btn"
                                 onClick={executarBusca}
                             >
                                 Buscar
-                            </button>
+                            </span>
 
-                            <button
-                                type="button"
+                            <span
                                 className="buscar-btn"
                                 onClick={limparFiltro}
                             >
                                 Limpar filtro
-                            </button>
+                            </span>
 
-                            <button
-                                type="button"
+                            <span
                                 className="buscar-btn"
                                 onClick={exportarCsv}
                             >
                                 Exportar CSV
-                            </button>
+                            </span>
                         </div>
-                        <button
+                        <span
                             className="buscar-btn"
                             onClick={() => navigate("/demandas/cadastro")}
                         >
                             + Nova demanda
-                        </button>
+                        </span>
                     </div>
 
                     <table className="demandas-table">
@@ -532,11 +522,11 @@ function Demandas() {
                                 <td>{motivoBuscaLabel[d.motivoBuscaAtiva]}</td>
                                 <td>{d.servidorCriadorNome || d.servidorCriadorId}</td>
                                 <td>
-                                    <button type="button"
+                                    <span
                                             className="ubs-badge ubs-clickable"
                                             onClick={() => abrirCardUbs(d.unidadeSolicitanteId)}>
                                         {d.unidadeSolicitanteNome || d.unidadeSolicitanteId || "-"}
-                                    </button>
+                                    </span>
                                 </td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
                                 <td>{formatarDataHora(d.dataHoraFinalizacao) || "-"}</td>
@@ -549,43 +539,43 @@ function Demandas() {
 
                                 <td>{prazoLabel[d.prazoDemanda] || "-"}</td>
                                 <td>
-                                    <button type="button"
+                                    <span
                                             className="ubs-badge ubs-clickable"
                                             onClick={() => abrirCardUbs(d.unidadeResponsavelId)}>
                                         {d.unidadeResponsavelNome || d.unidadeResponsavelId || "-"}
-                                    </button>
+                                    </span>
                                 </td>
                                 <td>
                                     <div className="acoes-container">
-                                        <button
+                                        <span
                                             className="btn-visualizar"
                                             onClick={() => abrirDetalhes(d)}
                                         >
                                             Ver mais
-                                        </button>
+                                        </span>
 
                                         {d.status !== "FINALIZADA" && servidor?.perfil !== "SOLICITANTE" && (
                                             <>
-                                                <button
+                                                <span
                                                     className="btn-tentativa"
                                                     onClick={() => abrirAcao(d, "TENTATIVA")}
                                                 >
                                                     Tentativa contato
-                                                </button>
+                                                </span>
 
-                                                <button
+                                                <span
                                                     className="btn-editar"
                                                     onClick={() => abrirAcao(d, "REDIRECIONAR")}
                                                 >
                                                     Redirecionar
-                                                </button>
+                                                </span>
 
-                                                <button
+                                                <span
                                                     className="btn-encerrar"
                                                     onClick={() => abrirAcao(d, "ENCERRAR")}
                                                 >
                                                     Encerrar
-                                                </button>
+                                                </span>
 
                                             </>
                                         )}

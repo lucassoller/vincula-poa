@@ -180,8 +180,7 @@ function Navbar() {
                 ref={menuRef}
             >
 
-                <button
-                    type="button"
+                <span
                     className="user-button"
                     onClick={() => setMenuAberto(!menuAberto)}
                     onMouseDown={(e) => e.preventDefault()}
@@ -199,13 +198,13 @@ function Navbar() {
                         ▾
                     </span>
 
-                </button>
+                </span>
 
                 {menuAberto && (
 
                     <div className="user-dropdown">
 
-                        <button
+                        <span
                             className="dropdown-item"
                             onClick={() => {
                                 setMenuAberto(false);
@@ -213,9 +212,9 @@ function Navbar() {
                             }}
                         >
                             Meu perfil
-                        </button>
+                        </span>
 
-                        <button
+                        <span
                             className="dropdown-item"
                             onClick={() => {
                                 setMenuAberto(false);
@@ -223,11 +222,11 @@ function Navbar() {
                             }}
                         >
                             Alterar senha
-                        </button>
+                        </span>
 
                         <div className="dropdown-divider"></div>
 
-                        <button
+                        <span
                             className="dropdown-item logout-item"
                             onClick={() => {
                                 logout();
@@ -235,7 +234,7 @@ function Navbar() {
                             }}
                         >
                             Sair
-                        </button>
+                        </span>
 
                     </div>
                 )}

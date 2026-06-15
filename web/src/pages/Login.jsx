@@ -89,11 +89,9 @@ function Login() {
 
                     {erro && (
                         <div className="erro">
-                            <div className="erro-alert">
+                            <div className="alert-card erro-alert">
                                 {erro}
-                                <span className="close" onClick={() => setErro("")}>
-                                    ✖
-                                </span>
+                                <span onClick={() => setErro("")}>✕</span>
                             </div>
                         </div>
                     )}

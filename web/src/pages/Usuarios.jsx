@@ -143,7 +143,7 @@ function Usuarios() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button type="button" onClick={() => setMensagem("")}>✕</button>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
                 <div className="table-card">
@@ -160,28 +160,26 @@ function Usuarios() {
                                     }
                                 }}
                             />
-                            <button
-                                type="button"
+                            <span
                                 className="buscar-btn"
                                 onClick={executarBusca}
                             >
                                 Buscar
-                            </button>
-                            <button
-                                type="button"
+                            </span>
+                            <span
                                 className="buscar-btn"
                                 onClick={limparFiltro}
                             >
                                 Limpar filtro
-                            </button>
+                            </span>
 
                         </div>
-                        <button
+                        <span
                             className="buscar-btn"
                             onClick={() => navigate("/usuarios/cadastro")}
                         >
                             + Novo usuário
-                        </button>
+                        </span>
 
                     </div>
 
@@ -212,31 +210,27 @@ function Usuarios() {
                                     {mascaraTelefone(usuario.telefone) || "-"}
                                 </td>
                                 <td>
-                                    <button
-                                        type="button"
+                                    <span
                                         className="ubs-badge ubs-clickable"
                                         onClick={() => abrirCardUbs(usuario.unidadeSaudeId)}
                                     >
                                         {usuario.unidadeSaudeNome}
-                                    </button>
+                                    </span>
                                 </td>
                                 <td>
                                     <div className="acoes-container">
-                                        <button
+                                        <span
                                             className="btn-visualizar"
                                             onClick={() => setUsuarioSelecionado(usuario)}
                                         >
                                             Visualizar
-                                        </button>
-
-
-                                            <button
-                                                className="btn-editar"
-                                                onClick={() => navigate(`/usuarios/${usuario.id}/editar`)}
-                                            >
-                                                Editar
-                                            </button>
-
+                                        </span>
+                                        <span
+                                            className="btn-editar"
+                                            onClick={() => navigate(`/usuarios/${usuario.id}/editar`)}
+                                        >
+                                            Editar
+                                        </span>
                                     </div>
                                 </td>
                             </tr>

@@ -19,7 +19,7 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                         <p>Demanda #{demanda.id}</p>
                     </div>
 
-                    <button className="modal-close" onClick={onFechar}>✕</button>
+                    <span className="modal-close" onClick={onFechar}>✕</span>
                 </div>
 
                 <div className="detalhe-section">

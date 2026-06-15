@@ -41,13 +41,12 @@ function Ranking({ titulo, dados }) {
 
             {dados.length > quantidadeInicial && (
 
-                <button
-                    type="button"
+                <span
                     className="ranking-expand-btn"
                     onClick={() => setExpandido(!expandido)}
                 >
                     {expandido ? "Ver menos" : "Ver mais"}
-                </button>
+                </span>
 
             )}
 

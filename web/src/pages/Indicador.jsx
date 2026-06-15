@@ -277,26 +277,26 @@ function Indicador() {
                         )}
 
                         <div className="indicador-actions">
-                            <button
+                            <span
                                 className="buscar-btn"
                                 onClick={carregarIndicador}
                             >
                                 Aplicar filtros
-                            </button>
+                            </span>
 
-                            <button
+                            <span
                                 className="buscar-btn"
                                 onClick={limparFiltros}
                             >
                                 Limpar filtros
-                            </button>
+                            </span>
 
-                            <button
+                            <span
                                 className="buscar-btn"
                                 onClick={exportarCsv}
                             >
                                 Exportar CSV
-                            </button>
+                            </span>
                         </div>
                     </div>
                 </div>

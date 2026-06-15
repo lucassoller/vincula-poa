@@ -86,18 +86,14 @@ function UnidadeSaudeCadastro() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button
-                            type="button"
-                            onClick={() => setMensagem("")}
-                        >
-                            ✕
-                        </button>
+                        <span onClick={() => setMensagem("")}>✕
+                        </span>
                     </div>
                 )}
                 {mensagemSucesso && (
                     <div className="success-card">
                         <span>{mensagemSucesso}</span>
-                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
+                        <span onClick={() => setMensagemSucesso("")}>✕</span>
                     </div>
                 )}
                 <div className="stepper">
@@ -111,7 +107,7 @@ function UnidadeSaudeCadastro() {
                         Endereço
                     </div>
                 </div>
-                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
+                <form className="cadastro-card">
                     {etapa === 1 && (
                         <>
                             <div className="form-grid full">
@@ -188,20 +184,18 @@ function UnidadeSaudeCadastro() {
 
                             </div>
                             <div className="form-actions">
-                                <button
-                                    type="button"
+                                <span
                                     className="buscar-btn"
                                     onClick={() => setEtapa(2)}
                                 >
                                     Próximo
-                                </button>
-                                <button
-                                    type="button"
+                                </span>
+                                <span
                                     className="buscar-btn"
                                     onClick={() => navigate("/unidades-saude")}
                                 >
                                     Cancelar
-                                </button>
+                                </span>
                             </div>
                         </>
                     )}
@@ -213,19 +207,18 @@ function UnidadeSaudeCadastro() {
 
                             />
                             <div className="form-actions">
-                                <button
-                                    type="submit"
+                                <span
+                                    onClick={handleSubmit(salvar)}
                                     className="buscar-btn"
                                 >
                                     Cadastrar
-                                </button>
-                                <button
-                                    type="button"
+                                </span>
+                                <span
                                     className="buscar-btn"
                                     onClick={() => setEtapa(1)}
                                 >
                                     Voltar
-                                </button>
+                                </span>
                             </div>
                         </>
                     )}

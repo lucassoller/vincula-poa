@@ -73,7 +73,7 @@ function UnidadeSaudeEditar() {
 
         try {
             await api.put(`/unidades-saude/${id}`, dados);
-            setMensagem("Serviço de saúde editado com sucesso!");
+            setMensagemSucesso("Serviço de saúde editado com sucesso!");
             setEtapa(1);
         } catch (error) {
             if (error.response?.data?.errors) {
@@ -114,18 +114,13 @@ function UnidadeSaudeEditar() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button
-                            type="button"
-                            onClick={() => setMensagem("")}
-                        >
-                            ✕
-                        </button>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
                 {mensagemSucesso && (
                     <div className="success-card">
                         <span>{mensagemSucesso}</span>
-                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
+                        <span onClick={() => setMensagemSucesso("")}>✕</span>
                     </div>
                 )}
                 <div className="stepper">
@@ -215,20 +210,18 @@ function UnidadeSaudeEditar() {
 
                             </div>
                             <div className="form-actions">
-                                <button
-                                    type="button"
+                                <span
                                     className="buscar-btn"
                                     onClick={() => setEtapa(2)}
                                 >
                                     Próximo
-                                </button>
-                                <button
-                                    type="button"
+                                </span>
+                                <span
                                     className="buscar-btn"
                                     onClick={() => navigate("/unidades-saude")}
                                 >
                                     Cancelar
-                                </button>
+                                </span>
                             </div>
                         </>
                     )}
@@ -239,19 +232,18 @@ function UnidadeSaudeEditar() {
                                 erros={erros}
                             />
                             <div className="form-actions">
-                                <button
-                                    type="submit"
+                                <span
+                                    onClick={handleSubmit(salvar)}
                                     className="buscar-btn"
                                 >
                                     Salvar alterações
-                                </button>
-                                <button
-                                    type="button"
+                                </span>
+                                <span
                                     className="buscar-btn"
                                     onClick={() => setEtapa(1)}
                                 >
                                     Voltar
-                                </button>
+                                </span>
                             </div>
                         </>
                     )}

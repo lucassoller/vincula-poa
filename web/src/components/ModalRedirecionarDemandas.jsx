@@ -19,21 +19,19 @@ function ModalRedirecionarDemandas({
                 </div>
 
                 <div className="modal-actions">
-                    <button
-                        type="button"
+                    <span
                         className="buscar-btn"
                         onClick={onConfirmar}
                     >
                         Sim, redirecionar
-                    </button>
+                    </span>
 
-                    <button
-                        type="button"
+                    <span
                         className="limpar-btn"
                         onClick={onCancelar}
                     >
                         Não, apenas salvar usuário
-                    </button>
+                    </span>
                 </div>
             </div>
         </div>

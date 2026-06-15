@@ -57,16 +57,14 @@ function MeuPerfil() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button type="button" onClick={() => setMensagem("")}>
-                            ✕
-                        </button>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
 
                 {mensagemSucesso && (
                     <div className="success-card">
                         <span>{mensagemSucesso}</span>
-                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
+                        <span onClick={() => setMensagemSucesso("")}>✕</span>
                     </div>
                 )}
 
@@ -110,17 +108,16 @@ function MeuPerfil() {
                     </div>
 
                     <div className="form-actions">
-                        <button type="submit" className="buscar-btn">
+                        <span onClick={handleSubmit(salvar)} className="buscar-btn">
                             Salvar alterações
-                        </button>
+                        </span>
 
-                        <button
-                            type="button"
+                        <span
                             className="buscar-btn"
                             onClick={() => navigate("/indicadores")}
                         >
                             Cancelar
-                        </button>
+                        </span>
                     </div>
                 </form>
             </div>

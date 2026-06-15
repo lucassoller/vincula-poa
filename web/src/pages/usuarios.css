@@ -305,6 +305,7 @@
 }
 
 .pagination {
+    border: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -321,6 +322,12 @@
     cursor: pointer;
     font-weight: 700;
     transition: 0.2s;
+}
+
+.pagination-btn:focus,
+.pagination-btn:focus-visible {
+    outline: none;
+    box-shadow: none;
 }
 
 

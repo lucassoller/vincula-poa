@@ -16,13 +16,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                         <p>Informações do Serviço de Saúde</p>
                     </div>
 
-                    <button
-                        type="button"
-                        className="modal-close"
-                        onClick={() => setUbsSelecionada(null)}
-                    >
-                        ✕
-                    </button>
+                    <span className="modal-close" onClick={() => setUbsSelecionada(null)}>✕</span>
                 </div>
 
                 <div className="detalhe-grid">
@@ -85,15 +79,14 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
 
                 {servidor?.perfil === 'GESTAO_MUNICIPAL' && (
                     <div className="ubs-actions">
-                        <button
-                            type="button"
+                        <span
                             className="btn-editar"
                             onClick={() =>
                                 navigate(`/unidades-saude/${ubsSelecionada.id}/editar`)
                             }
                         >
                             Editar Serviço
-                        </button>
+                        </span>
                     </div>
                 )}
 

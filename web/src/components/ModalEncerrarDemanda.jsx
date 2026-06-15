@@ -9,17 +9,12 @@ function ModalEncerrarDemanda({ demanda, encerramento, setEncerramento, erros, o
 
                     </div>
 
-                    <button className="modal-close" onClick={onFechar}>✕</button>
+                    <span className="modal-close" onClick={onFechar}>✕</span>
                 </div>
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button
-                            type="button"
-                            onClick={() => setMensagem("")}
-                        >
-                            ✕
-                        </button>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
 
@@ -68,8 +63,8 @@ function ModalEncerrarDemanda({ demanda, encerramento, setEncerramento, erros, o
                     </div>
 
                     <div className="modal-actions">
-                        <button type="submit" className="buscar-btn">Encerrar demanda</button>
-                        <button type="button" className="buscar-btn" onClick={onFechar}>Cancelar</button>
+                        <span onClick={onSalvar} className="buscar-btn">Encerrar demanda</span>
+                        <span className="buscar-btn" onClick={onFechar}>Cancelar</span>
                     </div>
                 </form>
             </div>

@@ -250,6 +250,7 @@
 }
 
 .ranking-expand-btn {
+    display: block;
     width: 100%;
     margin-top: 12px;
     padding: 12px;
@@ -260,8 +261,9 @@
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
+    text-align: center;
 }
 
 .ranking-expand-btn:hover {
-    opacity: 0.9;
+    background: #1d4ed8;
 }

@@ -123,7 +123,7 @@ function Servidores() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button type="button" onClick={() => setMensagem("")}>✕</button>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
 
@@ -141,28 +141,26 @@ function Servidores() {
                                     }
                                 }}
                             />
-                            <button
-                                type="button"
+                            <span
                                 className="buscar-btn"
                                 onClick={executarBusca}
                             >
                                 Buscar
-                            </button>
-                            <button
-                                type="button"
+                            </span>
+                            <span
                                 className="buscar-btn"
                                 onClick={limparFiltro}
                             >
                                 Limpar filtro
-                            </button>
+                            </span>
 
                         </div>
-                        <button
+                        <span
                             className="buscar-btn"
                             onClick={() => navigate("/servidores/cadastro")}
                         >
                             + Novo servidor
-                        </button>
+                        </span>
 
                     </div>
 
@@ -187,13 +185,12 @@ function Servidores() {
 
                                     <td>
                                         {s.unidadeSaudeId !== null ? (
-                                            <button
-                                                type="button"
+                                            <span
                                                 className="ubs-badge ubs-clickable"
                                                 onClick={() => abrirCardUbs(s.unidadeSaudeId)}
                                             >
                                                 {s.unidadeSaudeNome}
-                                            </button>
+                                            </span>
                                         ) : (
                                             "-"
                                         )}

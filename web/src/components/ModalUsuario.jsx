@@ -1,12 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
 import CampoDetalhe from "./CampoDetalhe.jsx";
 import { mascaraDocumento, mascaraTelefone } from "../utils/mascaras";
 import { sexoLabel } from "../utils/utils.js";
 
 function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
     const navigate = useNavigate();
-    const { servidor } = useAuth();
 
     return (
         <div className="modal-overlay">
@@ -18,13 +16,7 @@ function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
                         <p>Informações do usuário</p>
                     </div>
 
-                    <button
-                        type="button"
-                        className="modal-close"
-                        onClick={() => setUsuarioSelecionado(null)}
-                    >
-                        ✕
-                    </button>
+                    <span className="modal-close" onClick={() => setUsuarioSelecionado(null)}>✕</span>
                 </div>
 
                 <div className="detalhe-section">
@@ -124,21 +116,6 @@ function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
                         />
                     </div>
                 </div>
-
-                <div className="ubs-actions">
-                    <button
-                        type="button"
-                        className="btn-editar"
-                        onClick={() =>
-                            navigate(
-                                `/usuarios/${usuarioSelecionado.id}/editar`
-                            )
-                        }
-                    >
-                        Editar usuario
-                    </button>
-                </div>
-
             </div>
         </div>
     );

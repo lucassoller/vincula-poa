@@ -124,7 +124,7 @@ function UnidadesSaude() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button type="button" onClick={() => setMensagem("")}>✕</button>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
 
@@ -142,30 +142,28 @@ function UnidadesSaude() {
                                     }
                                 }}
                             />
-                            <button
-                                type="button"
+                            <span
                                 className="buscar-btn"
                                 onClick={executarBusca}
                             >
                                 Buscar
-                            </button>
+                            </span>
 
-                            <button
-                                type="button"
+                            <span
                                 className="buscar-btn"
                                 onClick={limparFiltro}
                             >
                                 Limpar filtro
-                            </button>
+                            </span>
 
                         </div>
                         {(servidor?.perfil === "GESTAO_MUNICIPAL") && (
-                            <button
+                            <span
                                 className="buscar-btn"
                                 onClick={() => navigate("/unidades-saude/cadastro")}
                             >
                                 + Novo serviço
-                            </button>
+                            </span>
                         )}
                     </div>
                     <table className="usuarios-table">
@@ -204,21 +202,21 @@ function UnidadesSaude() {
                                 <td>{ubs.endereco?.bairro || "-"}</td>
                                 <td>
                                     <div className="acoes-container">
-                                        <button
+                                        <span
                                             className="btn-visualizar"
                                             onClick={() => setUnidadeDetalhada(ubs)}
                                         >
                                             Ver mais
-                                        </button>
+                                        </span>
                                         {servidor?.perfil === "GESTAO_MUNICIPAL" && (
-                                            <button
+                                            <span
                                                 className="btn-editar"
                                                 onClick={() =>
                                                     navigate(`/unidades-saude/${ubs.id}/editar`)
                                                 }
                                             >
                                                 Editar
-                                            </button>
+                                            </span>
                                         )}
                                     </div>
                                 </td>

@@ -156,12 +156,11 @@ function Auditoria() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button
-                            type="button"
+                        <span
                             onClick={() => setMensagem("")}
                         >
                             ✕
-                        </button>
+                        </span>
                     </div>
                 )}
 
@@ -198,18 +197,18 @@ function Auditoria() {
                         value={fim}
                         onChange={(e) => setFim(e.target.value)}
                     />
-                    <button
+                    <span
                         className="buscar-btn"
                         onClick={aplicarFiltros}
                     >
                         Aplicar filtros
-                    </button>
-                    <button
+                    </span>
+                    <span
                         className="buscar-btn"
                         onClick={limparFiltros}
                     >
                         Limpar
-                    </button>
+                    </span>
                 </div>
 
                 <div className="table-card">

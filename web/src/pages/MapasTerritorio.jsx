@@ -64,7 +64,7 @@ function MapaTerritorios() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button type="button" onClick={() => setMensagem("")}>✕</button>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
                 <MapContainer

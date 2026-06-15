@@ -62,19 +62,14 @@ function ImportarMapa() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <button
-                            type="button"
-                            onClick={() => setMensagem("")}
-                        >
-                            ✕
-                        </button>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
 
                 {mensagemSucesso && (
                     <div className="success-card">
                         <span>{mensagemSucesso}</span>
-                        <button type="button" onClick={() => setMensagemSucesso("")}>✕</button>
+                        <span onClick={() => setMensagemSucesso("")}>✕</span>
                     </div>
                 )}
                 <form
