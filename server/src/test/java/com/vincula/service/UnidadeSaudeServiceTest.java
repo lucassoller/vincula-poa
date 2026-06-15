@@ -7,6 +7,7 @@ import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
+import com.vincula.enums.TipoServico;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
@@ -309,5 +310,43 @@ class UnidadeSaudeServiceTest {
                 unidadeSaudeService.buscarPorCnes("1234567");
 
         assertEquals("1234567", response.getCnes());
+    }
+
+    @Test
+    void deveListarTodasUbs() {
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(1L);
+        unidade.setNome("UBS Centro");
+
+        when(unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS))
+                .thenReturn(List.of(unidade));
+
+        List<UnidadeSaudeShortResponseDTO> resultado =
+                unidadeSaudeService.listarTodasUbs();
+
+        assertEquals(1, resultado.size());
+
+        verify(unidadeSaudeRepository)
+                .findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS);
+    }
+
+    @Test
+    void deveListarTodosOutros() {
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(1L);
+        unidade.setNome("Hospital X");
+
+        when(unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.OUTRO))
+                .thenReturn(List.of(unidade));
+
+        List<UnidadeSaudeShortResponseDTO> resultado =
+                unidadeSaudeService.listarTodosOutros();
+
+        assertEquals(1, resultado.size());
+
+        verify(unidadeSaudeRepository)
+                .findAllByTipoServicoOrderByNomeAsc(TipoServico.OUTRO);
     }
 }

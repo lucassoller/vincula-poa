@@ -121,7 +121,7 @@ class IndicadorRankingServiceTest {
         List<IndicadorRankingDTO> resultado =
                 indicadorRankingService.rankingPorTempoMedioResolucao();
 
-        assertEquals("1h 1m 1s", resultado.get(0).getValor());
+        assertEquals("0d 1h 1m", resultado.get(0).getValor());
     }
 
     @Test
@@ -145,7 +145,7 @@ class IndicadorRankingServiceTest {
         List<IndicadorRankingDTO> resultado =
                 indicadorRankingService.rankingPorTempoAtePrimeiraTentativa();
 
-        assertEquals("2h 0m 0s", resultado.get(0).getValor());
+        assertEquals("0d 2h 0m", resultado.get(0).getValor());
     }
 
     @Test
@@ -192,7 +192,7 @@ class IndicadorRankingServiceTest {
         List<IndicadorRankingDTO> resultado =
                 indicadorRankingService.rankingPorTempoMedioResolucao();
 
-        assertEquals("0h 0m 0s", resultado.get(0).getValor());
+        assertEquals("0d 0h 0m", resultado.get(0).getValor());
     }
 
     @Test
@@ -215,7 +215,7 @@ class IndicadorRankingServiceTest {
         List<IndicadorRankingDTO> resultado =
                 indicadorRankingService.rankingPorTempoMedioResolucao();
 
-        assertEquals("0h 0m 0s", resultado.get(0).getValor());
+        assertEquals("0d 0h 0m", resultado.get(0).getValor());
     }
 
     @Test

@@ -19,7 +19,10 @@ public final class IndicadorUtil {
         return arredondar(valor * 100.0 / total);
     }
 
-    public static double arredondar(double valor) {
+    public static double arredondar(Double valor) {
+        if(valor == null){
+            return 0.0;
+        }
         return BigDecimal.valueOf(valor)
                 .setScale(2, RoundingMode.HALF_UP)
                 .doubleValue();

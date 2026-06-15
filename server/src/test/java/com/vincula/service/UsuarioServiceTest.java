@@ -1,11 +1,14 @@
 package com.vincula.service;
 
+import com.vincula.dto.endereco.EnderecoDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.usuario.UsuarioShortResponseDTO;
 import com.vincula.entity.Endereco;
+import com.vincula.entity.Servidor;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
+import com.vincula.enums.PerfilServidor;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,6 +50,9 @@ class UsuarioServiceTest {
 
     @Mock
     private GeocodingService geocodingService;
+
+    @Mock
+    private ServidorService servidorService;
 
     @InjectMocks
     private UsuarioService usuarioService;
@@ -207,6 +214,12 @@ class UsuarioServiceTest {
         usuario.setEndereco(endereco);
         usuario.setUnidadeSaude(unidade);
 
+        Servidor servidor = new Servidor();
+        servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
+
+        when(servidorService.buscarServidorAutenticado())
+                .thenReturn(servidor);
+
         when(usuarioRepository.existsByDocumento(dto.getDocumento()))
                 .thenReturn(false);
 
@@ -263,6 +276,12 @@ class UsuarioServiceTest {
         dto.setDocumento("123");
 
         Endereco endereco = new Endereco();
+
+        Servidor servidor = new Servidor();
+        servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
+
+        when(servidorService.buscarServidorAutenticado())
+                .thenReturn(servidor);
 
         when(usuarioRepository.existsByDocumento(any()))
                 .thenReturn(false);
@@ -627,5 +646,163 @@ class UsuarioServiceTest {
         assertEquals(1, resultado.getTotalElements());
         assertEquals("Lucas",
                 resultado.getContent().get(0).getNomeCompleto());
+    }
+
+    @Test
+    void deveListarUsuariosPorUnidadeSolicitanteFiltrados() {
+
+        Long unidadeId = 1L;
+        String filtro = "joao";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(1L);
+        unidade.setNome("UBS Centro");
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setNomeCompleto("João");
+        usuario.setUnidadeSaude(unidade);
+        usuario.setUnidadeSolicitante(unidade);
+
+        Page<Usuario> page = new PageImpl<>(List.of(usuario));
+
+        when(usuarioRepository.findFiltradosByUnidadeSolicitante(
+                unidadeId,
+                filtro,
+                pageable
+        )).thenReturn(page);
+
+        Page<UsuarioResponseDTO> resultado =
+                usuarioService.listarTodosPorUnidadeSolicitanteFiltrados(
+                        unidadeId,
+                        filtro,
+                        pageable
+                );
+
+        assertEquals(1, resultado.getContent().size());
+
+        verify(usuarioRepository)
+                .findFiltradosByUnidadeSolicitante(
+                        unidadeId,
+                        filtro,
+                        pageable
+                );
+    }
+
+    @Test
+    void deveDefinirUnidadeSolicitanteQuandoServidorForSolicitante() {
+
+        UnidadeSaude unidadeSolicitante = new UnidadeSaude();
+        unidadeSolicitante.setId(10L);
+
+        Servidor servidor = new Servidor();
+        servidor.setPerfil(PerfilServidor.SOLICITANTE);
+        servidor.setUnidadeSaude(unidadeSolicitante);
+
+        EnderecoDTO enderecoDTO = new EnderecoDTO();
+
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setNomeCompleto("João");
+        dto.setEndereco(enderecoDTO);
+
+        Endereco endereco = new Endereco();
+        endereco.setLatitude(-30.0);
+        endereco.setLongitude(-51.0);
+
+        UnidadeSaude ubsTerritorio = new UnidadeSaude();
+        ubsTerritorio.setId(20L);
+
+        when(enderecoMapper.toEntity(enderecoDTO))
+                .thenReturn(endereco);
+
+        when(servidorService.buscarServidorAutenticado())
+                .thenReturn(servidor);
+
+        when(territorializacaoService.buscarUbsPorCoordenada(
+                -30.0,
+                -51.0
+        )).thenReturn(ubsTerritorio);
+
+        Usuario resultado = ReflectionTestUtils.invokeMethod(
+                usuarioService,
+                "toEntity",
+                dto
+        );
+
+        assertEquals(
+                unidadeSolicitante,
+                resultado.getUnidadeSolicitante()
+        );
+    }
+
+    @Test
+    void deveMapearUnidadeSolicitanteNoShortDTO() {
+
+        UnidadeSaude unidadeSaude = new UnidadeSaude();
+        unidadeSaude.setId(1L);
+        unidadeSaude.setNome("UBS Centro");
+
+        UnidadeSaude unidadeSolicitante = new UnidadeSaude();
+        unidadeSolicitante.setId(2L);
+        unidadeSolicitante.setNome("Hospital Conceição");
+
+        Usuario usuario = new Usuario();
+        usuario.setId(10L);
+        usuario.setNomeCompleto("João da Silva");
+        usuario.setDocumento("123456789");
+        usuario.setUnidadeSaude(unidadeSaude);
+        usuario.setUnidadeSolicitante(unidadeSolicitante);
+
+        UsuarioShortResponseDTO dto =
+                ReflectionTestUtils.invokeMethod(
+                        usuarioService,
+                        "toShortDTO",
+                        usuario
+                );
+
+        assertEquals(2L, dto.getUnidadeSolicitanteId());
+        assertEquals(
+                "Hospital Conceição",
+                dto.getUnidadeSolicitanteNome()
+        );
+    }
+
+    @Test
+    void deveListarUsuariosPorUnidadeSolicitante() {
+
+        Long unidadeId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(1L);
+        unidade.setNome("UBS Centro");
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setNomeCompleto("João");
+        usuario.setUnidadeSaude(unidade);
+        usuario.setUnidadeSolicitante(unidade);
+
+        Page<Usuario> page = new PageImpl<>(List.of(usuario));
+
+        when(usuarioRepository.findByUnidadeSolicitanteIdOrderByNomeCompletoAsc(
+                unidadeId,
+                pageable
+        )).thenReturn(page);
+
+        Page<UsuarioResponseDTO> resultado =
+                usuarioService.listarTodosPorUnidadeSolicitante(
+                        unidadeId,
+                        pageable
+                );
+
+        assertEquals(1, resultado.getContent().size());
+
+        verify(usuarioRepository)
+                .findByUnidadeSolicitanteIdOrderByNomeCompletoAsc(
+                        unidadeId,
+                        pageable
+                );
     }
 }

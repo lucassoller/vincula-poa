@@ -651,24 +651,31 @@ class IndicadorServiceTest {
                 () -> indicadorService.indicadorPorUnidade(unidadeId)
         );
 
-        assertEquals("Servidor não pode acessar indicadores por unidade", ex.getMessage());
+        assertEquals("Servidor não pode acessar indicadores de outra unidade", ex.getMessage());
     }
 
     @Test
-    void deveExecutarFluxoGeralSemParametros() {
+    void deveExecutarFluxoIndicadorGeralSemFiltros() {
 
         IndicadorDTO dtoMock = mock(IndicadorDTO.class);
+
         IndicadorService spy = Mockito.spy(indicadorService);
+
+        Servidor servidor = mock(Servidor.class);
+        when(servidor.getPerfil()).thenReturn(PerfilServidor.GESTAO_MUNICIPAL);
+
+        when(servidorService.buscarServidorAutenticado())
+                .thenReturn(servidor);
 
         doReturn(dtoMock)
                 .when(spy)
                 .indicadorGeral();
 
-        when(csvExporter.exportar(dtoMock)).thenReturn("csv-geral");
+        IndicadorDTO resultado =
+                spy.indicadorGeral(null, null, null, null);
 
-        String result =
-                spy.exportarIndicadorGeralCsv(null, null, null, null);
+        assertEquals(dtoMock, resultado);
 
-        assertEquals("csv-geral", result);
+        verify(spy).indicadorGeral();
     }
 }

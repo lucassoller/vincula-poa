@@ -757,7 +757,7 @@ class DemandaServiceTest {
 
         verify(auditoriaFacade)
                 .exportacaoCsvRealizadaDemanda(
-                        "Demandas do servidor criador 1 exportadas"
+                        "Demandas da unidade 1 exportadas"
                 );
     }
 
@@ -784,7 +784,7 @@ class DemandaServiceTest {
 
         verify(auditoriaFacade)
                 .exportacaoCsvRealizadaDemanda(
-                        "Demandas do servidor criador 1 exportadas"
+                        "Demandas da unidade 1 exportadas"
                 );
     }
 
@@ -888,5 +888,103 @@ class DemandaServiceTest {
                 response.getDataHoraCriacao().plusDays(dias),
                 response.getDataHoraLimite()
         );
+    }
+
+    @Test
+    void deveListarDemandasPorUnidadeSolicitante() {
+
+        Long unidadeId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setNomeCompleto("João");
+
+        Servidor servidor = new Servidor();
+        servidor.setId(2L);
+        servidor.setNome("Maria");
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(10L);
+        unidade.setNome("UBS Centro");
+
+        Demanda demanda = new Demanda();
+        demanda.setId(100L);
+        demanda.setUsuario(usuario);
+        demanda.setServidorCriador(servidor);
+        demanda.setUnidadeResponsavel(unidade);
+        demanda.setUnidadeSolicitante(unidade);
+
+        Page<Demanda> page = new PageImpl<>(List.of(demanda));
+
+        when(demandaRepository.findByUnidadeSolicitanteOrderByUsuarioNome(
+                unidadeId,
+                pageable
+        )).thenReturn(page);
+
+        Page<DemandaResponseDTO> resultado =
+                demandaService.listarPorUnidadeSolicitante(
+                        unidadeId,
+                        pageable
+                );
+
+        assertEquals(1, resultado.getContent().size());
+
+        verify(demandaRepository)
+                .findByUnidadeSolicitanteOrderByUsuarioNome(
+                        unidadeId,
+                        pageable
+                );
+    }
+
+    @Test
+    void deveListarDemandasFiltradasPorUnidadeSolicitante() {
+
+        Long unidadeId = 1L;
+        String filtro = "João";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setNomeCompleto("João");
+
+        Servidor servidor = new Servidor();
+        servidor.setId(2L);
+        servidor.setNome("Maria");
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(10L);
+        unidade.setNome("UBS Centro");
+
+        Demanda demanda = new Demanda();
+        demanda.setId(100L);
+        demanda.setUsuario(usuario);
+        demanda.setServidorCriador(servidor);
+        demanda.setUnidadeResponsavel(unidade);
+        demanda.setUnidadeSolicitante(unidade);
+
+        Page<Demanda> page = new PageImpl<>(List.of(demanda));
+
+        when(demandaRepository.findFiltradasByUnidadeSolicitante(
+                unidadeId,
+                filtro,
+                pageable
+        )).thenReturn(page);
+
+        Page<DemandaResponseDTO> resultado =
+                demandaService.listarPorUnidadeSolicitanteFiltradas(
+                        unidadeId,
+                        filtro,
+                        pageable
+                );
+
+        assertEquals(1, resultado.getContent().size());
+
+        verify(demandaRepository)
+                .findFiltradasByUnidadeSolicitante(
+                        unidadeId,
+                        filtro,
+                        pageable
+                );
     }
 }

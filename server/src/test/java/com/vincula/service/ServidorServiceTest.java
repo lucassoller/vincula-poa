@@ -669,25 +669,6 @@ class ServidorServiceTest {
     }
 
     @Test
-    void deveLancarExceptionQuandoSolicitantePossuiUnidade() {
-
-        Servidor servidor = new Servidor();
-        servidor.setId(1L);
-
-        ServidorDTO dto = new ServidorDTO();
-        dto.setPerfil(PerfilServidor.SOLICITANTE);
-        dto.setUnidadeSaudeId(10L);
-
-        when(servidorRepository.findById(1L))
-                .thenReturn(Optional.of(servidor));
-
-        assertThrows(
-                BusinessException.class,
-                () -> servidorService.atualizar(1L, dto)
-        );
-    }
-
-    @Test
     void deveLancarExceptionQuandoGestaoMunicipalPossuiUnidade() {
 
         Servidor servidor = new Servidor();
@@ -897,5 +878,37 @@ class ServidorServiceTest {
                     () -> servidorService.atualizarMeuPerfil(dto)
             );
         }
+    }
+
+    @Test
+    void deveListarServidoresFiltrados() {
+
+        String filtro = "joao";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Servidor servidor = new Servidor();
+        servidor.setId(1L);
+        servidor.setNome("João");
+
+        Page<Servidor> page = new PageImpl<>(List.of(servidor));
+
+        when(servidorRepository.findFiltrados(
+                filtro,
+                pageable
+        )).thenReturn(page);
+
+        Page<ServidorResponseDTO> resultado =
+                servidorService.listarTodosFiltrados(
+                        filtro,
+                        pageable
+                );
+
+        assertEquals(1, resultado.getContent().size());
+
+        verify(servidorRepository)
+                .findFiltrados(
+                        filtro,
+                        pageable
+                );
     }
 }

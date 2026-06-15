@@ -40,7 +40,7 @@ class IndicadorPrazoServiceTest {
         assertEquals(20.0, resultado.get(2).getValor());
 
         assertEquals(
-                "1h 1m 1s",
+                "0d 1h 1m",
                 resultado.get(3).getValor()
         );
     }
@@ -59,7 +59,7 @@ class IndicadorPrazoServiceTest {
         assertEquals(0.0, resultado.get(0).getValor());
         assertEquals(0.0, resultado.get(1).getValor());
         assertEquals(0.0, resultado.get(2).getValor());
-        assertEquals("0h 0m 0s", resultado.get(3).getValor());
+        assertEquals("0d 0h 0m", resultado.get(3).getValor());
     }
 
     @Test
@@ -74,7 +74,7 @@ class IndicadorPrazoServiceTest {
                 service.indicadoresPrazo();
 
         assertEquals(
-                "0h 0m 0s",
+                "0d 0h 0m",
                 resultado.get(3).getValor()
         );
     }
