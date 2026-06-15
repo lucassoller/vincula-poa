@@ -11,9 +11,10 @@ import com.vincula.repository.TentativaContatoRepository;
 import com.vincula.service.ServidorService;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
+
+import static com.vincula.util.IndicadorUtil.arredondar;
+import static com.vincula.util.IndicadorUtil.formatarTempo;
 
 @Service
 public class IndicadorRankingService {
@@ -91,35 +92,11 @@ public class IndicadorRankingService {
     }
 
 
-    private double arredondar(Double valor) {
-        if (valor == null) {
-            return 0.0;
-        }
-
-        return BigDecimal.valueOf(valor)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-    }
-
     private void validarAcessoGestao() {
         Servidor servidor = servidorService.buscarServidorAutenticado();
 
         if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL) {
             throw new BusinessException("Servidor não pode acessar ranking de unidades");
         }
-    }
-
-    private String formatarTempo(Double totalSegundos) {
-        if (totalSegundos == null || totalSegundos <= 0) {
-            return "0h 0m 0s";
-        }
-
-        long segundosTotais = Math.round(totalSegundos);
-
-        long horas = segundosTotais / 3600;
-        long minutos = (segundosTotais % 3600) / 60;
-        long segundos = segundosTotais % 60;
-
-        return horas + "h " + minutos + "m " + segundos + "s";
     }
 }

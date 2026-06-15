@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.vincula.util.IndicadorUtil.percentual;
+
 @Service
 public class IndicadorResultadoService {
 
@@ -89,16 +91,8 @@ public class IndicadorResultadoService {
     private IndicadorValorDTO toIndicador(DesfechoQuantidadeProjection item, double totalFinalizadas) {
         return new IndicadorValorDTO(
                 traduzirDesfecho(item.getDesfecho()),
-                arredondar(percentual(totalFinalizadas, item.getQuantidade()))
+                percentual(totalFinalizadas, item.getQuantidade())
         );
-    }
-
-    private double percentual(double total, long valor) {
-        return total == 0 ? 0.0 : (valor * 100.0 / total);
-    }
-
-    private double arredondar(double valor) {
-        return Math.round(valor * 100.0) / 100.0;
     }
 
     private String traduzirDesfecho(String desfecho) {

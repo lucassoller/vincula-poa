@@ -5,10 +5,11 @@ import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.TentativaContatoRepository;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.vincula.util.IndicadorUtil.arredondar;
+import static com.vincula.util.IndicadorUtil.formatarTempo;
 
 @Service
 public class IndicadorProcessoService {
@@ -123,7 +124,7 @@ public class IndicadorProcessoService {
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorPeriodo(inicio, fim);
-        return new IndicadorValorDTO("Tempo até a primeira tentativa de contato",formatarTempo(valor));
+        return new IndicadorValorDTO("Tempo até a primeira tentativa de contato", formatarTempo(valor));
     }
 
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativaPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
@@ -254,29 +255,5 @@ public class IndicadorProcessoService {
                 mediaTentativasPorDemandaPorServidorEPeriodo(servidorId, inicio, fim),
                 mediaTentativasPorServidorPorServidorEPeriodo(servidorId, inicio, fim)
         );
-    }
-
-    private double arredondar(Double valor) {
-        if (valor == null) {
-            return 0.0;
-        }
-
-        return BigDecimal.valueOf(valor)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-    }
-
-    private String formatarTempo(Double totalSegundos) {
-        if (totalSegundos == null || totalSegundos <= 0) {
-            return "0h 0m 0s";
-        }
-
-        long segundosTotais = Math.round(totalSegundos);
-
-        long horas = segundosTotais / 3600;
-        long minutos = (segundosTotais % 3600) / 60;
-        long segundos = segundosTotais % 60;
-
-        return horas + "h " + minutos + "m " + segundos + "s";
     }
 }
