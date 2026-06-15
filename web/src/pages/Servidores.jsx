@@ -84,6 +84,9 @@ function Servidores() {
     }
 
     async function abrirCardUbs(unidadeSaudeId) {
+        if(unidadeSaudeId === null){
+            return
+        }
         try {
             setCarregandoUbs(true);
             const response = await api.get(`/unidades-saude/${unidadeSaudeId}`);
@@ -184,16 +187,12 @@ function Servidores() {
                                     <td>{s.email}</td>
 
                                     <td>
-                                        {s.unidadeSaudeId !== null ? (
-                                            <span
-                                                className="ubs-badge ubs-clickable"
-                                                onClick={() => abrirCardUbs(s.unidadeSaudeId)}
-                                            >
-                                                {s.unidadeSaudeNome}
-                                            </span>
-                                        ) : (
-                                            "-"
-                                        )}
+                                        <span
+                                            className="ubs-badge ubs-clickable"
+                                            onClick={() => abrirCardUbs(s.unidadeSaudeId)}
+                                        >
+                                            {s.unidadeSaudeNome}
+                                        </span>
                                     </td>
                                 </tr>
                             ))}

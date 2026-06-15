@@ -46,6 +46,11 @@
     background: transparent;
     color: #991b1b;
     cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.alert-card span:last-child:active {
+    transform: scale(0.8);
 }
 
 .success-card {
@@ -63,6 +68,11 @@
     background: transparent;
     color: #166534;
     cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.success-card span:last-child:active {
+    transform: scale(0.8);
 }
 
 .stepper {

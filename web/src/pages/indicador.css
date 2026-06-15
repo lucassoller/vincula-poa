@@ -260,10 +260,14 @@
     color: white;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.2s;
     text-align: center;
+    transition: all 0.15s ease;
 }
 
 .ranking-expand-btn:hover {
     background: #1d4ed8;
+}
+
+.ranking-expand-btn:active{
+    transform: scale(0.96);
 }

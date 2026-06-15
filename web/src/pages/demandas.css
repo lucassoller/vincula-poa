@@ -83,19 +83,7 @@
     flex-wrap: wrap;
 }
 
-.btn-encerrar {
-    border: none;
-    background: #fee2e2;
-    color: #b91c1c;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-}
 
-.btn-encerrar:hover{
-    background: #eacbcb;
-}
 
 .modal-overlay {
     position: fixed;
@@ -140,10 +128,15 @@
     padding: 8px 12px;
     cursor: pointer;
     font-weight: 700;
+    transition: all 0.15s ease;
 }
 
 .modal-close:hover{
     background: #dee5ec;
+}
+
+.modal-close:active {
+    transform: scale(0.96);
 }
 
 .modal-actions {
@@ -235,11 +228,34 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    transition: 0.2s;
+    transition: all 0.15s ease;
 }
 
 .btn-tentativa:hover {
     background: #cbd5e1;
+}
+
+.btn-tentativa:active {
+    transform: scale(0.96);
+}
+
+.btn-encerrar {
+    border: none;
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.btn-encerrar:hover{
+    background: #eacbcb;
+}
+
+.btn-encerrar:active {
+    transform: scale(0.96);
 }
 
 .search-container {
@@ -257,7 +273,11 @@
     border-radius: 10px;
     cursor: pointer;
     font-weight: 700;
-    transition: 0.2s;
+    transition: all 0.15s ease;
+}
+
+.buscar-btn:active {
+    transform: scale(0.96);
 }
 
 .buscar-btn:hover {

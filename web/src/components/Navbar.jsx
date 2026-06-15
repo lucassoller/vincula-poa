@@ -156,14 +156,14 @@ function Navbar() {
 
                         <Link
                             to="/mapa"
-                            className="dropdown-link"
+                            className="dropdown-item"
                         >
                             Visualizar mapa
                         </Link>
                         {servidor?.perfil === "GESTAO_MUNICIPAL" && (
                         <Link
                             to="/mapa/importar"
-                            className="dropdown-link"
+                            className="dropdown-item"
                         >
                             Importar mapa
                         </Link>

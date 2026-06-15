@@ -151,10 +151,10 @@
     top: 100%;
     left: 0;
     min-width: 220px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-    padding: 8px 0;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18);
+    padding: 10px;
     display: none;
     z-index: 1000;
 }
@@ -170,6 +170,7 @@
     color: #1f2937;
     transition: 0.2s;
     white-space: nowrap;
+    border-radius: 14px;
 }
 
 .dropdown-link:hover {
