@@ -1,13 +1,11 @@
 package com.vincula.service;
 
 import com.vincula.dto.senha.MudancaSenhaDTO;
-import com.vincula.dto.servidor.MeuPerfilDTO;
-import com.vincula.dto.servidor.ServidorDTO;
-import com.vincula.dto.servidor.ServidorResponseDTO;
-import com.vincula.dto.servidor.ServidorShortResponseDTO;
+import com.vincula.dto.servidor.*;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Servidor;
 import com.vincula.enums.PerfilServidor;
+import com.vincula.enums.TipoServico;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
@@ -134,6 +132,37 @@ public class ServidorService {
         return toDTO(atualizado);
     }
 
+    public ServidorResponseDTO transferirServidor(Long id, TransferirServidorDTO dto) {
+
+        Servidor entity = buscarServidorPorId(id);
+        if (entity.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL){
+            throw new BusinessException("Não é possível transferir um servidor Gestão Municipal");
+        }
+
+        if(dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL){
+            throw new BusinessException("Não é possível mudar o perfil de um servidor para Gestão Municipal");
+        }
+
+        UnidadeSaude unidadeSaude = buscarUnidadePorId(dto.getUnidadeSaudeId());
+        String descricaoLog = AuditoriaDescricaoUtil.servidorAtualizado(entity, dto);
+
+        if(dto.getPerfil() == PerfilServidor.SOLICITANTE && unidadeSaude.getTipoServico() != TipoServico.OUTRO){
+            throw new BusinessException("Solicitante só pode ser vinculado a serviço do tipo OUTRO");
+        }else if(dto.getPerfil() == PerfilServidor.SERVIDOR_APS && unidadeSaude.getTipoServico() != TipoServico.UBS){
+            throw new BusinessException("Servidor APS só pode ser vinculado a serviço do tipo UBS");
+        }
+
+        entity.setPerfil(dto.getPerfil());
+        entity.setUnidadeSaude(unidadeSaude);
+
+        Servidor atualizado = servidorRepository.save(entity);
+
+        auditoriaFacade.servidorAtualizado(atualizado.getId(), descricaoLog);
+
+        return toDTO(atualizado);
+    }
+
+
     public ServidorResponseDTO atualizarMinhaSenha(MudancaSenhaDTO dto) {
         Servidor entity = buscarServidorAutenticado();
 
@@ -229,24 +258,30 @@ public class ServidorService {
                 .orElseThrow(() -> new NotFoundException("Servidor do sistema não encontrado"));
     }
 
+    private UnidadeSaude buscarUnidadePorId(Long id){
+        return unidadeSaudeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+    }
+
     private UnidadeSaude resolverUnidadeSaude(ServidorDTO dto) {
-
-        if (dto.getUnidadeSaudeId() != null) {
-
-            if (dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL) {
+        if(dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL){
+            if(dto.getUnidadeSaudeId() != null){
                 throw new BusinessException("Gestão Municipal não deve estar vinculado a uma unidade de saúde");
             }
-
-            return unidadeSaudeRepository.findById(dto.getUnidadeSaudeId())
-                    .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
-
-        } else {
-
-            if (dto.getPerfil() == PerfilServidor.SOLICITANTE || dto.getPerfil() == PerfilServidor.SERVIDOR_APS) {
-                throw new BusinessException(dto.getPerfil() + " deve estar vinculado a um serviço de saúde");
-            }
-
             return null;
+        }else{
+            if(dto.getUnidadeSaudeId() == null){
+                throw new BusinessException(dto.getPerfil() + " deve estar vinculado a um serviço de saúde");
+            }else{
+                UnidadeSaude unidadeSaude = buscarUnidadePorId(dto.getUnidadeSaudeId());
+
+                if(dto.getPerfil() == PerfilServidor.SOLICITANTE && unidadeSaude.getTipoServico() != TipoServico.OUTRO){
+                    throw new BusinessException("Solicitante só pode ser vinculado a serviço do tipo OUTRO");
+                }else if(dto.getPerfil() == PerfilServidor.SERVIDOR_APS && unidadeSaude.getTipoServico() != TipoServico.UBS){
+                    throw new BusinessException("Servidor APS só pode ser vinculado a serviço do tipo UBS");
+                }
+                return unidadeSaude;
+            }
         }
     }
 

@@ -1,10 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.senha.MudancaSenhaDTO;
-import com.vincula.dto.servidor.MeuPerfilDTO;
-import com.vincula.dto.servidor.ServidorDTO;
-import com.vincula.dto.servidor.ServidorResponseDTO;
-import com.vincula.dto.servidor.ServidorShortResponseDTO;
+import com.vincula.dto.servidor.*;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.service.ServidorService;
@@ -89,6 +86,13 @@ public class ServidorController {
     public ResponseEntity<ServidorResponseDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody ServidorDTO dto) {
         return ResponseEntity.ok(servidorService.atualizar(id, dto));
+    }
+
+    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PutMapping("/transferir/{id}")
+    public ResponseEntity<ServidorResponseDTO> transferir(@PathVariable Long id,
+                                                         @Valid @RequestBody TransferirServidorDTO dto) {
+        return ResponseEntity.ok(servidorService.transferirServidor(id, dto));
     }
 
     @PutMapping("/me")

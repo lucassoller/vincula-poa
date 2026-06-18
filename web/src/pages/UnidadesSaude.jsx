@@ -199,7 +199,7 @@ function UnidadesSaude() {
                                 <td>{mascaraTelefone(ubs.telefone) || "-"}</td>
                                 <td>{mascaraTelefone(ubs.telefone2) || "-"}</td>
 
-                                <td>{ubs.endereco?.bairro || "-"}</td>
+                                <td className="bairro-coluna">{ubs.endereco?.bairro || "-"}</td>
                                 <td>
                                     <div className="acoes-container">
                                         <span

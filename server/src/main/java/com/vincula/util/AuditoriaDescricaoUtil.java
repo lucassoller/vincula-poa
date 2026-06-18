@@ -2,6 +2,7 @@ package com.vincula.util;
 
 import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.endereco.EnderecoDTO;
+import com.vincula.dto.servidor.TransferirServidorDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.tentativaContato.TentativaContatoDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
@@ -102,6 +103,16 @@ public class AuditoriaDescricaoUtil {
         adicionarAlteracao(sb, "Login", entity.getLogin(), dto.getLogin());
         adicionarAlteracao(sb, "Perfil", entity.getPerfil(), dto.getPerfil());
         adicionarAlteracao(sb, "Ativo", entity.getAtivo(), dto.getAtivo());
+
+        Long unidadeAntes = entity.getUnidadeSaude() != null ? entity.getUnidadeSaude().getId() : null;
+        adicionarAlteracao(sb, "Unidade de saúde", unidadeAntes, dto.getUnidadeSaudeId());
+
+        return sb.isEmpty() ? "Servidor atualizado sem alterações relevantes" : sb.toString();
+    }
+
+    public static String servidorAtualizado(Servidor entity, TransferirServidorDTO dto) {
+        StringBuilder sb = new StringBuilder();
+        adicionarAlteracao(sb, "Perfil", entity.getPerfil(), dto.getPerfil());
 
         Long unidadeAntes = entity.getUnidadeSaude() != null ? entity.getUnidadeSaude().getId() : null;
         adicionarAlteracao(sb, "Unidade de saúde", unidadeAntes, dto.getUnidadeSaudeId());

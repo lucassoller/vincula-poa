@@ -5,19 +5,31 @@ import "./usuarios.css";
 import { useNavigate } from "react-router-dom";
 import ModalUbs from "../components/ModalUbs.jsx";
 import Pagination from "../components/Paginations.jsx";
+import ModalTransferirServidor from "../components/ModalTransferirServidor.jsx";
 
 function Servidores() {
     const navigate = useNavigate();
     const { servidor } = useAuth();
     const [servidores, setServidores] = useState([]);
     const [mensagem, setMensagem] = useState("");
+    const [mensagemErro, setMensagemErro] = useState("");
+    const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [ubsSelecionada, setUbsSelecionada] = useState(null);
+    const [servidorSelecionado, setServidorSelecionado] = useState(null);
     const [carregandoUbs, setCarregandoUbs] = useState(false);
     const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
+    const [unidades, setUnidades] = useState([]);
+    const [servicos, setServicos] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [modoFiltrado, setModoFiltrado] = useState(false);
+    const [erros, setErros] = useState({});
+    const [transferencia, setTransferencia] = useState({
+        perfil: "",
+        unidadeSaudeId: "",
+    });
+
     const tamanhoPagina = 10;
 
     const carregarDados = useCallback(async (paginaAtual = pagina) => {
@@ -27,7 +39,7 @@ function Servidores() {
             setServidores(response.data.content);
             setTotalPaginas(response.data.page.totalPages);
         } catch {
-            setMensagem("Erro ao carregar servidores.");
+            setMensagemErro("Erro ao carregar servidores.");
         } finally {
             setCarregando(false);
         }
@@ -43,7 +55,7 @@ function Servidores() {
             setServidores(response.data.content);
             setTotalPaginas(response.data.page.totalPages);
         } catch {
-            setMensagem("Erro ao buscar servidores.");
+            setMensagemErro("Erro ao buscar servidores.");
         } finally {
             setCarregando(false);
         }
@@ -59,6 +71,25 @@ function Servidores() {
         };
         void executar();
     }, [pagina, modoFiltrado]);
+
+    useEffect(() => {
+        async function carregarUnidades() {
+            try {
+                const [ubsResponse, servicosResponse] = await Promise.all([
+                    api.get("/unidades-saude/ubs"),
+                    api.get("/unidades-saude/outro")
+                ]);
+
+                setUnidades(ubsResponse.data);
+                setServicos(servicosResponse.data);
+
+            } catch {
+                setMensagemErro("Erro ao carregar os serviços.");
+                setMensagemSucesso("");
+            }
+        }
+        void carregarUnidades();
+    }, []);
 
     async function executarBusca() {
 
@@ -98,6 +129,66 @@ function Servidores() {
         }
     }
 
+    function abrirCardTransferencia(servidor) {
+        if(servidor === null){
+            return
+        }
+        setServidorSelecionado(servidor);
+
+        setTransferencia({
+            perfil: servidor.perfil,
+            unidadeSaudeId: String(servidor.unidadeSaudeId ?? "")
+        });
+    }
+
+    async function salvarTransferencia(e) {
+
+        e.preventDefault();
+
+        const payload = {
+            perfil: transferencia.perfil || null,
+            unidadeSaudeId: transferencia.unidadeSaudeId
+                ? Number(transferencia.unidadeSaudeId)
+                : null,
+        };
+        try {
+            await api.put(
+                `/servidores/transferir/${servidorSelecionado.id}`,
+                payload
+            );
+            setMensagemSucesso("Servidor transferido com sucesso!");
+            setMensagemErro("")
+            fecharModal();
+            if (modoFiltrado) {
+                await buscarUsuarios(pagina);
+            } else {
+                await carregarDados(pagina);
+            }
+        } catch (error) {
+            tratarErro(error);
+        }
+    }
+
+    function tratarErro(error) {
+        setMensagemSucesso("");
+        if (error.response?.data?.errors) {
+            setErros(error.response.data.errors);
+            setMensagem(error.response.data.message || "Dados inválidos.");
+        } else {
+            setMensagem(error.response?.data?.message || "Erro ao realizar ação.");
+        }
+    }
+
+    function fecharModal() {
+        setServidorSelecionado(null)
+        setErros({});
+        setMensagem("");
+        setTransferencia({
+            perfil: "",
+            unidadeSaudeId: "",
+        });
+    }
+
     if (carregando) {
         return (
             <div className="loading-container">
@@ -123,10 +214,17 @@ function Servidores() {
                         {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
                     </div>
                 </div>
-                {mensagem && (
+                {mensagemErro && (
                     <div className="alert-card">
-                        <span>{mensagem}</span>
-                        <span onClick={() => setMensagem("")}>✕</span>
+                        <span>{mensagemErro}</span>
+                        <span onClick={() => setMensagemErro("")}>✕</span>
+                    </div>
+                )}
+
+                {mensagemSucesso && (
+                    <div className="success-card">
+                        <span>{mensagemSucesso}</span>
+                        <span onClick={() => setMensagemSucesso("")}>✕</span>
                     </div>
                 )}
 
@@ -173,6 +271,7 @@ function Servidores() {
                             <th>Nome</th>
                             <th>Email</th>
                             <th>Serviço vinculado</th>
+                            <th>Ações</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -194,12 +293,35 @@ function Servidores() {
                                             {s.unidadeSaudeNome}
                                         </span>
                                     </td>
+                                    <td>
+                                        <span
+                                            className="btn-editar"
+                                            onClick={() => abrirCardTransferencia(s)}
+                                        >
+                                            Transferir
+                                        </span>
+                                    </td>
                                 </tr>
                             ))}
 
 
                         </tbody>
                     </table>
+
+                    {servidorSelecionado && (
+                        <ModalTransferirServidor
+                            servidor={servidorSelecionado}
+                            unidades={unidades}
+                            servicos={servicos}
+                            transferencia={transferencia}
+                            setTransferencia={setTransferencia}
+                            erros={erros}
+                            onSalvar={salvarTransferencia}
+                            onFechar={fecharModal}
+                            mensagem={mensagem}
+                            setMensagem={setMensagem}
+                        />
+                    )}
 
                     {servidores.length === 0 && !mensagem && (
                         <div className="empty-state">
