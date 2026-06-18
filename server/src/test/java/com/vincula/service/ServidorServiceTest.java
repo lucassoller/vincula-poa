@@ -1,13 +1,11 @@
 package com.vincula.service;
 
 import com.vincula.dto.senha.MudancaSenhaDTO;
-import com.vincula.dto.servidor.MeuPerfilDTO;
-import com.vincula.dto.servidor.ServidorDTO;
-import com.vincula.dto.servidor.ServidorResponseDTO;
-import com.vincula.dto.servidor.ServidorShortResponseDTO;
+import com.vincula.dto.servidor.*;
 import com.vincula.entity.Servidor;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.enums.PerfilServidor;
+import com.vincula.enums.TipoServico;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
@@ -365,7 +363,14 @@ class ServidorServiceTest {
     @Test
     void deveCriarServidor() {
 
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(10L);
+        unidade.setNome("UBS Centro");
+        unidade.setTipoServico(TipoServico.UBS);
+
         ServidorDTO dto = new ServidorDTO();
+        dto.setPerfil(PerfilServidor.SERVIDOR_APS);
+        dto.setUnidadeSaudeId(10L);
 
         when(servidorRepository.existsByEmail(any()))
                 .thenReturn(false);
@@ -375,6 +380,9 @@ class ServidorServiceTest {
 
         when(passwordEncoder.encode(any()))
                 .thenReturn("hash");
+
+        when(unidadeSaudeRepository.findById(10L))
+                .thenReturn(Optional.of(unidade));
 
         when(servidorRepository.save(any()))
                 .thenAnswer(i -> {
@@ -557,6 +565,7 @@ class ServidorServiceTest {
         UnidadeSaude unidade = new UnidadeSaude();
         unidade.setId(10L);
         unidade.setNome("UBS Centro");
+        unidade.setTipoServico(TipoServico.UBS);
 
         ServidorDTO dto = new ServidorDTO();
         dto.setNome("Novo Nome");
@@ -595,6 +604,7 @@ class ServidorServiceTest {
         servidor.setId(1L);
 
         UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setTipoServico(TipoServico.UBS);
         unidade.setId(10L);
 
         ServidorDTO dto = new ServidorDTO();
@@ -910,5 +920,205 @@ class ServidorServiceTest {
                         filtro,
                         pageable
                 );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoServidorForGestaoMunicipal() {
+
+        Servidor servidor = new Servidor();
+        servidor.setId(1L);
+        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
+
+        TransferirServidorDTO dto = new TransferirServidorDTO();
+        dto.setPerfil(PerfilServidor.SOLICITANTE);
+        dto.setUnidadeSaudeId(1L);
+
+        when(servidorRepository.findById(1L))
+                .thenReturn(Optional.of(servidor));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> servidorService.transferirServidor(1L, dto)
+        );
+
+        assertEquals(
+                "Não é possível transferir um servidor Gestão Municipal",
+                ex.getMessage()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoNovoPerfilForGestaoMunicipal() {
+
+        Servidor servidor = new Servidor();
+        servidor.setId(1L);
+        servidor.setPerfil(PerfilServidor.SOLICITANTE);
+
+        TransferirServidorDTO dto = new TransferirServidorDTO();
+        dto.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
+        dto.setUnidadeSaudeId(1L);
+
+        when(servidorRepository.findById(1L))
+                .thenReturn(Optional.of(servidor));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> servidorService.transferirServidor(1L, dto)
+        );
+
+        assertEquals(
+                "Não é possível mudar o perfil de um servidor para Gestão Municipal",
+                ex.getMessage()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoSolicitanteForVinculadoEmUbs() {
+
+        Servidor servidor = new Servidor();
+        servidor.setId(1L);
+        servidor.setPerfil(PerfilServidor.SOLICITANTE);
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(10L);
+        unidade.setTipoServico(TipoServico.UBS);
+
+        TransferirServidorDTO dto = new TransferirServidorDTO();
+        dto.setPerfil(PerfilServidor.SOLICITANTE);
+        dto.setUnidadeSaudeId(10L);
+
+        when(servidorRepository.findById(1L))
+                .thenReturn(Optional.of(servidor));
+
+        when(unidadeSaudeRepository.findById(10L))
+                .thenReturn(Optional.of(unidade));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> servidorService.transferirServidor(1L, dto)
+        );
+
+        assertEquals(
+                "Solicitante só pode ser vinculado a serviço do tipo OUTRO",
+                ex.getMessage()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoServidorApsForVinculadoEmServicoOutro() {
+
+        Servidor servidor = new Servidor();
+        servidor.setId(1L);
+        servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(10L);
+        unidade.setTipoServico(TipoServico.OUTRO);
+
+        TransferirServidorDTO dto = new TransferirServidorDTO();
+        dto.setPerfil(PerfilServidor.SERVIDOR_APS);
+        dto.setUnidadeSaudeId(10L);
+
+        when(servidorRepository.findById(1L))
+                .thenReturn(Optional.of(servidor));
+
+        when(unidadeSaudeRepository.findById(10L))
+                .thenReturn(Optional.of(unidade));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> servidorService.transferirServidor(1L, dto)
+        );
+
+        assertEquals(
+                "Servidor APS só pode ser vinculado a serviço do tipo UBS",
+                ex.getMessage()
+        );
+    }
+
+    @Test
+    void deveTransferirServidorComSucesso() {
+
+        Servidor servidor = new Servidor();
+        servidor.setId(1L);
+        servidor.setPerfil(PerfilServidor.SOLICITANTE);
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(10L);
+        unidade.setTipoServico(TipoServico.UBS);
+
+        TransferirServidorDTO dto = new TransferirServidorDTO();
+        dto.setPerfil(PerfilServidor.SERVIDOR_APS);
+        dto.setUnidadeSaudeId(10L);
+
+        when(servidorRepository.findById(1L))
+                .thenReturn(Optional.of(servidor));
+
+        when(unidadeSaudeRepository.findById(10L))
+                .thenReturn(Optional.of(unidade));
+
+        when(servidorRepository.save(any()))
+                .thenAnswer(i -> i.getArgument(0));
+
+        ServidorResponseDTO response =
+                servidorService.transferirServidor(1L, dto);
+
+        assertEquals(
+                PerfilServidor.SERVIDOR_APS,
+                response.getPerfil()
+        );
+
+        verify(auditoriaFacade)
+                .servidorAtualizado(eq(1L), anyString());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoSolicitanteForVinculadoEmUbs2() {
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(1L);
+        unidade.setTipoServico(TipoServico.UBS);
+
+        ServidorDTO dto = new ServidorDTO();
+        dto.setPerfil(PerfilServidor.SOLICITANTE);
+        dto.setUnidadeSaudeId(1L);
+
+        when(unidadeSaudeRepository.findById(1L))
+                .thenReturn(Optional.of(unidade));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> servidorService.criar(dto)
+        );
+
+        assertEquals(
+                "Solicitante só pode ser vinculado a serviço do tipo OUTRO",
+                ex.getMessage()
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoServidorApsForVinculadoEmServicoOutro2() {
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(1L);
+        unidade.setTipoServico(TipoServico.OUTRO);
+
+        ServidorDTO dto = new ServidorDTO();
+        dto.setPerfil(PerfilServidor.SERVIDOR_APS);
+        dto.setUnidadeSaudeId(1L);
+
+        when(unidadeSaudeRepository.findById(1L))
+                .thenReturn(Optional.of(unidade));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> servidorService.criar(dto)
+        );
+
+        assertEquals(
+                "Servidor APS só pode ser vinculado a serviço do tipo UBS",
+                ex.getMessage()
+        );
     }
 }
