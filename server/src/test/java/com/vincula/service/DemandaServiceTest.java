@@ -362,33 +362,19 @@ class DemandaServiceTest {
         assertEquals(1, resultado.getTotalElements());
     }
 
-    /*@Test
-    void deveListarPorServidorCriador() {
-
-        Pageable pageable = PageRequest.of(0, 10);
-
-        when(demandaRepository.findByServidorOrderByUsuarioNome(1L, pageable))
-                .thenReturn(criarPaginaDemanda());
-
-        Page<DemandaResponseDTO> resultado =
-                demandaService.listarPorServidorCriador(1L, pageable);
-
-        assertEquals(1, resultado.getTotalElements());
-    }*/
-
     @Test
     void deveListarPorServidorCriadorFiltradas() {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(demandaRepository.findFiltradasByServidorCriador(
+        when(demandaRepository.findFiltradasByUnidadeSolicitante(
                 1L,
                 "abc",
                 pageable))
                 .thenReturn(criarPaginaDemanda());
 
         Page<DemandaResponseDTO> resultado =
-                demandaService.listarPorServidorCriadorFiltradas(
+                demandaService.listarPorUnidadeSolicitanteFiltradas(
                         1L,
                         "abc",
                         pageable);
@@ -740,11 +726,11 @@ class DemandaServiceTest {
     }
 
     @Test
-    void deveExportarDemandasPorServidorCsv() {
+    void deveExportarDemandasPorSolicitanteCsv() {
 
         List<Demanda> demandas = criarDemandas();
 
-        when(demandaRepository.findByServidorOrderByUsuarioNome(1L))
+        when(demandaRepository.findByUnidadeSolicitanteOrderByUsuarioNome(1L))
                 .thenReturn(demandas);
 
         when(demandaExporter.exportar(demandas))
@@ -762,11 +748,11 @@ class DemandaServiceTest {
     }
 
     @Test
-    void deveExportarDemandasFiltradasPorServidorCsv() {
+    void deveExportarDemandasFiltradasPorSolicitanteCsv() {
 
         List<Demanda> demandas = criarDemandas();
 
-        when(demandaRepository.findFiltradasByServidorCriador(
+        when(demandaRepository.findFiltradasByUnidadeSolicitante(
                 1L,
                 "abc"))
                 .thenReturn(demandas);

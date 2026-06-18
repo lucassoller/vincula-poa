@@ -64,7 +64,7 @@ function Demandas() {
                 );
             } else if (servidor?.perfil === "SOLICITANTE") {
                 demandasResponse = await api.get(
-                    `/demandas/unidadeSolicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    `/demandas/solicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
             }else {
                 demandasResponse = { data: { content: [], page: { totalPages: 0 } } };
@@ -102,7 +102,7 @@ function Demandas() {
 
             }  else if (servidor?.perfil === "SOLICITANTE") {
                 demandasResponse = await api.get(
-                    `/demandas/filtradas/unidadeSolicitante/${servidor.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    `/demandas/filtradas/solicitante/${servidor.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
 
             } else {
@@ -345,7 +345,7 @@ function Demandas() {
                     );
                 }else if (servidor?.perfil === "SOLICITANTE") {
                     response = await api.get(
-                        `/demandas/exportar/filtradas/servidor/${servidor.id}/${filtro}`,
+                        `/demandas/exportar/filtradas/solicitante/${servidor.unidadeSaudeId}/${filtro}`,
                         {
                             responseType: "blob",
                         }
@@ -370,7 +370,7 @@ function Demandas() {
                 } else if (servidor?.perfil === "SOLICITANTE") {
 
                     response = await api.get(
-                        `/demandas/exportar/servidor/${servidor.id}`,
+                        `/demandas/exportar/solicitante/${servidor.unidadeSaudeId}`,
                         {
                             responseType: "blob",
                         }

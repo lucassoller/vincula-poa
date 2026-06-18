@@ -71,7 +71,7 @@ public class DemandaController {
     }
 
     @PreAuthorize("hasAnyRole('SOLICITANTE','GESTAO_MUNICIPAL')")
-    @GetMapping("/unidadeSolicitante/{unidadeSolicitanteId}")
+    @GetMapping("/solicitante/{unidadeSolicitanteId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSolicitante(
             @PathVariable Long unidadeSolicitanteId,
             Pageable pageable
@@ -105,7 +105,7 @@ public class DemandaController {
     }
 
     @PreAuthorize("hasRole('SOLICITANTE')")
-    @GetMapping("/filtradas/unidadeSolicitante/{unidadeSolicitanteId}/{filtro}")
+    @GetMapping("/filtradas/solicitante/{unidadeSolicitanteId}/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSolicitanteFiltradas(
             @PathVariable Long unidadeSolicitanteId,
             @PathVariable String filtro,
@@ -157,12 +157,12 @@ public class DemandaController {
     }
 
     @PreAuthorize("hasRole('SOLICITANTE')")
-    @GetMapping(value = "/exportar/servidor/{servidorCriadorId}", produces = "text/csv")
-    public ResponseEntity<String> exportarDemandasPorServidorCsv(
-            @PathVariable Long servidorCriadorId
+    @GetMapping(value = "/exportar/solicitante/{unidadeId}", produces = "text/csv")
+    public ResponseEntity<String> exportarDemandasPorUnidadeSolicitanteCsv(
+            @PathVariable Long unidadeId
     ) {
 
-        String csv = demandaService.exportarDemandasPorUnidadeSolicitanteCsv(servidorCriadorId);
+        String csv = demandaService.exportarDemandasPorUnidadeSolicitanteCsv(unidadeId);
 
         return gerarRespostaCsv(csv);
     }
@@ -196,16 +196,16 @@ public class DemandaController {
 
     @PreAuthorize("hasRole('SOLICITANTE')")
     @GetMapping(
-            value = "/exportar/filtradas/servidor/{servidorCriadorId}/{filtro}",
+            value = "/exportar/filtradas/solicitante/{unidadeId}/{filtro}",
             produces = "text/csv"
     )
-    public ResponseEntity<String> exportarDemandasFiltradasPorServidorCsv(
-            @PathVariable Long servidorCriadorId,
+    public ResponseEntity<String> exportarDemandasFiltradasPorUnidadeSolicitanteCsv(
+            @PathVariable Long unidadeId,
             @PathVariable String filtro
     ) {
 
         String csv = demandaService
-                .exportarDemandasFiltradasPorUnidadeSolicitanteCsv(servidorCriadorId, filtro);
+                .exportarDemandasFiltradasPorUnidadeSolicitanteCsv(unidadeId, filtro);
 
         return gerarRespostaCsv(csv);
     }

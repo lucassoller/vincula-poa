@@ -17,7 +17,6 @@ import com.vincula.util.AuditoriaFacade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -86,11 +85,6 @@ public class DemandaService {
 
     public Page<DemandaResponseDTO> listarPorUnidadeSolicitanteFiltradas(Long unidadeSolicitanteId, String filtro, Pageable pageable) {
         return demandaRepository.findFiltradasByUnidadeSolicitante(unidadeSolicitanteId, filtro, pageable)
-                .map(this::toDTO);
-    }
-
-    public Page<DemandaResponseDTO> listarPorServidorCriadorFiltradas(Long servidorId, String filtro, Pageable pageable) {
-        return demandaRepository.findFiltradasByServidorCriador(servidorId, filtro, pageable)
                 .map(this::toDTO);
     }
 
@@ -243,13 +237,13 @@ public class DemandaService {
     }
 
     public String exportarDemandasPorUnidadeSolicitanteCsv(Long unidadeSolicitanteId){
-        List<Demanda> demandas = demandaRepository.findByServidorOrderByUsuarioNome(unidadeSolicitanteId);
+        List<Demanda> demandas = demandaRepository.findByUnidadeSolicitanteOrderByUsuarioNome(unidadeSolicitanteId);
         auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas da unidade " + unidadeSolicitanteId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
 
     public String exportarDemandasFiltradasPorUnidadeSolicitanteCsv(Long unidadeSolicitanteId, String filtro){
-        List<Demanda> demandas = demandaRepository.findFiltradasByServidorCriador(unidadeSolicitanteId, filtro);
+        List<Demanda> demandas = demandaRepository.findFiltradasByUnidadeSolicitante(unidadeSolicitanteId, filtro);
         auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas da unidade " + unidadeSolicitanteId + " exportadas");
         return demandaExporter.exportar(demandas);
     }
