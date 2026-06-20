@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/public")
 public class RecuperacaoSenhaController {
     private final RecuperacaoSenhaService recuperacaoSenhaService;
 

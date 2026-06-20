@@ -17,7 +17,7 @@ function RedefinirSenha() {
 
         try {
 
-            await api.post("/auth/redefinir-senha", {
+            await api.post("/public/redefinir-senha", {
                 token,
                 novaSenha
             });

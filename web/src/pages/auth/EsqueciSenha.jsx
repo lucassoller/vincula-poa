@@ -16,7 +16,7 @@ function EsqueciSenha() {
 
         try {
             setCarregando(true);
-            await api.post("/auth/esqueci-senha", {
+            await api.post("/public/esqueci-senha", {
                 email
             });
 
