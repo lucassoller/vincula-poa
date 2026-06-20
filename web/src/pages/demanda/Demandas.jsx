@@ -1,15 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
-import api from "../api/api";
-import { useAuth } from "../context/AuthContext.jsx";
-import "./demandas.css";
-import {prazoLabel, formatarDataHora, statusLabel, motivoBuscaLabel } from "../utils/utils.js";
-import ModalTentativaContato from "../components/ModalTentativaContato";
-import ModalRedirecionarDemanda from "../components/ModalRedirecionarDemanda";
-import ModalEncerrarDemanda from "../components/ModalEncerrarDemanda";
-import ModalDetalhesDemanda from "../components/ModalDetalhesDemanda";
+import api from "../../api/api.js";
+import { useAuth } from "../../context/AuthContext.jsx";
+import "../../styles/demandas.css";
+import {prazoLabel, formatarDataHora, statusLabel, motivoBuscaLabel } from "../../utils/utils.js";
+import ModalTentativaContato from "../../components/ModalTentativaContato.jsx";
+import ModalRedirecionarDemanda from "../../components/ModalRedirecionarDemanda.jsx";
+import ModalEncerrarDemanda from "../../components/ModalEncerrarDemanda.jsx";
+import ModalDetalhesDemanda from "../../components/ModalDetalhesDemanda.jsx";
 import { useNavigate } from "react-router-dom";
-import Pagination from "../components/Paginations.jsx";
-import ModalUbs from "../components/ModalUbs.jsx";
+import Pagination from "../../components/Paginations.jsx";
+import ModalUbs from "../../components/ModalUbs.jsx";
 
 function Demandas() {
     const navigate = useNavigate();

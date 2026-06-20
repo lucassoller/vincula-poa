@@ -1,17 +1,17 @@
-import { useState } from "react";
-import api from "../api/api";
-import EnderecoForm from "../components/EnderecoForm.jsx";
-import {useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../api/api.js";
+import EnderecoForm from "../../components/EnderecoForm.jsx";
 import { useForm } from "react-hook-form";
-import {useAuth} from "../context/AuthContext.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2", "tipoServico"];
 
-function UnidadeSaudeCadastro() {
+function UnidadeSaudeEditar() {
     const {
         register,
         handleSubmit,
-        reset
+        reset,
     } = useForm({
         defaultValues: {
             nome: "",
@@ -29,15 +29,34 @@ function UnidadeSaudeCadastro() {
             }
         }
     });
-
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
-    const navigate = useNavigate();
     const [mensagem, setMensagem] = useState("");
     const [mensagemSucesso, setMensagemSucesso] = useState("");
+    const [carregando, setCarregando] = useState(true);
     const { servidor } = useAuth();
 
+    useEffect(() => {
+        async function carregarUnidade() {
+            try {
+                const response = await api.get(`/unidades-saude/${id}`);
+                reset(response.data);
+            } catch {
+                setMensagem("Erro ao carregar serviço de saúde.");
+                setMensagemSucesso("")
+            } finally {
+                setCarregando(false);
+            }
+        }
+
+        void carregarUnidade();
+
+    }, [id, reset]);
+
     function voltarParaEtapaComErro(errors) {
+        setMensagemSucesso("")
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
         if (temErroEtapa1) {
             setEtapa(1);
@@ -45,21 +64,21 @@ function UnidadeSaudeCadastro() {
             setEtapa(2);
         }
         setMensagem("Dados inválidos.");
-        setMensagemSucesso("")
     }
 
     async function salvar(dados) {
         setMensagem("");
         setMensagemSucesso("")
         setErros({});
+
         try {
-            await api.post("/unidades-saude", dados);
-            setMensagemSucesso("Serviço de saúde cadastrado com sucesso!");
-            reset();
-            setErros({});
-        }catch (error) {
+            await api.put(`/unidades-saude/${id}`, dados);
+            setMensagemSucesso("Serviço de saúde editado com sucesso!");
+            setEtapa(1);
+        } catch (error) {
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
+
                 setErros(errors);
                 setMensagem(error.response.data.message || "Dados inválidos");
                 voltarParaEtapaComErro(errors);
@@ -69,14 +88,23 @@ function UnidadeSaudeCadastro() {
         }
     }
 
+    if (carregando) {
+        return (<div className="loading-container">
+                <div className="loading-card">
+                    <p>Carregando serviço de saúde...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="cadastro-container">
             <div className="cadastro-page">
                 <div className="cadastro-header">
                     <div>
-                        <h1>Novo serviço</h1>
+                        <h1>Editar Serviço de Saúde</h1>
                         <p>
-                            Cadastre um serviço para vinculação de usuários e equipes
+                            Atualize os dados cadastrais do serviço
                         </p>
                     </div>
                     <div className="perfil-badge">
@@ -86,8 +114,7 @@ function UnidadeSaudeCadastro() {
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <span onClick={() => setMensagem("")}>✕
-                        </span>
+                        <span onClick={() => setMensagem("")}>✕</span>
                     </div>
                 )}
                 {mensagemSucesso && (
@@ -107,13 +134,13 @@ function UnidadeSaudeCadastro() {
                         Endereço
                     </div>
                 </div>
-                <form className="cadastro-card">
+                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
                     {etapa === 1 && (
                         <>
                             <div className="form-grid full">
                                 <div className="form-group">
                                     <label>
-                                        Nome do serviço<span>*</span>
+                                        Nome <span>*</span>
                                     </label>
                                     <input
                                         className="input-field"
@@ -131,9 +158,9 @@ function UnidadeSaudeCadastro() {
                                     </label>
                                     <input
                                         className="input-field"
-                                        type="text"
                                         {...register("cnes")}
                                     />
+
                                     {erros.cnes && (
                                         <small>{erros.cnes}</small>
                                     )}
@@ -151,7 +178,6 @@ function UnidadeSaudeCadastro() {
                                     {erros.tipoServico && <small>{erros.tipoServico}</small>}
                                 </div>
                             </div>
-
                             <div className="form-grid two">
                                 <div className="form-group">
                                     <label>
@@ -204,14 +230,13 @@ function UnidadeSaudeCadastro() {
                             <EnderecoForm
                                 register={register}
                                 erros={erros}
-
                             />
                             <div className="form-actions">
                                 <span
                                     onClick={handleSubmit(salvar)}
                                     className="buscar-btn"
                                 >
-                                    Cadastrar
+                                    Salvar alterações
                                 </span>
                                 <span
                                     className="buscar-btn"
@@ -228,4 +253,4 @@ function UnidadeSaudeCadastro() {
     );
 }
 
-export default UnidadeSaudeCadastro;
+export default UnidadeSaudeEditar;

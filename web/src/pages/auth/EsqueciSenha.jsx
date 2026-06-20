@@ -1,7 +1,7 @@
 import { useState } from "react";
-import api from "../api/api";
+import api from "../../api/api.js";
 import { useNavigate } from "react-router-dom";
-import "./esqueciSenha.css"
+import "../../styles/esqueciSenha.css"
 
 function EsqueciSenha() {
     const navigate = useNavigate();

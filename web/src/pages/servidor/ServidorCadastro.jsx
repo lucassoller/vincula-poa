@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
-import api from "../api/api";
+import api from "../../api/api.js";
 import {useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {useAuth} from "../context/AuthContext.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 function ServidorCadastro() {
     const {

@@ -1,6 +1,6 @@
 import {useNavigate, useSearchParams} from "react-router-dom";
 import { useState } from "react";
-import api from "../api/api";
+import api from "../../api/api.js";
 
 function RedefinirSenha() {
     const navigate = useNavigate();

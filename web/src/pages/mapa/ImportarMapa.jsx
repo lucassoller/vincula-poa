@@ -1,8 +1,8 @@
 import { useState } from "react";
-import api from "../api/api";
-import { converterGoogleMaps } from "../utils/googleMapsImport";
-import "./importarMapa.css";
-import {useAuth} from "../context/AuthContext.jsx";
+import api from "../../api/api.js";
+import { converterGoogleMaps } from "../../utils/googleMapsImport.js";
+import "../../styles/importarMapa.css";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 function ImportarMapa() {
 

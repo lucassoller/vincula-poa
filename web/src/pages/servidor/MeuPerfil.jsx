@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
-import api from "../api/api.js";
+import { useAuth } from "../../context/AuthContext.jsx";
+import api from "../../api/api.js";
 import {useForm} from "react-hook-form";
 
 function MeuPerfil() {

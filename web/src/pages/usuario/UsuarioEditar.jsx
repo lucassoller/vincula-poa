@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../api/api";
-import EnderecoForm from "../components/EnderecoForm";
-import "./usuarioCadastro.css";
+import api from "../../api/api.js";
+import EnderecoForm from "../../components/EnderecoForm.jsx";
+import "../../styles/usuarioCadastro.css";
 import { useForm } from "react-hook-form";
 
-import ModalRedirecionarDemandas from "../components/ModalRedirecionarDemandas.jsx";
-import {useAuth} from "../context/AuthContext.jsx";
+import ModalRedirecionarDemandas from "../../components/ModalRedirecionarDemandas.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 

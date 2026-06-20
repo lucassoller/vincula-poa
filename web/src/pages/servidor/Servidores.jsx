@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import api from "../api/api";
-import "./usuarios.css";
+import { useAuth } from "../../context/AuthContext.jsx";
+import api from "../../api/api.js";
+import "../../styles/usuarios.css";
 import { useNavigate } from "react-router-dom";
-import ModalUbs from "../components/ModalUbs.jsx";
-import Pagination from "../components/Paginations.jsx";
-import ModalTransferirServidor from "../components/ModalTransferirServidor.jsx";
+import ModalUbs from "../../components/ModalUbs.jsx";
+import Pagination from "../../components/Paginations.jsx";
+import ModalTransferirServidor from "../../components/ModalTransferirServidor.jsx";
 
 function Servidores() {
     const navigate = useNavigate();

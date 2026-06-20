@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import api from "../api/api";
-import "./auditoria.css";
-import Pagination from "../components/Paginations.jsx";
-import {formatarDataHora, formatarEnum} from "../utils/utils.js";
-import {useAuth} from "../context/AuthContext.jsx";
+import api from "../../api/api.js";
+import "../../styles/auditoria.css";
+import Pagination from "../../components/Paginations.jsx";
+import {formatarDataHora, formatarEnum} from "../../utils/utils.js";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 function Auditoria() {
 

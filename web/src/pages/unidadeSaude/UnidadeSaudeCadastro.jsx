@@ -1,25 +1,24 @@
 import { useState } from "react";
-import api from "../api/api";
-import EnderecoForm from "../components/EnderecoForm";
-import "./usuarioCadastro.css";
+import api from "../../api/api.js";
+import EnderecoForm from "../../components/EnderecoForm.jsx";
 import {useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {useAuth} from "../context/AuthContext.jsx";
+import {useAuth} from "../../context/AuthContext.jsx";
 
+const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2", "tipoServico"];
 
-const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
-
-function UsuarioCadastro() {
+function UnidadeSaudeCadastro() {
     const {
         register,
         handleSubmit,
+        reset
     } = useForm({
         defaultValues: {
-            nomeCompleto: "",
+            nome: "",
+            cnes: "",
             telefone: "",
-            documento: "",
-            dataNascimento: "",
-            sexo: "",
+            telefone2: "",
+            tipoServico: 'UBS',
             endereco: {
                 rua: "",
                 numero: "",
@@ -30,15 +29,15 @@ function UsuarioCadastro() {
             }
         }
     });
-    const navigate = useNavigate();
+
     const [etapa, setEtapa] = useState(1);
     const [erros, setErros] = useState({});
+    const navigate = useNavigate();
     const [mensagem, setMensagem] = useState("");
     const [mensagemSucesso, setMensagemSucesso] = useState("");
     const { servidor } = useAuth();
 
     function voltarParaEtapaComErro(errors) {
-        setMensagemSucesso("")
         const temErroEtapa1 = camposEtapa1.some((campo) => errors[campo]);
         if (temErroEtapa1) {
             setEtapa(1);
@@ -46,6 +45,7 @@ function UsuarioCadastro() {
             setEtapa(2);
         }
         setMensagem("Dados inválidos.");
+        setMensagemSucesso("")
     }
 
     async function salvar(dados) {
@@ -53,26 +53,13 @@ function UsuarioCadastro() {
         setMensagemSucesso("")
         setErros({});
         try {
-            const payload = {
-                ...dados,
-                sexo: dados.sexo || null,
-            };
-
-            const response = await api.post("/usuarios", payload);
-
-            if(response.data.id !== null){
-                navigate("/demandas/cadastro", {
-                    state: {
-                        usuarioId: response.data.id
-                    }
-                });
-            }
+            await api.post("/unidades-saude", dados);
+            setMensagemSucesso("Serviço de saúde cadastrado com sucesso!");
+            reset();
             setErros({});
         }catch (error) {
-            setMensagemSucesso("")
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
-
                 setErros(errors);
                 setMensagem(error.response.data.message || "Dados inválidos");
                 voltarParaEtapaComErro(errors);
@@ -87,134 +74,149 @@ function UsuarioCadastro() {
             <div className="cadastro-page">
                 <div className="cadastro-header">
                     <div>
-                        <h1>Novo usuário</h1>
-                        <p>Preencha os dados do usuário para iniciar o acompanhamento</p>
+                        <h1>Novo serviço</h1>
+                        <p>
+                            Cadastre um serviço para vinculação de usuários e equipes
+                        </p>
                     </div>
                     <div className="perfil-badge">
                         {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
                     </div>
                 </div>
-
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <span onClick={() => setMensagem("")}>✕</span>
+                        <span onClick={() => setMensagem("")}>✕
+                        </span>
                     </div>
                 )}
-
                 {mensagemSucesso && (
                     <div className="success-card">
                         <span>{mensagemSucesso}</span>
                         <span onClick={() => setMensagemSucesso("")}>✕</span>
                     </div>
                 )}
-
                 <div className="stepper">
                     <div className={`step ${etapa === 1 ? "active" : ""}`}>
                         <span>1</span>
-                        Dados pessoais
+                        Dados do serviço
                     </div>
-
                     <div className="step-line"></div>
-
                     <div className={`step ${etapa === 2 ? "active" : ""}`}>
                         <span>2</span>
                         Endereço
                     </div>
                 </div>
-
-                <form className="cadastro-card" onSubmit={handleSubmit(salvar)}>
+                <form className="cadastro-card">
                     {etapa === 1 && (
                         <>
                             <div className="form-grid full">
                                 <div className="form-group">
-                                    <label>Nome completo <span>*</span></label>
+                                    <label>
+                                        Nome do serviço<span>*</span>
+                                    </label>
                                     <input
                                         className="input-field"
-                                        {...register("nomeCompleto")}
+                                        {...register("nome")}
                                     />
-                                    {erros.nomeCompleto && <small>{erros.nomeCompleto}</small>}
+                                    {erros.nome && (
+                                        <small>{erros.nome}</small>
+                                    )}
                                 </div>
                             </div>
-
                             <div className="form-grid two">
                                 <div className="form-group">
-                                    <label>CPF/CNS <span>*</span></label>
-
+                                    <label>
+                                        CNES <span>*</span>
+                                    </label>
                                     <input
                                         className="input-field"
-                                        {...register("documento")}
-                                        type="number"
-                                        placeholder="Digite CPF ou CNS"
-                                    />
-
-                                    {erros.documento && <small>{erros.documento}</small>}
-                                </div>
-                                <div className="form-group">
-                                    <label>Telefone</label>
-                                    <input
-                                        className="input-field"
-                                        {...register("telefone")}
-                                        placeholder="(xx)xxxxx-xxxx"
                                         type="text"
+                                        {...register("cnes")}
                                     />
-                                    {erros.telefone && <small>{erros.telefone}</small>}
+                                    {erros.cnes && (
+                                        <small>{erros.cnes}</small>
+                                    )}
                                 </div>
-                            </div>
-
-                            <div className="form-grid two">
                                 <div className="form-group">
-                                    <label>Data de nascimento</label>
-                                    <input
-                                        className="input-field"
-                                        {...register("dataNascimento")}
-                                        type="date"
-                                    />
-                                    {erros.dataNascimento && <small>{erros.dataNascimento}</small>}
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Sexo</label>
+                                    <label>Tipo de serviço <span>*</span> </label>
                                     <select
                                         className="input-field"
-                                        {...register("sexo")}
+                                        {...register("tipoServico")}
 
                                     >
-                                        <option value="">Selecione</option>
-                                        <option value="FEMININO">Feminino</option>
-                                        <option value="MASCULINO">Masculino</option>
+                                        <option value="UBS">UBS</option>
                                         <option value="OUTRO">Outro</option>
-                                        <option value="NAO_INFORMADO">Não informar</option>
                                     </select>
-                                    {erros.sexo && <small>{erros.sexo}</small>}
+                                    {erros.tipoServico && <small>{erros.tipoServico}</small>}
                                 </div>
                             </div>
 
+                            <div className="form-grid two">
+                                <div className="form-group">
+                                    <label>
+                                        Telefone
+                                    </label>
+                                    <input
+                                        className="input-field"
+                                        placeholder="(xx)xxxxx-xxxx"
+                                        type="text"
+                                        {...register("telefone")}
+                                    />
+                                    {erros.telefone && (
+                                        <small>{erros.telefone}</small>
+                                    )}
+                                </div>
+                                <div className="form-group">
+                                    <label>
+                                        Telefone adicional
+                                    </label>
+                                    <input
+                                        className="input-field"
+                                        placeholder="(xx)xxxxx-xxxx"
+                                        type="text"
+                                        {...register("telefone2")}
+                                    />
+                                    {erros.telefone2 && (
+                                        <small>{erros.telefone2}</small>
+                                    )}
+                                </div>
+
+                            </div>
                             <div className="form-actions">
-                                <span className="buscar-btn" onClick={() => setEtapa(2)}>
+                                <span
+                                    className="buscar-btn"
+                                    onClick={() => setEtapa(2)}
+                                >
                                     Próximo
                                 </span>
-
-                                <span className="buscar-btn" onClick={() => navigate("/usuarios")}>
+                                <span
+                                    className="buscar-btn"
+                                    onClick={() => navigate("/unidades-saude")}
+                                >
                                     Cancelar
                                 </span>
                             </div>
                         </>
                     )}
-
                     {etapa === 2 && (
                         <>
                             <EnderecoForm
                                 register={register}
                                 erros={erros}
-                            />
 
+                            />
                             <div className="form-actions">
-                                <span onClick={handleSubmit(salvar)} className="buscar-btn">
+                                <span
+                                    onClick={handleSubmit(salvar)}
+                                    className="buscar-btn"
+                                >
                                     Cadastrar
                                 </span>
-
-                                <span className="buscar-btn" onClick={() => setEtapa(1)}>
+                                <span
+                                    className="buscar-btn"
+                                    onClick={() => setEtapa(1)}
+                                >
                                     Voltar
                                 </span>
                             </div>
@@ -226,4 +228,4 @@ function UsuarioCadastro() {
     );
 }
 
-export default UsuarioCadastro;
+export default UnidadeSaudeCadastro;

@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import api from "../api/api";
-import "./indicador.css";
-import { useAuth } from "../context/AuthContext.jsx";
+import api from "../../api/api.js";
+import "../../styles/indicador.css";
+import { useAuth } from "../../context/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
-import Ranking from "../components/Ranking.jsx";
-import BarChartSimples from "../components/BarChartSimples.jsx";
-import DonutChart from "../components/DonutChart.jsx";
-import SecaoCardsInterna from "../components/SecaoCardsInterna.jsx";
-import ChartCard from "../components/ChartCard.jsx";
-import SecaoCards from "../components/SecaoCards.jsx";
+import Ranking from "../../components/Ranking.jsx";
+import BarChartSimples from "../../components/BarChartSimples.jsx";
+import DonutChart from "../../components/DonutChart.jsx";
+import SecaoCardsInterna from "../../components/SecaoCardsInterna.jsx";
+import ChartCard from "../../components/ChartCard.jsx";
+import SecaoCards from "../../components/SecaoCards.jsx";
 
 function Indicador() {
     const navigate = useNavigate();

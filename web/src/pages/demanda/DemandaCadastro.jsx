@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import api from "../api/api";
-import { useAuth } from "../context/AuthContext.jsx";
-import "./demandaCadastro.css";
+import api from "../../api/api.js";
+import { useAuth } from "../../context/AuthContext.jsx";
+import "../../styles/demandaCadastro.css";
 import {useForm} from "react-hook-form";
 
 function DemandaCadastro() {

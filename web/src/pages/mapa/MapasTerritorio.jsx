@@ -1,7 +1,7 @@
 import {MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, Pane} from "react-leaflet";
 import { useEffect, useState } from "react";
-import api from "../api/api";
-import "./mapasTerritorio.css";
+import api from "../../api/api.js";
+import "../../styles/mapasTerritorio.css";
 
 function MapaTerritorios() {
     const [territorios, setTerritorios] = useState([]);
