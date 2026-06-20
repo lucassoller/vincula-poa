@@ -1121,4 +1121,22 @@ class ServidorServiceTest {
                 ex.getMessage()
         );
     }
+
+    @Test
+    void deveCriarGestaoMunicipalSemUnidade() {
+        ServidorDTO dto = new ServidorDTO();
+        dto.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
+        dto.setUnidadeSaudeId(null);
+
+        Servidor servidorSalvo = new Servidor();
+        servidorSalvo.setId(1L);
+
+        when(servidorRepository.save(any(Servidor.class)))
+                .thenReturn(servidorSalvo);
+
+        ServidorResponseDTO response = servidorService.criar(dto);
+
+        assertNotNull(response);
+        assertNull(response.getUnidadeSaudeId());
+    }
 }
