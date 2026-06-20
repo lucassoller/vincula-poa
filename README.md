@@ -12,18 +12,23 @@ Frontend (React)  ←→  Backend (Spring Boot API)  ←→  PostgreSQL
 ## Tecnologias utilizadas
 
 ### Frontend
+- JavaScript
 - React
-- React Router DOM
 - Axios
-- CSS puro
+- Leaflet
 
 ### Backend
 - Java 17+
 - Spring Boot
 - Spring Security
-- JPA / Hibernate
-- PostgreSQL
+- Spring Data JPA / Hibernate
 - JWT
+- JUnit
+- OpenStreetMap
+- GeoJSON
+
+### Database
+- PostgreSQL
 
 ## Funcionalidades
 
@@ -83,6 +88,10 @@ Configurar `.env`:
 ```env
 VITE_API_URL=http://localhost:8080
 ```
+
+### 4. Database
+
+É necessário ter o banco de dados PostgreSQL baixado e configurado
 
 ---
 
