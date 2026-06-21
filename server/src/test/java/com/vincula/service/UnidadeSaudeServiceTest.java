@@ -1,5 +1,7 @@
 package com.vincula.service;
 
+import com.vincula.dto.endereco.EnderecoDTO;
+import com.vincula.dto.endereco.EnderecoResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
@@ -17,7 +19,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +35,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureJsonTesters
 class UnidadeSaudeServiceTest {
+
     @Mock
     private UnidadeSaudeRepository unidadeSaudeRepository;
 
@@ -46,9 +54,18 @@ class UnidadeSaudeServiceTest {
     @Test
     void deveCriarUnidadeComSucesso() {
 
+        EnderecoDTO dtoEnd = new EnderecoDTO();
+        dtoEnd.setRua("Rua A");
+        dtoEnd.setNumero("10");
+        dtoEnd.setBairro("Centro");
+        dtoEnd.setCidade("POA");
+        dtoEnd.setEstado("RS");
+        dtoEnd.setComplemento("apto 1");
+
         UnidadeSaudeDTO dto = new UnidadeSaudeDTO();
         dto.setNome("UBS Centro");
         dto.setCnes("1234567");
+        dto.setEndereco(dtoEnd);
 
         Endereco endereco = new Endereco();
 
@@ -73,6 +90,7 @@ class UnidadeSaudeServiceTest {
         assertEquals("UBS Centro", response.getNome());
 
         verify(auditoriaFacade).unidadeSaudeCriada(1L);
+        verify(enderecoMapper).toEntity(any());
     }
 
     @Test

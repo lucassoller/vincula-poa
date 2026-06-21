@@ -201,5 +201,4 @@ class UnidadeSaudeControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk());
     }
-
 }
