@@ -23,7 +23,7 @@ public class DemandaExporter {
                         "foi_redirecionada,motivo_redirecionamento," +
                         "unidade_solicitante,unidade_responsavel," +
                         "servidor_criador,unidadeResponsavelAnterior," +
-                        "servidorEncerramento,servidorRedirecionamenot\n"
+                        "servidorEncerramento,servidorRedirecionamento\n"
         );
 
         for (Demanda d : demandas) {

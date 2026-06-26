@@ -19,10 +19,9 @@ public class IndicadorExporter {
         adicionarIndicadores(sb, "producao", indicador.getProducao());
         adicionarIndicadores(sb, "processo", indicador.getProcesso());
         adicionarIndicadores(sb, "resultado", indicador.getResultado());
-        adicionarMotivos(sb, indicador.getPrincipaisMotivos());
-        adicionarMotivos(sb, indicador.getPrincipaisComplementos());
+        adicionarMotivos(sb, "motivo_busca_ativa", indicador.getPrincipaisMotivos());
+        adicionarMotivos(sb, "motivo_detalhamento", indicador.getPrincipaisComplementos());
         adicionarIndicadores(sb, "prazos", indicador.getPrazos());
-
         adicionarRanking(sb, "ranking_total_demandas", indicador.getRankingTotalDemandas());
         adicionarRanking(sb, "ranking_percentual_resolucao", indicador.getRankingPercentualResolucao());
         adicionarRanking(sb, "ranking_tempo_medio_resolucao", indicador.getRankingTempoMedioResolucao());
@@ -39,13 +38,14 @@ public class IndicadorExporter {
         }
     }
 
-    private void adicionarMotivos(StringBuilder sb, List<MotivoQuantidadeDTO> motivos) {
+    private void adicionarMotivos(StringBuilder sb, String categoria, List<MotivoQuantidadeDTO> motivos) {
         for (MotivoQuantidadeDTO item : motivos) {
-            sb.append("motivo_insucesso,")
+            sb.append(categoria).append(",")
                     .append(escapar(item.getMotivo())).append(",")
                     .append(item.getQuantidade()).append("\n");
         }
     }
+
 
     private void adicionarRanking(StringBuilder sb, String categoria, List<IndicadorRankingDTO> ranking) {
         for (IndicadorRankingDTO item : ranking) {
