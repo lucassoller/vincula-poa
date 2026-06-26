@@ -1,5 +1,7 @@
 package com.vincula.service;
 
+import com.vincula.dto.MotivoBuscaResponseDTO;
+import com.vincula.dto.MotivoComplementoResponseDTO;
 import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.demanda.EncerrarDemandaDTO;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
@@ -18,7 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DemandaService {
@@ -277,12 +281,16 @@ public class DemandaService {
         }
 
         entity.setUnidadeResponsavel(usuario.getUnidadeSaude());
-        entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
+        entity.setPrioridade(dto.getPrioridade());
         entity.setDescricaoBusca(dto.getDescricaoBusca());
         entity.setPrazoDemanda(dto.getPrazoDemanda());
         entity.setStatus(StatusDemanda.ABERTA);
         entity.setDataHoraCriacao(LocalDateTime.now());
         entity.setDataHoraLimite(calcularDataLimite(entity.getDataHoraCriacao(), dto.getPrazoDemanda()));
+
+        validarMotivoEComplemento(dto.getMotivoBuscaAtiva(), dto.getMotivoComplemento());
+        entity.setMotivoBuscaAtiva(dto.getMotivoBuscaAtiva());
+        entity.setMotivoComplemento(dto.getMotivoComplemento());
 
         return entity;
     }
@@ -303,6 +311,8 @@ public class DemandaService {
         dto.setUnidadeResponsavelNome(entity.getUnidadeResponsavel().getNome());
 
         dto.setMotivoBuscaAtiva(entity.getMotivoBuscaAtiva());
+        dto.setMotivoComplemento(entity.getMotivoComplemento());
+        dto.setPrioridade(entity.getPrioridade());
         dto.setDescricaoBusca(entity.getDescricaoBusca());
         dto.setPrazoDemanda(entity.getPrazoDemanda());
         dto.setStatus(entity.getStatus());
@@ -338,6 +348,40 @@ public class DemandaService {
         }
 
         return dto;
+    }
+
+    public void validarMotivoEComplemento(MotivoBuscaAtiva motivo,
+                                        MotivoComplemento complemento) {
+
+        // se não tem complemento, não valida nada
+        if (complemento == null || motivo == null || motivo == MotivoBuscaAtiva.OUTRO) {
+            return;
+        }
+
+        Set<MotivoComplemento> permitidos = motivo.getComplementosPermitidos();
+
+        // se motivo não tem regra ou não permite nada
+        if (!permitidos.contains(complemento)) {
+            throw new BusinessException(
+                "O detalhamento é inválido para o motivo: " + motivo
+            );
+        }
+    }
+
+    public List<MotivoBuscaResponseDTO> listarMotivos() {
+
+        return Arrays.stream(MotivoBuscaAtiva.values())
+                .map(motivo -> new MotivoBuscaResponseDTO(
+                        motivo.name(),
+                        motivo.getDescricao(),
+                        motivo.getComplementosPermitidos()
+                                .stream()
+                                .map(c -> new MotivoComplementoResponseDTO(
+                                        c.name(),
+                                        c.getDescricao()))
+                                .toList()
+                ))
+                .toList();
     }
 
     private LocalDateTime calcularDataLimite(LocalDateTime inicio, PrazoDemanda prazo) {

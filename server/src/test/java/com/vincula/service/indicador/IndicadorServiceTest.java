@@ -14,9 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -60,14 +57,6 @@ class IndicadorServiceTest {
 
     private final LocalDateTime inicio = LocalDateTime.now().minusDays(30);
     private final LocalDateTime fim = LocalDateTime.now();
-
-    private void autenticarUsuario() {
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-    }
 
     @Test
     void devePermitirIndicadorGeralParaGestaoMunicipal() {

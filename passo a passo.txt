@@ -1,0 +1,28 @@
+1- baixar git bash ou fazer o download do zip, extrair e ir pro passo 3
+2- clonar repositório de https://github.com/lucassoller/vincula-poa.git
+3- baixar vs code
+4- baixar postgres
+5- baixar Java
+6- baixar Maven
+7- baixar jdk
+8- conferir se java, jdk e maven estão no path
+9- criar o banco vincula-poa no postgres
+10- configurar nas variaveis do sistema                                                                                                                                                                                                  
+PORT 			8080
+FRONTEND_URL		http://localhost:5173
+DB_URL			jdbc:postgresql://localhost:5432/vincula-poa
+DATABASE_USER		postgres
+DATABASE_PASSWORD	postgres
+MAIL_TOKEN		{seu token do site resend}
+JWT_SECRET		{aqui qualquer texto pode ser a chave de criptografia}
+
+11- dar build no servidor mvn spring-boot:run
+se não encontrar o jdk:  
+12- where javac e copiar
+13- adicionar o valor do javac nas variaveis do sistema
+14- dar build no servidor mvn spring-boot:run  
+15- rodar o servidor
+16- baixar node
+17- se o cmd não reconhecer npm Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+18- npm install
+19- npm run dev

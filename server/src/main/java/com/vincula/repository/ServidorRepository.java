@@ -1,7 +1,6 @@
 package com.vincula.repository;
 
 import com.vincula.entity.Servidor;
-import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilServidor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

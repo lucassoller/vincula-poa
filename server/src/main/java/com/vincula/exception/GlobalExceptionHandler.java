@@ -1,7 +1,6 @@
 package com.vincula.exception;
 
 import com.vincula.dto.ErrorResponseDTO;
-import com.vincula.util.AuditoriaFacade;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +14,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    private final AuditoriaFacade auditoriaFacade;
-
-    public GlobalExceptionHandler(AuditoriaFacade auditoriaFacade) {
-        this.auditoriaFacade = auditoriaFacade;
+    public GlobalExceptionHandler() {
+        
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

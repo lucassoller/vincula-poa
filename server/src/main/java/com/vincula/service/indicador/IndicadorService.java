@@ -18,6 +18,7 @@ public class IndicadorService {
     private final IndicadorProcessoService indicadorProcessoService;
     private final IndicadorResultadoService indicadorResultadoService;
     private final IndicadorInsucessoService indicadorInsucessoService;
+    private final IndicadorComplementoService indicadorComplementoService;
     private final ServidorService servidorService;
     private final IndicadorExporter csvExporter;
     private final IndicadorRankingService indicadorRankingService;
@@ -28,6 +29,7 @@ public class IndicadorService {
                             IndicadorProcessoService indicadorProcessoService,
                             IndicadorResultadoService indicadorResultadoService,
                             IndicadorInsucessoService indicadorInsucessoService,
+                            IndicadorComplementoService indicadorComplementoService,
                             IndicadorRankingService indicadorRankingService,
                             IndicadorPrazoService indicadorPrazoService,
                             IndicadorExporter csvExporter,
@@ -37,6 +39,7 @@ public class IndicadorService {
         this.indicadorProcessoService = indicadorProcessoService;
         this.indicadorResultadoService = indicadorResultadoService;
         this.indicadorInsucessoService = indicadorInsucessoService;
+        this.indicadorComplementoService = indicadorComplementoService;
         this.indicadorRankingService = indicadorRankingService;
         this.indicadorPrazoService = indicadorPrazoService;
         this.csvExporter = csvExporter;
@@ -50,6 +53,7 @@ public class IndicadorService {
                 indicadorProcessoService.montarProcessoGeral(),
                 indicadorResultadoService.percentualPorDesfecho(),
                 indicadorInsucessoService.principaisMotivosInsucesso(),
+                indicadorComplementoService.principaisComplementos(),
                 indicadorPrazoService.indicadoresPrazo(),
                 indicadorRankingService.rankingPorTotalDemandas(),
                 indicadorRankingService.rankingPorPercentualResolucao(),
@@ -98,6 +102,7 @@ public class IndicadorService {
                 indicadorProcessoService.montarProcessoPorUnidade(unidadeSaudeId),
                 indicadorResultadoService.percentualPorDesfechoPorUnidade(unidadeSaudeId),
                 indicadorInsucessoService.principaisMotivosInsucessoPorUnidade(unidadeSaudeId),
+                indicadorComplementoService.principaisComplementosPorUnidade(unidadeSaudeId),
                 indicadorPrazoService.indicadoresPrazoPorUnidade(unidadeSaudeId),
                 List.of(),
                 List.of(),
@@ -113,6 +118,7 @@ public class IndicadorService {
                 indicadorProcessoService.montarProcessoPorPeriodo(inicio, fim),
                 indicadorResultadoService.percentualPorDesfechoPorPeriodo(inicio, fim),
                 indicadorInsucessoService.principaisMotivosInsucessoPorPeriodo(inicio, fim),
+                indicadorComplementoService.principaisComplementosPorPeriodo(inicio, fim),
                 indicadorPrazoService.indicadoresPrazoPorPeriodo(inicio, fim),
                 List.of(),
                 List.of(),
@@ -128,6 +134,7 @@ public class IndicadorService {
                 indicadorProcessoService.montarProcessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorResultadoService.percentualPorDesfechoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorInsucessoService.principaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
+                indicadorComplementoService.principaisComplementosPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 indicadorPrazoService.indicadoresPrazoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim),
                 List.of(),
                 List.of(),
@@ -142,6 +149,7 @@ public class IndicadorService {
                 indicadorProcessoService.montarProcessoPorServidor(unidadeSolicitante),
                 indicadorResultadoService.percentualPorDesfechoPorServidor(unidadeSolicitante),
                 indicadorInsucessoService.principaisMotivosInsucessoPorServidor(unidadeSolicitante),
+                indicadorComplementoService.principaisComplementosPorServidor(unidadeSolicitante),
                 indicadorPrazoService.indicadoresPrazoPorServidor(unidadeSolicitante),
                 List.of(),
                 List.of(),
@@ -156,6 +164,7 @@ public class IndicadorService {
                 indicadorProcessoService.montarProcessoPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
                 indicadorResultadoService.percentualPorDesfechoPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
                 indicadorInsucessoService.principaisMotivosInsucessoPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
+                indicadorComplementoService.principaisComplementosPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
                 indicadorPrazoService.indicadoresPrazoPorServidorEPeriodo(unidadeSolicitanteId, inicio, fim),
                 List.of(),
                 List.of(),

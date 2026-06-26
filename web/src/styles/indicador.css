@@ -79,6 +79,13 @@
     margin-bottom: 34px;
 }
 
+.indicador-grid-all {
+    display: block;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin-bottom: 34px;
+}
+
 .chart-card,
 .ranking-card {
     background: white;

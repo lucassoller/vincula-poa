@@ -3,9 +3,12 @@ import {
     desfechoLabel,
     formatarDataHora,
     motivoBuscaLabel,
+    motivoComplementoLabel,
     prazoLabel,
     statusLabel,
-    tentativaContatoLabe
+    prioridadeLabel,
+    tentativaContatoLabel,
+    diasRestantes
 } from "../utils/utils.js";
 
 function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
@@ -28,11 +31,21 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                     <div className="detalhe-grid">
                         <CampoDetalhe label="Usuário" valor={demanda.usuarioNome} />
                         <CampoDetalhe label="Motivo da busca" valor={motivoBuscaLabel[demanda.motivoBuscaAtiva]} />
+                        <CampoDetalhe label="Detalhamento do motivo da busca" valor={motivoComplementoLabel[demanda.motivoComplemento]} />
+                        <CampoDetalhe label="Prioridade" valor={prioridadeLabel[demanda.prioridade]} />
                         <CampoDetalhe label="Status" valor={statusLabel[demanda.status]} />
+                        <CampoDetalhe label="Descrição da busca" valor={demanda.descricaoBusca} />
+                    </div>
+                </div>
+
+                <div className="detalhe-section">
+                    <h3>Prazos</h3>
+
+                    <div className="detalhe-grid">
                         <CampoDetalhe label="Prazo" valor={prazoLabel[demanda.prazoDemanda]} />
                         <CampoDetalhe label="Criada em" valor={formatarDataHora(demanda.dataHoraCriacao)} />
                         <CampoDetalhe label="Data limite" valor={formatarDataHora(demanda.dataHoraLimite)} />
-                        <CampoDetalhe label="Descrição da busca" valor={demanda.descricaoBusca} />
+                        <CampoDetalhe label="Dias restantes" valor={diasRestantes(demanda.dataHoraCriacao, demanda.dataHoraLimite)} />
                     </div>
                 </div>
 
@@ -100,7 +113,7 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                             {tentativasContato.map((t) => (
                                 <div className="tentativa-card" key={t.id}>
                                     <div className="tentativa-top">
-                                        <strong>{tentativaContatoLabe[t.tipo]}</strong>
+                                        <strong>{tentativaContatoLabel[t.tipo]}</strong>
                                         <span>{formatarDataHora(t.dataHora)}</span>
                                     </div>
 

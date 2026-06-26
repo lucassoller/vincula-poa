@@ -2,7 +2,9 @@ package com.vincula.entity;
 
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.MotivoBuscaAtiva;
+import com.vincula.enums.MotivoComplemento;
 import com.vincula.enums.PrazoDemanda;
+import com.vincula.enums.Prioridade;
 import com.vincula.enums.StatusDemanda;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,8 +21,16 @@ public class Demanda {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 14)
+    @Column(nullable = false, length = 21)
     private MotivoBuscaAtiva motivoBuscaAtiva;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 38)
+    private MotivoComplemento motivoComplemento;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 5)
+    private Prioridade prioridade;
 
     @Column(length = 500)
     private String descricaoBusca;

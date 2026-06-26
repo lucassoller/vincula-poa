@@ -343,7 +343,6 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
@@ -352,8 +351,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
-      AND d.unidade_responsavel_id = :unidadeResponsavelId
+    WHERE d.unidade_responsavel_id = :unidadeResponsavelId
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
@@ -362,8 +360,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
-      AND d.unidade_solicitante_id = :unidadeSolicitanteId
+    WHERE d.unidade_solicitante_id = :unidadeSolicitanteId
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
@@ -373,8 +370,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
-      AND d.data_hora_criacao BETWEEN :inicio AND :fim
+    WHERE d.data_hora_criacao BETWEEN :inicio AND :fim
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
@@ -384,8 +380,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
-      AND d.unidade_responsavel_id = :unidadeResponsavelId
+    WHERE 
+      d.unidade_responsavel_id = :unidadeResponsavelId
       AND d.data_hora_criacao BETWEEN :inicio AND :fim
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
@@ -397,13 +393,76 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE d.desfecho IN ('NAO_LOCALIZADO', 'ENDERECO_INCORRETO', 'MUDOU_TERRITORIO', 'OUTRO')
-      AND d.unidade_solicitante_id = :unidadeSolicitanteId
+    WHERE 
+      d.unidade_solicitante_id = :unidadeSolicitanteId
       AND d.data_hora_criacao BETWEEN :inicio AND :fim
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidadeSolicitanteEPeriodo(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
+                                                                                        @Param("inicio") LocalDateTime inicio,
+                                                                                        @Param("fim") LocalDateTime fim);
+
+                                                                                        @Query(value = """
+    SELECT d.motivo_complemento AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    GROUP BY d.motivo_complemento
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisComplementos();
+
+    @Query(value = """
+    SELECT d.motivo_complemento AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.unidade_responsavel_id = :unidadeResponsavelId
+    GROUP BY d.motivo_complemento
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisComplementosPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
+
+    @Query(value = """
+    SELECT d.motivo_complemento AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.unidade_solicitante_id = :unidadeSolicitanteId
+    GROUP BY d.motivo_complemento
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisComplementosPorUnidadeSolicitante(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId);
+
+
+    @Query(value = """
+    SELECT d.motivo_complemento AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE d.data_hora_criacao BETWEEN :inicio AND :fim
+    GROUP BY d.motivo_complemento
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisComplementosPorPeriodo(@Param("inicio") LocalDateTime inicio,
+                                                                                @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+    SELECT d.motivo_complemento AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE 
+      d.unidade_responsavel_id = :unidadeResponsavelId
+      AND d.data_hora_criacao BETWEEN :inicio AND :fim
+    GROUP BY d.motivo_complemento
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisComplementosPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
+                                                                                        @Param("inicio") LocalDateTime inicio,
+                                                                                        @Param("fim") LocalDateTime fim);
+
+    @Query(value = """
+    SELECT d.motivo_complemento AS motivo, COUNT(*) AS quantidade
+    FROM demanda d
+    WHERE 
+      d.unidade_solicitante_id = :unidadeSolicitanteId
+      AND d.data_hora_criacao BETWEEN :inicio AND :fim
+    GROUP BY d.motivo_complemento
+    ORDER BY quantidade DESC
+    """, nativeQuery = true)
+    List<MotivoQuantidadeProjection> listarPrincipaisComplementosPorUnidadeSolicitanteEPeriodo(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
                                                                                         @Param("inicio") LocalDateTime inicio,
                                                                                         @Param("fim") LocalDateTime fim);
 

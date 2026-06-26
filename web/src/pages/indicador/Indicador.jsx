@@ -213,6 +213,7 @@ function Indicador() {
     const prazos = indicador?.prazos || [];
     const resultado = indicador?.resultado || [];
     const motivos = indicador?.principaisMotivosInsucesso || [];
+    const complementos = indicador?.principaisComplementos || [];
 
     return (
         <div className="indicador-container">
@@ -328,7 +329,7 @@ function Indicador() {
                             valorKey="valor"
                         />
                     </ChartCard>
-                    <ChartCard titulo="Principais motivos de insucesso">
+                    <ChartCard titulo="Motivos de busca ativa">
                         <BarChartSimples
                             dados={motivos}
                             nomeKey="motivo"
@@ -336,6 +337,17 @@ function Indicador() {
                         />
                     </ChartCard>
                 </div>
+
+                <div className="indicador-grid-all">
+                    <ChartCard titulo="Detalhamentos dos motivos de busca ativa">
+                        <BarChartSimples
+                            dados={complementos}
+                            nomeKey="motivo"
+                            valorKey="quantidade"
+                        />
+                    </ChartCard>
+                </div>
+
 
                 <SecaoCards
                     titulo="Processo"

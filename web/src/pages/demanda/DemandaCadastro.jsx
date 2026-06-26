@@ -11,9 +11,12 @@ function DemandaCadastro() {
         register,
         handleSubmit,
         setValue,
+        watch,
     } = useForm({
         defaultValues: {
             motivoBuscaAtiva: "",
+            motivoComplemento:"",
+            prioridade:"",
             descricaoBusca: "",
             prazoDemanda: "",
             usuarioId: ""
@@ -29,9 +32,22 @@ function DemandaCadastro() {
     const [ubsUsuario, setUbsUsuario] = useState("");
     const [buscaUsuario, setBuscaUsuario] = useState("");
     const [sugestoes, setSugestoes] = useState([]);
+    const [motivos, setMotivos] = useState([]);
+    const [complementos, setComplementos] = useState([]);
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
     const autocompleteRef = useRef(null);
     const [carregandoSugestoes, setCarregandoSugestoes] = useState(false);
+    const motivoSelecionado = watch("motivoBuscaAtiva");
+
+    useEffect(() => {
+        const motivo = motivos.find(
+            m => m.valor === motivoSelecionado
+        );
+
+        setComplementos(motivo?.complementos ?? []);
+        setValue("motivoComplemento", "");
+
+    }, [motivoSelecionado, motivos, setValue]);
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -76,6 +92,15 @@ function DemandaCadastro() {
 
         void carregarDados();
     }, [servidor]);
+
+    useEffect(() => {
+        async function carregarMotivos() {
+            const response = await api.get("/demandas/motivos");
+            setMotivos(response.data);
+        }
+
+        carregarMotivos();
+    }, []);
 
     useEffect(() => {
 
@@ -131,6 +156,8 @@ function DemandaCadastro() {
             const payload = {
                 ...dados,
                 motivoBuscaAtiva: dados.motivoBuscaAtiva || null,
+                motivoComplemento: dados.motivoComplemento || null,
+                prioridade: dados.prioridade || null,
                 prazoDemanda: dados.prazoDemanda || null,
                 usuarioId: dados.usuarioId ? Number(dados.usuarioId) : null,
             };
@@ -254,12 +281,48 @@ function DemandaCadastro() {
                                 {...register("motivoBuscaAtiva")}
                             >
                                 <option value="">Selecione</option>
-                                <option value="CONDICAO_SAUDE">Condição de saúde</option>
-                                <option value="FALTOSO">Faltoso</option>
-                                <option value="ABANDONO">Abandono</option>
-                                <option value="OUTRO">Outro</option>
+
+                                {motivos.map(m => (
+                                    <option key={m.valor} value={m.valor}>
+                                        {m.descricao}
+                                    </option>
+                                ))}
                             </select>
                             {erros.motivoBuscaAtiva && <small>{erros.motivoBuscaAtiva}</small>}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Detalhamento do motivo da busca {complementos.length > 0 && (<span>*</span>)}</label>
+                            <select
+                                className="input-field"
+                                {...register("motivoComplemento")}
+                                disabled={complementos.length === 0}
+                            >
+                                <option value="">Selecione</option>
+
+                                {complementos.map(c => (
+                                    <option key={c.valor} value={c.valor}>
+                                        {c.descricao}
+                                    </option>
+                                ))}
+                            </select>
+                            {erros.motivoComplemento && <small>{erros.motivoComplemento}</small>}
+                        </div>
+                    </div>
+
+                    <div className="form-grid two">
+                        <div className="form-group">
+                            <label>Prioridade <span>*</span></label>
+                            <select
+                                className="input-field"
+                                {...register("prioridade")}
+                            >
+                                <option value="">Selecione</option>
+                                <option value="BAIXA">Baixa</option>
+                                <option value="MEDIA">Média</option>
+                                <option value="ALTA">Alta</option>
+                            </select>
+                            {erros.prioridade && <small>{erros.prioridade}</small>}
                         </div>
 
                         <div className="form-group">

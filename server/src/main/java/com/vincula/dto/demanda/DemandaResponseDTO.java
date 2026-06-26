@@ -2,7 +2,9 @@ package com.vincula.dto.demanda;
 
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.MotivoBuscaAtiva;
+import com.vincula.enums.MotivoComplemento;
 import com.vincula.enums.PrazoDemanda;
+import com.vincula.enums.Prioridade;
 import com.vincula.enums.StatusDemanda;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +17,8 @@ public class DemandaResponseDTO {
     private Long id;
 
     private MotivoBuscaAtiva motivoBuscaAtiva;
+    private MotivoComplemento motivoComplemento;
+    private Prioridade prioridade;
     private String descricaoBusca;
 
     private PrazoDemanda prazoDemanda;

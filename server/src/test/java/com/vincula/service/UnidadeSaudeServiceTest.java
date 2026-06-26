@@ -1,7 +1,6 @@
 package com.vincula.service;
 
 import com.vincula.dto.endereco.EnderecoDTO;
-import com.vincula.dto.endereco.EnderecoResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;

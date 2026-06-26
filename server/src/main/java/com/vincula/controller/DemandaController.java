@@ -4,6 +4,7 @@ import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.demanda.EncerrarDemandaDTO;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.demanda.DemandaResponseDTO;
+import com.vincula.dto.MotivoBuscaResponseDTO;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.service.DemandaService;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/demandas")
@@ -112,6 +114,12 @@ public class DemandaController {
             Pageable pageable
     ) {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitanteFiltradas(unidadeSolicitanteId, filtro, pageable));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/motivos")
+    public ResponseEntity<List<MotivoBuscaResponseDTO>> listarMotivos() {
+        return ResponseEntity.ok(demandaService.listarMotivos());
     }
 
     @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")

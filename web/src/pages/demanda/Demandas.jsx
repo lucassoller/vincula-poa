@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import api from "../../api/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/demandas.css";
-import {prazoLabel, formatarDataHora, statusLabel, motivoBuscaLabel } from "../../utils/utils.js";
+import {prazoLabel, diasRestantes, prioridadeLabel, formatarDataHora, statusLabel, motivoBuscaLabel } from "../../utils/utils.js";
 import ModalTentativaContato from "../../components/ModalTentativaContato.jsx";
 import ModalRedirecionarDemanda from "../../components/ModalRedirecionarDemanda.jsx";
 import ModalEncerrarDemanda from "../../components/ModalEncerrarDemanda.jsx";
@@ -505,9 +505,10 @@ function Demandas() {
                             <th>Servidor solicitante</th>
                             <th>Serviço solicitante</th>
                             <th>Data de abertura</th>
-                            <th>Data de encerramento</th>
+                            <th>Data limite</th>
+                            <th>Tempo restante</th>
                             <th>Status</th>
-                            <th>Prazo</th>
+                            <th>Prioridade</th>
                             <th>Unidade responsável</th>
                             <th>Ações</th>
                         </tr>
@@ -529,15 +530,15 @@ function Demandas() {
                                     </span>
                                 </td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
-                                <td>{formatarDataHora(d.dataHoraFinalizacao) || "-"}</td>
-
+                                <td>{formatarDataHora(d.dataHoraLimite) || "-"}</td>
+                                <td>{diasRestantes(d.dataHoraCriacao, d.dataHoraLimite)}</td>
                                 <td>
                                     <span className={`status-badge status-${d.status}`}>
                                         {statusLabel[d.status]}
                                     </span>
                                 </td>
-
-                                <td>{prazoLabel[d.prazoDemanda] || "-"}</td>
+                                <td>{prioridadeLabel[d.prioridade]} </td>
+                               
                                 <td>
                                     <span
                                             className="ubs-badge ubs-clickable"

@@ -1,6 +1,5 @@
 package com.vincula.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.indicador.IndicadorDTO;
 import com.vincula.security.JwtAuthenticationFilter;
 import com.vincula.security.JwtService;
@@ -40,8 +39,6 @@ class IndicadorControllerTest {
 
     @MockitoBean
     private AuditoriaFacade auditoriaFacade;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void deveBuscarIndicadorGeral() throws Exception {
