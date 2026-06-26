@@ -199,7 +199,7 @@ class IndicadorServiceTest {
         when(indicadorProducaoService.indicadoresGerais()).thenReturn(List.of());
         when(indicadorProcessoService.montarProcessoGeral()).thenReturn(List.of());
         when(indicadorResultadoService.percentualPorDesfecho()).thenReturn(List.of());
-        when(indicadorInsucessoService.principaisMotivosInsucesso()).thenReturn(List.of());
+        when(indicadorInsucessoService.principaisMotivos()).thenReturn(List.of());
         when(indicadorPrazoService.indicadoresPrazo()).thenReturn(List.of());
 
         IndicadorDTO dto = indicadorService.indicadorGeral();

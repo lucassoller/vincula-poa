@@ -34,11 +34,11 @@ class IndicadorInsucessoServiceTest {
         when(projection.getMotivo()).thenReturn("FALTOSO");
         when(projection.getQuantidade()).thenReturn(10L);
 
-        when(demandaRepository.listarPrincipaisMotivosInsucesso())
+        when(demandaRepository.listarPrincipaisMotivos())
                 .thenReturn(List.of(projection));
 
         List<MotivoQuantidadeDTO> resultado =
-                service.principaisMotivosInsucesso();
+                service.principaisMotivos();
 
         assertEquals("Faltoso", resultado.get(0).getMotivo());
         assertEquals(10L, resultado.get(0).getQuantidade());
@@ -62,11 +62,11 @@ class IndicadorInsucessoServiceTest {
         when(projection.getMotivo()).thenReturn(motivoBanco);
         when(projection.getQuantidade()).thenReturn(1L);
 
-        when(demandaRepository.listarPrincipaisMotivosInsucesso())
+        when(demandaRepository.listarPrincipaisMotivos())
                 .thenReturn(List.of(projection));
 
         List<MotivoQuantidadeDTO> resultado =
-                service.principaisMotivosInsucesso();
+                service.principaisMotivos();
 
         assertEquals(
                 motivoEsperado,
@@ -78,13 +78,13 @@ class IndicadorInsucessoServiceTest {
     void deveListarMotivosPorUnidade() {
 
         when(demandaRepository
-                .listarPrincipaisMotivosInsucessoPorUnidade(1L))
+                .listarPrincipaisMotivosPorUnidade(1L))
                 .thenReturn(List.of());
 
-        service.principaisMotivosInsucessoPorUnidade(1L);
+        service.principaisMotivosPorUnidade(1L);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosInsucessoPorUnidade(1L);
+                .listarPrincipaisMotivosPorUnidade(1L);
     }
 
     @Test
@@ -94,13 +94,13 @@ class IndicadorInsucessoServiceTest {
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .listarPrincipaisMotivosInsucessoPorPeriodo(inicio, fim))
+                .listarPrincipaisMotivosPorPeriodo(inicio, fim))
                 .thenReturn(List.of());
 
-        service.principaisMotivosInsucessoPorPeriodo(inicio, fim);
+        service.principaisMotivosPorPeriodo(inicio, fim);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosInsucessoPorPeriodo(inicio, fim);
+                .listarPrincipaisMotivosPorPeriodo(inicio, fim);
     }
 
     @Test
@@ -110,19 +110,19 @@ class IndicadorInsucessoServiceTest {
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(
+                .listarPrincipaisMotivosPorUnidadeEPeriodo(
                         1L,
                         inicio,
                         fim))
                 .thenReturn(List.of());
 
-        service.principaisMotivosInsucessoPorUnidadeEPeriodo(
+        service.principaisMotivosPorUnidadeEPeriodo(
                 1L,
                 inicio,
                 fim);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(
+                .listarPrincipaisMotivosPorUnidadeEPeriodo(
                         1L,
                         inicio,
                         fim);
@@ -135,19 +135,19 @@ class IndicadorInsucessoServiceTest {
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .listarPrincipaisMotivosInsucessoPorUnidadeSolicitanteEPeriodo(
+                .listarPrincipaisMotivosPorUnidadeSolicitanteEPeriodo(
                         1L,
                         inicio,
                         fim))
                 .thenReturn(List.of());
 
-        service.principaisMotivosInsucessoPorServidorEPeriodo(
+        service.principaisMotivosPorServidorEPeriodo(
                 1L,
                 inicio,
                 fim);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosInsucessoPorUnidadeSolicitanteEPeriodo(
+                .listarPrincipaisMotivosPorUnidadeSolicitanteEPeriodo(
                         1L,
                         inicio,
                         fim);
@@ -157,13 +157,13 @@ class IndicadorInsucessoServiceTest {
     void deveListarMotivosPorServidor() {
 
         when(demandaRepository
-                .listarPrincipaisMotivosInsucessoPorUnidadeSolicitante(1L))
+                .listarPrincipaisMotivosPorUnidadeSolicitante(1L))
                 .thenReturn(List.of());
 
-        service.principaisMotivosInsucessoPorServidor(1L);
+        service.principaisMotivosPorServidor(1L);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosInsucessoPorUnidadeSolicitante(1L);
+                .listarPrincipaisMotivosPorUnidadeSolicitante(1L);
     }
 
 }

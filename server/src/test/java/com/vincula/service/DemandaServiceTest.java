@@ -206,7 +206,7 @@ class DemandaServiceTest {
                 .thenAnswer(i -> i.getArgument(0));
 
         DemandaDTO dto = new DemandaDTO();
-        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.FALTOSO);
+        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.OUTRO);
         dto.setDescricaoBusca("teste");
         dto.setPrazoDemanda(PrazoDemanda.D7);
 
@@ -214,7 +214,7 @@ class DemandaServiceTest {
                 demandaService.atualizar(1L, dto);
 
         assertEquals(
-                MotivoBuscaAtiva.FALTOSO,
+                MotivoBuscaAtiva.OUTRO,
                 response.getMotivoBuscaAtiva()
         );
 

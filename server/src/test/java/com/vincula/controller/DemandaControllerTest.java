@@ -151,7 +151,7 @@ class DemandaControllerTest {
 
         DemandaDTO dto = new DemandaDTO();
         dto.setUsuarioId(1L);
-        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.FALTOSO);
+        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.OUTRO);
         dto.setDescricaoBusca("descricao");
         dto.setPrazoDemanda(PrazoDemanda.D7);
 
@@ -169,7 +169,7 @@ class DemandaControllerTest {
 
         DemandaDTO dto = new DemandaDTO();
         dto.setUsuarioId(1L);
-        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.FALTOSO);
+        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.OUTRO);
         dto.setDescricaoBusca("descricao");
         dto.setPrazoDemanda(PrazoDemanda.D7);
 
