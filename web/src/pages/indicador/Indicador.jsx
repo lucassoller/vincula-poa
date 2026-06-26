@@ -212,7 +212,7 @@ function Indicador() {
     const processo = indicador?.processo || [];
     const prazos = indicador?.prazos || [];
     const resultado = indicador?.resultado || [];
-    const motivos = indicador?.principaisMotivosInsucesso || [];
+    const motivos = indicador?.principaisMotivos || [];
     const complementos = indicador?.principaisComplementos || [];
 
     return (

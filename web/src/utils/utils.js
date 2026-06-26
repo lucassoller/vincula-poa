@@ -15,9 +15,6 @@ export const statusLabel = {
 };
 
 export const motivoBuscaLabel = {
-    "CONDICAO_SAUDE": "Condição de saúde",
-    "FALTOSO": "Faltoso",
-    "ABANDONO": "Abandono",
     "COORDENACAO_CUIDADO": "Coordenação do Cuidado",
     "BOLSA_FAMILIA": "Bolsa Família",
     "SAUDE_MULHER": "Saúde da Mulher",
@@ -31,7 +28,7 @@ export const motivoBuscaLabel = {
 };
 
 export const motivoComplementoLabel = {
-        "ABANDONO_TRATAMENTO": "Abandono de tratamento",
+    "ABANDONO_TRATAMENTO": "Abandono de tratamento",
     "AVISO_CONSULTA": "Aviso de consulta",
     "EGRESSO_HOSPITALAR": "Egresso hospitalar",
     "FALTOSO_CONSULTA": "Faltoso a consulta",

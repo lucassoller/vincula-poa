@@ -23,7 +23,7 @@ class IndicadorInsucessoServiceTest {
     private DemandaRepository demandaRepository;
 
     @InjectMocks
-    private IndicadorInsucessoService service;
+    private IndicadorMotivoService service;
 
     @Test
     void deveTraduzirMotivoFaltoso() {

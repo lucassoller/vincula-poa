@@ -102,6 +102,7 @@ VITE_API_URL=http://localhost:8080
 - Banco → PostgreSQL (Railway)
 
 Atenção: em produção, ajustar URL da API no frontend como VITE_API_URL e configurar as váriaveis do arquivo application.properties do bacnkend
+Passo a passo completo em "passo a passo.txt"
 
 ## Autor
 

@@ -346,7 +346,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
-    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucesso();
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivos();
 
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
@@ -355,7 +355,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
-    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
 
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
@@ -364,7 +364,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
-    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidadeSolicitante(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId);
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosPorUnidadeSolicitante(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId);
 
 
     @Query(value = """
@@ -374,7 +374,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
-    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorPeriodo(@Param("inicio") LocalDateTime inicio,
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosPorPeriodo(@Param("inicio") LocalDateTime inicio,
                                                                                 @Param("fim") LocalDateTime fim);
 
     @Query(value = """
@@ -386,7 +386,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
-    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
                                                                                         @Param("inicio") LocalDateTime inicio,
                                                                                         @Param("fim") LocalDateTime fim);
 
@@ -399,7 +399,7 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long> {
     GROUP BY d.motivo_busca_ativa
     ORDER BY quantidade DESC
     """, nativeQuery = true)
-    List<MotivoQuantidadeProjection> listarPrincipaisMotivosInsucessoPorUnidadeSolicitanteEPeriodo(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
+    List<MotivoQuantidadeProjection> listarPrincipaisMotivosPorUnidadeSolicitanteEPeriodo(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
                                                                                         @Param("inicio") LocalDateTime inicio,
                                                                                         @Param("fim") LocalDateTime fim);
 

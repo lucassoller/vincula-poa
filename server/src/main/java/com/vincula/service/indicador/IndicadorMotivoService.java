@@ -7,51 +7,51 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class IndicadorInsucessoService {
+public class IndicadorMotivoService {
 
     private final DemandaRepository demandaRepository;
 
-    public IndicadorInsucessoService(DemandaRepository demandaRepository) {
+    public IndicadorMotivoService(DemandaRepository demandaRepository) {
         this.demandaRepository = demandaRepository;
     }
 
-    public List<MotivoQuantidadeDTO> principaisMotivosInsucesso() {
-        return demandaRepository.listarPrincipaisMotivosInsucesso()
+    public List<MotivoQuantidadeDTO> principaisMotivos() {
+        return demandaRepository.listarPrincipaisMotivos()
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
     }
 
-    public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorUnidade(Long unidadeSaudeId) {
-        return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidade(unidadeSaudeId)
+    public List<MotivoQuantidadeDTO> principaisMotivosPorUnidade(Long unidadeSaudeId) {
+        return demandaRepository.listarPrincipaisMotivosPorUnidade(unidadeSaudeId)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
     }
 
-    public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorServidor(Long servidorId) {
-        return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidadeSolicitante(servidorId)
+    public List<MotivoQuantidadeDTO> principaisMotivosPorServidor(Long servidorId) {
+        return demandaRepository.listarPrincipaisMotivosPorUnidadeSolicitante(servidorId)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
     }
 
-    public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        return demandaRepository.listarPrincipaisMotivosInsucessoPorPeriodo(inicio, fim)
+    public List<MotivoQuantidadeDTO> principaisMotivosPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        return demandaRepository.listarPrincipaisMotivosPorPeriodo(inicio, fim)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
     }
 
-    public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
-        return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
+    public List<MotivoQuantidadeDTO> principaisMotivosPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
+        return demandaRepository.listarPrincipaisMotivosPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
     }
 
-    public List<MotivoQuantidadeDTO> principaisMotivosInsucessoPorServidorEPeriodo(Long servidorId, LocalDateTime inicio, LocalDateTime fim) {
-        return demandaRepository.listarPrincipaisMotivosInsucessoPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim)
+    public List<MotivoQuantidadeDTO> principaisMotivosPorServidorEPeriodo(Long servidorId, LocalDateTime inicio, LocalDateTime fim) {
+        return demandaRepository.listarPrincipaisMotivosPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim)
                 .stream()
                 .map(item -> new MotivoQuantidadeDTO(traduzirMotivo(item.getMotivo()), item.getQuantidade()))
                 .toList();
@@ -59,10 +59,6 @@ public class IndicadorInsucessoService {
 
 private String traduzirMotivo(String motivo) {
     return switch (motivo) {
-        case "FALTOSO" -> "Faltoso";
-        case "ABANDONO" -> "Abandono de tratamento";
-        case "CONDICAO_SAUDE" -> "Condição de saúde";
-
         case "COORDENACAO_CUIDADO" -> "Coordenação do Cuidado";
         case "BOLSA_FAMILIA" -> "Bolsa Família";
         case "SAUDE_MULHER" -> "Saúde da Mulher";
@@ -72,7 +68,6 @@ private String traduzirMotivo(String motivo) {
         case "DOENCA_CRONICA" -> "Doença Crônica";
         case "DOENCA_TRANSMITIVEL" -> "Doença Transmissível";
         case "VIOLENCIA_MORTALIDADE" -> "Violência e Mortalidade";
-
         case "OUTRO" -> "Outro";
 
         default -> motivo;

@@ -3,10 +3,6 @@ package com.vincula.enums;
 import java.util.Set;
 
 public enum MotivoBuscaAtiva {
-    CONDICAO_SAUDE(Set.of()),
-    FALTOSO(Set.of()),
-    ABANDONO(Set.of()),
-
     COORDENACAO_CUIDADO(Set.of(
         MotivoComplemento.ABANDONO_TRATAMENTO,
         MotivoComplemento.AVISO_CONSULTA,
@@ -98,9 +94,6 @@ public enum MotivoBuscaAtiva {
 
     public String getDescricao() {
         return switch (this) {
-            case CONDICAO_SAUDE -> "Condição de saúde";
-            case FALTOSO -> "Faltoso";
-            case ABANDONO -> "Abandono";
             case COORDENACAO_CUIDADO -> "Coordenação do Cuidado";
             case BOLSA_FAMILIA -> "Bolsa Família";
             case SAUDE_MULHER -> "Saúde da Mulher";

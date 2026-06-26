@@ -13,7 +13,7 @@ public class IndicadorDTO {
     private List<IndicadorValorDTO> producao;
     private List<IndicadorValorDTO> processo;
     private List<IndicadorValorDTO> resultado;
-    private List<MotivoQuantidadeDTO> principaisMotivosInsucesso;
+    private List<MotivoQuantidadeDTO> principaisMotivos;
     private List<MotivoQuantidadeDTO> principaisComplementos;
     private List<IndicadorValorDTO> prazos;
     private List<IndicadorRankingDTO> rankingTotalDemandas;

@@ -35,7 +35,7 @@ class IndicadorServiceTest {
     private IndicadorResultadoService indicadorResultadoService;
 
     @Mock
-    private IndicadorInsucessoService indicadorInsucessoService;
+    private IndicadorMotivoService indicadorInsucessoService;
 
     @Mock
     private ServidorService servidorService;

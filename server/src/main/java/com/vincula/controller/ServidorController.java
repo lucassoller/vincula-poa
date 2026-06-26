@@ -2,7 +2,6 @@ package com.vincula.controller;
 
 import com.vincula.dto.senha.MudancaSenhaDTO;
 import com.vincula.dto.servidor.*;
-import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.service.ServidorService;
 import jakarta.validation.Valid;
