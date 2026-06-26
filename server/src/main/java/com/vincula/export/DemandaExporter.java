@@ -17,12 +17,13 @@ public class DemandaExporter {
         StringBuilder sb = new StringBuilder();
 
         sb.append(
-                "id,usuario,motivo_busca,descricao_busca,prazo,status," +
+                "id,usuario,motivo_busca,detalhamento_motivo,prioridade,descricao_busca,prazo,status," +
                         "data_criacao,data_limite,data_finalizacao," +
                         "desfecho,descricao_desfecho," +
                         "foi_redirecionada,motivo_redirecionamento," +
                         "unidade_solicitante,unidade_responsavel," +
-                        "servidor_criador\n"
+                        "servidor_criador,unidadeResponsavelAnterior," +
+                        "servidorEncerramento,servidorRedirecionamenot\n"
         );
 
         for (Demanda d : demandas) {
@@ -39,6 +40,20 @@ public class DemandaExporter {
                     .append(escapar(
                             d.getMotivoBuscaAtiva() != null
                                     ? d.getMotivoBuscaAtiva().name()
+                                    : ""
+                    ))
+                    .append(",")
+
+                    .append(escapar(
+                            d.getMotivoComplemento() != null
+                                    ? d.getMotivoComplemento().name()
+                                    : ""
+                    ))
+                    .append(",")
+
+                    .append(escapar(
+                            d.getPrioridade() != null
+                                    ? d.getPrioridade().name()
                                     : ""
                     ))
                     .append(",")
@@ -104,6 +119,27 @@ public class DemandaExporter {
                                     ? d.getServidorCriador().getNome()
                                     : ""
                     ))
+                    .append(",")
+
+                        .append(escapar(
+                                d.getUnidadeResponsavelAnterior() != null
+                                        ? d.getUnidadeResponsavelAnterior().getNome()
+                                        : ""
+                        ))
+                        .append(",")    
+
+                        .append(escapar(
+                                d.getServidorEncerramento() != null
+                                        ? d.getServidorEncerramento().getNome()
+                                        : ""
+                        ))
+                        .append(",")
+
+                        .append(escapar(
+                                d.getServidorRedirecionamento() != null
+                                        ? d.getServidorRedirecionamento().getNome()
+                                        : ""
+                        ))
                     .append("\n");
         }
 

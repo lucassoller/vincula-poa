@@ -19,7 +19,8 @@ public class IndicadorExporter {
         adicionarIndicadores(sb, "producao", indicador.getProducao());
         adicionarIndicadores(sb, "processo", indicador.getProcesso());
         adicionarIndicadores(sb, "resultado", indicador.getResultado());
-        adicionarMotivos(sb, indicador.getPrincipaisMotivosInsucesso());
+        adicionarMotivos(sb, indicador.getPrincipaisMotivos());
+        adicionarMotivos(sb, indicador.getPrincipaisComplementos());
         adicionarIndicadores(sb, "prazos", indicador.getPrazos());
 
         adicionarRanking(sb, "ranking_total_demandas", indicador.getRankingTotalDemandas());
