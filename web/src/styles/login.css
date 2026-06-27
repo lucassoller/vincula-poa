@@ -23,6 +23,11 @@
     justify-content: center;
 }
 
+.senha-input::-ms-reveal,
+.senha-input::-ms-clear {
+    display: none;
+}
+
 .image-child{
     background: #fff;
     padding: 32px;

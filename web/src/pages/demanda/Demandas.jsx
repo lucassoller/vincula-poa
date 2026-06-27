@@ -502,10 +502,8 @@ function Demandas() {
                         <tr>
                             <th>Usuário</th>
                             <th>Motivo da busca</th>
-                            <th>Servidor solicitante</th>
                             <th>Serviço solicitante</th>
                             <th>Data de abertura</th>
-                            <th>Data limite</th>
                             <th>Tempo restante</th>
                             <th>Status</th>
                             <th>Prioridade</th>
@@ -521,7 +519,6 @@ function Demandas() {
 
                                 <td><b>{d.usuarioNome || d.usuarioId}</b></td>
                                 <td>{motivoBuscaLabel[d.motivoBuscaAtiva]}</td>
-                                <td>{d.servidorCriadorNome || d.servidorCriadorId}</td>
                                 <td>
                                     <span
                                             className="ubs-badge ubs-clickable"
@@ -530,7 +527,6 @@ function Demandas() {
                                     </span>
                                 </td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
-                                <td>{formatarDataHora(d.dataHoraLimite) || "-"}</td>
                                 <td>{diasRestantes(d.dataHoraCriacao, d.dataHoraLimite)}</td>
                                 <td>
                                     <span className={`status-badge status-${d.status}`}>
