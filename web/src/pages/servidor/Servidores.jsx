@@ -290,7 +290,9 @@ function Servidores() {
                                             className="ubs-badge ubs-clickable"
                                             onClick={() => abrirCardUbs(s.unidadeSaudeId)}
                                         >
-                                            {s.unidadeSaudeNome}
+                                            {s.perfil === "GESTAO_MUNICIPAL"
+                                                ? "Sem serviço vinculado"
+                                                : s.unidadeSaudeNome}
                                         </span>
                                     </td>
                                     <td>

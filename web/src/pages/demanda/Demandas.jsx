@@ -523,7 +523,7 @@ function Demandas() {
                                     <span
                                             className="ubs-badge ubs-clickable"
                                             onClick={() => abrirCardUbs(d.unidadeSolicitanteId)}>
-                                        {d.unidadeSolicitanteNome || d.unidadeSolicitanteId || "-"}
+                                        {d.unidadeSolicitanteNome || "Solicitado pela Gestão Municipal"}
                                     </span>
                                 </td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>

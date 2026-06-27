@@ -8,6 +8,7 @@ import com.vincula.dto.TerritorioUbsDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.TerritorioUbs;
 import com.vincula.entity.UnidadeSaude;
+import com.vincula.enums.TipoServico;
 import com.vincula.repository.TerritorioUbsRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
 import org.springframework.stereotype.Service;
@@ -161,6 +162,7 @@ public class ImportarTerritorioService {
         unidade.setEndereco(endereco);
         unidade.setTelefone(telefones[0]);
         unidade.setTelefone2(telefones[1]);
+        unidade.setTipoServico(TipoServico.UBS);
 
         unidadeSaudeRepository.save(unidade);
     }
