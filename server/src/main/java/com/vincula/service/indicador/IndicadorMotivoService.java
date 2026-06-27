@@ -57,20 +57,20 @@ public class IndicadorMotivoService {
                 .toList();
     }
 
-private String traduzirMotivo(String motivo) {
-    return switch (motivo) {
-        case "COORDENACAO_CUIDADO" -> "Coordenação do Cuidado";
-        case "BOLSA_FAMILIA" -> "Bolsa Família";
-        case "SAUDE_MULHER" -> "Saúde da Mulher";
-        case "SAUDE_CRIANCA" -> "Saúde da Criança";
-        case "SAUDE_IDOSO" -> "Saúde do Idoso";
-        case "VACINACAO" -> "Vacinação";
-        case "DOENCA_CRONICA" -> "Doença Crônica";
-        case "DOENCA_TRANSMITIVEL" -> "Doença Transmissível";
-        case "VIOLENCIA_MORTALIDADE" -> "Violência e Mortalidade";
-        case "OUTRO" -> "Outro";
+    private String traduzirMotivo(String motivo) {
+        return switch (motivo) {
+            case "COORDENACAO_CUIDADO" -> "Coordenação do Cuidado";
+            case "BOLSA_FAMILIA" -> "Bolsa Família";
+            case "SAUDE_MULHER" -> "Saúde da Mulher";
+            case "SAUDE_CRIANCA" -> "Saúde da Criança";
+            case "SAUDE_IDOSO" -> "Saúde do Idoso";
+            case "VACINACAO" -> "Vacinação";
+            case "DOENCA_CRONICA" -> "Doença Crônica";
+            case "DOENCA_TRANSMITIVEL" -> "Doença Transmissível";
+            case "VIOLENCIA_MORTALIDADE" -> "Violência e Mortalidade";
+            case "OUTRO" -> "Outro";
 
-        default -> motivo;
-    };
-}
+            default -> motivo;
+        };
+    }
 }

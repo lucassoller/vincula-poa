@@ -1,13 +1,17 @@
 package com.vincula.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vincula.dto.MotivoBuscaResponseDTO;
+import com.vincula.dto.MotivoComplementoResponseDTO;
 import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.demanda.DemandaResponseDTO;
 import com.vincula.dto.demanda.EncerrarDemandaDTO;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.MotivoBuscaAtiva;
+import com.vincula.enums.MotivoComplemento;
 import com.vincula.enums.PrazoDemanda;
+import com.vincula.enums.Prioridade;
 import com.vincula.security.JwtAuthenticationFilter;
 import com.vincula.security.JwtService;
 import com.vincula.service.DemandaService;
@@ -28,9 +32,13 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.hamcrest.Matchers.hasSize;
 
 @WebMvcTest(DemandaController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -151,9 +159,11 @@ class DemandaControllerTest {
 
         DemandaDTO dto = new DemandaDTO();
         dto.setUsuarioId(1L);
-        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.OUTRO);
+        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.BOLSA_FAMILIA);
+        dto.setMotivoComplemento(MotivoComplemento.ABANDONO_TRATAMENTO);
         dto.setDescricaoBusca("descricao");
         dto.setPrazoDemanda(PrazoDemanda.D7);
+        dto.setPrioridade(Prioridade.BAIXA);
 
         when(demandaService.criar(any(DemandaDTO.class)))
                 .thenReturn(new DemandaResponseDTO());
@@ -169,9 +179,11 @@ class DemandaControllerTest {
 
         DemandaDTO dto = new DemandaDTO();
         dto.setUsuarioId(1L);
-        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.OUTRO);
+        dto.setMotivoBuscaAtiva(MotivoBuscaAtiva.BOLSA_FAMILIA);
+        dto.setMotivoComplemento(MotivoComplemento.ABANDONO_TRATAMENTO);
         dto.setDescricaoBusca("descricao");
         dto.setPrazoDemanda(PrazoDemanda.D7);
+        dto.setPrioridade(Prioridade.BAIXA);
 
         when(demandaService.atualizar(eq(1L), any(DemandaDTO.class)))
                 .thenReturn(new DemandaResponseDTO());
@@ -180,6 +192,45 @@ class DemandaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveListarMotivos() throws Exception {
+        List<MotivoBuscaResponseDTO> motivos = List.of(
+                new MotivoBuscaResponseDTO(
+                        "PACIENTE_NAO_ENCONTRADO",
+                        "Paciente não encontrado",
+                        List.of(
+                                new MotivoComplementoResponseDTO(
+                                        "ENDERECO_INCORRETO",
+                                        "Endereço incorreto"
+                                )
+                        )
+                ),
+                new MotivoBuscaResponseDTO(
+                        "RECUSA_ATENDIMENTO",
+                        "Recusa atendimento",
+                        List.of()
+                )
+        );
+
+        when(demandaService.listarMotivos()).thenReturn(motivos);
+
+        mockMvc.perform(get("/demandas/motivos"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].valor").value("PACIENTE_NAO_ENCONTRADO"))
+                .andExpect(jsonPath("$[0].descricao").value("Paciente não encontrado"))
+                .andExpect(jsonPath("$[0].complementos[0].valor").value("ENDERECO_INCORRETO"))
+                .andExpect(jsonPath("$[0].complementos[0].descricao").value("Endereço incorreto"))
+
+                .andExpect(jsonPath("$[1].valor").value("RECUSA_ATENDIMENTO"))
+                .andExpect(jsonPath("$[1].descricao").value("Recusa atendimento"))
+                .andExpect(jsonPath("$[1].complementos").isArray())
+                .andExpect(jsonPath("$[1].complementos").isEmpty());
+
+        verify(demandaService).listarMotivos();
     }
 
     @Test

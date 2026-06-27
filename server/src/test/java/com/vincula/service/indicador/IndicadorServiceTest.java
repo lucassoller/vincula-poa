@@ -35,7 +35,10 @@ class IndicadorServiceTest {
     private IndicadorResultadoService indicadorResultadoService;
 
     @Mock
-    private IndicadorMotivoService indicadorInsucessoService;
+    private IndicadorMotivoService indicadorMotivoService;
+
+    @Mock
+    private IndicadorComplementoService indicadorComplementoService;
 
     @Mock
     private ServidorService servidorService;
@@ -199,7 +202,8 @@ class IndicadorServiceTest {
         when(indicadorProducaoService.indicadoresGerais()).thenReturn(List.of());
         when(indicadorProcessoService.montarProcessoGeral()).thenReturn(List.of());
         when(indicadorResultadoService.percentualPorDesfecho()).thenReturn(List.of());
-        when(indicadorInsucessoService.principaisMotivos()).thenReturn(List.of());
+        when(indicadorMotivoService.principaisMotivos()).thenReturn(List.of());
+        when(indicadorComplementoService.principaisComplementos()).thenReturn(List.of());
         when(indicadorPrazoService.indicadoresPrazo()).thenReturn(List.of());
 
         IndicadorDTO dto = indicadorService.indicadorGeral();

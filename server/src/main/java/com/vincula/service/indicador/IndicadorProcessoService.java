@@ -139,62 +139,62 @@ public class IndicadorProcessoService {
 
     public IndicadorValorDTO mediaTentativasPorDemanda() {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemanda();
-        return new IndicadorValorDTO("Média de tentativas de contato por demanda", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas de contato por demanda", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorUnidade(Long unidadeResponsavelId) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidade(unidadeResponsavelId);
-        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorServidor(Long servidorId) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeSolicitante(servidorId);
-        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorPeriodo(inicio, fim);
-        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorUnidadeEPeriodo(Long unidadeResponsavelId, LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim);
-        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorDemandaPorServidorEPeriodo(Long servidorId, LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
-        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por demanda", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorServidor() {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorServidor();
-        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorServidorPorUnidade(Long unidadeSaudeId) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorServidorPorUnidade(unidadeSaudeId);
-        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorServidorPorCriador(Long servidorId) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorServidorPorUnidadeSolicitante(servidorId);
-        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorServidorPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorServidorPorPeriodo(inicio, fim);
-        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorServidorPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorServidorPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim);
-        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor));
     }
 
     public IndicadorValorDTO mediaTentativasPorServidorPorServidorEPeriodo(Long servidorId, LocalDateTime inicio, LocalDateTime fim) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorServidorPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
-        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor == null ? 0.0 : valor));
+        return new IndicadorValorDTO("Média de tentativas  de contato por servidor", arredondar(valor));
     }
 
     public List<IndicadorValorDTO> montarProcessoGeral() {

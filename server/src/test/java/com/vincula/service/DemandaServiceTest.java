@@ -1,5 +1,6 @@
 package com.vincula.service;
 
+import com.vincula.dto.MotivoBuscaResponseDTO;
 import com.vincula.dto.demanda.DemandaDTO;
 import com.vincula.dto.demanda.DemandaResponseDTO;
 import com.vincula.dto.demanda.EncerrarDemandaDTO;
@@ -8,10 +9,7 @@ import com.vincula.entity.Demanda;
 import com.vincula.entity.Servidor;
 import com.vincula.entity.UnidadeSaude;
 import com.vincula.entity.Usuario;
-import com.vincula.enums.DesfechoDemanda;
-import com.vincula.enums.MotivoBuscaAtiva;
-import com.vincula.enums.PrazoDemanda;
-import com.vincula.enums.StatusDemanda;
+import com.vincula.enums.*;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.export.DemandaExporter;
@@ -417,6 +415,7 @@ class DemandaServiceTest {
         DemandaDTO dto = new DemandaDTO();
         dto.setUsuarioId(1L);
         dto.setPrazoDemanda(PrazoDemanda.D7);
+        dto.setPrioridade(Prioridade.BAIXA);
 
         when(usuarioRepository.findById(1L))
                 .thenReturn(Optional.of(usuario));
@@ -559,6 +558,7 @@ class DemandaServiceTest {
         Demanda demanda = new Demanda();
         demanda.setStatus(StatusDemanda.ABERTA);
         demanda.setUnidadeResponsavel(origem);
+        demanda.setPrioridade(Prioridade.ALTA);
 
         RedirecionarDemandaDTO dto = new RedirecionarDemandaDTO();
         dto.setMotivoRedirecionamento("Teste");
@@ -972,5 +972,65 @@ class DemandaServiceTest {
                         filtro,
                         pageable
                 );
+    }
+
+    @Test
+    void deveAceitarComplementoNulo() {
+        assertDoesNotThrow(() ->
+                demandaService.validarMotivoEComplemento(
+                        MotivoBuscaAtiva.OUTRO,
+                        null
+                )
+        );
+    }
+
+    @Test
+    void deveAceitarMotivoNulo() {
+        assertDoesNotThrow(() ->
+                demandaService.validarMotivoEComplemento(
+                        null,
+                        MotivoComplemento.ABANDONO_TRATAMENTO
+                )
+        );
+    }
+
+    @Test
+    void deveAceitarComplementoPermitido() {
+        assertDoesNotThrow(() ->
+                demandaService.validarMotivoEComplemento(
+                        MotivoBuscaAtiva.COORDENACAO_CUIDADO,
+                        MotivoComplemento.ABANDONO_TRATAMENTO
+                )
+        );
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoComplementoNaoPermitido() {
+        assertThrows(BusinessException.class, () ->
+                demandaService.validarMotivoEComplemento(
+                        MotivoBuscaAtiva.BOLSA_FAMILIA,
+                        MotivoComplemento.HIV_AIDS
+                )
+        );
+    }
+
+    @Test
+    void deveListarMotivos() {
+        List<MotivoBuscaResponseDTO> motivos = demandaService.listarMotivos();
+
+        assertNotNull(motivos);
+        assertEquals(MotivoBuscaAtiva.values().length, motivos.size());
+
+        for (int i = 0; i < MotivoBuscaAtiva.values().length; i++) {
+            MotivoBuscaAtiva motivo = MotivoBuscaAtiva.values()[i];
+            MotivoBuscaResponseDTO dto = motivos.get(i);
+
+            assertEquals(motivo.name(), dto.getValor());
+            assertEquals(motivo.getDescricao(), dto.getDescricao());
+            assertEquals(
+                    motivo.getComplementosPermitidos().size(),
+                    dto.getComplementos().size()
+            );
+        }
     }
 }

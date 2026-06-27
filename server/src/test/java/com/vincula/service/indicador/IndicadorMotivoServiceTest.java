@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class IndicadorInsucessoServiceTest {
+class IndicadorMotivoServiceTest {
 
     @Mock
     private DemandaRepository demandaRepository;
@@ -26,12 +28,12 @@ class IndicadorInsucessoServiceTest {
     private IndicadorMotivoService service;
 
     @Test
-    void deveTraduzirMotivoFaltoso() {
+    void deveTraduzirMotivoOutro() {
 
         MotivoQuantidadeProjection projection =
                 mock(MotivoQuantidadeProjection.class);
 
-        when(projection.getMotivo()).thenReturn("FALTOSO");
+        when(projection.getMotivo()).thenReturn("OUTRO");
         when(projection.getQuantidade()).thenReturn(10L);
 
         when(demandaRepository.listarPrincipaisMotivos())
@@ -40,17 +42,22 @@ class IndicadorInsucessoServiceTest {
         List<MotivoQuantidadeDTO> resultado =
                 service.principaisMotivos();
 
-        assertEquals("Faltoso", resultado.get(0).getMotivo());
+        assertEquals("Outro", resultado.get(0).getMotivo());
         assertEquals(10L, resultado.get(0).getQuantidade());
     }
 
     @ParameterizedTest
     @CsvSource({
-            "FALTOSO,Faltoso",
-            "ABANDONO,Abandono de tratamento",
-            "CONDICAO_SAUDE,Condição de saúde",
+            "COORDENACAO_CUIDADO,Coordenação do Cuidado",
+            "BOLSA_FAMILIA,Bolsa Família",
+            "SAUDE_MULHER,Saúde da Mulher",
+            "SAUDE_CRIANCA,Saúde da Criança",
+            "SAUDE_IDOSO,Saúde do Idoso",
+            "VACINACAO,Vacinação",
+            "DOENCA_CRONICA,Doença Crônica",
+            "DOENCA_TRANSMITIVEL,Doença Transmissível",
+            "VIOLENCIA_MORTALIDADE,Violência e Mortalidade",
             "OUTRO,Outro",
-            "QUALQUER,QUALQUER"
     })
     void deveTraduzirMotivos(
             String motivoBanco,
@@ -165,5 +172,4 @@ class IndicadorInsucessoServiceTest {
         verify(demandaRepository)
                 .listarPrincipaisMotivosPorUnidadeSolicitante(1L);
     }
-
 }
