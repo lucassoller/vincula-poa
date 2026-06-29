@@ -239,52 +239,34 @@ function ServidorCadastro() {
                                 <small>{erros.perfil}</small>
                             )}
                         </div>
-                        {perfil === "SERVIDOR_APS" && (
-                            <div className="form-group">
-                                <label>
-                                    Unidade Básica de Saúde <span>*</span>
-                                </label>
-                                <select
-                                    className="input-field"
-                                    {...register("unidadeSaudeId")}
-                                >
-                                    <option value="">
-                                        Selecione
-                                    </option>
-                                    {unidades.map((u) => (
-                                        <option key={u.id} value={u.id}>
-                                            {u.nome}
-                                        </option>
-                                    ))}
-                                </select>
-                                {erros.unidadeSaudeId && (
-                                    <small>{erros.unidadeSaudeId}</small>
+                        <div className="form-group">
+                            <label>
+                                Serviço de Saúde
+                                {(perfil === "SOLICITANTE" || perfil === "SERVIDOR_APS") && (
+                                    <span> *</span>
                                 )}
-                            </div>
-                        )}
-                        {perfil === "SOLICITANTE" && (
-                            <div className="form-group">
-                                <label>
-                                    Serviço de Saúde <span>*</span>
-                                </label>
-                                <select
-                                    className="input-field"
-                                    {...register("unidadeSaudeId")}
-                                >
-                                    <option value="">
-                                        Selecione
+                            </label>
+
+                            <select
+                                className="input-field"
+                                disabled={
+                                    !perfil || perfil === "GESTAO_MUNICIPAL"
+                                }
+                                {...register("unidadeSaudeId")}
+                            >
+                                <option value="">Selecione</option>
+
+                                {(perfil === "SERVIDOR_APS" ? unidades : perfil === "SOLICITANTE" ? servicos : []).map((u) => (
+                                    <option key={u.id} value={u.id}>
+                                        {u.nome}
                                     </option>
-                                    {servicos.map((u) => (
-                                        <option key={u.id} value={u.id}>
-                                            {u.nome}
-                                        </option>
-                                    ))}
-                                </select>
-                                {erros.unidadeSaudeId && (
-                                    <small>{erros.unidadeSaudeId}</small>
-                                )}
-                            </div>
-                        )}
+                                ))}
+                            </select>
+
+                            {erros.unidadeSaudeId && (
+                                <small>{erros.unidadeSaudeId}</small>
+                            )}
+                        </div>
                     </div>
                     <div className="form-actions">
                         <span
