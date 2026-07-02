@@ -296,12 +296,14 @@ function Servidores() {
                                         </span>
                                     </td>
                                     <td>
-                                        <span
-                                            className="btn-editar"
-                                            onClick={() => abrirCardTransferencia(s)}
-                                        >
-                                            Transferir
-                                        </span>
+                                        {(s.perfil === "SOLICITANTE" || s.perfil === "SERVIDOR_APS") && (
+                                            <span
+                                                className="btn-editar"
+                                                onClick={() => abrirCardTransferencia(s)}
+                                            >
+                                                Transferir
+                                            </span>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
