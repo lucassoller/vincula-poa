@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ModalUbs from "../../components/ModalUbs.jsx";
 import Pagination from "../../components/Paginations.jsx";
 import ModalTransferirServidor from "../../components/ModalTransferirServidor.jsx";
+import {perfilLabel} from "../../utils/utils.js";
 
 function Servidores() {
     const navigate = useNavigate();
@@ -270,6 +271,7 @@ function Servidores() {
                         <tr>
                             <th>Nome</th>
                             <th>Email</th>
+                            <th>Perfil</th>
                             <th>Serviço vinculado</th>
                             <th>Ações</th>
                         </tr>
@@ -284,7 +286,7 @@ function Servidores() {
                                         </div>
                                     </td>
                                     <td>{s.email}</td>
-
+                                    <td>{perfilLabel[s.perfil]}</td>
                                     <td>
                                         <span
                                             className="ubs-badge ubs-clickable"

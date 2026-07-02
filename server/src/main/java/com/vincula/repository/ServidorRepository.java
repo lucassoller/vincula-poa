@@ -22,6 +22,7 @@ public interface ServidorRepository extends JpaRepository<Servidor, Long> {
     WHERE (
         LOWER(p.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(p.email) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(p.perfil) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(COALESCE(us.nome, '')) LIKE LOWER(CONCAT('%', :filtro, '%'))
     )
     ORDER BY p.nome ASC
