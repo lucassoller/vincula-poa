@@ -158,10 +158,20 @@ class UnidadeSaudeControllerTest {
     @Test
     void deveListarUbs() throws Exception {
 
-        when(unidadeSaudeService.listarTodasUbs())
+        when(unidadeSaudeService.listarTodosPorServico(TipoServico.UBS))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/unidades-saude/ubs"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveListarOutro() throws Exception {
+
+        when(unidadeSaudeService.listarTodosPorServico(TipoServico.OUTRO))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/unidades-saude/outro"))
                 .andExpect(status().isOk());
     }
 
@@ -171,7 +181,17 @@ class UnidadeSaudeControllerTest {
         when(unidadeSaudeService.listarTodosOutros())
                 .thenReturn(List.of());
 
-        mockMvc.perform(get("/unidades-saude/outro"))
+        mockMvc.perform(get("/unidades-saude/outros"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveListarEspecializados() throws Exception {
+
+        when(unidadeSaudeService.listarTodosPorServico(TipoServico.SERVICO_ESPECIALIZADO))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/unidades-saude/especializado"))
                 .andExpect(status().isOk());
     }
 

@@ -1,8 +1,18 @@
-function ModalTransferirServidor({servidor, unidades, servicos, transferencia, setTransferencia, erros, onSalvar, onFechar, mensagem, setMensagem}) {
-    const opcoes =
+function ModalTransferirServidor({servidor, unidades, servicos, especializados, transferencia, setTransferencia, erros, onSalvar, onFechar, mensagem, setMensagem}) {
+    let opcoes =
         transferencia.perfil === "SERVIDOR_APS"
             ? unidades
-            : servicos;
+            : [];
+
+    if (transferencia.perfil === "SOLICITANTE") {
+        if (transferencia.tipoServico === "SERVICO_ESPECIALIZADO") {
+            opcoes = especializados;
+        } else if (transferencia.tipoServico === "OUTRO") {
+            opcoes = servicos;
+        } else {
+            opcoes = [];
+        }
+    }
 
     return (
         <div className="modal-overlay">
@@ -56,11 +66,35 @@ function ModalTransferirServidor({servidor, unidades, servicos, transferencia, s
                         )}
                     </div>
 
+                    {transferencia.perfil === "SOLICITANTE" && (
+                        <div className="form-group">
+                            <label>
+                                Tipo do serviço <span>*</span>
+                            </label>
+
+                            <select
+                                className="input-field"
+                                value={transferencia.tipoServico}
+                                onChange={(e) =>
+                                    setTransferencia({
+                                        ...transferencia,
+                                        tipoServico: e.target.value,
+                                        unidadeSaudeId: ""
+                                    })
+                                }
+                            >
+                                <option value="">Selecione</option>
+                                <option value="SERVICO_ESPECIALIZADO">Serviço especializado</option>
+                                <option value="OUTRO">Outro</option>
+                            </select>
+                        </div>
+                    )}
+
                     <div className="form-group">
                         <label>
                             {transferencia.perfil === "SERVIDOR_APS"
-                                ? "Nova UBS"
-                                : "Novo serviço"}
+                                ? "Nova UBS "
+                                : "Novo serviço "}
                             <span>*</span>
                         </label>
 

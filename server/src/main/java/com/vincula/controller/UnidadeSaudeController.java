@@ -3,6 +3,7 @@ package com.vincula.controller;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
+import com.vincula.enums.TipoServico;
 import com.vincula.service.UnidadeSaudeService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -52,12 +53,24 @@ public class UnidadeSaudeController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/ubs")
     public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodasUbs() {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodasUbs());
+        return ResponseEntity.ok(unidadeSaudeService.listarTodosPorServico(TipoServico.UBS));
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/outro")
     public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosOutro() {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodosPorServico(TipoServico.OUTRO));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/especializado")
+    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosEspecializado() {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodosPorServico(TipoServico.SERVICO_ESPECIALIZADO));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/outros")
+    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosOutros() {
         return ResponseEntity.ok(unidadeSaudeService.listarTodosOutros());
     }
 

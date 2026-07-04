@@ -192,7 +192,7 @@ function UnidadesSaude() {
                                 <td>{ubs.cnes}</td>
                                 <td>
                                     <span className="ubs-badge">
-                                        {ubs.tipoServico}
+                                        {tipoServico[ubs.tipoServico]}
                                     </span>
                                 </td>
 

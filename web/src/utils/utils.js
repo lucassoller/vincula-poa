@@ -105,6 +105,7 @@ export const sexoLabel = {
 
 export const tipoServico = {
     "UBS": "UBS",
+    "SERVICO_ESPECIALIZADO": "Serviço especializado",
     "OUTRO": "Outro",
 };
 

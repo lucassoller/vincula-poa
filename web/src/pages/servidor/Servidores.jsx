@@ -23,12 +23,14 @@ function Servidores() {
     const [pagina, setPagina] = useState(0);
     const [unidades, setUnidades] = useState([]);
     const [servicos, setServicos] = useState([]);
+    const [especializados, setEsp] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [modoFiltrado, setModoFiltrado] = useState(false);
     const [erros, setErros] = useState({});
     const [transferencia, setTransferencia] = useState({
         perfil: "",
         unidadeSaudeId: "",
+        tipoServico: ""
     });
 
     const tamanhoPagina = 10;
@@ -76,13 +78,15 @@ function Servidores() {
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                const [ubsResponse, servicosResponse] = await Promise.all([
+                const [ubsResponse, servicosResponse, espResponse] = await Promise.all([
                     api.get("/unidades-saude/ubs"),
-                    api.get("/unidades-saude/outro")
+                    api.get("/unidades-saude/outro"),
+                    api.get("/unidades-saude/especializado")
                 ]);
 
                 setUnidades(ubsResponse.data);
                 setServicos(servicosResponse.data);
+                setEsp(espResponse.data);
 
             } catch {
                 setMensagemErro("Erro ao carregar os serviços.");
@@ -138,7 +142,8 @@ function Servidores() {
 
         setTransferencia({
             perfil: servidor.perfil,
-            unidadeSaudeId: String(servidor.unidadeSaudeId ?? "")
+            unidadeSaudeId: String(servidor.unidadeSaudeId ?? ""),
+            tipoServico: servidor.tipoServico
         });
     }
 
@@ -187,6 +192,7 @@ function Servidores() {
         setTransferencia({
             perfil: "",
             unidadeSaudeId: "",
+            tipoServico: ""
         });
     }
 
@@ -319,6 +325,7 @@ function Servidores() {
                             servidor={servidorSelecionado}
                             unidades={unidades}
                             servicos={servicos}
+                            especializados={especializados}
                             transferencia={transferencia}
                             setTransferencia={setTransferencia}
                             erros={erros}

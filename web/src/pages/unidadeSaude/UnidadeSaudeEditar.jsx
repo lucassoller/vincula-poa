@@ -173,6 +173,7 @@ function UnidadeSaudeEditar() {
 
                                     >
                                         <option value="UBS">UBS</option>
+                                        <option value="SERVICO_ESPECIALIZADO">Serviço especializado</option>
                                         <option value="OUTRO">Outro</option>
                                     </select>
                                     {erros.tipoServico && <small>{erros.tipoServico}</small>}

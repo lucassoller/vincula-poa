@@ -333,13 +333,14 @@ class UnidadeSaudeServiceTest {
 
         UnidadeSaude unidade = new UnidadeSaude();
         unidade.setId(1L);
+        unidade.setTipoServico(TipoServico.UBS);
         unidade.setNome("UBS Centro");
 
         when(unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS))
                 .thenReturn(List.of(unidade));
 
         List<UnidadeSaudeShortResponseDTO> resultado =
-                unidadeSaudeService.listarTodasUbs();
+                unidadeSaudeService.listarTodosPorServico(TipoServico.UBS);
 
         assertEquals(1, resultado.size());
 
@@ -352,9 +353,30 @@ class UnidadeSaudeServiceTest {
 
         UnidadeSaude unidade = new UnidadeSaude();
         unidade.setId(1L);
+        unidade.setTipoServico(TipoServico.OUTRO);
         unidade.setNome("Hospital X");
 
         when(unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.OUTRO))
+                .thenReturn(List.of(unidade));
+
+        List<UnidadeSaudeShortResponseDTO> resultado =
+                unidadeSaudeService.listarTodosPorServico(TipoServico.OUTRO);
+
+        assertEquals(1, resultado.size());
+
+        verify(unidadeSaudeRepository)
+                .findAllByTipoServicoOrderByNomeAsc(TipoServico.OUTRO);
+    }
+
+    @Test
+    void deveListarTodosOutros2() {
+
+        UnidadeSaude unidade = new UnidadeSaude();
+        unidade.setId(1L);
+        unidade.setTipoServico(TipoServico.OUTRO);
+        unidade.setNome("Hospital X");
+
+        when(unidadeSaudeRepository.findAllByTipoServicoNotOrderByNomeAsc(TipoServico.UBS))
                 .thenReturn(List.of(unidade));
 
         List<UnidadeSaudeShortResponseDTO> resultado =
@@ -363,6 +385,6 @@ class UnidadeSaudeServiceTest {
         assertEquals(1, resultado.size());
 
         verify(unidadeSaudeRepository)
-                .findAllByTipoServicoOrderByNomeAsc(TipoServico.OUTRO);
+                .findAllByTipoServicoNotOrderByNomeAsc(TipoServico.UBS);
     }
 }

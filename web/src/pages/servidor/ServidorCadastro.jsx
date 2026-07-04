@@ -3,6 +3,7 @@ import api from "../../api/api.js";
 import {useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {useAuth} from "../../context/AuthContext.jsx";
+import * as Promisse from "axios";
 
 function ServidorCadastro() {
     const {
@@ -35,10 +36,12 @@ function ServidorCadastro() {
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                const response = await api.get("/unidades-saude/ubs");
-                setUnidades(response.data);
-                const response2 = await api.get("/unidades-saude/outro");
-                setServicos(response2.data);
+                const [ubsReponse, servicosResponse] = await Promisse.all( [
+                    api.get("/unidades-saude/ubs"),
+                    api.get("/unidades-saude/outros")
+                ]);
+                setUnidades(ubsReponse.data);
+                setServicos(servicosResponse.data);
             } catch {
                 setMensagem("Erro ao carregar serviços");
                 setMensagemSucesso("")

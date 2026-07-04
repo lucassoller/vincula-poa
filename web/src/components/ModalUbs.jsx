@@ -1,6 +1,7 @@
 import CampoDetalhe from "./CampoDetalhe.jsx";
 import { useNavigate } from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
+import {tipoServico} from "../utils/utils.js";
 
 function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
     const navigate = useNavigate();
@@ -27,7 +28,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
 
                     <CampoDetalhe
                         label="Tipo de serviço"
-                        valor={ubsSelecionada.tipoServico}
+                        valor={tipoServico[ubsSelecionada.tipoServico]}
                     />
 
                     <CampoDetalhe

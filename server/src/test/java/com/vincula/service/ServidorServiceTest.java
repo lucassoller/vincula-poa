@@ -999,7 +999,7 @@ class ServidorServiceTest {
         );
 
         assertEquals(
-                "Solicitante só pode ser vinculado a serviço do tipo OUTRO",
+                "Solicitante só pode ser vinculado a serviço do tipo outro ou serviço especializado",
                 ex.getMessage()
         );
     }
@@ -1092,7 +1092,7 @@ class ServidorServiceTest {
         );
 
         assertEquals(
-                "Solicitante só pode ser vinculado a serviço do tipo OUTRO",
+                "Solicitante só pode ser vinculado a serviço do tipo outro ou serviço especializado",
                 ex.getMessage()
         );
     }

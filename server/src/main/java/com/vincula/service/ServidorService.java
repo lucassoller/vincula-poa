@@ -146,8 +146,8 @@ public class ServidorService {
         UnidadeSaude unidadeSaude = buscarUnidadePorId(dto.getUnidadeSaudeId());
         String descricaoLog = AuditoriaDescricaoUtil.servidorAtualizado(entity, dto);
 
-        if(dto.getPerfil() == PerfilServidor.SOLICITANTE && unidadeSaude.getTipoServico() != TipoServico.OUTRO){
-            throw new BusinessException("Solicitante só pode ser vinculado a serviço do tipo OUTRO");
+        if(dto.getPerfil() == PerfilServidor.SOLICITANTE && unidadeSaude.getTipoServico() == TipoServico.UBS){
+            throw new BusinessException("Solicitante só pode ser vinculado a serviço do tipo outro ou serviço especializado");
         }else if(dto.getPerfil() == PerfilServidor.SERVIDOR_APS && unidadeSaude.getTipoServico() != TipoServico.UBS){
             throw new BusinessException("Servidor APS só pode ser vinculado a serviço do tipo UBS");
         }
@@ -161,7 +161,6 @@ public class ServidorService {
 
         return toDTO(atualizado);
     }
-
 
     public ServidorResponseDTO atualizarMinhaSenha(MudancaSenhaDTO dto) {
         Servidor entity = buscarServidorAutenticado();
@@ -231,7 +230,6 @@ public class ServidorService {
         }
     }
 
-
     private void validarDuplicidadeUpdate(MeuPerfilDTO dto, Long id) {
         if (servidorRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
             throw new ConflictException("Email já cadastrado");
@@ -275,8 +273,8 @@ public class ServidorService {
             }else{
                 UnidadeSaude unidadeSaude = buscarUnidadePorId(dto.getUnidadeSaudeId());
 
-                if(dto.getPerfil() == PerfilServidor.SOLICITANTE && unidadeSaude.getTipoServico() != TipoServico.OUTRO){
-                    throw new BusinessException("Solicitante só pode ser vinculado a serviço do tipo OUTRO");
+                if(dto.getPerfil() == PerfilServidor.SOLICITANTE && unidadeSaude.getTipoServico() == TipoServico.UBS){
+                    throw new BusinessException("Solicitante só pode ser vinculado a serviço do tipo outro ou serviço especializado");
                 }else if(dto.getPerfil() == PerfilServidor.SERVIDOR_APS && unidadeSaude.getTipoServico() != TipoServico.UBS){
                     throw new BusinessException("Servidor APS só pode ser vinculado a serviço do tipo UBS");
                 }
@@ -319,9 +317,7 @@ public class ServidorService {
         if (entity.getUnidadeSaude() != null) {
             dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
             dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
-        } else {
-            dto.setUnidadeSaudeId(null);
-            dto.setUnidadeSaudeNome(null);
+            dto.setTipoServico(entity.getUnidadeSaude().getTipoServico());
         }
 
         return dto;

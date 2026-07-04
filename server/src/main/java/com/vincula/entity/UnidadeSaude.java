@@ -24,7 +24,7 @@ public class UnidadeSaude {
     private String telefone2;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 5)
+    @Column(nullable = false, length = 21)
     private TipoServico tipoServico;
 
     @Column(nullable = false, unique = true, length = 7)

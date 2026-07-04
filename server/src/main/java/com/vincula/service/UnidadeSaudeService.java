@@ -47,15 +47,15 @@ public class UnidadeSaudeService {
                 .map(this::toDTO);
     }
 
-    public List<UnidadeSaudeShortResponseDTO> listarTodasUbs() {
-        return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS)
+    public List<UnidadeSaudeShortResponseDTO> listarTodosPorServico(TipoServico tipoServico) {
+        return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(tipoServico)
                 .stream()
                 .map(this::toShortDTO)
                 .toList();
     }
 
     public List<UnidadeSaudeShortResponseDTO> listarTodosOutros() {
-        return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.OUTRO)
+        return unidadeSaudeRepository.findAllByTipoServicoNotOrderByNomeAsc(TipoServico.UBS)
                 .stream()
                 .map(this::toShortDTO)
                 .toList();

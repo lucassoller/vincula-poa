@@ -20,12 +20,15 @@ public interface UnidadeSaudeRepository extends JpaRepository<UnidadeSaude, Long
 
     List<UnidadeSaude> findAllByTipoServicoOrderByNomeAsc(TipoServico tipoServico);
 
+    List<UnidadeSaude> findAllByTipoServicoNotOrderByNomeAsc(TipoServico tipoServico);
+
     @Query("""
     SELECT u
     FROM UnidadeSaude u
     WHERE
         LOWER(u.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(u.cnes) LIKE LOWER(CONCAT('%', :filtro, '%'))
+        OR LOWER(u.tipoServico) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(u.telefone) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(u.telefone2) LIKE LOWER(CONCAT('%', :filtro, '%'))
         OR LOWER(u.endereco.bairro) LIKE LOWER(CONCAT('%', :filtro, '%'))
