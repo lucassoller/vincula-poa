@@ -77,6 +77,27 @@
     color: #166534;
 }
 
+
+.prioridade-IMEDIATA {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.prioridade-ALTA {
+    background: #fedac7;
+    color: #fd4f37;
+}
+
+.prioridade-MEDIA {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.prioridade-BAIXA {
+    background: #dcfce7;
+    color: #166534;
+}
+
 .acoes-container {
     display: flex;
     gap: 8px;

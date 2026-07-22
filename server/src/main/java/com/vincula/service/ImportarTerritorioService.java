@@ -95,6 +95,7 @@ public class ImportarTerritorioService {
                 UnidadeSaude usRamos = new UnidadeSaude();
                 usRamos.setNome("US Ramos");
                 usRamos.setCnes("2264706");
+                usRamos.setTipoServico(TipoServico.UBS);
                 usRamos.setEndereco(endereco);
                 unidadeSaudeRepository.save(usRamos);
             }

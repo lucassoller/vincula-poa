@@ -25,11 +25,11 @@ public class Demanda {
     private MotivoBuscaAtiva motivoBuscaAtiva;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true, length = 38)
+    @Column(length = 38)
     private MotivoComplemento motivoComplemento;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true, length = 5)
+    @Column(length = 8)
     private Prioridade prioridade;
 
     @Column(length = 500)

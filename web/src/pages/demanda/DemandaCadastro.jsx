@@ -321,6 +321,7 @@ function DemandaCadastro() {
                                 <option value="BAIXA">Baixa</option>
                                 <option value="MEDIA">Média</option>
                                 <option value="ALTA">Alta</option>
+                                <option value="IMEDIATA">Imediata</option>
                             </select>
                             {erros.prioridade && <small>{erros.prioridade}</small>}
                         </div>

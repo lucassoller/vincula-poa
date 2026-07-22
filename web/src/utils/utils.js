@@ -112,7 +112,8 @@ export const tipoServico = {
 export const prioridadeLabel = {
     "ALTA": "Alta",
     "MEDIA": "Média",
-    "BAIXA": "Baixa"
+    "BAIXA": "Baixa",
+    "IMEDIATA": "Imediata"
 };
 
 export const perfilLabel = {

@@ -533,7 +533,11 @@ function Demandas() {
                                         {statusLabel[d.status]}
                                     </span>
                                 </td>
-                                <td>{prioridadeLabel[d.prioridade]} </td>
+                                <td>
+                                    <span className={`status-badge prioridade-${d.prioridade}`}>
+                                        {prioridadeLabel[d.prioridade]}
+                                    </span>
+                                </td>
                                
                                 <td>
                                     <span
