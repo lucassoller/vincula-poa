@@ -66,8 +66,7 @@ public enum MotivoBuscaAtiva {
         MotivoComplemento.HIV_AIDS,
         MotivoComplemento.OUTRAS_DOENCAS_NOTIFICACAO_COMPULSORIA,
         MotivoComplemento.SIFILIS,
-        MotivoComplemento.TUBERCULOSE_ABANDONO_TRATAMENTO,
-        MotivoComplemento.TUBERCULOSE_INVESTIGACAO_CONTATOS
+        MotivoComplemento.TUBERCULOSE
     )),
 
     VIOLENCIA_MORTALIDADE(Set.of(

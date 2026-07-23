@@ -100,8 +100,7 @@ public class IndicadorComplementoService {
             case "HIV_AIDS" -> "HIV/AIDS";
             case "OUTRAS_DOENCAS_NOTIFICACAO_COMPULSORIA" -> "Outras doenças de notificação compulsória";
             case "SIFILIS" -> "Sífilis";
-            case "TUBERCULOSE_ABANDONO_TRATAMENTO" -> "Tuberculose - abandono de tratamento";
-            case "TUBERCULOSE_INVESTIGACAO_CONTATOS" -> "Tuberculose - investigação de contatos";
+            case "TUBERCULOSE" -> "Tuberculose";
             case "MORTALIDADE_INFANTIL" -> "Mortalidade infantil";
             case "MORTALIDADE_MATERNA" -> "Mortalidade materna";
             case "TRABALHO_INFANTIL" -> "Trabalho infantil";
