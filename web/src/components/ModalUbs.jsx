@@ -78,7 +78,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                     </div>
                 </div>
 
-                {servidor?.perfil === 'GESTAO_MUNICIPAL' && (
+                {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                     <div className="ubs-actions">
                         <span
                             className="btn-editar"

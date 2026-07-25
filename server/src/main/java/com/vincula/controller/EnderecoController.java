@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/enderecos")
-@PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+@PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
 public class EnderecoController {
 
     private final EnderecoService enderecoService;

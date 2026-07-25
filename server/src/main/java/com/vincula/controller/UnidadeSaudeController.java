@@ -25,7 +25,7 @@ public class UnidadeSaudeController {
         this.unidadeSaudeService = unidadeSaudeService;
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PostMapping
     public ResponseEntity<UnidadeSaudeResponseDTO> criar(@Valid @RequestBody UnidadeSaudeDTO dto) {
         UnidadeSaudeResponseDTO criada = unidadeSaudeService.criar(dto);
@@ -80,14 +80,14 @@ public class UnidadeSaudeController {
         return ResponseEntity.ok(unidadeSaudeService.buscarPorId(id));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PutMapping("/{id}")
     public ResponseEntity<UnidadeSaudeResponseDTO> atualizar(@PathVariable Long id,
                                                      @Valid @RequestBody UnidadeSaudeDTO dto) {
         return ResponseEntity.ok(unidadeSaudeService.atualizar(id, dto));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         unidadeSaudeService.deletar(id);

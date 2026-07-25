@@ -47,7 +47,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
-    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/unidadeSaude/{unidadeSaudeId}")
     public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidade(
             @PathVariable Long unidadeSaudeId,
@@ -58,7 +58,7 @@ public class UsuarioController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('SOLICITANTE', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SOLICITANTE', 'GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/unidadeSolicitante/{unidadeSolicitanteId}")
     public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidadeSolicitante(
             @PathVariable Long unidadeSolicitanteId,
@@ -81,7 +81,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarTodosFiltradosPorNomeOuDocumento(filtro));
     }
 
-    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/filtrados/unidadeSaude/{unidadeSaudeId}/{filtro}")
     public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidade(
             @PathVariable Long unidadeSaudeId,
@@ -93,7 +93,7 @@ public class UsuarioController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('SOLICITANTE', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SOLICITANTE', 'GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/filtrados/unidadeSolicitante/{unidadeSolicitanteId}/{filtro}")
     public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidadeSolicitante(
             @PathVariable Long unidadeSolicitanteId,
@@ -129,7 +129,7 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         usuarioService.deletar(id);

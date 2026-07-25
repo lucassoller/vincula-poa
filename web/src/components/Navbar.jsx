@@ -48,7 +48,7 @@ function Navbar() {
                         Indicadores
                     </Link>
 
-                {servidor?.perfil === "GESTAO_MUNICIPAL" && (
+                {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                     <Link
                         to="/auditoria"
                         className="navbar-link"
@@ -113,7 +113,7 @@ function Navbar() {
                             Listar serviços
                         </Link>
 
-                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                         <Link
                             to="/unidades-saude/cadastro"
                             className="dropdown-link"
@@ -122,7 +122,7 @@ function Navbar() {
                         </Link>
                         )}
 
-                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                             <Link
                                 to="/servidores"
                                 className="dropdown-link"
@@ -132,7 +132,7 @@ function Navbar() {
 
                         )}
 
-                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                             <Link
                                 to="/servidores/cadastro"
                                 className="dropdown-link"
@@ -160,7 +160,7 @@ function Navbar() {
                         >
                             Visualizar mapa
                         </Link>
-                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                         <Link
                             to="/mapa/importar"
                             className="dropdown-item"

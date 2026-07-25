@@ -24,14 +24,14 @@ public class ServidorController {
         this.servidorService = servidorService;
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PostMapping
     public ResponseEntity<ServidorResponseDTO> criar(@Valid @RequestBody ServidorDTO dto) {
         ServidorResponseDTO criado = servidorService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping
     public ResponseEntity<Page<ServidorResponseDTO>> listarTodos(Pageable pageable) {
         return ResponseEntity.ok(servidorService.listarTodos(pageable));
@@ -43,13 +43,13 @@ public class ServidorController {
         return ResponseEntity.ok(servidorService.listarTodosFiltrados(filtro, pageable));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/perfil/{perfil}")
     public ResponseEntity<Page<ServidorResponseDTO>> listarTodos(@PathVariable PerfilServidor perfil, Pageable pageable) {
         return ResponseEntity.ok(servidorService.listarTodosPorPerfil(perfil, pageable));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/all")
     public ResponseEntity<List<ServidorShortResponseDTO>> listarTodos() {
         return ResponseEntity.ok(servidorService.listarTodos());
@@ -80,14 +80,14 @@ public class ServidorController {
     }
 
     // COMENTAR ROLE PARA CADASTRAR SERVIDOR
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PutMapping("/{id}")
     public ResponseEntity<ServidorResponseDTO> atualizar(@PathVariable Long id,
                                                 @Valid @RequestBody ServidorDTO dto) {
         return ResponseEntity.ok(servidorService.atualizar(id, dto));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PutMapping("/transferir/{id}")
     public ResponseEntity<ServidorResponseDTO> transferir(@PathVariable Long id,
                                                          @Valid @RequestBody TransferirServidorDTO dto) {
@@ -118,7 +118,7 @@ public class ServidorController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         servidorService.deletar(id);

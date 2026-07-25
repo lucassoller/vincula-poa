@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {useAuth} from "../../context/AuthContext.jsx";
 import * as Promisse from "axios";
+import {perfilLabel} from "../../utils/utils.js";
 
 function ServidorCadastro() {
     const {
@@ -92,7 +93,7 @@ function ServidorCadastro() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
                     </div>
                 </div>
                 {mensagem && (
@@ -228,48 +229,50 @@ function ServidorCadastro() {
                                 <option value="">
                                     Selecionar
                                 </option>
+                                <option value="GESTAO_MUNICIPAL">
+                                    Gestão Municipal
+                                </option>
+                                <option value="VIGILANCIA">
+                                    Vigilância
+                                </option>
+                                <option value="COORDENADORIA">
+                                    Coordenadoria
+                                </option>
                                 <option value="SOLICITANTE">
                                     Solicitante
                                 </option>
                                 <option value="SERVIDOR_APS">
                                     Servidor APS
                                 </option>
-                                <option value="GESTAO_MUNICIPAL">
-                                    Gestão Municipal
-                                </option>
                             </select>
                             {erros.perfil && (
                                 <small>{erros.perfil}</small>
                             )}
                         </div>
-                        <div className="form-group">
-                            <label>
-                                Serviço de Saúde
-                                {(perfil === "SOLICITANTE" || perfil === "SERVIDOR_APS") && (
-                                    <span> *</span>
+                        {(perfil === "SOLICITANTE" || perfil === "SERVIDOR_APS") && (
+                            <div className="form-group">
+                                <label>
+                                    Serviço de Saúde <span> *</span>
+                                </label>
+
+                                <select
+                                    className="input-field"
+                                    {...register("unidadeSaudeId")}
+                                >
+                                    <option value="">Selecione</option>
+
+                                    {(perfil === "SERVIDOR_APS" ? unidades : perfil === "SOLICITANTE" ? servicos : []).map((u) => (
+                                        <option key={u.id} value={u.id}>
+                                            {u.nome}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                {erros.unidadeSaudeId && (
+                                    <small>{erros.unidadeSaudeId}</small>
                                 )}
-                            </label>
-
-                            <select
-                                className="input-field"
-                                disabled={
-                                    !perfil || perfil === "GESTAO_MUNICIPAL"
-                                }
-                                {...register("unidadeSaudeId")}
-                            >
-                                <option value="">Selecione</option>
-
-                                {(perfil === "SERVIDOR_APS" ? unidades : perfil === "SOLICITANTE" ? servicos : []).map((u) => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.nome}
-                                    </option>
-                                ))}
-                            </select>
-
-                            {erros.unidadeSaudeId && (
-                                <small>{erros.unidadeSaudeId}</small>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                     <div className="form-actions">
                         <span

@@ -7,6 +7,7 @@ import {mascaraDocumento, mascaraTelefone} from "../../utils/mascaras.js";
 import ModalUbs from "../../components/ModalUbs.jsx";
 import Pagination from "../../components/Paginations.jsx";
 import ModalUsuario from "../../components/ModalUsuario.jsx";
+import {perfilLabel} from "../../utils/utils.js";
 
 function Usuarios() {
     const navigate = useNavigate();
@@ -137,7 +138,7 @@ function Usuarios() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
                     </div>
                 </div>
                 {mensagem && (

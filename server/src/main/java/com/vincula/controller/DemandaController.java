@@ -42,7 +42,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.atualizar(id, dto));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodas(Pageable pageable) {
         return ResponseEntity.ok(demandaService.listarTodas(pageable));
@@ -54,7 +54,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.buscarPorId(id));
     }
 
-    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUsuario(
             @PathVariable Long usuarioId,
@@ -63,7 +63,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUsuario(usuarioId, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/unidade/{unidadeSaudeId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaude(
             @PathVariable Long unidadeSaudeId,
@@ -72,7 +72,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSaude(unidadeSaudeId, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('SOLICITANTE','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SOLICITANTE','GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/solicitante/{unidadeSolicitanteId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSolicitante(
             @PathVariable Long unidadeSolicitanteId,
@@ -81,7 +81,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitante(unidadeSolicitanteId, pageable));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/status/{status}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorStatus(
             @PathVariable StatusDemanda status,
@@ -90,7 +90,7 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorStatus(status, pageable));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/filtradas/{filtro}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas(@PathVariable String filtro, Pageable pageable) {
         return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));
@@ -122,14 +122,14 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarMotivos());
     }
 
-    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PatchMapping("/{id}/redirecionar")
     public ResponseEntity<DemandaResponseDTO> redirecionar(@PathVariable Long id,
                                                    @Valid @RequestBody RedirecionarDemandaDTO dto) {
         return ResponseEntity.ok(demandaService.redirecionar(id, dto));
     }
 
-    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PatchMapping("/{id}/encerrar")
     public ResponseEntity<DemandaResponseDTO> encerrar(@PathVariable Long id,
                                                        @Valid @RequestBody EncerrarDemandaDTO dto) {
@@ -137,14 +137,14 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.encerrar(id, dto));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         demandaService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping(value = "/exportar", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasCsv() {
 
@@ -175,7 +175,7 @@ public class DemandaController {
         return gerarRespostaCsv(csv);
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping(value = "/exportar/filtradas/{filtro}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasFiltradasCsv(
             @PathVariable String filtro

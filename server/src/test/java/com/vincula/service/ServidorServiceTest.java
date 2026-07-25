@@ -942,7 +942,7 @@ class ServidorServiceTest {
         );
 
         assertEquals(
-                "Não é possível transferir um servidor Gestão Municipal",
+                "Não é possível transferir um servidor do tipo gestão",
                 ex.getMessage()
         );
     }
@@ -967,7 +967,7 @@ class ServidorServiceTest {
         );
 
         assertEquals(
-                "Não é possível mudar o perfil de um servidor para Gestão Municipal",
+                "Não é possível mudar o perfil de um servidor para o tipo gestão",
                 ex.getMessage()
         );
     }

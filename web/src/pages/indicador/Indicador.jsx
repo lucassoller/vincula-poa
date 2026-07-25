@@ -9,6 +9,7 @@ import DonutChart from "../../components/DonutChart.jsx";
 import SecaoCardsInterna from "../../components/SecaoCardsInterna.jsx";
 import ChartCard from "../../components/ChartCard.jsx";
 import SecaoCards from "../../components/SecaoCards.jsx";
+import {perfilLabel} from "../../utils/utils.js";
 
 function Indicador() {
     const navigate = useNavigate();
@@ -226,7 +227,7 @@ function Indicador() {
                         </div>
 
                         <div className="perfil-badge">
-                            {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                            {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
                         </div>
                     </div>
 

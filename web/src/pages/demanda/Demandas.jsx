@@ -2,7 +2,15 @@ import { useEffect, useState, useCallback } from "react";
 import api from "../../api/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/demandas.css";
-import {prazoLabel, diasRestantes, prioridadeLabel, formatarDataHora, statusLabel, motivoBuscaLabel } from "../../utils/utils.js";
+import {
+    prazoLabel,
+    diasRestantes,
+    prioridadeLabel,
+    formatarDataHora,
+    statusLabel,
+    motivoBuscaLabel,
+    perfilLabel
+} from "../../utils/utils.js";
 import ModalTentativaContato from "../../components/ModalTentativaContato.jsx";
 import ModalRedirecionarDemanda from "../../components/ModalRedirecionarDemanda.jsx";
 import ModalEncerrarDemanda from "../../components/ModalEncerrarDemanda.jsx";
@@ -53,7 +61,7 @@ function Demandas() {
         try {
             setCarregando(true);
             let demandasResponse;
-            if (servidor?.perfil === "GESTAO_MUNICIPAL") {
+            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
                 demandasResponse = await api.get(
                     `/demandas?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
@@ -90,7 +98,7 @@ function Demandas() {
             setCarregando(true);
             let demandasResponse;
 
-            if (servidor?.perfil === "GESTAO_MUNICIPAL") {
+            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
                 demandasResponse = await api.get(
                     `/demandas/filtradas/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
                 );
@@ -329,7 +337,7 @@ function Demandas() {
 
             let response;
             if (modoFiltrado && filtro.trim()) {
-                if (servidor?.perfil === "GESTAO_MUNICIPAL") {
+                if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
                     response = await api.get(
                         `/demandas/exportar/filtradas/${filtro}`,
                         {
@@ -352,7 +360,7 @@ function Demandas() {
                     );
                 }
             } else {
-                if (servidor?.perfil === "GESTAO_MUNICIPAL") {
+                if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
                     response = await api.get(
                         "/demandas/exportar",
                         {
@@ -435,7 +443,7 @@ function Demandas() {
 
                     </div>
 
-                    <span className="perfil-badge">{servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}</span>
+                    <span className="perfil-badge">{['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}</span>
                 </div>
 
                 {mensagemSucesso && (

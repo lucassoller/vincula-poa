@@ -22,13 +22,13 @@ public class TentativaContatoController {
         this.tentativaService = tentativaService;
     }
 
-    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PostMapping
     public ResponseEntity<TentativaContatoResponseDTO> criar(@Valid @RequestBody TentativaContatoDTO dto) {
         return ResponseEntity.ok(tentativaService.criar(dto));
     }
 
-    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PutMapping("/{id}")
     public ResponseEntity<TentativaContatoResponseDTO> atualizar(@PathVariable Long id,
                                                          @Valid @RequestBody TentativaContatoDTO dto) {
@@ -41,13 +41,13 @@ public class TentativaContatoController {
         return ResponseEntity.ok(tentativaService.listarPorDemanda(demandaId));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping
     public ResponseEntity<Page<TentativaContatoResponseDTO>> listarTodas(Pageable pageable) {
         return ResponseEntity.ok(tentativaService.listarTodas(pageable));
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         tentativaService.deletar(id);

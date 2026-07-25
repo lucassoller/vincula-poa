@@ -231,7 +231,9 @@ public class IndicadorService {
     private void validarAcessoIndicadorGeral() {
         Servidor servidor = servidorService.buscarServidorAutenticado();
 
-        if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL) {
+        if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL &&
+                servidor.getPerfil() != PerfilServidor.VIGILANCIA &&
+                servidor.getPerfil() != PerfilServidor.COORDENADORIA) {
             throw new BusinessException("Servidor não pode acessar indicadores gerais");
         }
     }
@@ -239,7 +241,9 @@ public class IndicadorService {
     private void validarAcessoUnidade(Long unidadeSaudeId) {
         Servidor servidor = servidorService.buscarServidorAutenticado();
 
-        if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL) {
+        if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL &&
+                servidor.getPerfil() != PerfilServidor.VIGILANCIA &&
+                servidor.getPerfil() != PerfilServidor.COORDENADORIA) {
             if (servidor.getUnidadeSaude() == null || !servidor.getUnidadeSaude().getId().equals(unidadeSaudeId)) {
                 throw new BusinessException("Servidor não pode acessar indicadores de outra unidade");
             }

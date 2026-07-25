@@ -23,7 +23,7 @@ public class ImportarMapaController {
         this.objectMapper = objectMapper;
     }
 
-    @PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PostMapping("/importar")
     public ResponseEntity<Void> importar(@RequestBody Map<String, Object> geojson) {
         JsonNode node = objectMapper.valueToTree(geojson);

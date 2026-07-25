@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import api from "../../api/api.js";
 import {useForm} from "react-hook-form";
+import {perfilLabel} from "../../utils/utils.js";
 
 function MeuPerfil() {
     const {servidor, setServidor} = useAuth();
@@ -50,7 +51,7 @@ function MeuPerfil() {
                         <p>Atualize seus dados de acesso ao sistema</p>
                     </div>
                     <div className="perfil-badge">
-                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
                     </div>
                 </div>
 

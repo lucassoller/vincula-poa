@@ -218,7 +218,7 @@ function Servidores() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
                     </div>
                 </div>
                 {mensagemErro && (
@@ -298,7 +298,7 @@ function Servidores() {
                                             className="ubs-badge ubs-clickable"
                                             onClick={() => abrirCardUbs(s.unidadeSaudeId)}
                                         >
-                                            {s.perfil === "GESTAO_MUNICIPAL"
+                                            {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)
                                                 ? "Sem serviço vinculado"
                                                 : s.unidadeSaudeNome}
                                         </span>

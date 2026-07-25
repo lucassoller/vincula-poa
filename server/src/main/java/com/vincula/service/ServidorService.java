@@ -135,12 +135,16 @@ public class ServidorService {
     public ServidorResponseDTO transferirServidor(Long id, TransferirServidorDTO dto) {
 
         Servidor entity = buscarServidorPorId(id);
-        if (entity.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL){
-            throw new BusinessException("Não é possível transferir um servidor Gestão Municipal");
+        if (entity.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL ||
+                entity.getPerfil() == PerfilServidor.VIGILANCIA ||
+                entity.getPerfil() == PerfilServidor.COORDENADORIA){
+            throw new BusinessException("Não é possível transferir um servidor do tipo gestão");
         }
 
-        if(dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL){
-            throw new BusinessException("Não é possível mudar o perfil de um servidor para Gestão Municipal");
+        if(dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL ||
+                dto.getPerfil() == PerfilServidor.VIGILANCIA ||
+                dto.getPerfil() == PerfilServidor.COORDENADORIA){
+            throw new BusinessException("Não é possível mudar o perfil de um servidor para o tipo gestão");
         }
 
         UnidadeSaude unidadeSaude = buscarUnidadePorId(dto.getUnidadeSaudeId());
@@ -262,9 +266,11 @@ public class ServidorService {
     }
 
     private UnidadeSaude resolverUnidadeSaude(ServidorDTO dto) {
-        if(dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL){
+        if(dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL ||
+                dto.getPerfil() == PerfilServidor.VIGILANCIA ||
+                dto.getPerfil() == PerfilServidor.COORDENADORIA){
             if(dto.getUnidadeSaudeId() != null){
-                throw new BusinessException("Gestão Municipal não deve estar vinculado a uma unidade de saúde");
+                throw new BusinessException("Perfil do tipo gestão não deve estar vinculado a uma unidade de saúde");
             }
             return null;
         }else{

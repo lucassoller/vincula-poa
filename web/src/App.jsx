@@ -50,7 +50,7 @@ function App() {
             <Route
               path="/indicadores"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                     <Layout>
                         <Indicador />
                     </Layout>
@@ -60,7 +60,7 @@ function App() {
             <Route
               path="/usuarios"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                     <Layout>
                         <Usuarios />
                     </Layout>
@@ -70,7 +70,7 @@ function App() {
             <Route
                 path="/mapa/importar"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <ImportarMapa />
                         </Layout>
@@ -81,7 +81,7 @@ function App() {
             <Route
                 path="/usuarios/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <UsuarioCadastro />
                         </Layout>
@@ -92,7 +92,7 @@ function App() {
             <Route
                 path="/usuarios/:id/editar"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <UsuarioEditar />
                         </Layout>
@@ -103,7 +103,7 @@ function App() {
             <Route
                 path="/demandas"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <Demandas />
                         </Layout>
@@ -114,7 +114,7 @@ function App() {
             <Route
                 path="/demandas/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <DemandaCadastro />
                         </Layout>
@@ -125,7 +125,7 @@ function App() {
             <Route
               path="/auditoria"
               element={
-                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
+                <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "VIGILANCIA", "COORDENADORIA"]}>
                     <Layout>
                         <Auditoria />
                     </Layout>
@@ -136,7 +136,7 @@ function App() {
             <Route
                 path="/servidores"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <Servidores />
                         </Layout>
@@ -147,7 +147,7 @@ function App() {
             <Route
                 path="/servidores/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <ServidorCadastro />
                         </Layout>
@@ -158,7 +158,7 @@ function App() {
             <Route
                 path="/unidades-saude/cadastro"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <UnidadeSaudeCadastro />
                         </Layout>
@@ -169,7 +169,7 @@ function App() {
             <Route
                 path="/unidades-saude"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <UnidadesSaude />
                         </Layout>
@@ -180,7 +180,7 @@ function App() {
             <Route
                 path="/unidades-saude/:id/editar"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <UnidadeSaudeEditar />
                         </Layout>
@@ -190,7 +190,7 @@ function App() {
             <Route
                 path="/meu-perfil"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <MeuPerfil />
                         </Layout>
@@ -200,7 +200,7 @@ function App() {
             <Route
                 path="/alterar-senha"
                 element={
-                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE"]}>
+                    <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
                             <AlterarSenha />
                         </Layout>

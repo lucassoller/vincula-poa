@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 
 import ModalRedirecionarDemandas from "../../components/ModalRedirecionarDemandas.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
+import {perfilLabel} from "../../utils/utils.js";
 
 const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 
@@ -162,7 +163,7 @@ function UsuarioEditar() {
                         <p>Atualize os dados cadastrais do usuário</p>
                     </div>
                     <div className="perfil-badge">
-                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
                     </div>
                 </div>
 

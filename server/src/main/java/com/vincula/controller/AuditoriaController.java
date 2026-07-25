@@ -10,7 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
-@PreAuthorize("hasRole('GESTAO_MUNICIPAL')")
+@PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
 @RestController
 @RequestMapping("/auditoria")
 public class AuditoriaController {

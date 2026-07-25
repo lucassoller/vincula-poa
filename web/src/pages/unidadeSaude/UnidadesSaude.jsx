@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Paginations.jsx";
 import { mascaraTelefone } from "../../utils/mascaras.js";
 import ModalUbs from "../../components/ModalUbs.jsx";
-import {tipoServico} from "../../utils/utils.js";
+import {perfilLabel, tipoServico} from "../../utils/utils.js";
 
 function UnidadesSaude() {
     const navigate = useNavigate();
@@ -116,7 +116,7 @@ function UnidadesSaude() {
                     </div>
 
                     <div className="perfil-badge">
-                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
                     </div>
 
                 </div>
@@ -157,7 +157,7 @@ function UnidadesSaude() {
                             </span>
 
                         </div>
-                        {(servidor?.perfil === "GESTAO_MUNICIPAL") && (
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                             <span
                                 className="buscar-btn"
                                 onClick={() => navigate("/unidades-saude/cadastro")}
@@ -208,7 +208,7 @@ function UnidadesSaude() {
                                         >
                                             Ver mais
                                         </span>
-                                        {servidor?.perfil === "GESTAO_MUNICIPAL" && (
+                                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                                             <span
                                                 className="btn-editar"
                                                 onClick={() =>

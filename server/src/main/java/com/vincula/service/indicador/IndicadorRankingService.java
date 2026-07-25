@@ -95,7 +95,9 @@ public class IndicadorRankingService {
     private void validarAcessoGestao() {
         Servidor servidor = servidorService.buscarServidorAutenticado();
 
-        if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL) {
+        if (servidor.getPerfil() != PerfilServidor.GESTAO_MUNICIPAL &&
+                servidor.getPerfil() != PerfilServidor.VIGILANCIA &&
+                servidor.getPerfil() != PerfilServidor.COORDENADORIA) {
             throw new BusinessException("Servidor não pode acessar ranking de unidades");
         }
     }

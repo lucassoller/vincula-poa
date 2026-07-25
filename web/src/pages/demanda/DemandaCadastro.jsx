@@ -4,6 +4,7 @@ import api from "../../api/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/demandaCadastro.css";
 import {useForm} from "react-hook-form";
+import {perfilLabel} from "../../utils/utils.js";
 
 function DemandaCadastro() {
     const {
@@ -194,7 +195,7 @@ function DemandaCadastro() {
                         <p>Cadastre uma solicitação de busca ativa para acompanhamento</p>
                     </div>
                     <div className="perfil-badge">
-                        {servidor?.perfil === 'GESTAO_MUNICIPAL' ? servidor.perfil : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
                     </div>
                 </div>
 

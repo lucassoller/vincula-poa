@@ -118,7 +118,9 @@ export const prioridadeLabel = {
 export const perfilLabel = {
     "SOLICITANTE": "Solicitante",
     "SERVIDOR_APS": "Servidor APS",
-    "GESTAO_MUNICIPAL": "Gestão Municipal"
+    "GESTAO_MUNICIPAL": "Gestão Municipal",
+    "VIGILANCIA": "Vigilância",
+    "COORDENADORIA": "Coordenadoria"
 };
 
 export function formatarDataHora(data) {
