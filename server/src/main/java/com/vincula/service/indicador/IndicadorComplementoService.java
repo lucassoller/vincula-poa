@@ -58,6 +58,10 @@ public class IndicadorComplementoService {
     }
 
     private String traduzirComplemento(String complemento) {
+        if (complemento == null) {
+            return "Sem complemento";
+        }
+
         return switch (complemento) {
             case "ABANDONO_TRATAMENTO" -> "Abandono de tratamento";
             case "AVISO_CONSULTA" -> "Aviso de consulta";
