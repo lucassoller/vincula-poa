@@ -2,10 +2,9 @@ package com.vincula.service;
 
 import com.vincula.dto.MotivoBuscaResponseDTO;
 import com.vincula.dto.MotivoComplementoResponseDTO;
-import com.vincula.dto.demanda.DemandaDTO;
-import com.vincula.dto.demanda.EncerrarDemandaDTO;
-import com.vincula.dto.demanda.RedirecionarDemandaDTO;
-import com.vincula.dto.demanda.DemandaResponseDTO;
+import com.vincula.dto.demanda.*;
+import com.vincula.dto.usuario.UsuarioFiltroResponseDTO;
+import com.vincula.dto.usuario.UsuarioShortResponseDTO;
 import com.vincula.entity.*;
 import com.vincula.enums.*;
 import com.vincula.exception.BusinessException;
@@ -14,10 +13,12 @@ import com.vincula.export.DemandaExporter;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.UsuarioRepository;
 import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.specification.DemandaSpecification;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -62,11 +63,6 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
-    public Page<DemandaResponseDTO> listarTodasFiltradas(String filtro, Pageable pageable) {
-        return demandaRepository.findFiltradas(filtro, pageable)
-                .map(this::toDTO);
-    }
-
     public Page<DemandaResponseDTO> listarPorUsuario(Long usuarioId, Pageable pageable) {
         return demandaRepository.findByUsuarioOrderByUsuarioNome(usuarioId, pageable)
                 .map(this::toDTO);
@@ -82,6 +78,11 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
+    public Page<DemandaResponseDTO> listarTodasFiltradas(String filtro, Pageable pageable) {
+        return demandaRepository.findFiltradas(filtro, pageable)
+                .map(this::toDTO);
+    }
+
     public Page<DemandaResponseDTO> listarPorUnidadeSaudeFiltradas(Long unidadeResponsavelId, String filtro, Pageable pageable) {
         return demandaRepository.findFiltradasByUnidade(unidadeResponsavelId, filtro, pageable)
                 .map(this::toDTO);
@@ -89,6 +90,43 @@ public class DemandaService {
 
     public Page<DemandaResponseDTO> listarPorUnidadeSolicitanteFiltradas(Long unidadeSolicitanteId, String filtro, Pageable pageable) {
         return demandaRepository.findFiltradasByUnidadeSolicitante(unidadeSolicitanteId, filtro, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<DemandaResponseDTO> listarTodasFiltradas2(
+            FiltroRequestDTO filtro,
+            Pageable pageable) {
+
+        Specification<Demanda> specification =
+                DemandaSpecification.comFiltros(filtro);
+
+        return demandaRepository.findAll(specification, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<DemandaResponseDTO> listarPorUnidadeSaudeFiltradas2(
+            Long unidadeResponsavelId,
+            FiltroRequestDTO filtro,
+            Pageable pageable) {
+
+        Specification<Demanda> specification =
+                DemandaSpecification.comFiltros(filtro)
+                        .and(DemandaSpecification.unidadeResponsavel(unidadeResponsavelId));
+
+        return demandaRepository.findAll(specification, pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<DemandaResponseDTO> listarPorUnidadeSolicitanteFiltradas2(
+            Long unidadeSolicitanteId,
+            FiltroRequestDTO filtro,
+            Pageable pageable) {
+
+        Specification<Demanda> specification =
+                DemandaSpecification.comFiltros(filtro)
+                        .and(DemandaSpecification.unidadeSolicitante(unidadeSolicitanteId));
+
+        return demandaRepository.findAll(specification, pageable)
                 .map(this::toDTO);
     }
 
@@ -380,6 +418,17 @@ public class DemandaService {
                                         c.name(),
                                         c.getDescricao()))
                                 .toList()
+                ))
+                .toList();
+    }
+
+    public List<UsuarioFiltroResponseDTO> listarUsuariosComDemanda() {
+        return demandaRepository.findUsuariosComDemanda()
+                .stream()
+                .map(usuario -> new UsuarioFiltroResponseDTO(
+                        usuario.getId(),
+                        usuario.getNomeCompleto(),
+                        usuario.getDocumento()
                 ))
                 .toList();
     }

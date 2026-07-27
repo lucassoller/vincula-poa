@@ -1,10 +1,9 @@
 package com.vincula.controller;
 
-import com.vincula.dto.demanda.DemandaDTO;
-import com.vincula.dto.demanda.EncerrarDemandaDTO;
-import com.vincula.dto.demanda.RedirecionarDemandaDTO;
-import com.vincula.dto.demanda.DemandaResponseDTO;
+import com.vincula.dto.demanda.*;
 import com.vincula.dto.MotivoBuscaResponseDTO;
+import com.vincula.dto.usuario.UsuarioFiltroResponseDTO;
+import com.vincula.dto.usuario.UsuarioShortResponseDTO;
 import com.vincula.enums.StatusDemanda;
 import com.vincula.service.DemandaService;
 import jakarta.validation.Valid;
@@ -116,10 +115,47 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitanteFiltradas(unidadeSolicitanteId, filtro, pageable));
     }
 
+
+    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
+    @PostMapping("/filtro")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas2(
+            @RequestBody FiltroRequestDTO filtro,
+            Pageable pageable) {
+        return ResponseEntity.ok(demandaService.listarTodasFiltradas2(filtro, pageable));
+    }
+
+    @PreAuthorize("hasRole('SERVIDOR_APS')")
+    @PostMapping("/filtro/unidade/{unidadeSaudeId}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaudeFiltradas2(
+            @PathVariable Long unidadeSaudeId,
+            @RequestBody FiltroRequestDTO filtro,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(demandaService.listarPorUnidadeSaudeFiltradas2(unidadeSaudeId, filtro, pageable));
+    }
+
+    @PreAuthorize("hasRole('SOLICITANTE')")
+    @PostMapping("/filtro/solicitante/{unidadeSolicitanteId}")
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSolicitanteFiltradas2(
+            @PathVariable Long unidadeSolicitanteId,
+            @RequestBody FiltroRequestDTO filtro,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitanteFiltradas2(unidadeSolicitanteId, filtro, pageable));
+    }
+
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/motivos")
     public ResponseEntity<List<MotivoBuscaResponseDTO>> listarMotivos() {
         return ResponseEntity.ok(demandaService.listarMotivos());
+    }
+
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/usuarios/com-demandas")
+    public ResponseEntity<List<UsuarioFiltroResponseDTO>> listarUsuariosComDemanda() {
+        return ResponseEntity.ok(demandaService.listarUsuariosComDemanda());
     }
 
     @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")

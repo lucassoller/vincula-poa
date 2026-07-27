@@ -1,9 +1,8 @@
-import { useEffect, useState, useCallback } from "react";
+import {useEffect, useState, useCallback, useRef} from "react";
 import api from "../../api/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/demandas.css";
 import {
-    prazoLabel,
     diasRestantes,
     prioridadeLabel,
     formatarDataHora,
@@ -18,12 +17,14 @@ import ModalDetalhesDemanda from "../../components/ModalDetalhesDemanda.jsx";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Paginations.jsx";
 import ModalUbs from "../../components/ModalUbs.jsx";
+import ModalFiltrosDemanda from "../../components/ModalFiltrosDemanda.jsx";
 
 function Demandas() {
     const navigate = useNavigate();
     const { servidor } = useAuth();
     const [demandas, setDemandas] = useState([]);
     const [unidades, setUnidades] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
     const [demandaSelecionada, setDemandaSelecionada] = useState(null);
     const [acao, setAcao] = useState("");
     const [mensagem, setMensagem] = useState("");
@@ -33,13 +34,35 @@ function Demandas() {
     const [demandaDetalhada, setDemandaDetalhada] = useState(null);
     const [tentativasContato, setTentativasContato] = useState([]);
     const [carregando, setCarregando] = useState(true);
-    const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [ubsSelecionada, setUbsSelecionada] = useState(null);
     const [carregandoUbs, setCarregandoUbs] = useState(false);
-    const [modoFiltrado, setModoFiltrado] = useState(false);
     const tamanhoPagina = 10;
+    const [mostrarFiltros, setMostrarFiltros] = useState(false);
+    const [motivos, setMotivos] = useState([]);
+    const [modoFiltrado, setModoFiltrado] = useState(0);
+
+    const [filtros, setFiltros] = useState({
+        status: [],
+        prioridade: [],
+        tempo: [],
+        unidade: "",
+        servico: "",
+        motivo: "",
+        usuario: "",
+        complemento: "",
+        dataAbInicial: "",
+        dataAbFinal: "",
+        dataEnInicial: "",
+        dataEnFinal: ""
+    });
+
+    const filtrosRef = useRef(filtros);
+
+    useEffect(() => {
+        filtrosRef.current = filtros;
+    }, [filtros]);
 
     const [tentativa, setTentativa] = useState({
         tipo: "",
@@ -56,98 +79,141 @@ function Demandas() {
         descricaoDesfecho: "",
     });
 
+    useEffect(() => {
+        async function carregarMotivos() {
+            const response = await api.get("/demandas/motivos");
+            setMotivos(response.data);
+        }
+
+        carregarMotivos();
+    }, []);
+
     const carregarDados = useCallback(async (paginaAtual = pagina) => {
 
         try {
-            setCarregando(true);
-            let demandasResponse;
-            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
-                demandasResponse = await api.get(
-                    `/demandas?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
 
-            } else if (servidor?.perfil === "SERVIDOR_APS") {
-                demandasResponse = await api.get(
-                    `/demandas/unidade/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-            } else if (servidor?.perfil === "SOLICITANTE") {
-                demandasResponse = await api.get(
-                    `/demandas/solicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-            }else {
-                demandasResponse = { data: { content: [], page: { totalPages: 0 } } };
+            setCarregando(true);
+
+            let demandasResponse;
+
+            if (modoFiltrado > 0) {
+
+                const filtrosAtuais = filtrosRef.current;
+
+                const payload = {
+                    status: filtrosAtuais.status,
+                    prioridade: filtrosAtuais.prioridade,
+                    tempo: filtrosAtuais.tempo,
+                    motivo: filtrosAtuais.motivo || null,
+                    usuarioId: filtrosAtuais.usuario || null,
+                    complemento: filtrosAtuais.complemento || null,
+                    unidadeResponsavelId: filtrosAtuais.unidade || null,
+                    unidadeSolicitanteId: filtrosAtuais.servico || null,
+                    dataAbInicial: filtrosAtuais.dataAbInicial || null,
+                    dataAbFinal: filtrosAtuais.dataAbFinal || null,
+                    dataEnInicial: filtrosAtuais.dataEnInicial || null,
+                    dataEnFinal: filtrosAtuais.dataEnFinal || null
+                };
+
+
+                if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
+
+                    demandasResponse = await api.post(
+                        `/demandas/filtro?page=${paginaAtual}&size=${tamanhoPagina}`,
+                        payload
+                    );
+
+                } else if (servidor?.perfil === "SERVIDOR_APS") {
+
+                    demandasResponse = await api.post(
+                        `/demandas/filtro/unidade/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`,
+                        payload
+                    );
+
+                } else {
+
+                    demandasResponse = await api.post(
+                        `/demandas/filtro/solicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`,
+                        payload
+                    );
+                }
+
+
+            } else {
+
+
+                if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
+
+                    demandasResponse = await api.get(
+                        `/demandas?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+
+                } else if (servidor?.perfil === "SERVIDOR_APS") {
+
+                    demandasResponse = await api.get(
+                        `/demandas/unidade/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+
+                } else {
+
+                    demandasResponse = await api.get(
+                        `/demandas/solicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
+                    );
+                }
             }
+
 
             setDemandas(demandasResponse.data.content);
             setTotalPaginas(demandasResponse.data.page.totalPages);
+
+
         } catch {
+
             setMensagemErro("Erro ao carregar demandas.");
             setMensagemSucesso("");
+
         } finally {
+
             setCarregando(false);
+
         }
 
-    }, [servidor, pagina]);
+    }, [servidor, pagina, modoFiltrado]);
 
-    const buscarDemandas = useCallback(async (paginaAtual = pagina) => {
+    function executarBusca() {
+        setModoFiltrado(valor => valor + 1);
+        setPagina(0);
+    }
 
-        if (!filtro.trim()) {
-            return;
-        }
-        try {
-            setCarregando(true);
-            let demandasResponse;
+    const limparFiltros = () => {
+        setModoFiltrado(0);
+        setPagina(0);
+    };
 
-            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
-                demandasResponse = await api.get(
-                    `/demandas/filtradas/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-
-            } else if (servidor?.perfil === "SERVIDOR_APS") {
-                demandasResponse = await api.get(
-                    `/demandas/filtradas/unidade/${servidor.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-
-            }  else if (servidor?.perfil === "SOLICITANTE") {
-                demandasResponse = await api.get(
-                    `/demandas/filtradas/solicitante/${servidor.unidadeSaudeId}/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
-                );
-
-            } else {
-                demandasResponse = { data: { content: [], page: { totalPages: 0 } } };
-
-            }
-            setDemandas(demandasResponse.data.content);
-            setTotalPaginas(demandasResponse.data.page.totalPages);
-
-        } catch {
-            setMensagemErro("Erro ao buscar demandas.");
-            setMensagemSucesso("");
-        } finally {
-            setCarregando(false);
-        }
-    }, [servidor, pagina, filtro]);
 
     useEffect(() => {
-
-        const executar = async () => {
-            if (modoFiltrado) {
-                await buscarDemandas(pagina);
-            } else {
-                await carregarDados(pagina);
-            }
+        const buscar = async () => {
+            await carregarDados(pagina);
         };
-        void executar();
 
-    }, [pagina, modoFiltrado]);
+        buscar();
+    }, [pagina, carregarDados]);
+
+    useEffect(() => {
+        async function carregarUsuarios() {
+            const response = await api.get("/demandas/usuarios/com-demandas");
+            setUsuarios(response.data);
+        }
+
+        void carregarUsuarios();
+    }, []);
 
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                if(servidor?.perfil !== 'SOLICITANTE'){
-                    const response = await api.get("/unidades-saude/ubs");
-                    setUnidades(response.data);
-                }
+                const response = await api.get("/unidades-saude/ubs");
+                setUnidades(response.data);
+
             } catch {
                 setMensagemErro("Erro ao carregar unidades.");
                 setMensagemSucesso("");
@@ -156,33 +222,6 @@ function Demandas() {
 
         void carregarUnidades();
     }, []);
-
-    async function executarBusca() {
-        if (!filtro.trim()) {
-            return;
-        }
-        setModoFiltrado(true);
-
-        if (pagina !== 0) {
-            setPagina(0);
-        } else {
-            await buscarDemandas(0);
-        }
-    }
-
-    async function limparFiltro() {
-        setFiltro("");
-        setMensagem("");
-        setMensagemSucesso("");
-        setMensagemErro("");
-        setModoFiltrado(false);
-
-        if (pagina !== 0) {
-            setPagina(0);
-        } else {
-            await carregarDados(0);
-        }
-    }
 
     async function abrirCardUbs(unidadeSaudeId) {
         if(unidadeSaudeId === null){
@@ -242,11 +281,8 @@ function Demandas() {
             setMensagemErro("");
             fecharModal();
 
-            if (modoFiltrado) {
-                await buscarDemandas(pagina);
-            } else {
-                await carregarDados(pagina);
-            }
+            await carregarDados(pagina);
+
         } catch (error) {
             tratarErro(error);
         }
@@ -272,11 +308,8 @@ function Demandas() {
             setMensagemErro("")
             fecharModal();
 
-            if (modoFiltrado) {
-                await buscarDemandas(pagina);
-            } else {
-                await carregarDados(pagina);
-            }
+            await carregarDados(pagina);
+
         } catch (error) {
             tratarErro(error);
         }
@@ -299,11 +332,7 @@ function Demandas() {
             setMensagemSucesso("Demanda encerrada com sucesso!");
             setMensagemErro("")
             fecharModal();
-            if (modoFiltrado) {
-                await buscarDemandas(pagina);
-            } else {
-                await carregarDados(pagina);
-            }
+            await carregarDados(pagina);
         } catch (error) {
             tratarErro(error);
         }
@@ -336,55 +365,33 @@ function Demandas() {
         try {
 
             let response;
-            if (modoFiltrado && filtro.trim()) {
-                if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
-                    response = await api.get(
-                        `/demandas/exportar/filtradas/${filtro}`,
-                        {
-                            responseType: "blob",
-                        }
-                    );
-                } else if (servidor?.perfil === "SERVIDOR_APS") {
-                    response = await api.get(
-                        `/demandas/exportar/filtradas/unidade/${servidor.unidadeSaudeId}/${filtro}`,
-                        {
-                            responseType: "blob",
-                        }
-                    );
-                }else if (servidor?.perfil === "SOLICITANTE") {
-                    response = await api.get(
-                        `/demandas/exportar/filtradas/solicitante/${servidor.unidadeSaudeId}/${filtro}`,
-                        {
-                            responseType: "blob",
-                        }
-                    );
-                }
-            } else {
-                if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
-                    response = await api.get(
-                        "/demandas/exportar",
-                        {
-                            responseType: "blob",
-                        }
-                    );
-                } else if (servidor?.perfil === "SERVIDOR_APS") {
 
-                    response = await api.get(
-                        `/demandas/exportar/unidade/${servidor.unidadeSaudeId}`,
-                        {
-                            responseType: "blob",
-                        }
-                    );
-                } else if (servidor?.perfil === "SOLICITANTE") {
+            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
 
-                    response = await api.get(
-                        `/demandas/exportar/solicitante/${servidor.unidadeSaudeId}`,
-                        {
-                            responseType: "blob",
-                        }
-                    );
-                }
+                response = await api.get("/demandas/exportar", {
+                    responseType: "blob",
+                });
+
+            } else if (servidor?.perfil === "SERVIDOR_APS") {
+
+                response = await api.get(
+                    `/demandas/exportar/unidade/${servidor.unidadeSaudeId}`,
+                    {
+                        responseType: "blob",
+                    }
+                );
+
+            } else if (servidor?.perfil === "SOLICITANTE") {
+
+                response = await api.get(
+                    `/demandas/exportar/solicitante/${servidor.unidadeSaudeId}`,
+                    {
+                        responseType: "blob",
+                    }
+                );
+
             }
+
             const blob = new Blob(
                 [response.data],
                 {
@@ -401,8 +408,8 @@ function Demandas() {
 
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.href = url;
 
+            link.href = url;
             link.setAttribute(
                 "download",
                 `demandas-vincula-poa-${dataHora}.csv`
@@ -411,6 +418,7 @@ function Demandas() {
             document.body.appendChild(link);
             link.click();
             link.remove();
+
             window.URL.revokeObjectURL(url);
 
         } catch {
@@ -463,31 +471,13 @@ function Demandas() {
                 <div className="table-card">
                     <div className="table-topbar">
                         <div className="search-container">
-                            <input
-                                className="usuario-search"
-                                placeholder="Buscar demanda..."
-                                value={filtro}
-                                onChange={(e) => setFiltro(e.target.value)}
-                                onKeyDown={(e) => {
 
-                                    if (e.key === "Enter") {
-                                        executarBusca();
-                                    }
-                                }}
-                            />
 
                             <span
                                 className="buscar-btn"
-                                onClick={executarBusca}
+                                onClick={() => setMostrarFiltros(true)}
                             >
-                                Buscar
-                            </span>
-
-                            <span
-                                className="buscar-btn"
-                                onClick={limparFiltro}
-                            >
-                                Limpar filtro
+                                Filtros
                             </span>
 
                             <span
@@ -674,6 +664,21 @@ function Demandas() {
                     </div>
                 </div>
             )}
+
+            <ModalFiltrosDemanda
+                aberto={mostrarFiltros}
+                onFechar={() => setMostrarFiltros(false)}
+                filtros={filtros}
+                setFiltros={setFiltros}
+                unidades={unidades}
+                motivos={motivos}
+                usuarios={usuarios}
+                onAplicar={() => {
+                    setMostrarFiltros(false);
+                    executarBusca();
+                }}
+                onLimpar={limparFiltros}
+            />
         </div>
     );
 }

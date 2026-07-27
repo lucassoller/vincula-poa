@@ -1,0 +1,138 @@
+.overlay-filtros {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-filtros {
+    width: 700px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 15px 45px rgba(0,0,0,.18);
+}
+
+.header-filtros {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.header-filtros h2 {
+    margin: 0;
+    color: #173d7a;
+}
+
+.header-filtros button {
+    border: none;
+    background: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #666;
+    transition: .2s;
+}
+
+.header-filtros button:hover {
+    color: #000;
+}
+
+.grupo-filtro {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ececec;
+}
+
+.grupo-filtro:last-of-type {
+    border-bottom: none;
+}
+
+.grupo-filtro h4 {
+    margin: 0 0 12px;
+    color: #173d7a;
+    font-size: 16px;
+}
+
+.grupo-filtro label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.grupo-filtro input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.grupo-filtro input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d7d7d7;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.footer-filtros {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-secundario,
+.btn-primario {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-secundario {
+    background: #ececec;
+    color: #333;
+}
+
+.btn-secundario:hover {
+    background: #d9d9d9;
+}
+
+.btn-primario {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-primario:hover {
+    background: #1d4ed8;
+}
+
+.grupo-filtro select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d6dbe5;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    transition: .2s;
+}
+
+.grupo-filtro select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+}
