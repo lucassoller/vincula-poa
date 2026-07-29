@@ -72,8 +72,6 @@ function DemandaCadastro() {
 
         if (usuario) {
             setValue("usuarioId", String(usuario.id));
-
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setBuscaUsuario(`${usuario.nomeCompleto} - ${usuario.documento}`);
             setUbsUsuario(usuario.unidadeSaudeNome || "");
             setUsuarioSelecionado(usuario);
@@ -110,7 +108,6 @@ function DemandaCadastro() {
         }
 
         if (!buscaUsuario.trim()) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSugestoes([]);
             setUsuarioSelecionado(null);
             setUbsUsuario("");

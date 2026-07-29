@@ -24,25 +24,6 @@ function ModalFiltrosDemanda({
         }));
     }
 
-    function limpar() {
-        setFiltros({
-            status: [],
-            prioridade: [],
-            tempo: [],
-            unidade: "",
-            servico: "",
-            motivo: "",
-            usuario: "",
-            complemento: "",
-            dataAbInicial: "",
-            dataAbFinal: "",
-            dataEnInicial: "",
-            dataEnFinal: ""
-        });
-
-        onLimpar();
-    }
-
     return (
         <div className="overlay-filtros">
 
@@ -337,7 +318,7 @@ function ModalFiltrosDemanda({
 
                     <button
                         className="btn-secundario"
-                        onClick={limpar}
+                        onClick={onLimpar}
                     >
                         Limpar
                     </button>

@@ -1,4 +1,4 @@
-import {useEffect, useState, useCallback, useRef} from "react";
+import {useEffect, useState} from "react";
 import api from "../../api/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/demandas.css";
@@ -24,6 +24,7 @@ function Demandas() {
     const { servidor } = useAuth();
     const [demandas, setDemandas] = useState([]);
     const [unidades, setUnidades] = useState([]);
+    const [servicos, setServicos] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
     const [demandaSelecionada, setDemandaSelecionada] = useState(null);
     const [acao, setAcao] = useState("");
@@ -41,7 +42,6 @@ function Demandas() {
     const tamanhoPagina = 10;
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
     const [motivos, setMotivos] = useState([]);
-    const [modoFiltrado, setModoFiltrado] = useState(0);
 
     const [filtros, setFiltros] = useState({
         status: [],
@@ -58,12 +58,6 @@ function Demandas() {
         dataEnFinal: ""
     });
 
-    const filtrosRef = useRef(filtros);
-
-    useEffect(() => {
-        filtrosRef.current = filtros;
-    }, [filtros]);
-
     const [tentativa, setTentativa] = useState({
         tipo: "",
         descricao: "",
@@ -79,93 +73,54 @@ function Demandas() {
         descricaoDesfecho: "",
     });
 
-    useEffect(() => {
-        async function carregarMotivos() {
-            const response = await api.get("/demandas/motivos");
-            setMotivos(response.data);
-        }
-
-        carregarMotivos();
-    }, []);
-
-    const carregarDados = useCallback(async (paginaAtual = pagina) => {
+    async function carregarDados(paginaAtual = pagina, filtrosAtuais = filtros) {
 
         try {
 
             setCarregando(true);
 
+            const payload = {
+                status: filtrosAtuais.status,
+                prioridade: filtrosAtuais.prioridade,
+                tempo: filtrosAtuais.tempo,
+                motivo: filtrosAtuais.motivo || null,
+                usuarioId: filtrosAtuais.usuario || null,
+                complemento: filtrosAtuais.complemento || null,
+                unidadeResponsavelId: filtrosAtuais.unidade || null,
+                unidadeSolicitanteId: filtrosAtuais.servico || null,
+                dataAbInicial: filtrosAtuais.dataAbInicial || null,
+                dataAbFinal: filtrosAtuais.dataAbFinal || null,
+                dataEnInicial: filtrosAtuais.dataEnInicial || null,
+                dataEnFinal: filtrosAtuais.dataEnFinal || null
+            };
+
             let demandasResponse;
 
-            if (modoFiltrado > 0) {
+            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
 
-                const filtrosAtuais = filtrosRef.current;
+                demandasResponse = await api.post(
+                    `/demandas/filtradas?page=${paginaAtual}&size=${tamanhoPagina}`,
+                    payload
+                );
 
-                const payload = {
-                    status: filtrosAtuais.status,
-                    prioridade: filtrosAtuais.prioridade,
-                    tempo: filtrosAtuais.tempo,
-                    motivo: filtrosAtuais.motivo || null,
-                    usuarioId: filtrosAtuais.usuario || null,
-                    complemento: filtrosAtuais.complemento || null,
-                    unidadeResponsavelId: filtrosAtuais.unidade || null,
-                    unidadeSolicitanteId: filtrosAtuais.servico || null,
-                    dataAbInicial: filtrosAtuais.dataAbInicial || null,
-                    dataAbFinal: filtrosAtuais.dataAbFinal || null,
-                    dataEnInicial: filtrosAtuais.dataEnInicial || null,
-                    dataEnFinal: filtrosAtuais.dataEnFinal || null
-                };
+            } else if (servidor?.perfil === "SERVIDOR_APS") {
 
-
-                if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
-
-                    demandasResponse = await api.post(
-                        `/demandas/filtro?page=${paginaAtual}&size=${tamanhoPagina}`,
-                        payload
-                    );
-
-                } else if (servidor?.perfil === "SERVIDOR_APS") {
-
-                    demandasResponse = await api.post(
-                        `/demandas/filtro/unidade/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`,
-                        payload
-                    );
-
-                } else {
-
-                    demandasResponse = await api.post(
-                        `/demandas/filtro/solicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`,
-                        payload
-                    );
-                }
-
+                demandasResponse = await api.post(
+                    `/demandas/filtradas/unidade/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`,
+                    payload
+                );
 
             } else {
 
+                demandasResponse = await api.post(
+                    `/demandas/filtradas/solicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`,
+                    payload
+                );
 
-                if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
-
-                    demandasResponse = await api.get(
-                        `/demandas?page=${paginaAtual}&size=${tamanhoPagina}`
-                    );
-
-                } else if (servidor?.perfil === "SERVIDOR_APS") {
-
-                    demandasResponse = await api.get(
-                        `/demandas/unidade/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
-                    );
-
-                } else {
-
-                    demandasResponse = await api.get(
-                        `/demandas/solicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`
-                    );
-                }
             }
-
 
             setDemandas(demandasResponse.data.content);
             setTotalPaginas(demandasResponse.data.page.totalPages);
-
 
         } catch {
 
@@ -177,31 +132,79 @@ function Demandas() {
             setCarregando(false);
 
         }
-
-    }, [servidor, pagina, modoFiltrado]);
-
-    function executarBusca() {
-        setModoFiltrado(valor => valor + 1);
-        setPagina(0);
     }
 
-    const limparFiltros = () => {
-        setModoFiltrado(0);
-        setPagina(0);
-    };
+    useEffect(() => {
+        async function carregarMotivos() {
+            const response = await api.get("/demandas/motivos");
+            setMotivos(response.data);
+        }
 
+        carregarMotivos();
+    }, []);
 
     useEffect(() => {
-        const buscar = async () => {
-            await carregarDados(pagina);
+        async function carregarServicos() {
+            //let response;
+
+            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
+
+                //response = await api.get("/demandas/motivos");
+
+            } else if (servidor?.perfil === "SERVIDOR_APS") {
+                //response = await api.get("/demandas/motivos");
+            }
+
+            //setServicos(response.data);
+        }
+
+        carregarServicos();
+    }, []);
+
+
+    async function executarBusca() {
+        setPagina(0);
+        await carregarDados(0, filtros);
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void carregarDados(pagina, filtros);
+    }, [pagina]);
+
+    async function limparFiltros() {
+        const filtrosVazios = {
+            status: [],
+            prioridade: [],
+            tempo: [],
+            unidade: "",
+            servico: "",
+            motivo: "",
+            usuario: "",
+            complemento: "",
+            dataAbInicial: "",
+            dataAbFinal: "",
+            dataEnInicial: "",
+            dataEnFinal: ""
         };
 
-        buscar();
-    }, [pagina, carregarDados]);
+        setFiltros(filtrosVazios);
+        setPagina(0);
+        await carregarDados(0, filtrosVazios);
+    }
+
 
     useEffect(() => {
         async function carregarUsuarios() {
-            const response = await api.get("/demandas/usuarios/com-demandas");
+            let response;
+
+            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
+                response = await api.get("/demandas/usuarios/com-demandas");
+            } else if (servidor?.perfil === "SERVIDOR_APS") {
+                response = await api.get(`/demandas/usuarios/com-demandas/unidade/${servidor.unidadeSaudeId}`);
+            } else {
+                response = await api.get(`/demandas/usuarios/com-demandas/solicitante/${servidor.unidadeSaudeId}`);
+            }
             setUsuarios(response.data);
         }
 
@@ -364,27 +367,48 @@ function Demandas() {
     async function exportarCsv() {
         try {
 
+            const payload = {
+                status: filtros.status,
+                prioridade: filtros.prioridade,
+                tempo: filtros.tempo,
+                motivo: filtros.motivo || null,
+                usuarioId: filtros.usuario || null,
+                complemento: filtros.complemento || null,
+                unidadeResponsavelId: filtros.unidade || null,
+                unidadeSolicitanteId: filtros.servico || null,
+                dataAbInicial: filtros.dataAbInicial || null,
+                dataAbFinal: filtros.dataAbFinal || null,
+                dataEnInicial: filtros.dataEnInicial || null,
+                dataEnFinal: filtros.dataEnFinal || null
+            };
+
             let response;
 
             if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
 
-                response = await api.get("/demandas/exportar", {
-                    responseType: "blob",
-                });
-
-            } else if (servidor?.perfil === "SERVIDOR_APS") {
-
-                response = await api.get(
-                    `/demandas/exportar/unidade/${servidor.unidadeSaudeId}`,
+                response = await api.post(
+                    "/demandas/exportar",
+                    payload,
                     {
                         responseType: "blob",
                     }
                 );
 
-            } else if (servidor?.perfil === "SOLICITANTE") {
+            } else if (servidor?.perfil === "SERVIDOR_APS") {
 
-                response = await api.get(
+                response = await api.post(
+                    `/demandas/exportar/unidade/${servidor.unidadeSaudeId}`,
+                    payload,
+                    {
+                        responseType: "blob",
+                    }
+                );
+
+            } else {
+
+                response = await api.post(
                     `/demandas/exportar/solicitante/${servidor.unidadeSaudeId}`,
+                    payload,
                     {
                         responseType: "blob",
                     }
@@ -392,12 +416,9 @@ function Demandas() {
 
             }
 
-            const blob = new Blob(
-                [response.data],
-                {
-                    type: "text/csv;charset=utf-8;",
-                }
-            );
+            const blob = new Blob([response.data], {
+                type: "text/csv;charset=utf-8;",
+            });
 
             const agora = new Date();
             const dataHora = agora
@@ -477,7 +498,14 @@ function Demandas() {
                                 className="buscar-btn"
                                 onClick={() => setMostrarFiltros(true)}
                             >
-                                Filtros
+                                Filtrar demandas
+                            </span>
+
+                            <span
+                                className="buscar-btn"
+                                onClick={() => limparFiltros()}
+                            >
+                                Limpar filtros
                             </span>
 
                             <span
@@ -673,9 +701,10 @@ function Demandas() {
                 unidades={unidades}
                 motivos={motivos}
                 usuarios={usuarios}
+                servicos={servicos}
                 onAplicar={() => {
                     setMostrarFiltros(false);
-                    executarBusca();
+                    void executarBusca();
                 }}
                 onLimpar={limparFiltros}
             />

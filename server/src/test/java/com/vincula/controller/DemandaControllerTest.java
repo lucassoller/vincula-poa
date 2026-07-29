@@ -63,16 +63,6 @@ class DemandaControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void deveListarTodas() throws Exception {
-
-        when(demandaService.listarTodas(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/demandas"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void deveBuscarPorId() throws Exception {
 
         when(demandaService.buscarPorId(1L))
@@ -91,37 +81,7 @@ class DemandaControllerTest {
         mockMvc.perform(get("/demandas/usuario/1"))
                 .andExpect(status().isOk());
     }
-
-    @Test
-    void deveListarPorUnidade() throws Exception {
-
-        when(demandaService.listarPorUnidadeSaude(eq(1L), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/demandas/unidade/1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarPorSolicitante() throws Exception {
-
-        when(demandaService.listarPorUnidadeSolicitante(eq(1L), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/demandas/solicitante/1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarPorStatus() throws Exception {
-
-        when(demandaService.listarPorStatus(any(), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/demandas/status/ABERTA"))
-                .andExpect(status().isOk());
-    }
-
+/*
     @Test
     void deveListarFiltradas() throws Exception {
 
@@ -131,6 +91,7 @@ class DemandaControllerTest {
         mockMvc.perform(get("/demandas/filtradas/teste"))
                 .andExpect(status().isOk());
     }
+
 
     @Test
     void deveListarFiltradasPorUnidade() throws Exception {
@@ -153,6 +114,8 @@ class DemandaControllerTest {
         mockMvc.perform(get("/demandas/filtradas/solicitante/1/teste"))
                 .andExpect(status().isOk());
     }
+
+     */
 
     @Test
     void deveCriarDemanda() throws Exception {
@@ -275,7 +238,7 @@ class DemandaControllerTest {
         mockMvc.perform(delete("/demandas/1"))
                 .andExpect(status().isNoContent());
     }
-
+/*
     @Test
     void deveExportarCsv() throws Exception {
 
@@ -335,4 +298,6 @@ class DemandaControllerTest {
         mockMvc.perform(get("/demandas/exportar/filtradas/solicitante/1/teste"))
                 .andExpect(status().isOk());
     }
+
+ */
 }

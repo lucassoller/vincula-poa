@@ -16,22 +16,6 @@ import java.util.List;
 public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpecificationExecutor<Demanda> {
 
     @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Demanda> findAllOrderByUsuarioNome(Pageable pageable);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    ORDER BY p.nomeCompleto ASC
-""")
-    List<Demanda> findAllOrderByUsuarioNome();
-
-    @Query("""
     SELECT DISTINCT u
     FROM Demanda d
     JOIN d.usuario u
@@ -40,158 +24,22 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     List<Usuario> findUsuariosComDemanda();
 
     @Query("""
-    SELECT d
+    SELECT DISTINCT u
     FROM Demanda d
-    JOIN d.usuario p
-    WHERE (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeSolicitante.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.prioridade) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Demanda> findFiltradas(@Param("filtro") String filtro, Pageable pageable);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeSolicitante.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.prioridade) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    List<Demanda> findFiltradas(@Param("filtro") String filtro);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
+    JOIN d.usuario u
     WHERE d.unidadeResponsavel.id = :unidadeSaudeId
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Demanda> findByUnidadeOrderByUsuarioNome(@Param("unidadeSaudeId") Long unidadeSaudeId, Pageable pageable);
+    ORDER BY u.nomeCompleto
+    """)
+    List<Usuario> findUsuariosComDemandaPorUnidade(@Param("unidadeSaudeId") Long unidadeSaudeId);
 
     @Query("""
-    SELECT d
+    SELECT DISTINCT u
     FROM Demanda d
-    JOIN d.usuario p
+    JOIN d.usuario u
     WHERE d.unidadeSolicitante.id = :unidadeSaudeId
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Demanda> findByUnidadeSolicitanteOrderByUsuarioNome(@Param("unidadeSaudeId") Long unidadeSaudeId, Pageable pageable);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE d.unidadeResponsavel.id = :unidadeSaudeId
-    ORDER BY p.nomeCompleto ASC
-""")
-    List<Demanda> findByUnidadeOrderByUsuarioNome(@Param("unidadeSaudeId") Long unidadeSaudeId);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE d.unidadeSolicitante.id = :unidadeSaudeId
-    ORDER BY p.nomeCompleto ASC
-""")
-    List<Demanda> findByUnidadeSolicitanteOrderByUsuarioNome(@Param("unidadeSaudeId") Long unidadeSaudeId);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE d.unidadeResponsavel.id = :unidadeSaudeId
-    AND (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.prioridade) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeSolicitante.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Demanda> findFiltradasByUnidade(@Param("unidadeSaudeId") Long unidadeSaudeId,
-                                         @Param("filtro") String filtro,
-                                         Pageable pageable);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE d.unidadeSolicitante.id = :unidadeSaudeId
-    AND (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.prioridade) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeSolicitante.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Demanda> findFiltradasByUnidadeSolicitante(@Param("unidadeSaudeId") Long unidadeSaudeId,
-                                         @Param("filtro") String filtro,
-                                         Pageable pageable);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE d.unidadeResponsavel.id = :unidadeSaudeId
-    AND (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.prioridade) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeSolicitante.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    List<Demanda> findFiltradasByUnidade(@Param("unidadeSaudeId") Long unidadeSaudeId,
-                                         @Param("filtro") String filtro);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE d.unidadeSolicitante.id = :unidadeSaudeId
-    AND (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.motivoBuscaAtiva) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.servidorCriador.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.status) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.prioridade) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeResponsavel.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(d.unidadeSolicitante.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(CAST(d.prazoDemanda AS string)) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    List<Demanda> findFiltradasByUnidadeSolicitante(@Param("unidadeSaudeId") Long unidadeSaudeId,
-                                                    @Param("filtro") String filtro);
+    ORDER BY u.nomeCompleto
+    """)
+    List<Usuario> findUsuariosComDemandaPorUnidadeSolicitante(@Param("unidadeSaudeId") Long unidadeSaudeId);
 
     @Query("""
     SELECT d
@@ -201,15 +49,6 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     ORDER BY p.nomeCompleto ASC
 """)
     Page<Demanda> findByUsuarioOrderByUsuarioNome(@Param("usuarioId") Long usuarioId, Pageable pageable);
-
-    @Query("""
-    SELECT d
-    FROM Demanda d
-    JOIN d.usuario p
-    WHERE d.status = :status
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Demanda> findByStatusOrderByUsuarioNome(@Param("status") StatusDemanda status, Pageable pageable);
 
     List<Demanda> findByUsuarioIdAndStatusIn(Long usuarioId, List<StatusDemanda> status);
 
