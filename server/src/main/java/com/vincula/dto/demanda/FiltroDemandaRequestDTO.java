@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class FiltroRequestDTO {
+public class FiltroDemandaRequestDTO {
 
     private List<StatusDemanda> status;
 

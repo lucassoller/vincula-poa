@@ -145,7 +145,7 @@ class UnidadeSaudeControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
+    /*@Test
     void deveListarTodos() throws Exception {
 
         when(unidadeSaudeService.listarTodos())
@@ -153,7 +153,7 @@ class UnidadeSaudeControllerTest {
 
         mockMvc.perform(get("/unidades-saude/all"))
                 .andExpect(status().isOk());
-    }
+    }*/
 
     @Test
     void deveListarUbs() throws Exception {

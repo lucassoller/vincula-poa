@@ -16,7 +16,12 @@ public interface UnidadeSaudeRepository extends JpaRepository<UnidadeSaude, Long
 
     Page<UnidadeSaude> findAllByOrderByNomeAsc(Pageable pageable);
 
-    List<UnidadeSaude> findAllByOrderByNomeAsc();
+    @Query("""
+    SELECT u
+    FROM UnidadeSaude u
+    ORDER BY u.tipoServico, u.nome ASC
+""")
+    List<UnidadeSaude> findAllByOrderByTipoServicoAndNomeAsc();
 
     List<UnidadeSaude> findAllByTipoServicoOrderByNomeAsc(TipoServico tipoServico);
 

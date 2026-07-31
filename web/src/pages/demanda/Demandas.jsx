@@ -214,8 +214,9 @@ function Demandas() {
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                const response = await api.get("/unidades-saude/ubs");
-                setUnidades(response.data);
+                const response = await api.get("/unidades-saude/all");
+                setUnidades(response.data.ubs);
+                setServicos(response.data.especializadas);
 
             } catch {
                 setMensagemErro("Erro ao carregar unidades.");
@@ -699,13 +700,14 @@ function Demandas() {
                 filtros={filtros}
                 setFiltros={setFiltros}
                 unidades={unidades}
+                servicos={servicos}
                 motivos={motivos}
                 usuarios={usuarios}
-                servicos={servicos}
                 onAplicar={() => {
                     setMostrarFiltros(false);
                     void executarBusca();
                 }}
+                servidor={servidor}
                 onLimpar={limparFiltros}
             />
         </div>

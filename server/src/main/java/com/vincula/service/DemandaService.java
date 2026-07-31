@@ -4,7 +4,6 @@ import com.vincula.dto.MotivoBuscaResponseDTO;
 import com.vincula.dto.MotivoComplementoResponseDTO;
 import com.vincula.dto.demanda.*;
 import com.vincula.dto.usuario.UsuarioFiltroResponseDTO;
-import com.vincula.dto.usuario.UsuarioShortResponseDTO;
 import com.vincula.entity.*;
 import com.vincula.enums.*;
 import com.vincula.exception.BusinessException;
@@ -66,7 +65,7 @@ public class DemandaService {
     }
 
     public Page<DemandaResponseDTO> listarTodasFiltradas(
-            FiltroRequestDTO filtro,
+            FiltroDemandaRequestDTO filtro,
             Pageable pageable) {
 
         Specification<Demanda> specification =
@@ -84,7 +83,7 @@ public class DemandaService {
 
     public Page<DemandaResponseDTO> listarPorUnidadeSaudeFiltradas(
             Long unidadeResponsavelId,
-            FiltroRequestDTO filtro,
+            FiltroDemandaRequestDTO filtro,
             Pageable pageable) {
 
         Specification<Demanda> specification =
@@ -103,7 +102,7 @@ public class DemandaService {
 
     public Page<DemandaResponseDTO> listarPorUnidadeSolicitanteFiltradas(
             Long unidadeSolicitanteId,
-            FiltroRequestDTO filtro,
+            FiltroDemandaRequestDTO filtro,
             Pageable pageable) {
 
         Specification<Demanda> specification =
@@ -120,7 +119,7 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
-    public String exportarDemandasCsv(FiltroRequestDTO filtro) {
+    public String exportarDemandasCsv(FiltroDemandaRequestDTO filtro) {
 
         Specification<Demanda> specification =
                 DemandaSpecification.comFiltros(filtro);
@@ -135,7 +134,7 @@ public class DemandaService {
         return demandaExporter.exportar(demandas);
     }
 
-    public String exportarDemandasPorUnidadeCsv(Long unidadeId, FiltroRequestDTO filtro) {
+    public String exportarDemandasPorUnidadeCsv(Long unidadeId, FiltroDemandaRequestDTO filtro) {
 
         Specification<Demanda> specification =
                 DemandaSpecification.comFiltros(filtro)
@@ -153,7 +152,7 @@ public class DemandaService {
         return demandaExporter.exportar(demandas);
     }
 
-    public String exportarDemandasPorUnidadeSolicitanteCsv(Long unidadeSolicitanteId, FiltroRequestDTO filtro) {
+    public String exportarDemandasPorUnidadeSolicitanteCsv(Long unidadeSolicitanteId, FiltroDemandaRequestDTO filtro) {
 
         Specification<Demanda> specification =
                 DemandaSpecification.comFiltros(filtro)

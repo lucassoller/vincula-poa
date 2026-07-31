@@ -1,6 +1,6 @@
 package com.vincula.specification;
 
-import com.vincula.dto.demanda.FiltroRequestDTO;
+import com.vincula.dto.demanda.FiltroDemandaRequestDTO;
 import com.vincula.entity.Demanda;
 import com.vincula.enums.*;
 import jakarta.persistence.criteria.Path;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class DemandaSpecification {
 
-    public static Specification<Demanda> comFiltros(FiltroRequestDTO filtro) {
+    public static Specification<Demanda> comFiltros(FiltroDemandaRequestDTO filtro) {
 
         Specification<Demanda> spec =
                 Specification.where((root, query, cb) -> cb.conjunction());
@@ -117,8 +117,13 @@ public class DemandaSpecification {
             return null;
         }
 
-        return (root, query, cb) ->
-                cb.equal(root.get("unidadeSolicitante").get("id"), unidadeId);
+        return (root, query, cb) -> {
+            if (unidadeId == 0L) {
+                return cb.isNull(root.get("unidadeSolicitante"));
+            }
+
+            return cb.equal(root.get("unidadeSolicitante").get("id"), unidadeId);
+        };
     }
 
     private static Specification<Demanda> dataAbertura(LocalDate inicio,

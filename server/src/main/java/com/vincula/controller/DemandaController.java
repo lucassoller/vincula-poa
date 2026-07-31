@@ -57,7 +57,7 @@ public class DemandaController {
     @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PostMapping("/filtradas")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas2(
-            @RequestBody FiltroRequestDTO filtro,
+            @RequestBody FiltroDemandaRequestDTO filtro,
             Pageable pageable) {
         return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));
     }
@@ -66,7 +66,7 @@ public class DemandaController {
     @PostMapping("/filtradas/unidade/{unidadeSaudeId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaudeFiltradas2(
             @PathVariable Long unidadeSaudeId,
-            @RequestBody FiltroRequestDTO filtro,
+            @RequestBody FiltroDemandaRequestDTO filtro,
             Pageable pageable
     ) {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSaudeFiltradas(unidadeSaudeId, filtro, pageable));
@@ -76,7 +76,7 @@ public class DemandaController {
     @PostMapping("/filtradas/solicitante/{unidadeSolicitanteId}")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSolicitanteFiltradas2(
             @PathVariable Long unidadeSolicitanteId,
-            @RequestBody FiltroRequestDTO filtro,
+            @RequestBody FiltroDemandaRequestDTO filtro,
             Pageable pageable
     ) {
         return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitanteFiltradas(unidadeSolicitanteId, filtro, pageable));
@@ -131,7 +131,7 @@ public class DemandaController {
 
     @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @PostMapping(value = "/exportar", produces = "text/csv")
-    public ResponseEntity<String> exportarDemandasCsv(@RequestBody FiltroRequestDTO filtro) {
+    public ResponseEntity<String> exportarDemandasCsv(@RequestBody FiltroDemandaRequestDTO filtro) {
 
         String csv = demandaService.exportarDemandasCsv(filtro);
 
@@ -142,7 +142,7 @@ public class DemandaController {
     @PostMapping(value = "/exportar/unidade/{unidadeId}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasPorUnidadeCsv(
             @PathVariable Long unidadeId,
-            @RequestBody FiltroRequestDTO filtro
+            @RequestBody FiltroDemandaRequestDTO filtro
     ) {
 
         String csv = demandaService.exportarDemandasPorUnidadeCsv(unidadeId, filtro);
@@ -154,7 +154,7 @@ public class DemandaController {
     @PostMapping(value = "/exportar/solicitante/{unidadeId}", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasPorUnidadeSolicitanteCsv(
             @PathVariable Long unidadeId,
-            @RequestBody FiltroRequestDTO filtro
+            @RequestBody FiltroDemandaRequestDTO filtro
     ) {
 
         String csv = demandaService.exportarDemandasPorUnidadeSolicitanteCsv(unidadeId, filtro);

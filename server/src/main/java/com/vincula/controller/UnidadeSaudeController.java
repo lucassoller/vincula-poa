@@ -3,6 +3,7 @@ package com.vincula.controller;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
+import com.vincula.dto.unidadeSaude.UnidadesResponseDTO;
 import com.vincula.enums.TipoServico;
 import com.vincula.service.UnidadeSaudeService;
 import jakarta.validation.Valid;
@@ -46,8 +47,8 @@ public class UnidadeSaudeController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/all")
-    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodos() {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodos());
+    public ResponseEntity <UnidadesResponseDTO> listarTodos() {
+        return ResponseEntity.ok(unidadeSaudeService.listarUnidades());
     }
 
     @PreAuthorize("isAuthenticated()")

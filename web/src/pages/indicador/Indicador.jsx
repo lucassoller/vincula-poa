@@ -34,10 +34,10 @@ function Indicador() {
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                if(servidor?.perfil !== "SOLICITANTE") {
+                /*if(servidor?.perfil !== "SOLICITANTE") {
                     const response = await api.get("/unidades-saude/all");
                     setUnidades(response.data);
-                }
+                }*/
             } catch {
                 setErro("Erro ao carregar unidades.");
             }

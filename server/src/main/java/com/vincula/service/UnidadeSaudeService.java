@@ -1,5 +1,6 @@
 package com.vincula.service;
 
+import com.vincula.dto.unidadeSaude.UnidadesResponseDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
 import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
@@ -61,11 +62,21 @@ public class UnidadeSaudeService {
                 .toList();
     }
 
-    public List<UnidadeSaudeShortResponseDTO> listarTodos() {
-        return unidadeSaudeRepository.findAllByOrderByNomeAsc()
-                .stream()
+
+    public UnidadesResponseDTO listarUnidades() {
+
+        List<UnidadeSaude> todas = unidadeSaudeRepository.findAllByOrderByTipoServicoAndNomeAsc();
+
+        List<UnidadeSaudeShortResponseDTO> ubs = todas.stream()
+                .filter(u -> u.getTipoServico() == TipoServico.UBS)
                 .map(this::toShortDTO)
                 .toList();
+
+        List<UnidadeSaudeShortResponseDTO> especializadas = todas.stream()
+                .map(this::toShortDTO)
+                .toList();
+
+        return new UnidadesResponseDTO(ubs, especializadas);
     }
 
     public Page<UnidadeSaudeResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {

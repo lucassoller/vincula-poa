@@ -10,7 +10,8 @@ function ModalFiltrosDemanda({
                                  servicos = [],
                                  motivos = [],
                                  usuarios = [],
-                                onLimpar
+                                 onLimpar,
+                                 servidor
                              }) {
 
     if (!aberto) return null;
@@ -62,6 +63,62 @@ function ModalFiltrosDemanda({
                     </select>
 
                 </div>
+
+                {servidor.perfil !== 'SERVIDOR_APS' && (
+
+                    <div className="grupo-filtro">
+
+                        <h4>Unidade responsável</h4>
+
+                        <select
+                            value={filtros.unidade}
+                            onChange={(e) =>
+                                setFiltros(prev => ({
+                                    ...prev,
+                                    unidade: e.target.value
+                                }))
+                            }
+                        >
+                            <option value="">Todas</option>
+
+                            {unidades.map(u => (
+                                <option key={u.id} value={u.id}>
+                                    {u.nome}
+                                </option>
+                            ))}
+
+                        </select>
+
+                    </div>
+                )}
+
+                {servidor.perfil !== 'SOLICITANTE' && (
+                    <div className="grupo-filtro">
+
+                        <h4>Serviço solicitante</h4>
+
+                        <select
+                            value={filtros.servico}
+                            onChange={(e) =>
+                                setFiltros(prev => ({
+                                    ...prev,
+                                    servico: e.target.value
+                                }))
+                            }
+                        >
+                            <option value="">Todos</option>
+                            <option value="0">Solicitado pela gestão</option>
+
+                            {servicos.map(servico => (
+                                <option key={servico.id} value={servico.id}>
+                                    {servico.nome}
+                                </option>
+                            ))}
+
+                        </select>
+
+                    </div>
+                )}
 
                 <div className="grupo-filtro">
 
@@ -261,56 +318,6 @@ function ModalFiltrosDemanda({
                             dataEnFinal:e.target.value
                         }))}
                     />
-
-                </div>
-
-                <div className="grupo-filtro">
-
-                    <h4>Unidade responsável</h4>
-
-                    <select
-                        value={filtros.unidade}
-                        onChange={(e) =>
-                            setFiltros(prev => ({
-                                ...prev,
-                                unidade: e.target.value
-                            }))
-                        }
-                    >
-                        <option value="">Todas</option>
-
-                        {unidades.map(u => (
-                            <option key={u.id} value={u.id}>
-                                {u.nome}
-                            </option>
-                        ))}
-
-                    </select>
-
-                </div>
-
-                <div className="grupo-filtro">
-
-                    <h4>Serviço solicitante</h4>
-
-                    <select
-                        value={filtros.servico}
-                        onChange={(e) =>
-                            setFiltros(prev => ({
-                                ...prev,
-                                servico: e.target.value
-                            }))
-                        }
-                    >
-                        <option value="">Todos</option>
-
-                        {servicos.map(servico => (
-                            <option key={servico.id} value={servico.id}>
-                                {servico.nome}
-                            </option>
-                        ))}
-
-                    </select>
 
                 </div>
 
