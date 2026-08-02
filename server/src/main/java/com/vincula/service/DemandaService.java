@@ -81,44 +81,6 @@ public class DemandaService {
                 .map(this::toDTO);
     }
 
-    public Page<DemandaResponseDTO> listarPorUnidadeSaudeFiltradas(
-            Long unidadeResponsavelId,
-            FiltroDemandaRequestDTO filtro,
-            Pageable pageable) {
-
-        Specification<Demanda> specification =
-                DemandaSpecification.comFiltros(filtro)
-                        .and(DemandaSpecification.unidadeResponsavel(unidadeResponsavelId));
-
-        Pageable pageableOrdenado = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by("usuario.nomeCompleto")
-        );
-
-        return demandaRepository.findAll(specification, pageableOrdenado)
-                .map(this::toDTO);
-    }
-
-    public Page<DemandaResponseDTO> listarPorUnidadeSolicitanteFiltradas(
-            Long unidadeSolicitanteId,
-            FiltroDemandaRequestDTO filtro,
-            Pageable pageable) {
-
-        Specification<Demanda> specification =
-                DemandaSpecification.comFiltros(filtro)
-                        .and(DemandaSpecification.unidadeSolicitante(unidadeSolicitanteId));
-
-        Pageable pageableOrdenado = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by("usuario.nomeCompleto")
-        );
-
-        return demandaRepository.findAll(specification, pageableOrdenado)
-                .map(this::toDTO);
-    }
-
     public String exportarDemandasCsv(FiltroDemandaRequestDTO filtro) {
 
         Specification<Demanda> specification =
@@ -130,42 +92,6 @@ public class DemandaService {
         );
 
         auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas exportadas");
-
-        return demandaExporter.exportar(demandas);
-    }
-
-    public String exportarDemandasPorUnidadeCsv(Long unidadeId, FiltroDemandaRequestDTO filtro) {
-
-        Specification<Demanda> specification =
-                DemandaSpecification.comFiltros(filtro)
-                        .and(DemandaSpecification.unidadeResponsavel(unidadeId));
-
-        List<Demanda> demandas = demandaRepository.findAll(
-                specification,
-                Sort.by("usuario.nomeCompleto")
-        );
-
-        auditoriaFacade.exportacaoCsvRealizadaDemanda(
-                "Demandas da unidade " + unidadeId + " exportadas"
-        );
-
-        return demandaExporter.exportar(demandas);
-    }
-
-    public String exportarDemandasPorUnidadeSolicitanteCsv(Long unidadeSolicitanteId, FiltroDemandaRequestDTO filtro) {
-
-        Specification<Demanda> specification =
-                DemandaSpecification.comFiltros(filtro)
-                        .and(DemandaSpecification.unidadeSolicitante(unidadeSolicitanteId));
-
-        List<Demanda> demandas = demandaRepository.findAll(
-                specification,
-                Sort.by("usuario.nomeCompleto")
-        );
-
-        auditoriaFacade.exportacaoCsvRealizadaDemanda(
-                "Demandas da unidade " + unidadeSolicitanteId + " exportadas"
-        );
 
         return demandaExporter.exportar(demandas);
     }

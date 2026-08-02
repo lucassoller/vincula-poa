@@ -107,7 +107,7 @@ function ModalFiltrosDemanda({
                             }
                         >
                             <option value="">Todos</option>
-                            <option value="0">Solicitado pela gestão</option>
+                            <option value="-1">Solicitado pela gestão</option>
 
                             {servicos.map(servico => (
                                 <option key={servico.id} value={servico.id}>

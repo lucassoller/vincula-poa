@@ -1,12 +1,11 @@
 package com.vincula.service.indicador;
 
+import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.IndicadorValorDTO;
 import com.vincula.dto.projection.DesfechoQuantidadeProjection;
-import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.vincula.util.IndicadorUtil.percentual;
@@ -20,80 +19,43 @@ public class IndicadorResultadoService {
         this.demandaRepository = demandaRepository;
     }
 
-    public List<IndicadorValorDTO> percentualPorDesfecho() {
-        double totalFinalizadas = demandaRepository.countByStatus(StatusDemanda.FINALIZADA);
+    public List<IndicadorValorDTO> gerarIndicadores(FiltroIndicadorRequestDTO filtro) {
 
-        return demandaRepository.agruparPorDesfecho()
+        Long unidadeResponsavelId = filtro.getUnidadeResponsavelId();
+        Long unidadeSolicitanteId = filtro.getUnidadeSolicitanteId();
+        LocalDate inicio = filtro.getDataInicial();
+        LocalDate fim = filtro.getDataFinal();
+
+        int totalFinalizadas =
+                 demandaRepository.countDemandasFinalizadas(
+                        unidadeResponsavelId,
+                        unidadeSolicitanteId,
+                        inicio,
+                        fim
+                );
+
+        return demandaRepository.agruparPorDesfecho(
+                        unidadeResponsavelId,
+                        unidadeSolicitanteId,
+                        inicio,
+                        fim
+                )
                 .stream()
                 .map(item -> toIndicador(item, totalFinalizadas))
                 .toList();
     }
 
-    public List<IndicadorValorDTO> percentualPorDesfechoPorUnidade(Long unidadeResponsavelId) {
-        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeResponsavelId(
-                StatusDemanda.FINALIZADA, unidadeResponsavelId
-        );
 
-        return demandaRepository.agruparPorDesfechoEUnidade(unidadeResponsavelId)
-                .stream()
-                .map(item -> toIndicador(item, totalFinalizadas))
-                .toList();
-    }
-
-    public List<IndicadorValorDTO> percentualPorDesfechoPorServidor(Long servidorId) {
-        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSolicitanteId(
-                StatusDemanda.FINALIZADA, servidorId
-        );
-
-        return demandaRepository.agruparPorDesfechoEUnidadeSolicitante(servidorId)
-                .stream()
-                .map(item -> toIndicador(item, totalFinalizadas))
-                .toList();
-    }
-
-    public List<IndicadorValorDTO> percentualPorDesfechoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        double totalFinalizadas = demandaRepository.countByStatusAndDataHoraCriacaoBetween(
-                StatusDemanda.FINALIZADA, inicio, fim
-        );
-
-        return demandaRepository.agruparPorDesfechoPorPeriodo(inicio, fim)
-                .stream()
-                .map(item -> toIndicador(item, totalFinalizadas))
-                .toList();
-    }
-
-    public List<IndicadorValorDTO> percentualPorDesfechoPorUnidadeEPeriodo(Long unidadeResponsavelId,
-                                                                           LocalDateTime inicio,
-                                                                           LocalDateTime fim) {
-        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(
-                StatusDemanda.FINALIZADA, unidadeResponsavelId, inicio, fim
-        );
-
-        return demandaRepository.agruparPorDesfechoEUnidadePorPeriodo(unidadeResponsavelId, inicio, fim)
-                .stream()
-                .map(item -> toIndicador(item, totalFinalizadas))
-                .toList();
-    }
-
-    public List<IndicadorValorDTO> percentualPorDesfechoPorServidorEPeriodo(Long servidorId,
-                                                                           LocalDateTime inicio,
-                                                                           LocalDateTime fim) {
-        double totalFinalizadas = demandaRepository.countByStatusAndUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
-                StatusDemanda.FINALIZADA, servidorId, inicio, fim
-        );
-
-        return demandaRepository.agruparPorDesfechoEUnidadeSolicitantePorPeriodo(servidorId, inicio, fim)
-                .stream()
-                .map(item -> toIndicador(item, totalFinalizadas))
-                .toList();
-    }
-
-    private IndicadorValorDTO toIndicador(DesfechoQuantidadeProjection item, double totalFinalizadas) {
+    private IndicadorValorDTO toIndicador(
+            DesfechoQuantidadeProjection item,
+            double totalFinalizadas
+    ) {
         return new IndicadorValorDTO(
                 traduzirDesfecho(item.getDesfecho()),
                 percentual(totalFinalizadas, item.getQuantidade())
         );
     }
+
 
     private String traduzirDesfecho(String desfecho) {
         return switch (desfecho) {

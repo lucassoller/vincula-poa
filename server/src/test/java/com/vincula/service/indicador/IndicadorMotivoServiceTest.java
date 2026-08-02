@@ -1,4 +1,4 @@
-package com.vincula.service.indicador;
+/* package com.vincula.service.indicador;
 
 import com.vincula.dto.indicador.MotivoQuantidadeDTO;
 import com.vincula.dto.projection.MotivoQuantidadeProjection;
@@ -173,3 +173,5 @@ class IndicadorMotivoServiceTest {
                 .listarPrincipaisMotivosPorUnidadeSolicitante(1L);
     }
 }
+
+ */

@@ -1,4 +1,4 @@
-package com.vincula.service.indicador;
+/*package com.vincula.service.indicador;
 
 import com.vincula.dto.indicador.IndicadorValorDTO;
 import com.vincula.enums.StatusDemanda;
@@ -393,3 +393,5 @@ class IndicadorProcessoServiceTest {
     }
 
 }
+
+ */

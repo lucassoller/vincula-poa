@@ -7,8 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TentativaContatoRepository extends JpaRepository<TentativaContato, Long> {
@@ -25,235 +24,69 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
                MIN(t.data_hora) AS primeira_tentativa
         FROM demanda d
         JOIN tentativa_contato t ON t.demanda_id = d.id
+        WHERE (:unidadeResponsavelId IS NULL OR d.unidade_responsavel_id = :unidadeResponsavelId)
+          AND (:unidadeSolicitanteId IS NULL
+            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
+            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+          AND (
+                :dataInicial IS NULL
+                OR d.data_hora_criacao BETWEEN :dataInicial AND :dataFinal
+              )
         GROUP BY d.id, d.data_hora_criacao
     ) sub
     """, nativeQuery = true)
-    Double calcularTempoMedioAtePrimeiraTentativaEmHoras();
+    Double calcularTempoMedioAtePrimeiraTentativa(
+            @Param("unidadeResponsavelId") Long unidadeResponsavelId,
+            @Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
+            @Param("dataInicial") LocalDate dataInicial,
+            @Param("dataFinal") LocalDate dataFinal
+    );
 
     @Query(value = """
-    SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
-    FROM (
-        SELECT d.data_hora_criacao,
-               MIN(t.data_hora) AS primeira_tentativa
-        FROM demanda d
-        JOIN tentativa_contato t ON t.demanda_id = d.id
-        WHERE d.unidade_responsavel_id = :unidadeResponsavelId
-        GROUP BY d.id, d.data_hora_criacao
-    ) sub
-    """, nativeQuery = true)
-    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
+SELECT AVG(qtd)
+FROM (
+    SELECT COUNT(*) AS qtd
+    FROM tentativa_contato t
+    JOIN demanda d ON d.id = t.demanda_id
+    WHERE (:unidadeResponsavelId IS NULL OR d.unidade_responsavel_id = :unidadeResponsavelId)
+      AND (:unidadeSolicitanteId IS NULL
+            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
+            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+      AND (
+            :inicio IS NULL
+            OR d.data_hora_criacao BETWEEN :inicio AND :fim
+      )
+    GROUP BY t.demanda_id
+) sub
+""", nativeQuery = true)
+    Double calcularMediaTentativasPorDemanda(
+            Long unidadeResponsavelId,
+            Long unidadeSolicitanteId,
+            LocalDate inicio,
+            LocalDate fim);
 
     @Query(value = """
-    SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
-    FROM (
-        SELECT d.data_hora_criacao,
-               MIN(t.data_hora) AS primeira_tentativa
-        FROM demanda d
-        JOIN tentativa_contato t ON t.demanda_id = d.id
-        WHERE d.unidade_solicitante_id = :unidadeSolicitanteId
-        GROUP BY d.id, d.data_hora_criacao
-    ) sub
-    """, nativeQuery = true)
-    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeSolicitante(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId);
-
-    @Query(value = """
-        SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
-        FROM (
-            SELECT d.data_hora_criacao,
-                   MIN(t.data_hora) AS primeira_tentativa
-            FROM demanda d
-            JOIN tentativa_contato t ON t.demanda_id = d.id
-            WHERE d.data_hora_criacao BETWEEN :inicio AND :fim
-            GROUP BY d.id, d.data_hora_criacao
-        ) sub
-        """, nativeQuery = true)
-    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorPeriodo(@Param("inicio") LocalDateTime inicio,
-                                                                   @Param("fim") LocalDateTime fim);
-
-    @Query(value = """
-        SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
-        FROM (
-            SELECT d.data_hora_criacao,
-                   MIN(t.data_hora) AS primeira_tentativa
-            FROM demanda d
-            JOIN tentativa_contato t ON t.demanda_id = d.id
-            WHERE d.unidade_responsavel_id = :unidadeResponsavelId
-              AND d.data_hora_criacao BETWEEN :inicio AND :fim
-            GROUP BY d.id, d.data_hora_criacao
-        ) sub
-        """, nativeQuery = true)
-    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
-                                                                           @Param("inicio") LocalDateTime inicio,
-                                                                           @Param("fim") LocalDateTime fim);
-    @Query(value = """
-        SELECT AVG(EXTRACT(EPOCH FROM (primeira_tentativa - data_hora_criacao)))
-        FROM (
-            SELECT d.data_hora_criacao,
-                   MIN(t.data_hora) AS primeira_tentativa
-            FROM demanda d
-            JOIN tentativa_contato t ON t.demanda_id = d.id
-            WHERE d.unidade_solicitante_id = :unidadeSolicitanteId
-              AND d.data_hora_criacao BETWEEN :inicio AND :fim
-            GROUP BY d.id, d.data_hora_criacao
-        ) sub
-        """, nativeQuery = true)
-    Double calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeSolicitanteEPeriodo(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
-                                                                                      @Param("inicio") LocalDateTime inicio,
-                                                                                      @Param("fim") LocalDateTime fim);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT COUNT(*) AS qtd
-        FROM tentativa_contato
-        GROUP BY demanda_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorDemanda();
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.unidade_responsavel_id = :unidadeResponsavelId
-        GROUP BY t.demanda_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorDemandaPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.unidade_solicitante_id = :unidadeSolicitanteId
-        GROUP BY t.demanda_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorDemandaPorUnidadeSolicitante(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.demanda_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorDemandaPorPeriodo(@Param("inicio") LocalDateTime inicio,
-                                                       @Param("fim") LocalDateTime fim);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.unidade_responsavel_id = :unidadeResponsavelId
-          AND d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.demanda_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorDemandaPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
-                                                               @Param("inicio") LocalDateTime inicio,
-                                                               @Param("fim") LocalDateTime fim);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.unidade_solicitante_id = :unidadeSolicitanteId
-          AND d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.demanda_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorDemandaPorUnidadeSolicitanteEPeriodo(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
-                                                                          @Param("inicio") LocalDateTime inicio,
-                                                                          @Param("fim") LocalDateTime fim);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT COUNT(*) AS qtd
-        FROM tentativa_contato
-        GROUP BY servidor_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorServidor();
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT t.servidor_id, COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.unidade_responsavel_id = :unidadeResponsavelId
-        GROUP BY t.servidor_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorServidorPorUnidade(@Param("unidadeResponsavelId") Long unidadeResponsavelId);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT t.servidor_id, COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.unidade_solicitante_id = :unidadeSolicitanteId
-        GROUP BY t.servidor_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorServidorPorUnidadeSolicitante(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT t.servidor_id, COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.servidor_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorServidorPorPeriodo(@Param("inicio") LocalDateTime inicio,
-                                                       @Param("fim") LocalDateTime fim);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT t.servidor_id, COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.unidade_responsavel_id = :unidadeResponsavelId
-          AND d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.servidor_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorServidorPorUnidadeEPeriodo(@Param("unidadeResponsavelId") Long unidadeResponsavelId,
-                                                               @Param("inicio") LocalDateTime inicio,
-                                                               @Param("fim") LocalDateTime fim);
-
-    @Query(value = """
-    SELECT AVG(qtd)
-    FROM (
-        SELECT t.servidor_id, COUNT(*) AS qtd
-        FROM tentativa_contato t
-        JOIN demanda d ON d.id = t.demanda_id
-        WHERE d.unidade_solicitante_id = :unidadeSolicitanteId
-          AND d.data_hora_criacao BETWEEN :inicio AND :fim
-        GROUP BY t.servidor_id
-    ) sub
-    """, nativeQuery = true)
-    Double calcularMediaTentativasPorServidorPorUnidadeSolicitanteEPeriodo(@Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
-                                                                           @Param("inicio") LocalDateTime inicio,
-                                                                           @Param("fim") LocalDateTime fim);
+SELECT AVG(qtd)
+FROM (
+    SELECT t.servidor_id, COUNT(*) AS qtd
+    FROM tentativa_contato t
+    JOIN demanda d ON d.id = t.demanda_id
+    WHERE (:unidadeResponsavelId IS NULL OR d.unidade_responsavel_id = :unidadeResponsavelId)
+      AND (:unidadeSolicitanteId IS NULL
+            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
+            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+      AND (
+            :inicio IS NULL
+            OR d.data_hora_criacao BETWEEN :inicio AND :fim
+      )
+    GROUP BY t.servidor_id
+) sub
+""", nativeQuery = true)
+    Double calcularMediaTentativasPorServidor(
+            Long unidadeResponsavelId,
+            Long unidadeSolicitanteId,
+            LocalDate inicio,
+            LocalDate fim);
 
 
     @Query(value = """

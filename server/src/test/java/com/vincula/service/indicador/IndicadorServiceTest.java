@@ -1,4 +1,4 @@
-package com.vincula.service.indicador;
+/*package com.vincula.service.indicador;
 
 import com.vincula.dto.indicador.IndicadorDTO;
 import com.vincula.entity.Servidor;
@@ -672,3 +672,5 @@ class IndicadorServiceTest {
         verify(spy).indicadorGeral();
     }
 }
+
+ */

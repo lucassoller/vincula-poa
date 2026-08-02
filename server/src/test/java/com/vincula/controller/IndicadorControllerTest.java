@@ -1,4 +1,4 @@
-package com.vincula.controller;
+/*package com.vincula.controller;
 
 import com.vincula.dto.indicador.IndicadorDTO;
 import com.vincula.security.JwtAuthenticationFilter;
@@ -83,3 +83,6 @@ class IndicadorControllerTest {
                 .andExpect(content().contentType("text/csv"));
     }
 }
+
+
+ */

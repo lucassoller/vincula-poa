@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../api/api.js";
 import "../../styles/indicador.css";
 import { useAuth } from "../../context/AuthContext.jsx";
-import {useNavigate} from "react-router-dom";
 import Ranking from "../../components/Ranking.jsx";
 import BarChartSimples from "../../components/BarChartSimples.jsx";
 import DonutChart from "../../components/DonutChart.jsx";
@@ -10,117 +9,118 @@ import SecaoCardsInterna from "../../components/SecaoCardsInterna.jsx";
 import ChartCard from "../../components/ChartCard.jsx";
 import SecaoCards from "../../components/SecaoCards.jsx";
 import {perfilLabel} from "../../utils/utils.js";
+import ModalFiltrosIndicador from "../../components/ModalFiltrosIndicador.jsx";
 
 function Indicador() {
-    const navigate = useNavigate();
     const { servidor } = useAuth();
     const [indicador, setIndicador] = useState(null);
     const [erro, setErro] = useState("");
     const [carregando, setCarregando] = useState(true);
-    const [inicio, setInicio] = useState("");
-    const [fim, setFim] = useState("");
-    const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
     const [unidades, setUnidades] = useState([]);
-    const unidadeSaudeId =
-        servidor?.perfil === "SERVIDOR_APS"
-            ? String(servidor.unidadeSaudeId)
-            : unidadeSelecionada;
+    const [servicos, setServicos] = useState([]);
+    const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
-    const unidadeSolicitanteId =
-        servidor?.perfil === "SOLICITANTE"
-            ? String(servidor.unidadeSaudeId)
-            : "";
+    const [filtros, setFiltros] = useState({
+        unidade: "",
+        servico: "",
+        dataInicial: "",
+        dataFinal: "",
+    });
 
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                /*if(servidor?.perfil !== "SOLICITANTE") {
-                    const response = await api.get("/unidades-saude/all");
-                    setUnidades(response.data);
-                }*/
+                const response = await api.get("/unidades-saude/all");
+                setUnidades(response.data.ubs);
+                setServicos(response.data.especializadas);
+
             } catch {
                 setErro("Erro ao carregar unidades.");
             }
         }
-        
+
         void carregarUnidades();
+    }, []);
 
-    }, [navigate, servidor]);
 
-    const carregarIndicador = useCallback(async (
-        unidade = unidadeSaudeId,
-        unidadeSolicitante = unidadeSolicitanteId,
-        dataInicio = inicio,
-        dataFim = fim,
-    ) => {
+    async function carregarDados(filtrosAtuais = filtros) {
 
         try {
-            const temInicio = dataInicio !== "";
-            const temFim = dataFim !== "";
-            const temUnidade = unidade !== "";
-            const temUnidadeSolicitante = unidadeSolicitante !== "";
-            if ((temInicio && !temFim) || (!temInicio && temFim)) {
-                setErro("Informe início e fim do período.");
-                return;
-            }
 
             setCarregando(true);
-            setErro("");
 
-            const params = new URLSearchParams();
+            const payload = {
+                usuarioId: filtrosAtuais.usuario || null,
+                complemento: filtrosAtuais.complemento || null,
+                unidadeResponsavelId: filtrosAtuais.unidade || null,
+                unidadeSolicitanteId: filtrosAtuais.servico || null,
+                dataInicial: filtrosAtuais.dataInicial || null,
+                dataFinal: filtrosAtuais.dataFinal || null,
+            };
 
-            if (temUnidade) {
-                params.append("unidadeSaudeId", unidadeSaudeId);
+            if (servidor?.perfil === "SERVIDOR_APS") {
+                payload.unidadeResponsavelId = servidor.unidadeSaudeId;
+            }else if (servidor?.perfil === "SOLICITANTE") {
+                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
             }
 
-            if (temInicio && temFim) {
-                params.append("inicio", `${dataInicio}T00:00:00`);
-                params.append("fim", `${dataFim}T23:59:59`);
-            }
-
-            if(temUnidadeSolicitante){
-                params.append("unidadeSolicitanteId", unidadeSolicitanteId);
-            }
-
-            const response = await api.get(
-                `/indicadores/geral?${params.toString()}`
+            const indicadorResponse = await api.post(
+                "/indicadores/geral",
+                payload
             );
-            setIndicador(response.data);
+
+            setIndicador(indicadorResponse.data);
 
         } catch {
-            setErro("Erro ao carregar indicador");
+            setErro("Erro ao carregar indicador.");
         } finally {
             setCarregando(false);
         }
-    }, [unidadeSaudeId, unidadeSolicitanteId, inicio, fim]);
+    }
+
+    async function executarBusca() {
+        await carregarDados(filtros);
+    }
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        void carregarIndicador();
-
+        void carregarDados(filtros);
     }, []);
+
+
+    async function limparFiltros() {
+
+        const filtrosVazios = {
+            unidade: "",
+            servico: "",
+            dataInicial: "",
+            dataFinal: "",
+        };
+
+        setFiltros(filtrosVazios);
+        setErro("");
+
+        await carregarDados(filtrosVazios);
+    }
 
 
     async function exportarCsv() {
         try {
-            const params = new URLSearchParams();
-            if (unidadeSaudeId) {
-                params.append("unidadeSaudeId", unidadeSaudeId);
+            const payload = {
+                unidadeResponsavelId: filtros.unidade || null,
+                unidadeSolicitanteId: filtros.servico || null,
+                dataInicial: filtros.dataInicial || null,
+                dataFinal: filtros.dataFinal || null,
+            };
+
+            if (servidor?.perfil === "SERVIDOR_APS") {
+                payload.unidadeResponsavelId = servidor.unidadeSaudeId;
+            }else if (servidor?.perfil === "SOLICITANTE") {
+                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
             }
 
-            if (inicio) {
-                params.append("inicio", `${inicio}T00:00:00`);
-            }
-
-            if (fim) {
-                params.append("fim", `${fim}T23:59:59`);
-            }
-
-            if(unidadeSolicitanteId){
-                params.append("unidadeSolicitanteId", unidadeSolicitanteId);
-            }
-
-            const response = await api.get(`/indicadores/exportar?${params.toString()}`,
+            const response = await api.post("/indicadores/exportar",
+                payload,
                 {
                     responseType: "blob",
                 }
@@ -160,35 +160,6 @@ function Indicador() {
         } catch {
             setErro("Erro ao exportar CSV.");
         }
-    }
-
-    async function limparFiltros() {
-
-        setInicio("");
-        setFim("");
-
-        const unidade =
-            servidor?.perfil === "SERVIDOR_APS"
-                ? String(servidor.unidadeSaudeId)
-                : "";
-
-        const unidadeSolicitante =
-            servidor?.perfil === "SOLICITANTE"
-                ? String(servidor.unidadeSaudeId)
-                : "";
-
-        if (servidor?.perfil !== "SERVIDOR_APS") {
-            setUnidadeSelecionada("");
-        }
-
-        setErro("");
-
-        await carregarIndicador(
-            unidade,
-            unidadeSolicitante,
-            "",
-            ""
-        );
     }
 
     if (carregando) {
@@ -231,64 +202,18 @@ function Indicador() {
                         </div>
                     </div>
 
-                    <div className="indicador-filtros">
+                    <div className="search-container">
 
-                        <input
-                            type="date"
-                            className="input-field"
-                            value={inicio}
-                            onChange={(e) =>
-                                setInicio(e.target.value)
-                            }
-                        />
-
-                        <input
-                            type="date"
-                            className="input-field"
-                            value={fim}
-                            onChange={(e) =>
-                                setFim(e.target.value)
-                            }
-                        />
-
-                        {servidor?.perfil !== "SOLICITANTE" && (
-                            <select
-                                className="input-field"
-                                value={unidadeSaudeId}
-                                onChange={(e) =>
-                                    setUnidadeSelecionada(e.target.value)
-                                }
-                                disabled={servidor?.perfil === "SERVIDOR_APS"}
-                            >
-
-                                <option value="">
-                                    Todas as UBS
-                                </option>
-
-                                {unidades.map((u) => (
-                                    <option
-                                        key={u.id}
-                                        value={u.id}
-                                    >
-                                        {u.nome}
-                                    </option>
-
-                                ))}
-
-                            </select>
-                        )}
-
-                        <div className="indicador-actions">
-                            <span
-                                className="buscar-btn"
-                                onClick={carregarIndicador}
-                            >
-                                Aplicar filtros
+                           <span
+                               className="buscar-btn"
+                               onClick={() => setMostrarFiltros(true)}
+                           >
+                                Filtrar indicadores
                             </span>
 
                             <span
                                 className="buscar-btn"
-                                onClick={limparFiltros}
+                                onClick={() => limparFiltros()}
                             >
                                 Limpar filtros
                             </span>
@@ -299,7 +224,7 @@ function Indicador() {
                             >
                                 Exportar CSV
                             </span>
-                        </div>
+
                     </div>
                 </div>
                 <SecaoCards
@@ -376,6 +301,23 @@ function Indicador() {
                     />
                 </div>
             </div>
+
+
+            <ModalFiltrosIndicador
+                aberto={mostrarFiltros}
+                onFechar={() => setMostrarFiltros(false)}
+                filtros={filtros}
+                setFiltros={setFiltros}
+                unidades={unidades}
+                servicos={servicos}
+                onAplicar={() => {
+                    setMostrarFiltros(false);
+                    void executarBusca();
+                }}
+                servidor={servidor}
+                onLimpar={limparFiltros}
+            />
+
         </div>
     );
 }

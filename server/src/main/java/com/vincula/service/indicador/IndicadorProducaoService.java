@@ -1,10 +1,9 @@
 package com.vincula.service.indicador;
 
+import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.IndicadorValorDTO;
 import com.vincula.repository.DemandaRepository;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,86 +16,27 @@ public class IndicadorProducaoService {
         this.demandaRepository = demandaRepository;
     }
 
-    public List<IndicadorValorDTO> indicadoresGerais() {
+    public List<IndicadorValorDTO> gerarIndicadores(FiltroIndicadorRequestDTO filtro) {
         List<IndicadorValorDTO> lista = new ArrayList<>(
-                demandaRepository.agruparPorStatus()
+                demandaRepository
+                        .agruparPorStatus(
+                                filtro.getUnidadeResponsavelId(),
+                                filtro.getUnidadeSolicitanteId(),
+                                filtro.getDataInicial(),
+                                filtro.getDataFinal()
+                        )
                         .stream()
-                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
+                        .map(item -> new IndicadorValorDTO(
+                                traduzirStatus(item.getStatus()),
+                                item.getQuantidade()))
                         .toList()
         );
 
-        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countBy()));
-        return lista;
-    }
-
-    public List<IndicadorValorDTO> indicadoresPorUnidade(Long unidadeResponsavelId) {
-        List<IndicadorValorDTO> lista = new ArrayList<>(
-                demandaRepository.agruparPorStatusPorUnidade(unidadeResponsavelId)
-                        .stream()
-                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
-                        .toList()
-        );
-
-        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeResponsavelId(unidadeResponsavelId)));
-        return lista;
-    }
-
-    public List<IndicadorValorDTO> indicadoresPorUnidadeSolicitante(Long unidadeSolicitanteId) {
-        List<IndicadorValorDTO> lista = new ArrayList<>(
-                demandaRepository.agruparPorStatusPorUnidadeSolicitante(unidadeSolicitanteId)
-                        .stream()
-                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
-                        .toList()
-        );
-
-        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeSolicitanteId(unidadeSolicitanteId)));
-        return lista;
-    }
-
-    public List<IndicadorValorDTO> indicadoresPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        List<IndicadorValorDTO> lista = new ArrayList<>(
-                demandaRepository.agruparPorStatusPorPeriodo(inicio, fim)
-                        .stream()
-                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
-                        .toList()
-        );
-
-        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByDataHoraCriacaoBetween(inicio, fim)));
-        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período indicado", demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim)));
-
-        return lista;
-    }
-
-    public List<IndicadorValorDTO> indicadoresPorUnidadeEPeriodo(Long unidadeResponsavelId,
-                                                                 LocalDateTime inicio,
-                                                                 LocalDateTime fim) {
-
-        List<IndicadorValorDTO> lista = new ArrayList<>(
-                demandaRepository.agruparPorStatusPorUnidadeEPeriodo(unidadeResponsavelId, inicio, fim)
-                        .stream()
-                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
-                        .toList()
-        );
-
-        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(unidadeResponsavelId, inicio, fim)));
-        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período indicado", demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(unidadeResponsavelId, inicio, fim)));
-
-        return lista;
-    }
-
-    public List<IndicadorValorDTO> indicadoresPorServidorEPeriodo(Long servidorId,
-                                                                 LocalDateTime inicio,
-                                                                 LocalDateTime fim) {
-
-        List<IndicadorValorDTO> lista = new ArrayList<>(
-                demandaRepository.agruparPorStatusPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim)
-                        .stream()
-                        .map(item -> new IndicadorValorDTO(traduzirStatus(item.getStatus()), item.getQuantidade()))
-                        .toList()
-        );
-
-        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countByUnidadeSolicitanteIdAndDataHoraCriacaoBetween(servidorId, inicio, fim)));
-        lista.add(new IndicadorValorDTO("Demandas finalizadas com data de finalização no período indicado", demandaRepository.countByUnidadeSolicitanteIdAndDataHoraFinalizacaoBetween(servidorId, inicio, fim)));
+        lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countDemandas(
+                filtro.getUnidadeResponsavelId(),
+                filtro.getUnidadeSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal())));
 
         return lista;
     }

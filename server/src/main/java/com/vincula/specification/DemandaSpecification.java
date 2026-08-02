@@ -6,7 +6,6 @@ import com.vincula.enums.*;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -118,7 +117,7 @@ public class DemandaSpecification {
         }
 
         return (root, query, cb) -> {
-            if (unidadeId == 0L) {
+            if (unidadeId == -1L) {
                 return cb.isNull(root.get("unidadeSolicitante"));
             }
 

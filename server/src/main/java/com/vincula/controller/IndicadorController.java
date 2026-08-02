@@ -1,5 +1,7 @@
 package com.vincula.controller;
 
+import com.vincula.dto.demanda.FiltroDemandaRequestDTO;
+import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.IndicadorDTO;
 import com.vincula.service.indicador.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,23 +24,17 @@ public class IndicadorController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/geral")
+    @PostMapping("/geral")
     public ResponseEntity<IndicadorDTO> indicadorGeral(
-            @RequestParam(required = false) Long unidadeSaudeId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
-            @RequestParam(required = false) Long unidadeSolicitanteId) {
-        return ResponseEntity.ok(indicadorService.indicadorGeral(unidadeSaudeId, inicio, fim, unidadeSolicitanteId));
+            @RequestBody FiltroIndicadorRequestDTO filtro) {
+        return ResponseEntity.ok(indicadorService.gerarIndicadores(filtro));
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping(value = "/exportar", produces = "text/csv")
+    @PostMapping(value = "/exportar", produces = "text/csv")
     public ResponseEntity<String> exportarIndicadorGeralCsv(
-            @RequestParam(required = false) Long unidadeSaudeId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
-            @RequestParam(required = false) Long unidadeSolicitanteId) {
-        String csv = indicadorService.exportarIndicadorGeralCsv(unidadeSaudeId, inicio, fim, unidadeSolicitanteId);
+            @RequestBody FiltroIndicadorRequestDTO filtro) {
+        String csv = indicadorService.exportarIndicadoresCsv(filtro);
         String dataHora = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm"));
 

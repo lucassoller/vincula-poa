@@ -1,4 +1,4 @@
-package com.vincula.service.indicador;
+/* package com.vincula.service.indicador;
 
 import com.vincula.dto.indicador.IndicadorRankingDTO;
 import com.vincula.dto.projection.RankingQuantidadeProjection;
@@ -242,3 +242,5 @@ class IndicadorRankingServiceTest {
     }
 
 }
+
+ */

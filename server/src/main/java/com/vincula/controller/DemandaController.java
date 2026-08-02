@@ -54,32 +54,12 @@ public class DemandaController {
         return ResponseEntity.ok(demandaService.listarPorUsuario(usuarioId, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/filtradas")
     public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas2(
             @RequestBody FiltroDemandaRequestDTO filtro,
             Pageable pageable) {
         return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));
-    }
-
-    @PreAuthorize("hasRole('SERVIDOR_APS')")
-    @PostMapping("/filtradas/unidade/{unidadeSaudeId}")
-    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSaudeFiltradas2(
-            @PathVariable Long unidadeSaudeId,
-            @RequestBody FiltroDemandaRequestDTO filtro,
-            Pageable pageable
-    ) {
-        return ResponseEntity.ok(demandaService.listarPorUnidadeSaudeFiltradas(unidadeSaudeId, filtro, pageable));
-    }
-
-    @PreAuthorize("hasRole('SOLICITANTE')")
-    @PostMapping("/filtradas/solicitante/{unidadeSolicitanteId}")
-    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasPorUnidadeSolicitanteFiltradas2(
-            @PathVariable Long unidadeSolicitanteId,
-            @RequestBody FiltroDemandaRequestDTO filtro,
-            Pageable pageable
-    ) {
-        return ResponseEntity.ok(demandaService.listarPorUnidadeSolicitanteFiltradas(unidadeSolicitanteId, filtro, pageable));
     }
 
 
@@ -129,35 +109,11 @@ public class DemandaController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/exportar", produces = "text/csv")
     public ResponseEntity<String> exportarDemandasCsv(@RequestBody FiltroDemandaRequestDTO filtro) {
 
         String csv = demandaService.exportarDemandasCsv(filtro);
-
-        return gerarRespostaCsv(csv);
-    }
-
-    @PreAuthorize("hasRole('SERVIDOR_APS')")
-    @PostMapping(value = "/exportar/unidade/{unidadeId}", produces = "text/csv")
-    public ResponseEntity<String> exportarDemandasPorUnidadeCsv(
-            @PathVariable Long unidadeId,
-            @RequestBody FiltroDemandaRequestDTO filtro
-    ) {
-
-        String csv = demandaService.exportarDemandasPorUnidadeCsv(unidadeId, filtro);
-
-        return gerarRespostaCsv(csv);
-    }
-
-    @PreAuthorize("hasRole('SOLICITANTE')")
-    @PostMapping(value = "/exportar/solicitante/{unidadeId}", produces = "text/csv")
-    public ResponseEntity<String> exportarDemandasPorUnidadeSolicitanteCsv(
-            @PathVariable Long unidadeId,
-            @RequestBody FiltroDemandaRequestDTO filtro
-    ) {
-
-        String csv = demandaService.exportarDemandasPorUnidadeSolicitanteCsv(unidadeId, filtro);
 
         return gerarRespostaCsv(csv);
     }

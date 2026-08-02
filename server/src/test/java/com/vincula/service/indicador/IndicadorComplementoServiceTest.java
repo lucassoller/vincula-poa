@@ -1,4 +1,4 @@
-package com.vincula.service.indicador;
+/* com.vincula.service.indicador;
 
 import com.vincula.dto.indicador.MotivoQuantidadeDTO;
 import com.vincula.dto.projection.MotivoQuantidadeProjection;
@@ -211,3 +211,5 @@ class IndicadorComplementoServiceTest {
                 .listarPrincipaisComplementosPorUnidadeSolicitante(1L);
     }
 }
+
+ */

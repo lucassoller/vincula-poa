@@ -94,30 +94,20 @@ function Demandas() {
                 dataEnFinal: filtrosAtuais.dataEnFinal || null
             };
 
-            let demandasResponse;
+            if (servidor?.perfil === "SERVIDOR_APS") {
 
-            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
+                payload.unidadeResponsavelId = servidor.unidadeSaudeId;
 
-                demandasResponse = await api.post(
-                    `/demandas/filtradas?page=${paginaAtual}&size=${tamanhoPagina}`,
-                    payload
-                );
+            } else if (servidor?.perfil === "SOLICITANTE") {
 
-            } else if (servidor?.perfil === "SERVIDOR_APS") {
-
-                demandasResponse = await api.post(
-                    `/demandas/filtradas/unidade/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`,
-                    payload
-                );
-
-            } else {
-
-                demandasResponse = await api.post(
-                    `/demandas/filtradas/solicitante/${servidor.unidadeSaudeId}?page=${paginaAtual}&size=${tamanhoPagina}`,
-                    payload
-                );
+                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
 
             }
+
+            const demandasResponse = await api.post(
+                `/demandas/filtradas?page=${paginaAtual}&size=${tamanhoPagina}`,
+                payload
+            );
 
             setDemandas(demandasResponse.data.content);
             setTotalPaginas(demandasResponse.data.page.totalPages);
@@ -142,25 +132,6 @@ function Demandas() {
 
         carregarMotivos();
     }, []);
-
-    useEffect(() => {
-        async function carregarServicos() {
-            //let response;
-
-            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
-
-                //response = await api.get("/demandas/motivos");
-
-            } else if (servidor?.perfil === "SERVIDOR_APS") {
-                //response = await api.get("/demandas/motivos");
-            }
-
-            //setServicos(response.data);
-        }
-
-        carregarServicos();
-    }, []);
-
 
     async function executarBusca() {
         setPagina(0);
@@ -383,39 +354,23 @@ function Demandas() {
                 dataEnFinal: filtros.dataEnFinal || null
             };
 
-            let response;
+            if (servidor?.perfil === "SERVIDOR_APS") {
 
-            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
+                payload.unidadeResponsavelId = servidor.unidadeSaudeId;
 
-                response = await api.post(
-                    "/demandas/exportar",
-                    payload,
-                    {
-                        responseType: "blob",
-                    }
-                );
+            } else if (servidor?.perfil === "SOLICITANTE") {
 
-            } else if (servidor?.perfil === "SERVIDOR_APS") {
-
-                response = await api.post(
-                    `/demandas/exportar/unidade/${servidor.unidadeSaudeId}`,
-                    payload,
-                    {
-                        responseType: "blob",
-                    }
-                );
-
-            } else {
-
-                response = await api.post(
-                    `/demandas/exportar/solicitante/${servidor.unidadeSaudeId}`,
-                    payload,
-                    {
-                        responseType: "blob",
-                    }
-                );
+                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
 
             }
+
+            const response = await api.post("/demandas/exportar",
+                payload,
+                {
+                    responseType: "blob",
+                }
+            );
+
 
             const blob = new Blob([response.data], {
                 type: "text/csv;charset=utf-8;",

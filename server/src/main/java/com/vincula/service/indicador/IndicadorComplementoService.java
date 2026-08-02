@@ -1,9 +1,9 @@
 package com.vincula.service.indicador;
 
+import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.MotivoQuantidadeDTO;
 import com.vincula.repository.DemandaRepository;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -15,45 +15,19 @@ public class IndicadorComplementoService {
         this.demandaRepository = demandaRepository;
     }
 
-    public List<MotivoQuantidadeDTO> principaisComplementos() {
-        return demandaRepository.listarPrincipaisComplementos()
-                .stream()
-                .map(item -> new MotivoQuantidadeDTO(traduzirComplemento(item.getMotivo()), item.getQuantidade()))
-                .toList();
-    }
+    public List<MotivoQuantidadeDTO> gerarIndicadores(FiltroIndicadorRequestDTO filtro) {
 
-    public List<MotivoQuantidadeDTO> principaisComplementosPorUnidade(Long unidadeSaudeId) {
-        return demandaRepository.listarPrincipaisComplementosPorUnidade(unidadeSaudeId)
+        return demandaRepository.listarPrincipaisComplementos(
+                        filtro.getUnidadeResponsavelId(),
+                        filtro.getUnidadeSolicitanteId(),
+                        filtro.getDataInicial(),
+                        filtro.getDataFinal()
+                )
                 .stream()
-                .map(item -> new MotivoQuantidadeDTO(traduzirComplemento(item.getMotivo()), item.getQuantidade()))
-                .toList();
-    }
-
-    public List<MotivoQuantidadeDTO> principaisComplementosPorServidor(Long servidorId) {
-        return demandaRepository.listarPrincipaisComplementosPorUnidadeSolicitante(servidorId)
-                .stream()
-                .map(item -> new MotivoQuantidadeDTO(traduzirComplemento(item.getMotivo()), item.getQuantidade()))
-                .toList();
-    }
-
-    public List<MotivoQuantidadeDTO> principaisComplementosPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        return demandaRepository.listarPrincipaisComplementosPorPeriodo(inicio, fim)
-                .stream()
-                .map(item -> new MotivoQuantidadeDTO(traduzirComplemento(item.getMotivo()), item.getQuantidade()))
-                .toList();
-    }
-
-    public List<MotivoQuantidadeDTO> principaisComplementosPorUnidadeEPeriodo(Long unidadeSaudeId, LocalDateTime inicio, LocalDateTime fim) {
-        return demandaRepository.listarPrincipaisComplementosPorUnidadeEPeriodo(unidadeSaudeId, inicio, fim)
-                .stream()
-                .map(item -> new MotivoQuantidadeDTO(traduzirComplemento(item.getMotivo()), item.getQuantidade()))
-                .toList();
-    }
-
-    public List<MotivoQuantidadeDTO> principaisComplementosPorServidorEPeriodo(Long servidorId, LocalDateTime inicio, LocalDateTime fim) {
-        return demandaRepository.listarPrincipaisComplementosPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim)
-                .stream()
-                .map(item -> new MotivoQuantidadeDTO(traduzirComplemento(item.getMotivo()), item.getQuantidade()))
+                .map(item -> new MotivoQuantidadeDTO(
+                        traduzirComplemento(item.getMotivo()),
+                        item.getQuantidade()
+                ))
                 .toList();
     }
 
