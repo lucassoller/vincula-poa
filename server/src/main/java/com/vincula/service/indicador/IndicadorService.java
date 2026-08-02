@@ -98,11 +98,7 @@ public class IndicadorService {
         LocalDate inicio = filtro.getDataInicial();
         LocalDate fim = filtro.getDataFinal();
 
-        if ((inicio == null) != (fim == null)) {
-            throw new BusinessException("Informe início e fim do período.");
-        }
-
-        if (inicio != null && inicio.isAfter(fim)) {
+        if (inicio != null && fim != null && inicio.isAfter(fim)) {
             throw new BusinessException("A data inicial deve ser anterior à data final.");
         }
     }

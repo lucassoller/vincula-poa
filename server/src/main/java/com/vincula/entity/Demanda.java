@@ -29,7 +29,7 @@ public class Demanda {
     private MotivoComplemento motivoComplemento;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 8)
+    @Column(nullable = false, length = 8)
     private Prioridade prioridade;
 
     @Column(length = 500)

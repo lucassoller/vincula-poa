@@ -29,17 +29,18 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
             OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
             OR d.unidade_solicitante_id = :unidadeSolicitanteId)
           AND (
-                :dataInicial IS NULL
-                OR d.data_hora_criacao BETWEEN :dataInicial AND :dataFinal
-              )
+        (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
+        AND
+        (CAST(:fim AS DATE) IS NULL OR d.data_hora_criacao < CAST(:fim AS DATE) + INTERVAL '1 day')
+    )
         GROUP BY d.id, d.data_hora_criacao
     ) sub
     """, nativeQuery = true)
     Double calcularTempoMedioAtePrimeiraTentativa(
-            @Param("unidadeResponsavelId") Long unidadeResponsavelId,
-            @Param("unidadeSolicitanteId") Long unidadeSolicitanteId,
-            @Param("dataInicial") LocalDate dataInicial,
-            @Param("dataFinal") LocalDate dataFinal
+            Long unidadeResponsavelId,
+            Long unidadeSolicitanteId,
+            LocalDate inicio,
+            LocalDate fim
     );
 
     @Query(value = """
@@ -53,9 +54,10 @@ FROM (
             OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
             OR d.unidade_solicitante_id = :unidadeSolicitanteId)
       AND (
-            :inicio IS NULL
-            OR d.data_hora_criacao BETWEEN :inicio AND :fim
-      )
+        (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
+        AND
+        (CAST(:fim AS DATE) IS NULL OR d.data_hora_criacao < CAST(:fim AS DATE) + INTERVAL '1 day')
+    )
     GROUP BY t.demanda_id
 ) sub
 """, nativeQuery = true)
@@ -76,9 +78,10 @@ FROM (
             OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
             OR d.unidade_solicitante_id = :unidadeSolicitanteId)
       AND (
-            :inicio IS NULL
-            OR d.data_hora_criacao BETWEEN :inicio AND :fim
-      )
+        (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
+        AND
+        (CAST(:fim AS DATE) IS NULL OR d.data_hora_criacao < CAST(:fim AS DATE) + INTERVAL '1 day')
+    )
     GROUP BY t.servidor_id
 ) sub
 """, nativeQuery = true)

@@ -26,7 +26,7 @@ public class IndicadorResultadoService {
         LocalDate inicio = filtro.getDataInicial();
         LocalDate fim = filtro.getDataFinal();
 
-        int totalFinalizadas =
+        Long totalFinalizadas =
                  demandaRepository.countDemandasFinalizadas(
                         unidadeResponsavelId,
                         unidadeSolicitanteId,
