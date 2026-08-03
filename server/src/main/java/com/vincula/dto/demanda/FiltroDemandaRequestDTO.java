@@ -23,6 +23,8 @@ public class FiltroDemandaRequestDTO {
 
     private Long unidadeSolicitanteId;
 
+    private Long usuarioId;
+
     private LocalDate dataAbInicial;
 
     private LocalDate dataAbFinal;

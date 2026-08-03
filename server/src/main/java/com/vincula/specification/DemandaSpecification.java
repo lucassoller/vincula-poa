@@ -43,6 +43,10 @@ public class DemandaSpecification {
             spec = spec.and(unidadeSolicitante(filtro.getUnidadeSolicitanteId()));
         }
 
+        if (filtro.getUsuarioId() != null) {
+            spec = spec.and(usuario(filtro.getUsuarioId()));
+        }
+
         if (filtro.getDataAbInicial() != null || filtro.getDataAbFinal() != null) {
             spec = spec.and(dataAbertura(
                     filtro.getDataAbInicial(),
@@ -123,6 +127,16 @@ public class DemandaSpecification {
 
             return cb.equal(root.get("unidadeSolicitante").get("id"), unidadeId);
         };
+    }
+
+    public static Specification<Demanda> usuario(Long usuarioId) {
+
+        if (usuarioId == null) {
+            return null;
+        }
+
+        return (root, query, cb) ->
+                cb.equal(root.get("usuario").get("id"), usuarioId);
     }
 
     private static Specification<Demanda> dataAbertura(LocalDate inicio,

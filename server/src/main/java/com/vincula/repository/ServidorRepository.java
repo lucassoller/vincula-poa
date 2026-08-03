@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,7 @@ public interface ServidorRepository extends JpaRepository<Servidor, Long> {
     )
     ORDER BY p.nome ASC
 """)
-    Page<Servidor> findFiltrados(@Param("filtro") String filtro, Pageable pageable);
+    Page<Servidor> findFiltrados(String filtro, Pageable pageable);
 
     List<Servidor> findAllByOrderByNomeAsc();
 

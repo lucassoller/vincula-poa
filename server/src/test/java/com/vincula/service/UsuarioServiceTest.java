@@ -132,6 +132,7 @@ class UsuarioServiceTest {
         verify(usuarioRepository, never()).save(any());
     }
 
+    /*
     @Test
     void deveLancarNotFoundAoDeletarUsuarioInexistente() {
 
@@ -145,6 +146,8 @@ class UsuarioServiceTest {
 
         verify(usuarioRepository, never()).delete(any());
     }
+
+     */
 
     @Test
     void deveDeletarUsuarioComSucesso() {

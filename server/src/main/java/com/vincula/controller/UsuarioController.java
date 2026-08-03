@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
+import com.vincula.dto.usuario.FiltroUsuarioRequestDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.usuario.UsuarioShortResponseDTO;
@@ -47,6 +48,14 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/filtrados")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarTodosFiltradas(
+            @RequestBody FiltroUsuarioRequestDTO filtro,
+            Pageable pageable) {
+        return ResponseEntity.ok(usuarioService.listarTodosFiltrados(filtro, pageable));
+    }
+
     @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
     @GetMapping("/unidadeSaude/{unidadeSaudeId}")
     public ResponseEntity<Page<UsuarioResponseDTO>> listarPorUnidade(
@@ -79,6 +88,12 @@ public class UsuarioController {
     @GetMapping("/filtrados/busca/{filtro}")
     public ResponseEntity<List<UsuarioShortResponseDTO>> listarTodosFiltradosPorNomeOuDocumento(@PathVariable String filtro) {
         return ResponseEntity.ok(usuarioService.listarTodosFiltradosPorNomeOuDocumento(filtro));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtrados/buscas")
+    public ResponseEntity<List<UsuarioShortResponseDTO>> listarTodosFiltradosPorNomeCompleto(@RequestParam String nomeCompleto) {
+        return ResponseEntity.ok(usuarioService.listarTodosFiltradosPorNomeCompleto(nomeCompleto));
     }
 
     @PreAuthorize("hasAnyRole('SERVIDOR_APS', 'GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")

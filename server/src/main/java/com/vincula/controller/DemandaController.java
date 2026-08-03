@@ -56,7 +56,7 @@ public class DemandaController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/filtradas")
-    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas2(
+    public ResponseEntity<Page<DemandaResponseDTO>> listarTodasFiltradas(
             @RequestBody FiltroDemandaRequestDTO filtro,
             Pageable pageable) {
         return ResponseEntity.ok(demandaService.listarTodasFiltradas(filtro, pageable));

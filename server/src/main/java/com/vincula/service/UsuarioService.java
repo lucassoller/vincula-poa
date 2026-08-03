@@ -1,12 +1,10 @@
 package com.vincula.service;
 
+import com.vincula.dto.usuario.FiltroUsuarioRequestDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.usuario.UsuarioShortResponseDTO;
-import com.vincula.entity.Endereco;
-import com.vincula.entity.Servidor;
-import com.vincula.entity.Usuario;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.*;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.enums.Sexo;
 import com.vincula.exception.BusinessException;
@@ -14,10 +12,14 @@ import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.UsuarioRepository;
+import com.vincula.specification.UsuarioSpecification;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
@@ -63,6 +65,23 @@ public class UsuarioService {
                 .map(this::toDTO);
     }
 
+    public Page<UsuarioResponseDTO> listarTodosFiltrados(
+            FiltroUsuarioRequestDTO filtro,
+            Pageable pageable) {
+
+        Specification<Usuario> specification =
+                UsuarioSpecification.comFiltros(filtro);
+
+        Pageable pageableOrdenado = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("nomeCompleto")
+        );
+
+        return usuarioRepository.findAll(specification, pageableOrdenado)
+                .map(this::toDTO);
+    }
+
     public List<UsuarioShortResponseDTO> listarTodos() {
         return usuarioRepository.findAllByOrderByNomeCompletoAsc()
                 .stream()
@@ -87,6 +106,13 @@ public class UsuarioService {
 
     public List<UsuarioShortResponseDTO> listarTodosFiltradosPorNomeOuDocumento(String filtro) {
         return usuarioRepository.buscarPorNomeOuDocumento(filtro)
+                .stream()
+                .map(this::toShortDTO)
+                .toList();
+    }
+
+    public List<UsuarioShortResponseDTO> listarTodosFiltradosPorNomeCompleto(String nomeCompleto) {
+        return usuarioRepository.findTop10ByNomeCompletoContainingIgnoreCaseOrderByNomeCompleto(nomeCompleto)
                 .stream()
                 .map(this::toShortDTO)
                 .toList();

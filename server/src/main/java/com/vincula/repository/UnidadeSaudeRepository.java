@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +40,7 @@ public interface UnidadeSaudeRepository extends JpaRepository<UnidadeSaude, Long
     ORDER BY u.nome ASC
 """)
     Page<UnidadeSaude> buscarFiltradas(
-            @Param("filtro") String filtro,
+            String filtro,
             Pageable pageable
     );
 

@@ -136,3 +136,27 @@
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37,99,235,.15);
 }
+
+.modal-autocomplete{
+    margin-top: -20px;
+}
+
+.usuario-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #eef4ff;
+    border: 1px solid #cddcff;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-top: 12px;
+    margin-bottom: -12px;
+}
+
+.usuario-chip button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+}
