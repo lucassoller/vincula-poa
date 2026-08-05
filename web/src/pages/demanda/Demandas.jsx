@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import api from "../../api/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/demandas.css";
@@ -25,7 +25,7 @@ function Demandas() {
     const [demandas, setDemandas] = useState([]);
     const [unidades, setUnidades] = useState([]);
     const [servicos, setServicos] = useState([]);
-    const [usuarios, setUsuarios] = useState([]);
+    const [usuariosBusca, setUsuariosBusca] = useState([]);
     const [demandaSelecionada, setDemandaSelecionada] = useState(null);
     const [acao, setAcao] = useState("");
     const [mensagem, setMensagem] = useState("");
@@ -50,7 +50,8 @@ function Demandas() {
         unidade: "",
         servico: "",
         motivo: "",
-        usuario: "",
+        usuarioId: "",
+        nomeCompleto: "",
         complemento: "",
         dataAbInicial: "",
         dataAbFinal: "",
@@ -84,7 +85,8 @@ function Demandas() {
                 prioridade: filtrosAtuais.prioridade,
                 tempo: filtrosAtuais.tempo,
                 motivo: filtrosAtuais.motivo || null,
-                usuarioId: filtrosAtuais.usuario || null,
+                usuarioId: filtrosAtuais.usuarioId || null,
+                nomeCompleto: filtrosAtuais.nomeCompleto || null,
                 complemento: filtrosAtuais.complemento || null,
                 unidadeResponsavelId: filtrosAtuais.unidade || null,
                 unidadeSolicitanteId: filtrosAtuais.servico || null,
@@ -124,6 +126,28 @@ function Demandas() {
         }
     }
 
+    const buscarUsuariosAutocomplete = useCallback(async (nome) => {
+
+        if (!nome || nome.trim().length < 3) {
+            setUsuariosBusca([]);
+            return;
+        }
+
+        try {
+
+            const response = await api.get(
+                `/usuarios/filtrados/buscas?nomeCompleto=${nome}`
+            );
+
+            setUsuariosBusca(response.data);
+
+        } catch {
+            setMensagem("Erro ao buscar usuários");
+        }
+
+    }, []);
+
+
     useEffect(() => {
         async function carregarMotivos() {
             const response = await api.get("/demandas/motivos");
@@ -151,7 +175,8 @@ function Demandas() {
             unidade: "",
             servico: "",
             motivo: "",
-            usuario: "",
+            usuarioId: "",
+            nomeCompleto: "",
             complemento: "",
             dataAbInicial: "",
             dataAbFinal: "",
@@ -163,24 +188,6 @@ function Demandas() {
         setPagina(0);
         await carregarDados(0, filtrosVazios);
     }
-
-
-    useEffect(() => {
-        async function carregarUsuarios() {
-            let response;
-
-            if (['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)) {
-                response = await api.get("/demandas/usuarios/com-demandas");
-            } else if (servidor?.perfil === "SERVIDOR_APS") {
-                response = await api.get(`/demandas/usuarios/com-demandas/unidade/${servidor.unidadeSaudeId}`);
-            } else {
-                response = await api.get(`/demandas/usuarios/com-demandas/solicitante/${servidor.unidadeSaudeId}`);
-            }
-            setUsuarios(response.data);
-        }
-
-        void carregarUsuarios();
-    }, []);
 
     useEffect(() => {
         async function carregarUnidades() {
@@ -657,13 +664,15 @@ function Demandas() {
                 unidades={unidades}
                 servicos={servicos}
                 motivos={motivos}
-                usuarios={usuarios}
                 onAplicar={() => {
                     setMostrarFiltros(false);
                     void executarBusca();
                 }}
                 servidor={servidor}
                 onLimpar={limparFiltros}
+                buscarUsuarios={buscarUsuariosAutocomplete}
+                setUsuarios={setUsuariosBusca}
+                usuarios={usuariosBusca}
             />
         </div>
     );

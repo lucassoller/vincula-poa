@@ -28,59 +28,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>, JpaSpec
 
     List<Usuario> findTop10ByNomeCompletoContainingIgnoreCaseOrderByNomeCompleto(String nomeCompleto);
 
-    @Query("""
-    SELECT p
-    FROM Usuario p
-    WHERE (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(p.telefone) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR LOWER(p.unidadeSaude.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Usuario> findFiltrados(String filtro, Pageable pageable);
-
-    Page<Usuario> findByUnidadeSaudeIdOrderByNomeCompletoAsc(Long unidadeSaudeId, Pageable pageable);
-
-    @Query("""
-    SELECT p
-    FROM Usuario p
-    WHERE p.unidadeSaude.id = :unidadeSaudeId
-    AND (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR p.documento LIKE CONCAT('%', :filtro, '%')
-        OR p.telefone LIKE CONCAT('%', :filtro, '%')
-        OR LOWER(p.unidadeSaude.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Usuario> findFiltradosByUnidade(
-            Long unidadeSaudeId,
-            String filtro,
-            Pageable pageable
-    );
-
-    Page<Usuario> findByUnidadeSolicitanteIdOrderByNomeCompletoAsc(Long unidadeSolicitanteId, Pageable pageable);
-
-    @Query("""
-    SELECT p
-    FROM Usuario p
-    WHERE p.unidadeSolicitante.id = :unidadeSolicitanteId
-    AND (
-        LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :filtro, '%'))
-        OR p.documento LIKE CONCAT('%', :filtro, '%')
-        OR p.telefone LIKE CONCAT('%', :filtro, '%')
-        OR LOWER(p.unidadeSolicitante.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))
-    )
-    ORDER BY p.nomeCompleto ASC
-""")
-    Page<Usuario> findFiltradosByUnidadeSolicitante(
-            Long unidadeSolicitanteId,
-            String filtro,
-            Pageable pageable
-    );
-
     boolean existsByDocumento(String documento);
 
     boolean existsByDocumentoAndIdNot(String documento, Long id);

@@ -102,35 +102,6 @@ class UsuarioControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deveListarPorUnidade() throws Exception {
-
-        when(usuarioService.listarTodosPorUnidade(eq(1L), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/usuarios/unidadeSaude/1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarPorUnidadeSolicitante() throws Exception {
-
-        when(usuarioService.listarTodosPorUnidadeSolicitante(eq(1L), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/usuarios/unidadeSolicitante/1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarFiltrados() throws Exception {
-
-        when(usuarioService.listarTodosFiltrados(eq("teste"), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/usuarios/filtrados/teste"))
-                .andExpect(status().isOk());
-    }
 
     @Test
     void deveListarFiltradosPorNomeOuDocumento() throws Exception {
@@ -139,26 +110,6 @@ class UsuarioControllerTest {
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/usuarios/filtrados/busca/teste"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarFiltradosPorUnidadeSaude() throws Exception {
-
-        when(usuarioService.listarTodosPorUnidadeFiltrados(eq(1L), eq("teste"), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/usuarios/filtrados/unidadeSaude/1/teste"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarFiltradosPorUnidadeSolicitante() throws Exception {
-
-        when(usuarioService.listarTodosPorUnidadeSolicitanteFiltrados(eq(1L), eq("teste"), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/usuarios/filtrados/unidadeSolicitante/1/teste"))
                 .andExpect(status().isOk());
     }
 

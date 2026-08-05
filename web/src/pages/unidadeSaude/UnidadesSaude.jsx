@@ -7,6 +7,7 @@ import Pagination from "../../components/Paginations.jsx";
 import { mascaraTelefone } from "../../utils/mascaras.js";
 import ModalUbs from "../../components/Modal/ModalUbs.jsx";
 import {perfilLabel, tipoServico} from "../../utils/utils.js";
+import ModalFiltrosServico from "../../components/Modal/ModalFiltrosServico.jsx";
 
 function UnidadesSaude() {
     const navigate = useNavigate();
@@ -18,80 +19,89 @@ function UnidadesSaude() {
     const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
-    const [modoFiltrado, setModoFiltrado] = useState(false);
+    const [mostrarFiltros, setMostrarFiltros] = useState(false);
+    const [servicosBusca, setServicosBusca] = useState([]);
+
     const tamanhoPagina = 10;
 
-    const carregarDados = useCallback(async (paginaAtual = pagina) => {
+    const [filtros, setFiltros] = useState({
+        id: "",
+        nome: "",
+        tipoServico: []
+    });
+
+    async function carregarDados(paginaAtual = pagina, filtrosAtuais = filtros) {
 
         try {
+
             setCarregando(true);
-            const response = await api.get(
-                `/unidades-saude?page=${paginaAtual}&size=${tamanhoPagina}`
+
+            const payload = {
+                id: filtrosAtuais.id || null,
+                nome: filtrosAtuais.nome || null,
+                tipoServico: filtrosAtuais.tipoServico || null,
+            };
+
+            const servicosReponse = await api.post(
+                `/unidades-saude/filtrados?page=${paginaAtual}&size=${tamanhoPagina}`,
+                payload
             );
-            setUnidades(response.data.content);
-            setTotalPaginas(response.data.page.totalPages);
+
+            setUnidades(servicosReponse.data.content);
+            setTotalPaginas(servicosReponse.data.page.totalPages);
 
         } catch {
-            setMensagem("Erro ao carregar serviço.");
+
+            setMensagem("Erro ao carregar serviços.")
+
         } finally {
+
             setCarregando(false);
-        }
-    }, [pagina]);
 
-    const buscarUnidades = useCallback(async (paginaAtual = pagina) => {
-
-        if (!filtro.trim()) {
-            return;
-        }
-        try {
-            setCarregando(true);
-            const response = await api.get(
-                `/unidades-saude/filtradas/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`
-            );
-            setUnidades(response.data.content);
-            setTotalPaginas(response.data.page.totalPages);
-
-        } catch {
-            setMensagem("Erro ao buscar serviços.");
-        } finally {
-            setCarregando(false);
-        }
-
-    }, [pagina, filtro]);
-
-    useEffect(() => {
-        const executar = async () => {
-            if (modoFiltrado) {
-                await buscarUnidades(pagina);
-            } else {
-                await carregarDados(pagina);
-            }
-        };
-        void executar();
-
-    }, [pagina, modoFiltrado]);
-
-    async function executarBusca() {
-        if (!filtro.trim()) {
-            return;
-        }
-
-        setModoFiltrado(true);
-        if (pagina !== 0) {
-            setPagina(0);
-        } else {
-            await buscarUnidades(0);
         }
     }
 
-    async function limparFiltro() {
-        setFiltro("");
-        setModoFiltrado(false);
-        if (pagina !== 0) {
-            setPagina(0);
-        } else {
-            await carregarDados(0);
+    const buscarServicosAutocomplete = useCallback(async (nome) => {
+
+        if (!nome || nome.trim().length < 3) {
+            setServicosBusca([]);
+            return;
         }
+
+        try {
+
+            const response = await api.get(
+                `/unidades-saude/filtrados/buscas?nome=${nome}`
+            );
+
+            setServicosBusca(response.data);
+
+        } catch {
+            setMensagem("Erro ao buscar serviços");
+        }
+
+    }, []);
+
+    async function executarBusca() {
+        setPagina(0);
+        await carregarDados(0, filtros);
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void carregarDados(pagina, filtros);
+    }, [pagina]);
+
+    async function limparFiltros() {
+        const filtrosVazios = {
+            id: "",
+            nome: "",
+            tipoServico: []
+        };
+
+        setFiltros(filtrosVazios);
+        setPagina(0);
+        await carregarDados(0, filtrosVazios);
     }
 
     if (carregando) {
@@ -131,27 +141,16 @@ function UnidadesSaude() {
                 <div className="table-card">
                     <div className="table-topbar">
                         <div className="search-container">
-                            <input
-                                className="usuario-search"
-                                placeholder="Buscar serviço..."
-                                value={filtro}
-                                onChange={(e) => setFiltro(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        void executarBusca();
-                                    }
-                                }}
-                            />
                             <span
                                 className="buscar-btn"
-                                onClick={executarBusca}
+                                onClick={() => setMostrarFiltros(true)}
                             >
-                                Buscar
+                                Filtrar serviços
                             </span>
 
                             <span
                                 className="buscar-btn"
-                                onClick={limparFiltro}
+                                onClick={limparFiltros}
                             >
                                 Limpar filtro
                             </span>
@@ -245,6 +244,23 @@ function UnidadesSaude() {
                     setUbsSelecionada={setUnidadeDetalhada}
                 />
             )}
+
+            <ModalFiltrosServico
+                aberto={mostrarFiltros}
+                onFechar={() => setMostrarFiltros(false)}
+                filtros={filtros}
+                setFiltros={setFiltros}
+                onAplicar={() => {
+                    setMostrarFiltros(false);
+                    void executarBusca();
+                }}
+                servidor={servidor}
+                onLimpar={limparFiltros}
+                buscarServicos={buscarServicosAutocomplete}
+                setServicos={setServicosBusca}
+                servicos={servicosBusca}
+            />
+
         </div>
     );
 }

@@ -1,4 +1,5 @@
 import "../../styles/modalFiltrosDemanda.css";
+import {useEffect, useRef} from "react";
 
 function ModalFiltrosDemanda({
                                  aberto,
@@ -10,9 +11,30 @@ function ModalFiltrosDemanda({
                                  servicos = [],
                                  motivos = [],
                                  usuarios = [],
+                                 setUsuarios,
+                                 buscarUsuarios,
                                  onLimpar,
                                  servidor
                              }) {
+
+    const autocompleteRef = useRef(null);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (autocompleteRef.current && !autocompleteRef.current.contains(event.target)) {
+                setUsuarios([]);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutside
+            );
+        };
+
+    }, []);
 
     if (!aberto) return null;
 
@@ -36,32 +58,73 @@ function ModalFiltrosDemanda({
                     <button onClick={onFechar}>✕</button>
                 </div>
 
-                <div className="grupo-filtro">
+                <div className="autocomplete-container grupo-filtro" ref={autocompleteRef}>
 
                     <h4>Usuário</h4>
 
-                    <select
-                        value={filtros.usuario}
-                        onChange={(e) =>
+                    <input
+                        type="text"
+                        className="input-field"
+                        placeholder="Digite o nome do usuário"
+                        value={filtros.nomeCompleto || ""}
+                        onChange={(e) => {
+
+                            const nome = e.target.value;
+
                             setFiltros(prev => ({
                                 ...prev,
-                                usuario: e.target.value
-                            }))
-                        }
-                    >
-                        <option value="">Todos</option>
+                                nomeCompleto: nome,
+                                usuarioId: ""
+                            }));
 
-                        {usuarios.map(usuario => (
-                            <option
-                                key={usuario.id}
-                                value={usuario.id}
+                            buscarUsuarios(nome);
+                        }}
+                    />
+
+                    {usuarios.length > 0 && (
+
+                        <div className="autocomplete-list modal-autocomplete">
+
+                            {usuarios.map(usuario => (
+
+                                <div
+                                    key={usuario.id}
+                                    className="autocomplete-item"
+                                    onClick={() => {
+
+                                        setFiltros(prev => ({
+                                            ...prev,
+                                            nomeCompleto: usuario.nomeCompleto,
+                                            usuarioId: usuario.id
+                                        }));
+
+                                        setUsuarios([]);
+
+                                    }}
+                                >
+                                    {usuario.nomeCompleto}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {filtros.usuarioId && (
+                        <div className="usuario-chip">
+                            <span>{filtros.nomeCompleto}</span>
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setFiltros(prev => ({
+                                        ...prev,
+                                        nomeCompleto: "",
+                                        usuarioId: ""
+                                    }))
+                                }
                             >
-                                {usuario.nomeCompleto}
-                            </option>
-                        ))}
-
-                    </select>
-
+                                ✕
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {servidor.perfil !== 'SERVIDOR_APS' && (

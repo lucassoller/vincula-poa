@@ -1,9 +1,6 @@
 package com.vincula.controller;
 
-import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
-import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
-import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
-import com.vincula.dto.unidadeSaude.UnidadesResponseDTO;
+import com.vincula.dto.unidadeSaude.*;
 import com.vincula.enums.TipoServico;
 import com.vincula.service.UnidadeSaudeService;
 import jakarta.validation.Valid;
@@ -34,15 +31,17 @@ public class UnidadeSaudeController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping
-    public ResponseEntity<Page<UnidadeSaudeResponseDTO>> listarTodos(Pageable pageable) {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodos(pageable));
+    @PostMapping("/filtrados")
+    public ResponseEntity<Page<UnidadeSaudeResponseDTO>> listarTodosFiltradas(
+            @RequestBody FiltroServicoRequestDTO filtro,
+            Pageable pageable) {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodosFiltrados(filtro, pageable));
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/filtradas/{filtro}")
-    public ResponseEntity<Page<UnidadeSaudeResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodosFiltrados(filtro, pageable));
+    @GetMapping("/filtrados/buscas")
+    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosFiltradosPorNome(@RequestParam String nome) {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodosFiltradosPorNome(nome));
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -404,31 +404,6 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void deveListarUsuariosPorUnidade() {
-
-        Pageable pageable = PageRequest.of(0, 10);
-
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
-
-        Usuario usuario = new Usuario();
-        usuario.setUnidadeSaude(unidade);
-
-        Page<Usuario> page =
-                new PageImpl<>(List.of(usuario));
-
-        when(usuarioRepository
-                .findByUnidadeSaudeIdOrderByNomeCompletoAsc(1L, pageable))
-                .thenReturn(page);
-
-        Page<UsuarioResponseDTO> resultado =
-                usuarioService.listarTodosPorUnidade(1L, pageable);
-
-        assertEquals(1, resultado.getTotalElements());
-    }
-
-    @Test
     void deveFiltrarUsuariosPorNomeOuDocumento() {
 
         UnidadeSaude unidade = new UnidadeSaude();
@@ -588,112 +563,6 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void deveListarUsuariosFiltrados() {
-
-        Pageable pageable = PageRequest.of(0, 10);
-
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
-
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
-        usuario.setNomeCompleto("Lucas");
-        usuario.setDocumento("123");
-        usuario.setUnidadeSaude(unidade);
-
-        Page<Usuario> page =
-                new PageImpl<>(List.of(usuario));
-
-        when(usuarioRepository.findFiltrados("Lucas", pageable))
-                .thenReturn(page);
-
-        Page<UsuarioResponseDTO> resultado =
-                usuarioService.listarTodosFiltrados("Lucas", pageable);
-
-        assertEquals(1, resultado.getTotalElements());
-        assertEquals("Lucas",
-                resultado.getContent().get(0).getNomeCompleto());
-    }
-
-    @Test
-    void deveListarUsuariosFiltradosPorUnidade() {
-
-        Pageable pageable = PageRequest.of(0, 10);
-
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
-
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
-        usuario.setNomeCompleto("Lucas");
-        usuario.setDocumento("123");
-        usuario.setUnidadeSaude(unidade);
-
-        Page<Usuario> page =
-                new PageImpl<>(List.of(usuario));
-
-        when(usuarioRepository.findFiltradosByUnidade(
-                1L,
-                "Lucas",
-                pageable))
-                .thenReturn(page);
-
-        Page<UsuarioResponseDTO> resultado =
-                usuarioService.listarTodosPorUnidadeFiltrados(
-                        1L,
-                        "Lucas",
-                        pageable);
-
-        assertEquals(1, resultado.getTotalElements());
-        assertEquals("Lucas",
-                resultado.getContent().get(0).getNomeCompleto());
-    }
-
-    @Test
-    void deveListarUsuariosPorUnidadeSolicitanteFiltrados() {
-
-        Long unidadeId = 1L;
-        String filtro = "joao";
-        Pageable pageable = PageRequest.of(0, 10);
-
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
-
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
-        usuario.setNomeCompleto("João");
-        usuario.setUnidadeSaude(unidade);
-        usuario.setUnidadeSolicitante(unidade);
-
-        Page<Usuario> page = new PageImpl<>(List.of(usuario));
-
-        when(usuarioRepository.findFiltradosByUnidadeSolicitante(
-                unidadeId,
-                filtro,
-                pageable
-        )).thenReturn(page);
-
-        Page<UsuarioResponseDTO> resultado =
-                usuarioService.listarTodosPorUnidadeSolicitanteFiltrados(
-                        unidadeId,
-                        filtro,
-                        pageable
-                );
-
-        assertEquals(1, resultado.getContent().size());
-
-        verify(usuarioRepository)
-                .findFiltradosByUnidadeSolicitante(
-                        unidadeId,
-                        filtro,
-                        pageable
-                );
-    }
-
-    @Test
     void deveDefinirUnidadeSolicitanteQuandoServidorForSolicitante() {
 
         UnidadeSaude unidadeSolicitante = new UnidadeSaude();
@@ -769,43 +638,5 @@ class UsuarioServiceTest {
                 "Hospital Conceição",
                 dto.getUnidadeSolicitanteNome()
         );
-    }
-
-    @Test
-    void deveListarUsuariosPorUnidadeSolicitante() {
-
-        Long unidadeId = 1L;
-        Pageable pageable = PageRequest.of(0, 10);
-
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
-
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
-        usuario.setNomeCompleto("João");
-        usuario.setUnidadeSaude(unidade);
-        usuario.setUnidadeSolicitante(unidade);
-
-        Page<Usuario> page = new PageImpl<>(List.of(usuario));
-
-        when(usuarioRepository.findByUnidadeSolicitanteIdOrderByNomeCompletoAsc(
-                unidadeId,
-                pageable
-        )).thenReturn(page);
-
-        Page<UsuarioResponseDTO> resultado =
-                usuarioService.listarTodosPorUnidadeSolicitante(
-                        unidadeId,
-                        pageable
-                );
-
-        assertEquals(1, resultado.getContent().size());
-
-        verify(usuarioRepository)
-                .findByUnidadeSolicitanteIdOrderByNomeCompletoAsc(
-                        unidadeId,
-                        pageable
-                );
     }
 }

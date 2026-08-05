@@ -116,35 +116,6 @@ class UnidadeSaudeControllerTest {
         verify(unidadeSaudeService).deletar(1L);
     }
 
-
-    @Test
-    void deveListarUnidadesPaginadas() throws Exception {
-
-        Page<UnidadeSaudeResponseDTO> page = new PageImpl<>(List.of());
-
-        when(unidadeSaudeService.listarTodos(any()))
-                .thenReturn(page);
-
-        mockMvc.perform(get("/unidades-saude")
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarUnidadesComFiltro() throws Exception {
-
-        Page<UnidadeSaudeResponseDTO> page = new PageImpl<>(List.of());
-
-        when(unidadeSaudeService.listarTodosFiltrados(anyString(), any()))
-                .thenReturn(page);
-
-        mockMvc.perform(get("/unidades-saude/filtradas/ubs")
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk());
-    }
-
     /*@Test
     void deveListarTodos() throws Exception {
 

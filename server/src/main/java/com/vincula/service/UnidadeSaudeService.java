@@ -1,10 +1,7 @@
 package com.vincula.service;
 
-import com.vincula.dto.unidadeSaude.UnidadesResponseDTO;
+import com.vincula.dto.unidadeSaude.*;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
-import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
-import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
-import com.vincula.dto.unidadeSaude.UnidadeSaudeShortResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Usuario;
 import com.vincula.entity.UnidadeSaude;
@@ -13,10 +10,14 @@ import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.specification.ServicoSpecification;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -43,11 +44,6 @@ public class UnidadeSaudeService {
         return toDTO(salvo);
     }
 
-    public Page<UnidadeSaudeResponseDTO> listarTodos(Pageable pageable) {
-        return unidadeSaudeRepository.findAllByOrderByNomeAsc(pageable)
-                .map(this::toDTO);
-    }
-
     public List<UnidadeSaudeShortResponseDTO> listarTodosPorServico(TipoServico tipoServico) {
         return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(tipoServico)
                 .stream()
@@ -62,6 +58,29 @@ public class UnidadeSaudeService {
                 .toList();
     }
 
+    public Page<UnidadeSaudeResponseDTO> listarTodosFiltrados(
+            FiltroServicoRequestDTO filtro,
+            Pageable pageable) {
+
+        Specification<UnidadeSaude> specification =
+                ServicoSpecification.comFiltros(filtro);
+
+        Pageable pageableOrdenado = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("nome")
+        );
+
+        return unidadeSaudeRepository.findAll(specification, pageableOrdenado)
+                .map(this::toDTO);
+    }
+
+    public List<UnidadeSaudeShortResponseDTO> listarTodosFiltradosPorNome(String nome) {
+        return unidadeSaudeRepository.findTop10ByNomeContainingIgnoreCaseOrderByNome(nome)
+                .stream()
+                .map(this::toShortDTO)
+                .toList();
+    }
 
     public UnidadesResponseDTO listarUnidades() {
 
@@ -77,18 +96,6 @@ public class UnidadeSaudeService {
                 .toList();
 
         return new UnidadesResponseDTO(ubs, especializadas);
-    }
-
-    public Page<UnidadeSaudeResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
-        return unidadeSaudeRepository.buscarFiltradas(filtro, pageable)
-                .map(this::toDTO);
-    }
-
-    public List<UsuarioResponseDTO> listarUsuariosPorUnidade(Long unidadeSaudeId) {
-        return unidadeSaudeRepository.findUsuariosByUnidadeSaudeId(unidadeSaudeId)
-                .stream()
-                .map(this::toUsuarioDTO)
-                .toList();
     }
 
     public UnidadeSaudeResponseDTO buscarPorId(Long id) {

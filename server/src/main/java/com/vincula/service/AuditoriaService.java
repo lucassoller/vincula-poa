@@ -69,11 +69,6 @@ public class AuditoriaService {
         auditoriaRepository.save(log);
     }
 
-    public Page<AuditoriaDTO> listarTodos(Pageable pageable) {
-        return auditoriaRepository.findAllByOrderByDataHoraDesc(pageable)
-                .map(this::toDTO);
-    }
-
     public Page<AuditoriaDTO> listarTodosFiltrados(
             FiltroAuditoriaRequestDTO filtro,
             Pageable pageable) {
@@ -88,24 +83,6 @@ public class AuditoriaService {
         );
 
         return auditoriaRepository.findAll(specification, pageableOrdenado)
-                .map(this::toDTO);
-    }
-
-    public Page<AuditoriaDTO> listarPorServidor(Long servidorId, Pageable pageable) {
-        return auditoriaRepository.findByServidorIdOrderByDataHoraDesc(servidorId, pageable)
-                .map(this::toDTO);
-    }
-
-    public Page<AuditoriaDTO> listarPorPeriodo(LocalDateTime inicio, LocalDateTime fim, Pageable pageable) {
-        return auditoriaRepository.findByDataHoraBetweenOrderByDataHoraDesc(inicio, fim, pageable)
-                .map(this::toDTO);
-    }
-
-    public Page<AuditoriaDTO> listarPorServidorEPeriodo(Long servidorId,
-                                                       LocalDateTime inicio,
-                                                       LocalDateTime fim,
-                                                       Pageable pageable) {
-        return auditoriaRepository.findByServidorIdAndDataHoraBetweenOrderByDataHoraDesc(servidorId, inicio, fim, pageable)
                 .map(this::toDTO);
     }
 

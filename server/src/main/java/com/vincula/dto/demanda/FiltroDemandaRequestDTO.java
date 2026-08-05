@@ -2,12 +2,13 @@ package com.vincula.dto.demanda;
 
 import com.vincula.enums.*;
 import lombok.Data;
-
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
 public class FiltroDemandaRequestDTO {
+
+    private String nomeCompleto;
 
     private List<StatusDemanda> status;
 

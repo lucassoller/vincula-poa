@@ -89,21 +89,6 @@ public class UsuarioService {
                 .toList();
     }
 
-    public Page<UsuarioResponseDTO> listarTodosPorUnidade(Long unidadeSaudeId, Pageable pageable) {
-        return usuarioRepository.findByUnidadeSaudeIdOrderByNomeCompletoAsc(unidadeSaudeId, pageable)
-                .map(this::toDTO);
-    }
-
-    public Page<UsuarioResponseDTO> listarTodosPorUnidadeSolicitante(Long unidadeSaudeId, Pageable pageable) {
-        return usuarioRepository.findByUnidadeSolicitanteIdOrderByNomeCompletoAsc(unidadeSaudeId, pageable)
-                .map(this::toDTO);
-    }
-
-    public Page<UsuarioResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
-        return usuarioRepository.findFiltrados(filtro, pageable)
-                .map(this::toDTO);
-    }
-
     public List<UsuarioShortResponseDTO> listarTodosFiltradosPorNomeOuDocumento(String filtro) {
         return usuarioRepository.buscarPorNomeOuDocumento(filtro)
                 .stream()
@@ -116,17 +101,6 @@ public class UsuarioService {
                 .stream()
                 .map(this::toShortDTO)
                 .toList();
-    }
-
-
-    public Page<UsuarioResponseDTO> listarTodosPorUnidadeFiltrados(Long unidadeSaudeId, String filtro, Pageable pageable) {
-        return usuarioRepository.findFiltradosByUnidade(unidadeSaudeId, filtro, pageable)
-                .map(this::toDTO);
-    }
-
-    public Page<UsuarioResponseDTO> listarTodosPorUnidadeSolicitanteFiltrados(Long unidadeSaudeId, String filtro, Pageable pageable) {
-        return usuarioRepository.findFiltradosByUnidadeSolicitante(unidadeSaudeId, filtro, pageable)
-                .map(this::toDTO);
     }
 
     public UsuarioResponseDTO buscarPorId(Long id) {

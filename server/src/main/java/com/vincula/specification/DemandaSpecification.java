@@ -19,6 +19,10 @@ public class DemandaSpecification {
         Specification<Demanda> spec =
                 Specification.where((root, query, cb) -> cb.conjunction());
 
+        if (filtro.getNomeCompleto() != null && !filtro.getNomeCompleto().isBlank()) {
+            spec = spec.and(nomeCompleto(filtro.getNomeCompleto()));
+        }
+
         if (filtro.getStatus() != null && !filtro.getStatus().isEmpty()) {
             spec = spec.and(status(filtro.getStatus()));
         }
@@ -64,6 +68,15 @@ public class DemandaSpecification {
         }
 
         return spec;
+    }
+
+    private static Specification<Demanda> nomeCompleto(String nome) {
+
+        return (root, query, cb) ->
+                cb.like(
+                        cb.lower(root.get("usuario").get("nomeCompleto")),
+                        "%" + nome.toLowerCase() + "%"
+                );
     }
 
     private static Specification<Demanda> status(List<StatusDemanda> status) {
