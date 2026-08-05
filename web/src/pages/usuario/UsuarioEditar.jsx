@@ -5,7 +5,7 @@ import EnderecoForm from "../../components/EnderecoForm.jsx";
 import "../../styles/usuarioCadastro.css";
 import { useForm } from "react-hook-form";
 
-import ModalRedirecionarDemandas from "../../components/ModalRedirecionarDemandas.jsx";
+import ModalRedirecionarDemandas from "../../components/Modal/ModalRedirecionarDemandas.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {perfilLabel} from "../../utils/utils.js";
 

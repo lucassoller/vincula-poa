@@ -72,6 +72,13 @@ public class ServidorService {
                 .map(this::toDTO);
     }
 
+    public List<ServidorShortResponseDTO> listarTodosFiltradosPorNome(String nome) {
+        return servidorRepository.findTop10ByNomeContainingIgnoreCaseOrderByNome(nome)
+                .stream()
+                .map(this::toShortDTO)
+                .toList();
+    }
+
     public ServidorResponseDTO buscarPorId(Long id) {
         Servidor entity = buscarServidorPorId(id);
         return toDTO(entity);

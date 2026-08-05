@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import CampoDetalhe from "./CampoDetalhe.jsx";
-import { mascaraDocumento, mascaraTelefone } from "../utils/mascaras";
-import { sexoLabel } from "../utils/utils.js";
+import CampoDetalhe from "../CampoDetalhe.jsx";
+import { mascaraDocumento, mascaraTelefone } from "../../utils/mascaras.js";
+import { sexoLabel } from "../../utils/utils.js";
 
 function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
     const navigate = useNavigate();

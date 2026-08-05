@@ -3,9 +3,9 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import api from "../../api/api.js";
 import "../../styles/usuarios.css";
 import { useNavigate } from "react-router-dom";
-import ModalUbs from "../../components/ModalUbs.jsx";
+import ModalUbs from "../../components/Modal/ModalUbs.jsx";
 import Pagination from "../../components/Paginations.jsx";
-import ModalTransferirServidor from "../../components/ModalTransferirServidor.jsx";
+import ModalTransferirServidor from "../../components/Modal/ModalTransferirServidor.jsx";
 import {perfilLabel} from "../../utils/utils.js";
 
 function Servidores() {

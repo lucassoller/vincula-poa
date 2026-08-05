@@ -1,6 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.auditoria.AuditoriaDTO;
+import com.vincula.dto.auditoria.FiltroAuditoriaRequestDTO;
 import com.vincula.service.AuditoriaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,5 +49,13 @@ public class AuditoriaController {
             Pageable pageable
     ) {
         return ResponseEntity.ok(auditoriaService.listarPorServidorEPeriodo(servidorId, inicio, fim, pageable));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/filtrados")
+    public ResponseEntity<Page<AuditoriaDTO>> listarTodosFiltrados(
+            @RequestBody FiltroAuditoriaRequestDTO filtro,
+            Pageable pageable) {
+        return ResponseEntity.ok(auditoriaService.listarTodosFiltrados(filtro, pageable));
     }
 }

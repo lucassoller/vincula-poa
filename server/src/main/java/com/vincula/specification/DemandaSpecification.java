@@ -68,27 +68,15 @@ public class DemandaSpecification {
 
     private static Specification<Demanda> status(List<StatusDemanda> status) {
 
-        if (status == null || status.isEmpty()) {
-            return null;
-        }
-
         return (root, query, cb) -> root.get("status").in(status);
     }
 
     private static Specification<Demanda> prioridade(List<Prioridade> prioridades) {
 
-        if (prioridades == null || prioridades.isEmpty()) {
-            return null;
-        }
-
         return (root, query, cb) -> root.get("prioridade").in(prioridades);
     }
 
     private static Specification<Demanda> motivo(MotivoBuscaAtiva motivo) {
-
-        if (motivo == null) {
-            return null;
-        }
 
         return (root, query, cb) ->
                 cb.equal(root.get("motivoBuscaAtiva"), motivo);
@@ -96,29 +84,17 @@ public class DemandaSpecification {
 
     private static Specification<Demanda> complemento(MotivoComplemento complemento) {
 
-        if (complemento == null) {
-            return null;
-        }
-
         return (root, query, cb) ->
                 cb.equal(root.get("motivoComplemento"), complemento);
     }
 
     public static Specification<Demanda> unidadeResponsavel(Long unidadeId) {
 
-        if (unidadeId == null) {
-            return null;
-        }
-
         return (root, query, cb) ->
                 cb.equal(root.get("unidadeResponsavel").get("id"), unidadeId);
     }
 
     public static Specification<Demanda> unidadeSolicitante(Long unidadeId) {
-
-        if (unidadeId == null) {
-            return null;
-        }
 
         return (root, query, cb) -> {
             if (unidadeId == -1L) {
@@ -131,20 +107,12 @@ public class DemandaSpecification {
 
     public static Specification<Demanda> usuario(Long usuarioId) {
 
-        if (usuarioId == null) {
-            return null;
-        }
-
         return (root, query, cb) ->
                 cb.equal(root.get("usuario").get("id"), usuarioId);
     }
 
     private static Specification<Demanda> dataAbertura(LocalDate inicio,
                                                        LocalDate fim) {
-
-        if (inicio == null && fim == null) {
-            return null;
-        }
 
         return (root, query, cb) -> {
 
@@ -175,10 +143,6 @@ public class DemandaSpecification {
     private static Specification<Demanda> dataEncerramento(LocalDate inicio,
                                                        LocalDate fim) {
 
-        if (inicio == null && fim == null) {
-            return null;
-        }
-
         return (root, query, cb) -> {
 
             Path<LocalDateTime> data = root.get("dataHoraEncerramento");
@@ -206,10 +170,6 @@ public class DemandaSpecification {
     }
 
     private static Specification<Demanda> tempo(List<PrazoAtual> tempos) {
-
-        if (tempos == null || tempos.isEmpty()) {
-            return null;
-        }
 
         return (root, query, cb) -> {
 

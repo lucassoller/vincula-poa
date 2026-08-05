@@ -1,4 +1,4 @@
-import "../styles/modalFiltrosDemanda.css";
+import "../../styles/modalFiltrosDemanda.css";
 import {useEffect, useRef} from "react";
 
 function ModalFiltrosUsuario({

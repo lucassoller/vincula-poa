@@ -4,11 +4,11 @@ import api from "../../api/api.js";
 import "../../styles/usuarios.css";
 import { useNavigate } from "react-router-dom";
 import {mascaraDocumento, mascaraTelefone} from "../../utils/mascaras.js";
-import ModalUbs from "../../components/ModalUbs.jsx";
+import ModalUbs from "../../components/Modal/ModalUbs.jsx";
 import Pagination from "../../components/Paginations.jsx";
-import ModalUsuario from "../../components/ModalUsuario.jsx";
+import ModalUsuario from "../../components/Modal/ModalUsuario.jsx";
 import {perfilLabel} from "../../utils/utils.js";
-import ModalFiltrosUsuario from "../../components/ModalFiltrosUsuario.jsx";
+import ModalFiltrosUsuario from "../../components/Modal/ModalFiltrosUsuario.jsx";
 
 function Usuarios() {
     const navigate = useNavigate();

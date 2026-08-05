@@ -1,4 +1,4 @@
-import CampoDetalhe from "./CampoDetalhe";
+import CampoDetalhe from "../CampoDetalhe.jsx";
 import {
     desfechoLabel,
     formatarDataHora,
@@ -9,7 +9,7 @@ import {
     prioridadeLabel,
     tentativaContatoLabel,
     diasRestantes
-} from "../utils/utils.js";
+} from "../../utils/utils.js";
 
 function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
     return (

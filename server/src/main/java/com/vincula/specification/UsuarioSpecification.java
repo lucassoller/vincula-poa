@@ -98,29 +98,17 @@ public class UsuarioSpecification {
 
     public static Specification<Usuario> unidadeSaude(Long unidadeId) {
 
-        if (unidadeId == null) {
-            return null;
-        }
-
         return (root, query, cb) ->
                 cb.equal(root.get("unidadeSaude").get("id"), unidadeId);
     }
 
     public static Specification<Usuario> unidadeSolicitante(Long unidadeId) {
 
-        if (unidadeId == null) {
-            return null;
-        }
-
         return (root, query, cb) ->
                 cb.equal(root.get("unidadeSolicitante").get("id"), unidadeId);
     }
 
     public static Specification<Usuario> id(Long id) {
-
-        if (id == null) {
-            return null;
-        }
 
         return (root, query, cb) ->
                 cb.equal(root.get("id"), id);

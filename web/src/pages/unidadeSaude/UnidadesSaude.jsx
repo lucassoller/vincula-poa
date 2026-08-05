@@ -5,7 +5,7 @@ import "../../styles/usuarios.css";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Paginations.jsx";
 import { mascaraTelefone } from "../../utils/mascaras.js";
-import ModalUbs from "../../components/ModalUbs.jsx";
+import ModalUbs from "../../components/Modal/ModalUbs.jsx";
 import {perfilLabel, tipoServico} from "../../utils/utils.js";
 
 function UnidadesSaude() {

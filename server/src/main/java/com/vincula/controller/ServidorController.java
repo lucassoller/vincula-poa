@@ -56,6 +56,12 @@ public class ServidorController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/filtrados/buscas")
+    public ResponseEntity<List<ServidorShortResponseDTO>> listarTodosFiltradosPorNome(@RequestParam String nome) {
+        return ResponseEntity.ok(servidorService.listarTodosFiltradosPorNome(nome));
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<ServidorResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(servidorService.buscarPorId(id));

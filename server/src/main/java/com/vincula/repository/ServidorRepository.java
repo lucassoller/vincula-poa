@@ -32,6 +32,8 @@ public interface ServidorRepository extends JpaRepository<Servidor, Long> {
 
     Page<Servidor> findByPerfilOrderByNomeAsc(PerfilServidor perfil, Pageable pageable);
 
+    List<Servidor> findTop10ByNomeContainingIgnoreCaseOrderByNome(String nome);
+
     boolean existsByEmail(String email);
 
     boolean existsByLogin(String login);

@@ -10,14 +10,14 @@ import {
     motivoBuscaLabel,
     perfilLabel
 } from "../../utils/utils.js";
-import ModalTentativaContato from "../../components/ModalTentativaContato.jsx";
-import ModalRedirecionarDemanda from "../../components/ModalRedirecionarDemanda.jsx";
-import ModalEncerrarDemanda from "../../components/ModalEncerrarDemanda.jsx";
-import ModalDetalhesDemanda from "../../components/ModalDetalhesDemanda.jsx";
+import ModalTentativaContato from "../../components/Modal/ModalTentativaContato.jsx";
+import ModalRedirecionarDemanda from "../../components/Modal/ModalRedirecionarDemanda.jsx";
+import ModalEncerrarDemanda from "../../components/Modal/ModalEncerrarDemanda.jsx";
+import ModalDetalhesDemanda from "../../components/Modal/ModalDetalhesDemanda.jsx";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Paginations.jsx";
-import ModalUbs from "../../components/ModalUbs.jsx";
-import ModalFiltrosDemanda from "../../components/ModalFiltrosDemanda.jsx";
+import ModalUbs from "../../components/Modal/ModalUbs.jsx";
+import ModalFiltrosDemanda from "../../components/Modal/ModalFiltrosDemanda.jsx";
 
 function Demandas() {
     const navigate = useNavigate();

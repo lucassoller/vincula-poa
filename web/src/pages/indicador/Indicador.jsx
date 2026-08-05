@@ -9,7 +9,7 @@ import SecaoCardsInterna from "../../components/SecaoCardsInterna.jsx";
 import ChartCard from "../../components/ChartCard.jsx";
 import SecaoCards from "../../components/SecaoCards.jsx";
 import {perfilLabel} from "../../utils/utils.js";
-import ModalFiltrosIndicador from "../../components/ModalFiltrosIndicador.jsx";
+import ModalFiltrosIndicador from "../../components/Modal/ModalFiltrosIndicador.jsx";
 
 function Indicador() {
     const { servidor } = useAuth();

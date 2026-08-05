@@ -1,14 +1,19 @@
 package com.vincula.service;
 
 import com.vincula.dto.auditoria.AuditoriaDTO;
+import com.vincula.dto.auditoria.FiltroAuditoriaRequestDTO;
 import com.vincula.entity.Auditoria;
 import com.vincula.entity.Servidor;
 import com.vincula.enums.TipoAcaoAuditoria;
 import com.vincula.repository.AuditoriaRepository;
 import com.vincula.repository.ServidorRepository;
+import com.vincula.specification.AuditoriaSpecification;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -66,6 +71,23 @@ public class AuditoriaService {
 
     public Page<AuditoriaDTO> listarTodos(Pageable pageable) {
         return auditoriaRepository.findAllByOrderByDataHoraDesc(pageable)
+                .map(this::toDTO);
+    }
+
+    public Page<AuditoriaDTO> listarTodosFiltrados(
+            FiltroAuditoriaRequestDTO filtro,
+            Pageable pageable) {
+
+        Specification<Auditoria> specification =
+                AuditoriaSpecification.comFiltros(filtro);
+
+        Pageable pageableOrdenado = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("dataHora").descending()
+        );
+
+        return auditoriaRepository.findAll(specification, pageableOrdenado)
                 .map(this::toDTO);
     }
 

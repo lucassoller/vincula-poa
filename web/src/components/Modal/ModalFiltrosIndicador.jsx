@@ -1,4 +1,4 @@
-import "../styles/modalFiltrosDemanda.css";
+import "../../styles/modalFiltrosDemanda.css";
 
 function ModalFiltrosIndicador({
                                  aberto,

@@ -85,6 +85,17 @@
     box-sizing: border-box;
 }
 
+.grupo-filtro input[type="datetime-local"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d7d7d7;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+
 .footer-filtros {
     display: flex;
     justify-content: flex-end;
