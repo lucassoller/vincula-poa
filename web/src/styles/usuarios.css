@@ -354,3 +354,10 @@
     color: #334155;
     font-weight: 700;
 }
+
+.acoes-container-usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}

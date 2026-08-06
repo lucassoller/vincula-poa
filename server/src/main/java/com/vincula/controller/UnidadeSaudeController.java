@@ -1,7 +1,6 @@
 package com.vincula.controller;
 
 import com.vincula.dto.unidadeSaude.*;
-import com.vincula.enums.TipoServico;
 import com.vincula.service.UnidadeSaudeService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

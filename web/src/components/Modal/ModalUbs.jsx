@@ -81,7 +81,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                 {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                     <div className="ubs-actions">
                         <span
-                            className="btn-editar"
+                            className="btn-visualizar"
                             onClick={() =>
                                 navigate(`/unidades-saude/${ubsSelecionada.id}/editar`)
                             }

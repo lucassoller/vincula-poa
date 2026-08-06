@@ -1,10 +1,8 @@
 package com.vincula.controller;
 
-import com.vincula.dto.demanda.FiltroDemandaRequestDTO;
 import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.IndicadorDTO;
 import com.vincula.service.indicador.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

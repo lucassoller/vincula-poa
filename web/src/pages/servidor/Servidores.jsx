@@ -314,7 +314,7 @@ function Servidores() {
                                     <td>
                                         {(s.perfil === "SOLICITANTE" || s.perfil === "SERVIDOR_APS") && (
                                             <span
-                                                className="btn-editar"
+                                                className="btn-visualizar"
                                                 onClick={() => abrirCardTransferencia(s)}
                                             >
                                                 Transferir

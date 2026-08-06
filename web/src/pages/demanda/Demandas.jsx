@@ -14,7 +14,7 @@ import ModalTentativaContato from "../../components/Modal/ModalTentativaContato.
 import ModalRedirecionarDemanda from "../../components/Modal/ModalRedirecionarDemanda.jsx";
 import ModalEncerrarDemanda from "../../components/Modal/ModalEncerrarDemanda.jsx";
 import ModalDetalhesDemanda from "../../components/Modal/ModalDetalhesDemanda.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Pagination from "../../components/Paginations.jsx";
 import ModalUbs from "../../components/Modal/ModalUbs.jsx";
 import ModalFiltrosDemanda from "../../components/Modal/ModalFiltrosDemanda.jsx";
@@ -42,6 +42,7 @@ function Demandas() {
     const tamanhoPagina = 10;
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
     const [motivos, setMotivos] = useState([]);
+    const location = useLocation();
 
     const [filtros, setFiltros] = useState({
         status: [],
@@ -50,8 +51,8 @@ function Demandas() {
         unidade: "",
         servico: "",
         motivo: "",
-        usuarioId: "",
-        nomeCompleto: "",
+        usuarioId:  location.state?.usuarioId ?? "",
+        nomeCompleto:  location.state?.nomeCompleto ?? "",
         complemento: "",
         dataAbInicial: "",
         dataAbFinal: "",
@@ -547,14 +548,14 @@ function Demandas() {
                                         {d.status !== "FINALIZADA" && servidor?.perfil !== "SOLICITANTE" && (
                                             <>
                                                 <span
-                                                    className="btn-tentativa"
+                                                    className="btn-visualizar"
                                                     onClick={() => abrirAcao(d, "TENTATIVA")}
                                                 >
                                                     Tentativa contato
                                                 </span>
 
                                                 <span
-                                                    className="btn-editar"
+                                                    className="btn-visualizar"
                                                     onClick={() => abrirAcao(d, "REDIRECIONAR")}
                                                 >
                                                     Redirecionar

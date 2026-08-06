@@ -236,18 +236,39 @@ function Usuarios() {
                                     </span>
                                 </td>
                                 <td>
-                                    <div className="acoes-container">
+                                    <div className="acoes-container-usuario">
                                         <span
                                             className="btn-visualizar"
                                             onClick={() => setUsuarioSelecionado(usuario)}
                                         >
-                                            Visualizar
+                                            Ver mais
                                         </span>
                                         <span
-                                            className="btn-editar"
+                                            className="btn-visualizar"
                                             onClick={() => navigate(`/usuarios/${usuario.id}/editar`)}
                                         >
                                             Editar
+                                        </span>
+                                        <span
+                                            className="btn-visualizar"
+                                            onClick={() => navigate("/demandas", {
+                                                state: {
+                                                    usuarioId: usuario.id,
+                                                    nomeCompleto: usuario.nomeCompleto
+                                                }
+                                            })}
+                                        >
+                                            Demandas
+                                        </span>
+                                        <span
+                                            className="btn-visualizar"
+                                            onClick={() => navigate("/demandas/cadastro" ,{
+                                                state: {
+                                                    usuarioId: usuario.id,
+                                                }
+                                            })}
+                                        >
+                                            Nova demanda
                                         </span>
                                     </div>
                                 </td>

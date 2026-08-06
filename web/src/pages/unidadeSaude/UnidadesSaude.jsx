@@ -197,7 +197,7 @@ function UnidadesSaude() {
                                         </span>
                                         {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                                             <span
-                                                className="btn-editar"
+                                                className="btn-visualizar"
                                                 onClick={() =>
                                                     navigate(`/unidades-saude/${servico.id}/editar`)
                                                 }

@@ -37,12 +37,9 @@ function ServidorCadastro() {
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                const [ubsReponse, servicosResponse] = await Promisse.all( [
-                    api.get("/unidades-saude/ubs"),
-                    api.get("/unidades-saude/outros")
-                ]);
-                setUnidades(ubsReponse.data);
-                setServicos(servicosResponse.data);
+                const response = await api.get("/unidades-saude/all")
+                setUnidades(response.data.ubs);
+                setServicos(response.data.servicos);
             } catch {
                 setMensagem("Erro ao carregar serviços");
                 setMensagemSucesso("")

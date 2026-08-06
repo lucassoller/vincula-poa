@@ -116,6 +116,16 @@ function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
                         />
                     </div>
                 </div>
+                <div className="ubs-actions">
+                    <span
+                        className="btn-visualizar"
+                        onClick={() =>
+                            navigate(`/usuarios/${usuarioSelecionado.id}/editar`)
+                        }
+                    >
+                        Editar usuário
+                    </span>
+                </div>
             </div>
         </div>
     );

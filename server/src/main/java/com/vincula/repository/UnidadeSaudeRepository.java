@@ -19,8 +19,6 @@ public interface UnidadeSaudeRepository extends JpaRepository<UnidadeSaude, Long
 
     List<UnidadeSaude> findAllByTipoServicoOrderByNomeAsc(TipoServico tipoServico);
 
-    List<UnidadeSaude> findAllByTipoServicoNotOrderByNomeAsc(TipoServico tipoServico);
-
     boolean existsByCnes(String cnes);
 
     boolean existsByCnesAndIdNot(String cnes, Long id);
