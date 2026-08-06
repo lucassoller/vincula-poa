@@ -9,28 +9,18 @@ import java.util.List;
 public class FiltroDemandaRequestDTO {
 
     private String nomeCompleto;
-
     private List<StatusDemanda> status;
-
     private List<Prioridade> prioridade;
-
     private List<PrazoAtual> tempo;
-
     private MotivoBuscaAtiva motivo;
-
     private MotivoComplemento complemento;
 
     private Long unidadeResponsavelId;
-
     private Long unidadeSolicitanteId;
-
     private Long usuarioId;
 
     private LocalDate dataAbInicial;
-
     private LocalDate dataAbFinal;
-
     private LocalDate dataEnInicial;
-
     private LocalDate dataEnFinal;
 }

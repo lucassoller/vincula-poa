@@ -496,67 +496,6 @@ class ServidorServiceTest {
     }
 
     @Test
-    void deveListarTodosPaginado() {
-
-        Servidor servidor = new Servidor();
-        servidor.setId(1L);
-
-        Page<Servidor> page =
-                new PageImpl<>(List.of(servidor));
-
-        when(servidorRepository.findAllByOrderByNomeAsc(any()))
-                .thenReturn(page);
-
-        Page<ServidorResponseDTO> resultado =
-                servidorService.listarTodos(PageRequest.of(0,10));
-
-        assertEquals(1, resultado.getContent().size());
-    }
-
-    @Test
-    void deveListarTodosShort() {
-
-        Servidor servidor = new Servidor();
-        servidor.setId(1L);
-        servidor.setNome("Lucas");
-        servidor.setEmail("lucas@email.com");
-
-        when(servidorRepository.findAllByOrderByNomeAsc())
-                .thenReturn(List.of(servidor));
-
-        List<ServidorShortResponseDTO> lista =
-                servidorService.listarTodos();
-
-        assertEquals(1, lista.size());
-
-        assertEquals(1L, lista.get(0).getId());
-        assertEquals("Lucas", lista.get(0).getNome());
-        assertEquals("lucas@email.com", lista.get(0).getEmail());
-    }
-
-    @Test
-    void deveListarPorPerfil() {
-
-        Servidor servidor = new Servidor();
-        servidor.setId(1L);
-
-        Page<Servidor> page =
-                new PageImpl<>(List.of(servidor));
-
-        when(servidorRepository.findByPerfilOrderByNomeAsc(
-                eq(PerfilServidor.SERVIDOR_APS),
-                any(Pageable.class)))
-                .thenReturn(page);
-
-        Page<ServidorResponseDTO> resultado =
-                servidorService.listarTodosPorPerfil(
-                        PerfilServidor.SERVIDOR_APS,
-                        PageRequest.of(0,10));
-
-        assertEquals(1, resultado.getContent().size());
-    }
-
-    @Test
     void deveAtualizarServidorComSenha() {
 
         Servidor servidor = new Servidor();
@@ -888,38 +827,6 @@ class ServidorServiceTest {
                     () -> servidorService.atualizarMeuPerfil(dto)
             );
         }
-    }
-
-    @Test
-    void deveListarServidoresFiltrados() {
-
-        String filtro = "joao";
-        Pageable pageable = PageRequest.of(0, 10);
-
-        Servidor servidor = new Servidor();
-        servidor.setId(1L);
-        servidor.setNome("João");
-
-        Page<Servidor> page = new PageImpl<>(List.of(servidor));
-
-        when(servidorRepository.findFiltrados(
-                filtro,
-                pageable
-        )).thenReturn(page);
-
-        Page<ServidorResponseDTO> resultado =
-                servidorService.listarTodosFiltrados(
-                        filtro,
-                        pageable
-                );
-
-        assertEquals(1, resultado.getContent().size());
-
-        verify(servidorRepository)
-                .findFiltrados(
-                        filtro,
-                        pageable
-                );
     }
 
     @Test

@@ -83,16 +83,6 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void deveListarUsuarios() throws Exception {
-
-        when(usuarioService.listarTodos(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/usuarios"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void deveListarTodosShort() throws Exception {
 
         when(usuarioService.listarTodos())

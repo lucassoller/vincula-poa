@@ -60,11 +60,6 @@ public class UsuarioService {
         return toDTO(salvo);
     }
 
-    public Page<UsuarioResponseDTO> listarTodos(Pageable pageable) {
-        return usuarioRepository.findAllByOrderByNomeCompletoAsc(pageable)
-                .map(this::toDTO);
-    }
-
     public Page<UsuarioResponseDTO> listarTodosFiltrados(
             FiltroUsuarioRequestDTO filtro,
             Pageable pageable) {

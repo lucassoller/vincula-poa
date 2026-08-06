@@ -2,7 +2,6 @@ package com.vincula.controller;
 
 import com.vincula.dto.senha.MudancaSenhaDTO;
 import com.vincula.dto.servidor.*;
-import com.vincula.enums.PerfilServidor;
 import com.vincula.service.ServidorService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -31,28 +30,12 @@ public class ServidorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
-    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
-    @GetMapping
-    public ResponseEntity<Page<ServidorResponseDTO>> listarTodos(Pageable pageable) {
-        return ResponseEntity.ok(servidorService.listarTodos(pageable));
-    }
-
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/filtrados/{filtro}")
-    public ResponseEntity<Page<ServidorResponseDTO>> listarTodosFiltrados(@PathVariable String filtro, Pageable pageable) {
+    @PostMapping("/filtrados")
+    public ResponseEntity<Page<ServidorResponseDTO>> listarTodosFiltradas(
+            @RequestBody FiltroServidorRequestDTO filtro,
+            Pageable pageable) {
         return ResponseEntity.ok(servidorService.listarTodosFiltrados(filtro, pageable));
-    }
-
-    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
-    @GetMapping("/perfil/{perfil}")
-    public ResponseEntity<Page<ServidorResponseDTO>> listarTodos(@PathVariable PerfilServidor perfil, Pageable pageable) {
-        return ResponseEntity.ok(servidorService.listarTodosPorPerfil(perfil, pageable));
-    }
-
-    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
-    @GetMapping("/all")
-    public ResponseEntity<List<ServidorShortResponseDTO>> listarTodos() {
-        return ResponseEntity.ok(servidorService.listarTodos());
     }
 
     @PreAuthorize("isAuthenticated()")

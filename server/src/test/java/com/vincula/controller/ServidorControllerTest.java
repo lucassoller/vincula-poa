@@ -74,48 +74,6 @@ class ServidorControllerTest {
     }
 
     @Test
-    void deveListarTodos() throws Exception {
-
-        when(servidorService.listarTodos(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/servidores"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarFiltrados() throws Exception {
-
-        when(servidorService.listarTodosFiltrados(eq("teste"), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/servidores/filtrados/teste"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarPorPerfil() throws Exception {
-
-        when(servidorService.listarTodosPorPerfil(any(), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/servidores/perfil/GESTAO_MUNICIPAL")
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarAll() throws Exception {
-
-        when(servidorService.listarTodos())
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/servidores/all"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void deveBuscarPorId() throws Exception {
 
         when(servidorService.buscarPorId(1L))

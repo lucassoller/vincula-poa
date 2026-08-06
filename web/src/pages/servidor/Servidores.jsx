@@ -7,11 +7,13 @@ import ModalUbs from "../../components/Modal/ModalUbs.jsx";
 import Pagination from "../../components/Paginations.jsx";
 import ModalTransferirServidor from "../../components/Modal/ModalTransferirServidor.jsx";
 import {perfilLabel} from "../../utils/utils.js";
+import ModalFiltrosServidor from "../../components/Modal/ModalFiltrosServidor.jsx";
 
 function Servidores() {
     const navigate = useNavigate();
     const { servidor } = useAuth();
     const [servidores, setServidores] = useState([]);
+    const [servidoresBusca, setServidoresBusca] = useState([]);
     const [mensagem, setMensagem] = useState("");
     const [mensagemErro, setMensagemErro] = useState("");
     const [mensagemSucesso, setMensagemSucesso] = useState("");
@@ -19,13 +21,13 @@ function Servidores() {
     const [ubsSelecionada, setUbsSelecionada] = useState(null);
     const [servidorSelecionado, setServidorSelecionado] = useState(null);
     const [carregandoUbs, setCarregandoUbs] = useState(false);
-    const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
     const [unidades, setUnidades] = useState([]);
+    const [todosServicos, setTodosServicos] = useState([]);
     const [servicos, setServicos] = useState([]);
     const [especializados, setEsp] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(0);
-    const [modoFiltrado, setModoFiltrado] = useState(false);
+    const [mostrarFiltros, setMostrarFiltros] = useState(false);
     const [erros, setErros] = useState({});
     const [transferencia, setTransferencia] = useState({
         perfil: "",
@@ -35,55 +37,104 @@ function Servidores() {
 
     const tamanhoPagina = 10;
 
-    const carregarDados = useCallback(async (paginaAtual = pagina) => {
-        try {
-            setCarregando(true);
-            const response = await api.get(`/servidores?page=${paginaAtual}&size=${tamanhoPagina}`);
-            setServidores(response.data.content);
-            setTotalPaginas(response.data.page.totalPages);
-        } catch {
-            setMensagemErro("Erro ao carregar servidores.");
-        } finally {
-            setCarregando(false);
-        }
-    }, [pagina]);
+    const [filtros, setFiltros] = useState({
+        id: "",
+        nome: "",
+        perfil: [],
+        unidade: ""
+    });
 
-    const buscarUsuarios = useCallback(async (paginaAtual = pagina) => {
-        if (!filtro.trim()) {
+    async function carregarDados(paginaAtual = pagina, filtrosAtuais = filtros) {
+
+        try {
+
+            setCarregando(true);
+
+            const payload = {
+                id: filtrosAtuais.id || null,
+                nome: filtrosAtuais.nome || null,
+                perfil: filtrosAtuais.perfil || null,
+                unidadeSaudeId: filtrosAtuais.unidade || null,
+            };
+
+            if(servidor.perfil === 'SOLICITANTE' || servidor.perfil === 'SOLICITANTE'){
+                payload.unidadeSaudeId = servidor.unidadeSaudeId;
+            }
+
+            const servidoresResponse = await api.post(
+                `/servidores/filtrados?page=${paginaAtual}&size=${tamanhoPagina}`,
+                payload
+            );
+
+            setServidores(servidoresResponse.data.content);
+            setTotalPaginas(servidoresResponse.data.page.totalPages);
+
+        } catch {
+
+            setMensagem("Erro ao carregar usuários.")
+
+        } finally {
+
+            setCarregando(false);
+
+        }
+    }
+
+    const buscarServidoresAutocomplete = useCallback(async (nome) => {
+
+        if (!nome || nome.trim().length < 3) {
+            setServidoresBusca([]);
             return;
         }
+
         try {
-            setCarregando(true);
-            const response = await api.get(`/servidores/filtrados/${filtro}?page=${paginaAtual}&size=${tamanhoPagina}`);
-            setServidores(response.data.content);
-            setTotalPaginas(response.data.page.totalPages);
+
+            const response = await api.get(
+                `/servidores/filtrados/buscas?nome=${nome}`
+            );
+
+            setServidoresBusca(response.data);
+
         } catch {
-            setMensagemErro("Erro ao buscar servidores.");
-        } finally {
-            setCarregando(false);
+            setMensagem("Erro ao buscar usuários");
         }
-    }, [pagina, filtro]);
+
+    }, []);
+
+    async function executarBusca() {
+        setPagina(0);
+        await carregarDados(0, filtros);
+    }
 
     useEffect(() => {
-        const executar = async () => {
-            if (modoFiltrado) {
-                await buscarUsuarios(pagina);
-            } else {
-                await carregarDados(pagina);
-            }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void carregarDados(pagina, filtros);
+    }, [pagina]);
+
+    async function limparFiltros() {
+        const filtrosVazios = {
+            id: "",
+            nome: "",
+            perfil: [],
+            unidade: ""
         };
-        void executar();
-    }, [pagina, modoFiltrado]);
+
+        setFiltros(filtrosVazios);
+        setPagina(0);
+        await carregarDados(0, filtrosVazios);
+    }
 
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                const [ubsResponse, servicosResponse, espResponse] = await Promise.all([
+                const [todosServicosResponse, ubsResponse, servicosResponse, espResponse] = await Promise.all([
+                    api.get("/unidades-saude/all"),
                     api.get("/unidades-saude/ubs"),
                     api.get("/unidades-saude/outro"),
                     api.get("/unidades-saude/especializado")
                 ]);
 
+                setTodosServicos(todosServicosResponse.data)
                 setUnidades(ubsResponse.data);
                 setServicos(servicosResponse.data);
                 setEsp(espResponse.data);
@@ -95,29 +146,6 @@ function Servidores() {
         }
         void carregarUnidades();
     }, []);
-
-    async function executarBusca() {
-
-        if (!filtro.trim()) {
-            return;
-        }
-        setModoFiltrado(true);
-        if (pagina !== 0) {
-            setPagina(0);
-        } else {
-            await buscarUsuarios(0);
-        }
-    }
-
-    async function limparFiltro() {
-        setFiltro("");
-        setModoFiltrado(false);
-        if (pagina !== 0) {
-            setPagina(0);
-        } else {
-            await carregarDados(0);
-        }
-    }
 
     async function abrirCardUbs(unidadeSaudeId) {
         if(unidadeSaudeId === null){
@@ -165,11 +193,8 @@ function Servidores() {
             setMensagemSucesso("Servidor transferido com sucesso!");
             setMensagemErro("")
             fecharModal();
-            if (modoFiltrado) {
-                await buscarUsuarios(pagina);
-            } else {
-                await carregarDados(pagina);
-            }
+            setPagina(0);
+            await carregarDados(0, filtros);
         } catch (error) {
             tratarErro(error);
         }
@@ -238,26 +263,15 @@ function Servidores() {
                 <div className="table-card">
                     <div className="table-topbar">
                         <div className="search-container">
-                            <input
-                                className="usuario-search"
-                                placeholder="Buscar servidor..."
-                                value={filtro}
-                                onChange={(e) => setFiltro(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        executarBusca();
-                                    }
-                                }}
-                            />
                             <span
                                 className="buscar-btn"
-                                onClick={executarBusca}
+                                onClick={() => setMostrarFiltros(true)}
                             >
-                                Buscar
+                                Filtrar servidores
                             </span>
                             <span
                                 className="buscar-btn"
-                                onClick={limparFiltro}
+                                onClick={limparFiltros}
                             >
                                 Limpar filtro
                             </span>
@@ -298,7 +312,7 @@ function Servidores() {
                                             className="ubs-badge ubs-clickable"
                                             onClick={() => abrirCardUbs(s.unidadeSaudeId)}
                                         >
-                                            {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil)
+                                            {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(s.perfil)
                                                 ? "Sem serviço vinculado"
                                                 : s.unidadeSaudeNome}
                                         </span>
@@ -364,6 +378,23 @@ function Servidores() {
                     </div>
                 </div>
             )}
+
+            <ModalFiltrosServidor
+                aberto={mostrarFiltros}
+                onFechar={() => setMostrarFiltros(false)}
+                filtros={filtros}
+                setFiltros={setFiltros}
+                unidades={unidades}
+                onAplicar={() => {
+                    setMostrarFiltros(false);
+                    void executarBusca();
+                }}
+                servidor={servidor}
+                onLimpar={limparFiltros}
+                buscarServidores={buscarServidoresAutocomplete}
+                setServidores={setServidoresBusca}
+                servidores={servidoresBusca}
+            />
         </div>
     );
 }

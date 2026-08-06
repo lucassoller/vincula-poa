@@ -37,12 +37,6 @@ public class UsuarioController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping
-    public ResponseEntity<Page<UsuarioResponseDTO>> listarTodos(Pageable pageable) {
-        return ResponseEntity.ok(usuarioService.listarTodos(pageable));
-    }
-
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/all")
     public ResponseEntity<List<UsuarioShortResponseDTO>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());

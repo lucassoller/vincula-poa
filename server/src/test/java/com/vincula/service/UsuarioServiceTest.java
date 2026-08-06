@@ -377,33 +377,6 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void deveListarTodosPaginado() {
-
-        Pageable pageable = PageRequest.of(0, 10);
-
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
-
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
-        usuario.setNomeCompleto("Lucas");
-        usuario.setDocumento("123");
-        usuario.setUnidadeSaude(unidade);
-
-        Page<Usuario> page =
-                new PageImpl<>(List.of(usuario));
-
-        when(usuarioRepository.findAllByOrderByNomeCompletoAsc(pageable))
-                .thenReturn(page);
-
-        Page<UsuarioResponseDTO> resultado =
-                usuarioService.listarTodos(pageable);
-
-        assertEquals(1, resultado.getTotalElements());
-    }
-
-    @Test
     void deveFiltrarUsuariosPorNomeOuDocumento() {
 
         UnidadeSaude unidade = new UnidadeSaude();

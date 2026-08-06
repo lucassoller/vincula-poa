@@ -11,10 +11,14 @@ import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.UnidadeSaudeRepository;
 import com.vincula.repository.ServidorRepository;
+import com.vincula.specification.ServidorSpecification;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,25 +54,20 @@ public class ServidorService {
         return toDTO(salvo);
     }
 
-    public Page<ServidorResponseDTO> listarTodos(Pageable pageable) {
-        return servidorRepository.findAllByOrderByNomeAsc(pageable)
-                .map(this::toDTO);
-    }
+    public Page<ServidorResponseDTO> listarTodosFiltrados(
+            FiltroServidorRequestDTO filtro,
+            Pageable pageable) {
 
-    public Page<ServidorResponseDTO> listarTodosFiltrados(String filtro, Pageable pageable) {
-        return servidorRepository.findFiltrados(filtro, pageable)
-                .map(this::toDTO);
-    }
+        Specification<Servidor> specification =
+                ServidorSpecification.comFiltros(filtro);
 
-    public List<ServidorShortResponseDTO> listarTodos() {
-        return servidorRepository.findAllByOrderByNomeAsc()
-                .stream()
-                .map(this::toShortDTO)
-                .toList();
-    }
+        Pageable pageableOrdenado = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("nome")
+        );
 
-    public Page<ServidorResponseDTO> listarTodosPorPerfil(PerfilServidor perfil, Pageable pageable) {
-        return servidorRepository.findByPerfilOrderByNomeAsc(perfil, pageable)
+        return servidorRepository.findAll(specification, pageableOrdenado)
                 .map(this::toDTO);
     }
 
