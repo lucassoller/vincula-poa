@@ -23,9 +23,9 @@ function Servidores() {
     const [carregandoUbs, setCarregandoUbs] = useState(false);
     const [pagina, setPagina] = useState(0);
     const [unidades, setUnidades] = useState([]);
-    const [todosServicos, setTodosServicos] = useState([]);
     const [servicos, setServicos] = useState([]);
-    const [especializados, setEsp] = useState([]);
+    const [especializados, setEspecializados] = useState([]);
+    const [outros, setOutros] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
     const [erros, setErros] = useState({});
@@ -127,17 +127,11 @@ function Servidores() {
     useEffect(() => {
         async function carregarUnidades() {
             try {
-                const [todosServicosResponse, ubsResponse, servicosResponse, espResponse] = await Promise.all([
-                    api.get("/unidades-saude/all"),
-                    api.get("/unidades-saude/ubs"),
-                    api.get("/unidades-saude/outro"),
-                    api.get("/unidades-saude/especializado")
-                ]);
-
-                setTodosServicos(todosServicosResponse.data)
-                setUnidades(ubsResponse.data);
-                setServicos(servicosResponse.data);
-                setEsp(espResponse.data);
+                const servicosResponse = await api.get("/unidades-saude/all");
+                setServicos(servicosResponse.data.todos)
+                setUnidades(servicosResponse.data.ubs);
+                setOutros(servicosResponse.data.outros);
+                setEspecializados(servicosResponse.data.especializados);
 
             } catch {
                 setMensagemErro("Erro ao carregar os serviços.");
@@ -338,7 +332,7 @@ function Servidores() {
                         <ModalTransferirServidor
                             servidor={servidorSelecionado}
                             unidades={unidades}
-                            servicos={servicos}
+                            outros={outros}
                             especializados={especializados}
                             transferencia={transferencia}
                             setTransferencia={setTransferencia}
@@ -384,7 +378,7 @@ function Servidores() {
                 onFechar={() => setMostrarFiltros(false)}
                 filtros={filtros}
                 setFiltros={setFiltros}
-                unidades={unidades}
+                servicos={servicos}
                 onAplicar={() => {
                     setMostrarFiltros(false);
                     void executarBusca();

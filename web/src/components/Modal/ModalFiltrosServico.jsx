@@ -1,5 +1,4 @@
 import "../../styles/modalFiltrosDemanda.css";
-import {useEffect, useRef} from "react";
 
 function ModalFiltrosServico({
                                  aberto,
@@ -8,30 +7,8 @@ function ModalFiltrosServico({
                                  setFiltros,
                                  onAplicar,
                                  onLimpar,
-                                 servicos = [],
-                                 buscarServicos,
-                                 setServicos,
+                                 servicos = []
                              }) {
-    const autocompleteRef = useRef(null);
-
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (autocompleteRef.current && !autocompleteRef.current.contains(event.target)) {
-                setServicos([]);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-
-        return () => {
-            document.removeEventListener(
-                "mousedown",
-                handleClickOutside
-            );
-        };
-
-    }, []);
-
-
     if (!aberto) return null;
 
     function toggle(campo, valor) {
@@ -57,74 +34,29 @@ function ModalFiltrosServico({
                     </button>
                 </div>
 
-                <div className="autocomplete-container grupo-filtro" ref={autocompleteRef}>
+                <div className="grupo-filtro">
 
                     <h4>Serviço</h4>
 
-                    <input
-                        type="text"
-                        className="input-field"
-                        placeholder="Digite o nome do serviço"
-                        value={filtros.nome || ""}
-                        onChange={(e) => {
-
-                            const nome = e.target.value;
-
+                    <select
+                        value={filtros.servico}
+                        onChange={(e) =>
                             setFiltros(prev => ({
                                 ...prev,
-                                nome: nome,
-                                id: ""
-                            }));
+                                servico: e.target.value
+                            }))
+                        }
+                    >
+                        <option value="">Todos</option>
 
-                            buscarServicos(nome);
-                        }}
-                    />
-
-                    {servicos.length > 0 && (
-
-                        <div className="autocomplete-list modal-autocomplete">
-
-                            {servicos.map(servico => (
-
-                                <div
-                                    key={servico.id}
-                                    className="autocomplete-item"
-                                    onClick={() => {
-
-                                        setFiltros(prev => ({
-                                            ...prev,
-                                            nome: servico.nome,
-                                            id: servico.id
-                                        }));
-
-                                        setServicos([]);
-
-                                    }}
-                                >
-                                    {servico.nome}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {filtros.id && (
-                        <div className="usuario-chip">
-                            <span>{filtros.nome}</span>
-
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setFiltros(prev => ({
-                                        ...prev,
-                                        nome: "",
-                                        id: ""
-                                    }))
-                                }
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    )}
+                        {servicos.map(servico => (
+                            <option key={servico.id} value={servico.id}>
+                                {servico.nome}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+
                 <div className="grupo-filtro">
 
                     <h4>Tipo de serviço</h4>

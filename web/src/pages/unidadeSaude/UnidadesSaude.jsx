@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import api from "../../api/api.js";
 import "../../styles/usuarios.css";
@@ -12,21 +12,19 @@ import ModalFiltrosServico from "../../components/Modal/ModalFiltrosServico.jsx"
 function UnidadesSaude() {
     const navigate = useNavigate();
     const { servidor } = useAuth();
-    const [unidades, setUnidades] = useState([]);
+    const [servicosBusca, setServicosBusca] = useState([]);
+    const [servicos, setServicos] = useState([]);
     const [unidadeDetalhada, setUnidadeDetalhada] = useState(null);
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
-    const [filtro, setFiltro] = useState("");
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
-    const [servicosBusca, setServicosBusca] = useState([]);
 
     const tamanhoPagina = 10;
 
     const [filtros, setFiltros] = useState({
-        id: "",
-        nome: "",
+        servico: "",
         tipoServico: []
     });
 
@@ -37,8 +35,7 @@ function UnidadesSaude() {
             setCarregando(true);
 
             const payload = {
-                id: filtrosAtuais.id || null,
-                nome: filtrosAtuais.nome || null,
+                id: filtrosAtuais.servico || null,
                 tipoServico: filtrosAtuais.tipoServico || null,
             };
 
@@ -47,7 +44,7 @@ function UnidadesSaude() {
                 payload
             );
 
-            setUnidades(servicosReponse.data.content);
+            setServicos(servicosReponse.data.content);
             setTotalPaginas(servicosReponse.data.page.totalPages);
 
         } catch {
@@ -61,25 +58,17 @@ function UnidadesSaude() {
         }
     }
 
-    const buscarServicosAutocomplete = useCallback(async (nome) => {
-
-        if (!nome || nome.trim().length < 3) {
-            setServicosBusca([]);
-            return;
+    useEffect(() => {
+        async function carregarServicos() {
+            try {
+                const response = await api.get("/unidades-saude/servicos");
+                setServicosBusca(response.data);
+            } catch {
+                setMensagem("Erro ao carregar serviços.");
+            }
         }
 
-        try {
-
-            const response = await api.get(
-                `/unidades-saude/filtrados/buscas?nome=${nome}`
-            );
-
-            setServicosBusca(response.data);
-
-        } catch {
-            setMensagem("Erro ao buscar serviços");
-        }
-
+        void carregarServicos();
     }, []);
 
     async function executarBusca() {
@@ -94,8 +83,7 @@ function UnidadesSaude() {
 
     async function limparFiltros() {
         const filtrosVazios = {
-            id: "",
-            nome: "",
+            servico: "",
             tipoServico: []
         };
 
@@ -180,30 +168,30 @@ function UnidadesSaude() {
 
                         <tbody>
 
-                        {unidades.map((ubs) => (
+                        {servicos.map((servico) => (
 
-                            <tr key={ubs.id}>
+                            <tr key={servico.id}>
                                 <td>
                                     <div className="usuario-nome">
-                                        {ubs.nome}
+                                        {servico.nome}
                                     </div>
                                 </td>
-                                <td>{ubs.cnes}</td>
+                                <td>{servico.cnes}</td>
                                 <td>
                                     <span className="ubs-badge">
-                                        {tipoServico[ubs.tipoServico]}
+                                        {tipoServico[servico.tipoServico]}
                                     </span>
                                 </td>
 
-                                <td>{mascaraTelefone(ubs.telefone) || "-"}</td>
-                                <td>{mascaraTelefone(ubs.telefone2) || "-"}</td>
+                                <td>{mascaraTelefone(servico.telefone) || "-"}</td>
+                                <td>{mascaraTelefone(servico.telefone2) || "-"}</td>
 
-                                <td className="bairro-coluna">{ubs.endereco?.bairro || "-"}</td>
+                                <td className="bairro-coluna">{servico.endereco?.bairro || "-"}</td>
                                 <td>
                                     <div className="acoes-container">
                                         <span
                                             className="btn-visualizar"
-                                            onClick={() => setUnidadeDetalhada(ubs)}
+                                            onClick={() => setUnidadeDetalhada(servico)}
                                         >
                                             Ver mais
                                         </span>
@@ -211,7 +199,7 @@ function UnidadesSaude() {
                                             <span
                                                 className="btn-editar"
                                                 onClick={() =>
-                                                    navigate(`/unidades-saude/${ubs.id}/editar`)
+                                                    navigate(`/unidades-saude/${servico.id}/editar`)
                                                 }
                                             >
                                                 Editar
@@ -225,7 +213,7 @@ function UnidadesSaude() {
                         </tbody>
                     </table>
 
-                    {unidades.length === 0 && !mensagem && (
+                    {servicos.length === 0 && !mensagem && (
                         <div className="empty-state">
                             Nenhum serviço encontrado.
                         </div>
@@ -256,11 +244,8 @@ function UnidadesSaude() {
                 }}
                 servidor={servidor}
                 onLimpar={limparFiltros}
-                buscarServicos={buscarServicosAutocomplete}
-                setServicos={setServicosBusca}
                 servicos={servicosBusca}
             />
-
         </div>
     );
 }

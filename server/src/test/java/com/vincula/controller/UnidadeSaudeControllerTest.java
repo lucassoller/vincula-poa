@@ -127,46 +127,6 @@ class UnidadeSaudeControllerTest {
     }*/
 
     @Test
-    void deveListarUbs() throws Exception {
-
-        when(unidadeSaudeService.listarTodosPorServico(TipoServico.UBS))
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/unidades-saude/ubs"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarOutro() throws Exception {
-
-        when(unidadeSaudeService.listarTodosPorServico(TipoServico.OUTRO))
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/unidades-saude/outro"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarOutros() throws Exception {
-
-        when(unidadeSaudeService.listarTodosOutros())
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/unidades-saude/outros"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarEspecializados() throws Exception {
-
-        when(unidadeSaudeService.listarTodosPorServico(TipoServico.SERVICO_ESPECIALIZADO))
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/unidades-saude/especializado"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void deveAtualizarUnidadeSaude() throws Exception {
 
         EnderecoDTO endereco = new EnderecoDTO();

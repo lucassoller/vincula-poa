@@ -10,8 +10,6 @@ import java.util.Optional;
 
 public interface UnidadeSaudeRepository extends JpaRepository<UnidadeSaude, Long>, JpaSpecificationExecutor<UnidadeSaude> {
 
-    List<UnidadeSaude> findTop10ByNomeContainingIgnoreCaseOrderByNome(String nome);
-
     @Query("""
     SELECT u
     FROM UnidadeSaude u

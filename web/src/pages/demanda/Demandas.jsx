@@ -194,7 +194,7 @@ function Demandas() {
             try {
                 const response = await api.get("/unidades-saude/all");
                 setUnidades(response.data.ubs);
-                setServicos(response.data.especializadas);
+                setServicos(response.data.servicos);
 
             } catch {
                 setMensagemErro("Erro ao carregar unidades.");

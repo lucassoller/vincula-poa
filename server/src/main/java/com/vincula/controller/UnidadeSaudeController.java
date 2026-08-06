@@ -39,39 +39,21 @@ public class UnidadeSaudeController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/filtrados/buscas")
-    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosFiltradosPorNome(@RequestParam String nome) {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodosFiltradosPorNome(nome));
-    }
-
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/all")
     public ResponseEntity <UnidadesResponseDTO> listarTodos() {
-        return ResponseEntity.ok(unidadeSaudeService.listarUnidades());
+        return ResponseEntity.ok(unidadeSaudeService.listarServicos());
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/ubs")
-    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodasUbs() {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodosPorServico(TipoServico.UBS));
+    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodasUnidades() {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodasUnidades());
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/outro")
-    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosOutro() {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodosPorServico(TipoServico.OUTRO));
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/especializado")
-    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosEspecializado() {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodosPorServico(TipoServico.SERVICO_ESPECIALIZADO));
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/outros")
-    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosOutros() {
-        return ResponseEntity.ok(unidadeSaudeService.listarTodosOutros());
+    @GetMapping("/servicos")
+    public ResponseEntity<List<UnidadeSaudeShortResponseDTO>> listarTodosServicos() {
+        return ResponseEntity.ok(unidadeSaudeService.listarTodosServicos());
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -9,7 +9,7 @@ function ModalFiltrosServidor({
                                  onAplicar,
                                  onLimpar,
                                  servidores = [],
-                                 unidades = [],
+                                 servicos = [],
                                  buscarServidores,
                                  setServidores,
                                  servidor
@@ -133,7 +133,7 @@ function ModalFiltrosServidor({
 
                     <div className="grupo-filtro">
 
-                        <h4>Serviço</h4>
+                        <h4>Serviço vinculado</h4>
 
                         <select
                             value={filtros.unidade}
@@ -147,13 +147,13 @@ function ModalFiltrosServidor({
                             <option value="">
                                 Todas
                             </option>
-                            {unidades.map(unidade => (
+                            {servicos.map(servico => (
 
                                 <option
-                                    key={unidade.id}
-                                    value={unidade.id}
+                                    key={servico.id}
+                                    value={servico.id}
                                 >
-                                    {unidade.nome}
+                                    {servico.nome}
                                 </option>
                             ))}
                         </select>

@@ -1,24 +1,16 @@
 package com.vincula.dto.unidadeSaude;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.List;
 
+@Data
+@AllArgsConstructor
 public class UnidadesResponseDTO {
-
+    private List<UnidadeSaudeShortResponseDTO> todos;
     private List<UnidadeSaudeShortResponseDTO> ubs;
-    private List<UnidadeSaudeShortResponseDTO> especializadas;
-
-    public UnidadesResponseDTO(
-            List<UnidadeSaudeShortResponseDTO> ubs,
-            List<UnidadeSaudeShortResponseDTO> especializadas) {
-        this.ubs = ubs;
-        this.especializadas = especializadas;
-    }
-
-    public List<UnidadeSaudeShortResponseDTO> getUbs() {
-        return ubs;
-    }
-
-    public List<UnidadeSaudeShortResponseDTO> getEspecializadas() {
-        return especializadas;
-    }
+    private List<UnidadeSaudeShortResponseDTO> servicos;
+    private List<UnidadeSaudeShortResponseDTO> outros;
+    private List<UnidadeSaudeShortResponseDTO> especializados;
 }

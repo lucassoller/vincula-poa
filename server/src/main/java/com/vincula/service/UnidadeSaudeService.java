@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,15 +46,15 @@ public class UnidadeSaudeService {
         return toDTO(salvo);
     }
 
-    public List<UnidadeSaudeShortResponseDTO> listarTodosPorServico(TipoServico tipoServico) {
-        return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(tipoServico)
+    public List<UnidadeSaudeShortResponseDTO> listarTodasUnidades() {
+        return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS)
                 .stream()
                 .map(this::toShortDTO)
                 .toList();
     }
 
-    public List<UnidadeSaudeShortResponseDTO> listarTodosOutros() {
-        return unidadeSaudeRepository.findAllByTipoServicoNotOrderByNomeAsc(TipoServico.UBS)
+    public List<UnidadeSaudeShortResponseDTO> listarTodosServicos() {
+        return unidadeSaudeRepository.findAllByOrderByTipoServicoAndNomeAsc()
                 .stream()
                 .map(this::toShortDTO)
                 .toList();
@@ -75,27 +77,41 @@ public class UnidadeSaudeService {
                 .map(this::toDTO);
     }
 
-    public List<UnidadeSaudeShortResponseDTO> listarTodosFiltradosPorNome(String nome) {
-        return unidadeSaudeRepository.findTop10ByNomeContainingIgnoreCaseOrderByNome(nome)
-                .stream()
-                .map(this::toShortDTO)
-                .toList();
-    }
-
-    public UnidadesResponseDTO listarUnidades() {
+    public UnidadesResponseDTO listarServicos() {
 
         List<UnidadeSaude> todas = unidadeSaudeRepository.findAllByOrderByTipoServicoAndNomeAsc();
 
-        List<UnidadeSaudeShortResponseDTO> ubs = todas.stream()
-                .filter(u -> u.getTipoServico() == TipoServico.UBS)
-                .map(this::toShortDTO)
-                .toList();
+        List<UnidadeSaudeShortResponseDTO> todasDto = new ArrayList<>();
+        List<UnidadeSaudeShortResponseDTO> ubs = new ArrayList<>();
+        List<UnidadeSaudeShortResponseDTO> servicos = new ArrayList<>();
+        List<UnidadeSaudeShortResponseDTO> outros = new ArrayList<>();
+        List<UnidadeSaudeShortResponseDTO> especializados = new ArrayList<>();
 
-        List<UnidadeSaudeShortResponseDTO> especializadas = todas.stream()
-                .map(this::toShortDTO)
-                .toList();
+        for (UnidadeSaude unidade : todas) {
 
-        return new UnidadesResponseDTO(ubs, especializadas);
+            UnidadeSaudeShortResponseDTO dto = toShortDTO(unidade);
+
+            todasDto.add(dto);
+
+            if (unidade.getTipoServico() == TipoServico.UBS) {
+                ubs.add(dto);
+            } else {
+                servicos.add(dto);
+                if (unidade.getTipoServico() == TipoServico.OUTRO) {
+                    outros.add(dto);
+                }else{
+                    especializados.add(dto);
+                }
+            }
+        }
+
+        return new UnidadesResponseDTO(
+                todasDto,
+                ubs,
+                servicos,
+                outros,
+                especializados
+        );
     }
 
     public UnidadeSaudeResponseDTO buscarPorId(Long id) {

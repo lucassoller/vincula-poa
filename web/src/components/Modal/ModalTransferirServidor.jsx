@@ -1,4 +1,4 @@
-function ModalTransferirServidor({servidor, unidades, servicos, especializados, transferencia, setTransferencia, erros, onSalvar, onFechar, mensagem, setMensagem}) {
+function ModalTransferirServidor({servidor, unidades, outros, especializados, transferencia, setTransferencia, erros, onSalvar, onFechar, mensagem, setMensagem}) {
     let opcoes =
         transferencia.perfil === "SERVIDOR_APS"
             ? unidades
@@ -8,7 +8,7 @@ function ModalTransferirServidor({servidor, unidades, servicos, especializados, 
         if (transferencia.tipoServico === "SERVICO_ESPECIALIZADO") {
             opcoes = especializados;
         } else if (transferencia.tipoServico === "OUTRO") {
-            opcoes = servicos;
+            opcoes = outros;
         } else {
             opcoes = [];
         }
