@@ -1,9 +1,6 @@
 package com.vincula.service;
 
-import com.vincula.dto.usuario.FiltroUsuarioRequestDTO;
-import com.vincula.dto.usuario.UsuarioDTO;
-import com.vincula.dto.usuario.UsuarioResponseDTO;
-import com.vincula.dto.usuario.UsuarioShortResponseDTO;
+import com.vincula.dto.usuario.*;
 import com.vincula.entity.*;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.enums.Sexo;
@@ -12,6 +9,7 @@ import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
 import com.vincula.repository.UsuarioRepository;
+import com.vincula.specification.AutocompleteUsuarioSpecification;
 import com.vincula.specification.UsuarioSpecification;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
@@ -91,8 +89,17 @@ public class UsuarioService {
                 .toList();
     }
 
-    public List<UsuarioShortResponseDTO> listarTodosFiltradosPorNomeCompleto(String nomeCompleto) {
-        return usuarioRepository.findTop10ByNomeCompletoContainingIgnoreCaseOrderByNomeCompleto(nomeCompleto)
+    public List<UsuarioShortResponseDTO> listarTodosFiltradosPorNomeCompleto(AutocompleteUsuarioRequestDTO dto) {
+        Specification<Usuario> specification =
+                AutocompleteUsuarioSpecification.comFiltros(dto);
+
+        Pageable pageable = PageRequest.of(
+                0,
+                10,
+                Sort.by("nomeCompleto")
+        );
+
+        return usuarioRepository.findAll(specification, pageable)
                 .stream()
                 .map(this::toShortDTO)
                 .toList();

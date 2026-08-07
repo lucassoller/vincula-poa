@@ -1,10 +1,7 @@
 package com.vincula.controller;
 
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
-import com.vincula.dto.usuario.FiltroUsuarioRequestDTO;
-import com.vincula.dto.usuario.UsuarioDTO;
-import com.vincula.dto.usuario.UsuarioResponseDTO;
-import com.vincula.dto.usuario.UsuarioShortResponseDTO;
+import com.vincula.dto.usuario.*;
 import com.vincula.service.DemandaService;
 import com.vincula.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -57,9 +54,9 @@ public class UsuarioController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/filtrados/buscas")
-    public ResponseEntity<List<UsuarioShortResponseDTO>> listarTodosFiltradosPorNomeCompleto(@RequestParam String nomeCompleto) {
-        return ResponseEntity.ok(usuarioService.listarTodosFiltradosPorNomeCompleto(nomeCompleto));
+    @PostMapping("/filtrados/nome-completo")
+    public ResponseEntity<List<UsuarioShortResponseDTO>> listarTodosFiltradosPorNomeCompleto(@RequestBody AutocompleteUsuarioRequestDTO dto) {
+        return ResponseEntity.ok(usuarioService.listarTodosFiltradosPorNomeCompleto(dto));
     }
 
     @PreAuthorize("isAuthenticated()")

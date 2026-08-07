@@ -136,8 +136,21 @@ function Demandas() {
 
         try {
 
-            const response = await api.get(
-                `/usuarios/filtrados/buscas?nomeCompleto=${nome}`
+            const payload = {
+                nomeCompleto: nome,
+                unidadeSaudeId: null,
+                unidadeSolicitanteId: null,
+            };
+
+            if(servidor.perfil === 'SOLICITANTE'){
+                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
+            }else if(servidor.perfil === 'SERVIDOR_APS'){
+                payload.unidadeSaudeId = servidor.unidadeSaudeId;
+            }
+
+            const response = await api.post(
+                "/usuarios/filtrados/nome-completo",
+                payload
             );
 
             setUsuariosBusca(response.data);

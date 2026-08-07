@@ -3,7 +3,6 @@ package com.vincula.service;
 import com.vincula.dto.MotivoBuscaResponseDTO;
 import com.vincula.dto.MotivoComplementoResponseDTO;
 import com.vincula.dto.demanda.*;
-import com.vincula.dto.usuario.UsuarioFiltroResponseDTO;
 import com.vincula.entity.*;
 import com.vincula.enums.*;
 import com.vincula.exception.BusinessException;
@@ -94,39 +93,6 @@ public class DemandaService {
         auditoriaFacade.exportacaoCsvRealizadaDemanda("Demandas exportadas");
 
         return demandaExporter.exportar(demandas);
-    }
-
-    public List<UsuarioFiltroResponseDTO> listarUsuariosComDemanda() {
-        return demandaRepository.findUsuariosComDemanda()
-                .stream()
-                .map(usuario -> new UsuarioFiltroResponseDTO(
-                        usuario.getId(),
-                        usuario.getNomeCompleto(),
-                        usuario.getDocumento()
-                ))
-                .toList();
-    }
-
-    public List<UsuarioFiltroResponseDTO> listarUsuariosComDemandaPorUnidade(Long id) {
-        return demandaRepository.findUsuariosComDemandaPorUnidade(id)
-                .stream()
-                .map(usuario -> new UsuarioFiltroResponseDTO(
-                        usuario.getId(),
-                        usuario.getNomeCompleto(),
-                        usuario.getDocumento()
-                ))
-                .toList();
-    }
-
-    public List<UsuarioFiltroResponseDTO> listarUsuariosComDemandaPorUnidadeSolicitante(Long id) {
-        return demandaRepository.findUsuariosComDemandaPorUnidadeSolicitante(id)
-                .stream()
-                .map(usuario -> new UsuarioFiltroResponseDTO(
-                        usuario.getId(),
-                        usuario.getNomeCompleto(),
-                        usuario.getDocumento()
-                ))
-                .toList();
     }
 
     public DemandaResponseDTO atualizar(Long id, DemandaDTO dto) {

@@ -2,7 +2,6 @@ package com.vincula.controller;
 
 import com.vincula.dto.demanda.*;
 import com.vincula.dto.MotivoBuscaResponseDTO;
-import com.vincula.dto.usuario.UsuarioFiltroResponseDTO;
 import com.vincula.service.DemandaService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -67,24 +66,6 @@ public class DemandaController {
     @GetMapping("/motivos")
     public ResponseEntity<List<MotivoBuscaResponseDTO>> listarMotivos() {
         return ResponseEntity.ok(demandaService.listarMotivos());
-    }
-
-    @PreAuthorize("hasAnyRole('GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
-    @GetMapping("/usuarios/com-demandas")
-    public ResponseEntity<List<UsuarioFiltroResponseDTO>> listarUsuariosComDemanda() {
-        return ResponseEntity.ok(demandaService.listarUsuariosComDemanda());
-    }
-
-    @PreAuthorize("hasRole('SERVIDOR_APS')")
-    @GetMapping("/usuarios/com-demandas/unidade/{unidadeId}")
-    public ResponseEntity<List<UsuarioFiltroResponseDTO>> listarUsuariosComDemandaPorUnidade(@PathVariable Long unidadeId) {
-        return ResponseEntity.ok(demandaService.listarUsuariosComDemandaPorUnidade(unidadeId));
-    }
-
-    @PreAuthorize("hasRole('SOLICITANTE')")
-    @GetMapping("/usuarios/com-demandas/solicitante/{unidadeId}")
-    public ResponseEntity<List<UsuarioFiltroResponseDTO>> listarUsuariosComDemandaPorUnidadeSolicitante(@PathVariable Long unidadeId) {
-        return ResponseEntity.ok(demandaService.listarUsuariosComDemandaPorUnidadeSolicitante(unidadeId));
     }
 
     @PreAuthorize("hasAnyRole('SERVIDOR_APS','GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA')")
