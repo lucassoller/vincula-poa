@@ -22,8 +22,9 @@ export const motivoBuscaLabel = {
     "SAUDE_IDOSO": "Saúde do Idoso",
     "VACINACAO": "Vacinação",
     "DOENCA_CRONICA": "Doença Crônica",
-    "DOENCA_TRANSMITIVEL": "Doença Transmissível",
+    "DOENCA_TRANSMISSIVEL": "Doença Transmissível",
     "VIOLENCIA_MORTALIDADE": "Violência e Mortalidade",
+    "SAUDE_TRABALHADOR": "Saúde do Trabalhador",
     "OUTRO": "Outro"
 };
 
@@ -75,7 +76,8 @@ export const motivoComplementoLabel = {
     "TRABALHO_INFANTIL": "Trabalho infantil",
     "VIOLENCIA_CONTRA_CRIANCAS": "Violência contra crianças",
     "VIOLENCIA_CONTRA_IDOSOS": "Violência contra idosos",
-    "VIOLENCIA_CONTRA_MULHERES": "Violência contra mulheres"
+    "VIOLENCIA_CONTRA_MULHERES": "Violência contra mulheres",
+    "INTOXICACAO_EXOGENA": "Intoxicação exógena"
 }
 
 export const desfechoLabel = {

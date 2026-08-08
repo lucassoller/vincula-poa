@@ -48,7 +48,8 @@ public enum MotivoComplemento {
     TRABALHO_INFANTIL,
     VIOLENCIA_CONTRA_CRIANCAS,
     VIOLENCIA_CONTRA_IDOSOS,
-    VIOLENCIA_CONTRA_MULHERES;
+    VIOLENCIA_CONTRA_MULHERES,
+    INTOXICACAO_EXOGENA;
 
     public String getDescricao() {
         return switch (this) {
@@ -100,6 +101,7 @@ public enum MotivoComplemento {
             case VIOLENCIA_CONTRA_CRIANCAS -> "Violência contra crianças";
             case VIOLENCIA_CONTRA_IDOSOS -> "Violência contra idosos";
             case VIOLENCIA_CONTRA_MULHERES -> "Violência contra mulheres";
+            case INTOXICACAO_EXOGENA -> "Intoxicação exógena";
         };
     }
 }

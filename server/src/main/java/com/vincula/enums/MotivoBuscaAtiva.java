@@ -60,7 +60,7 @@ public enum MotivoBuscaAtiva {
         MotivoComplemento.OUTROS_AGRAVOS_CRONICOS
     )),
 
-    DOENCA_TRANSMITIVEL(Set.of(
+    DOENCA_TRANSMISSIVEL(Set.of(
         MotivoComplemento.HANSENIASE,
         MotivoComplemento.HEPATITES_VIRAIS,
         MotivoComplemento.HIV_AIDS,
@@ -75,11 +75,11 @@ public enum MotivoBuscaAtiva {
         MotivoComplemento.TRABALHO_INFANTIL,
         MotivoComplemento.VIOLENCIA_CONTRA_CRIANCAS,
         MotivoComplemento.VIOLENCIA_CONTRA_IDOSOS,
-        MotivoComplemento.VIOLENCIA_CONTRA_MULHERES
+        MotivoComplemento.VIOLENCIA_CONTRA_MULHERES,
+        MotivoComplemento.INTOXICACAO_EXOGENA
     )),
-    
-     OUTRO(Set.of());
-
+    SAUDE_TRABALHADOR(Set.of()),
+    OUTRO(Set.of());
 
     private final Set<MotivoComplemento> complementosPermitidos;
 
@@ -100,8 +100,9 @@ public enum MotivoBuscaAtiva {
             case SAUDE_IDOSO -> "Saúde do Idoso";
             case VACINACAO -> "Vacinação";
             case DOENCA_CRONICA -> "Doença Crônica";
-            case DOENCA_TRANSMITIVEL -> "Doença Transmissível";
+            case DOENCA_TRANSMISSIVEL -> "Doença Transmissível";
             case VIOLENCIA_MORTALIDADE -> "Violência e Mortalidade";
+            case SAUDE_TRABALHADOR -> "Saúde do Trabalhador";
             case OUTRO -> "Outro";
         };
     }

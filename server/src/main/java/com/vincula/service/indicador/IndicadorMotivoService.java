@@ -40,8 +40,9 @@ public class IndicadorMotivoService {
             case "SAUDE_IDOSO" -> "Saúde do Idoso";
             case "VACINACAO" -> "Vacinação";
             case "DOENCA_CRONICA" -> "Doença Crônica";
-            case "DOENCA_TRANSMITIVEL" -> "Doença Transmissível";
+            case "DOENCA_TRANSMISSIVEL" -> "Doença Transmissível";
             case "VIOLENCIA_MORTALIDADE" -> "Violência e Mortalidade";
+            case "SAUDE_TRABALHADOS" -> "Saúde do Trabalhador";
             case "OUTRO" -> "Outro";
 
             default -> motivo;

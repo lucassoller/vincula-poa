@@ -85,6 +85,7 @@ public class IndicadorComplementoService {
             case "VIOLENCIA_CONTRA_CRIANCAS" -> "Violência contra crianças";
             case "VIOLENCIA_CONTRA_IDOSOS" -> "Violência contra idosos";
             case "VIOLENCIA_CONTRA_MULHERES" -> "Violência contra mulheres";
+            case "INTOXICACAO_EXOGENA" -> "Intoxicação exógena";
 
             default -> complemento;
         };
