@@ -20,8 +20,8 @@ public class IndicadorProducaoService {
         List<IndicadorValorDTO> lista = new ArrayList<>(
                 demandaRepository
                         .agruparPorStatus(
-                                filtro.getUnidadeResponsavelId(),
-                                filtro.getUnidadeSolicitanteId(),
+                                filtro.getServicoResponsavelId(),
+                                filtro.getServicoSolicitanteId(),
                                 filtro.getDataInicial(),
                                 filtro.getDataFinal()
                         )
@@ -33,8 +33,8 @@ public class IndicadorProducaoService {
         );
 
         lista.add(new IndicadorValorDTO("Total de demandas", demandaRepository.countDemandas(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal())));
 

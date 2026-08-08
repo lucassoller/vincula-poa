@@ -25,8 +25,8 @@ public class ServidorSpecification {
             spec = spec.and(perfil(filtro.getPerfil()));
         }
 
-        if (filtro.getUnidadeSaudeId() != null) {
-            spec = spec.and(unidadeSaude(filtro.getUnidadeSaudeId()));
+        if (filtro.getServicoId() != null) {
+            spec = spec.and(servico(filtro.getServicoId()));
         }
 
         return spec;
@@ -46,14 +46,14 @@ public class ServidorSpecification {
         return (root, query, cb) -> root.get("perfil").in(perfis);
     }
 
-    public static Specification<Servidor> unidadeSaude(Long unidadeId) {
+    public static Specification<Servidor> servico(Long servicoId) {
 
         return (root, query, cb) -> {
-            if (unidadeId == -1L) {
-                return cb.isNull(root.get("unidadeSaude"));
+            if (servicoId == -1L) {
+                return cb.isNull(root.get("servico"));
             }
 
-            return cb.equal(root.get("unidadeSaude").get("id"), unidadeId);
+            return cb.equal(root.get("servico").get("id"), servicoId);
         };
     }
 

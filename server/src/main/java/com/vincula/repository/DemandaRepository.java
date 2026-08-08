@@ -26,19 +26,19 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     SELECT DISTINCT u
     FROM Demanda d
     JOIN d.usuario u
-    WHERE d.unidadeResponsavel.id = :unidadeSaudeId
+    WHERE d.servicoResponsavel.id = :servicoId
     ORDER BY u.nomeCompleto
     """)
-    List<Usuario> findUsuariosComDemandaPorUnidade(Long unidadeSaudeId);
+    List<Usuario> findUsuariosComDemandaPorServico(Long servicoId);
 
     @Query("""
     SELECT DISTINCT u
     FROM Demanda d
     JOIN d.usuario u
-    WHERE d.unidadeSolicitante.id = :unidadeSaudeId
+    WHERE d.servicoSolicitante.id = :servicoId
     ORDER BY u.nomeCompleto
     """)
-    List<Usuario> findUsuariosComDemandaPorUnidadeSolicitante(Long unidadeSaudeId);
+    List<Usuario> findUsuariosComDemandaPorServicoSolicitante(Long servicoId);
 
     @Query("""
     SELECT d
@@ -55,11 +55,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     SELECT COUNT(*)
     FROM demanda d
     WHERE
-        (:unidadeResponsavelId IS NULL
-            OR d.unidade_responsavel_id = :unidadeResponsavelId)
-    AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+        (:servicoResponsavelId IS NULL
+            OR d.servico_responsavel_id = :servicoResponsavelId)
+    AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
     AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -67,8 +67,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     )
     """, nativeQuery = true)
     Long countDemandas(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim);
 
@@ -77,12 +77,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     FROM demanda d
     WHERE d.status = 'FINALIZADA'
       AND (
-            :unidadeResponsavelId IS NULL
-            OR d.unidade_responsavel_id = :unidadeResponsavelId
+            :servicoResponsavelId IS NULL
+            OR d.servico_responsavel_id = :servicoResponsavelId
       )
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -90,8 +90,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     )
     """, nativeQuery = true)
     Long countDemandasFinalizadas(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim);
 
@@ -102,12 +102,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
         (d.status IN ('ABERTA', 'EM_ANDAMENTO')
                  AND NOW() <= d.data_hora_limite)
         AND (
-            :unidadeResponsavelId IS NULL
-            OR d.unidade_responsavel_id = :unidadeResponsavelId
+            :servicoResponsavelId IS NULL
+            OR d.servico_responsavel_id = :servicoResponsavelId
         )
-        AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+        AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
         AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -115,8 +115,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     )
     """, nativeQuery = true)
     Long countDemandasDentroDoPrazo(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -128,12 +128,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
         (d.status IN ('ABERTA', 'EM_ANDAMENTO')
             AND NOW() > d.data_hora_limite)
         AND (
-            :unidadeResponsavelId IS NULL
-            OR d.unidade_responsavel_id = :unidadeResponsavelId
+            :servicoResponsavelId IS NULL
+            OR d.servico_responsavel_id = :servicoResponsavelId
         )
-        AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+        AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
         AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -141,8 +141,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     )
     """, nativeQuery = true)
     Long countDemandasAtrasadas(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -153,12 +153,12 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     WHERE d.status = 'FINALIZADA'
       AND d.data_hora_finalizacao > d.data_hora_limite
       AND (
-            :unidadeResponsavelId IS NULL
-            OR d.unidade_responsavel_id = :unidadeResponsavelId
+            :servicoResponsavelId IS NULL
+            OR d.servico_responsavel_id = :servicoResponsavelId
       )
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -166,8 +166,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     )
     """, nativeQuery = true)
     Long countDemandasFinalizadasComAtraso(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -175,10 +175,10 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     @Query(value = """
     SELECT d.status AS status, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE (:unidadeResponsavelId IS NULL OR d.unidade_responsavel_id = :unidadeResponsavelId)
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+    WHERE (:servicoResponsavelId IS NULL OR d.servico_responsavel_id = :servicoResponsavelId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -187,8 +187,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     GROUP BY d.status
     """, nativeQuery = true)
     List<StatusQuantidadeProjection> agruparPorStatus(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -196,11 +196,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     @Query(value = """
     SELECT d.desfecho AS desfecho, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE (:unidadeResponsavelId IS NULL 
-           OR d.unidade_responsavel_id = :unidadeResponsavelId)
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+    WHERE (:servicoResponsavelId IS NULL 
+           OR d.servico_responsavel_id = :servicoResponsavelId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -210,8 +210,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     GROUP BY d.desfecho
     """, nativeQuery = true)
     List<DesfechoQuantidadeProjection> agruparPorDesfecho(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -219,11 +219,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     @Query(value = """
     SELECT d.motivo_busca_ativa AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE (:unidadeResponsavelId IS NULL 
-            OR d.unidade_responsavel_id = :unidadeResponsavelId)
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+    WHERE (:servicoResponsavelId IS NULL 
+            OR d.servico_responsavel_id = :servicoResponsavelId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -233,8 +233,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     GROUP BY d.motivo_busca_ativa
     """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisMotivos(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -242,11 +242,11 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     @Query(value = """
     SELECT d.motivo_complemento AS motivo, COUNT(*) AS quantidade
     FROM demanda d
-    WHERE (:unidadeResponsavelId IS NULL 
-            OR d.unidade_responsavel_id = :unidadeResponsavelId)
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+    WHERE (:servicoResponsavelId IS NULL 
+            OR d.servico_responsavel_id = :servicoResponsavelId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -256,8 +256,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     GROUP BY d.motivo_complemento
     """, nativeQuery = true)
     List<MotivoQuantidadeProjection> listarPrincipaisComplementos(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -273,13 +273,13 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
         d.status = 'FINALIZADA'
         AND d.data_hora_finalizacao > d.data_hora_limite
         AND (
-            :unidadeResponsavelId IS NULL
-            OR d.unidade_responsavel_id = :unidadeResponsavelId
+            :servicoResponsavelId IS NULL
+            OR d.servico_responsavel_id = :servicoResponsavelId
         )
         AND (
-            :unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId
+            :servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId
         )
         AND (
             (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
@@ -288,8 +288,8 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
         )
     """, nativeQuery = true)
     Double calcularTempoMedioAtraso(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -298,10 +298,10 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     SELECT AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao)))
     FROM demanda d
     WHERE d.status = 'FINALIZADA'
-      AND (:unidadeResponsavelId IS NULL OR d.unidade_responsavel_id = :unidadeResponsavelId)
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+      AND (:servicoResponsavelId IS NULL OR d.servico_responsavel_id = :servicoResponsavelId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -309,48 +309,48 @@ public interface DemandaRepository extends JpaRepository<Demanda, Long>, JpaSpec
     )
     """, nativeQuery = true)
     Double calcularTempoMedioResolucao(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
 
     @Query(value = """
     SELECT 
-        u.id AS unidadeSaudeId,
-        u.nome AS unidadeSaudeNome,
+        u.id AS servicoId,
+        u.nome AS servicoNome,
         COUNT(d.id) AS valor
-    FROM unidade_saude u
-    LEFT JOIN demanda d ON d.unidade_responsavel_id = u.id
+    FROM servico u
+    LEFT JOIN demanda d ON d.servico_responsavel_id = u.id
     GROUP BY u.id, u.nome
     HAVING COUNT(d.id) > 0
     ORDER BY valor DESC, u.nome ASC
     """, nativeQuery = true)
-    List<RankingQuantidadeProjection> rankingUnidadesPorTotalDemandas();
+    List<RankingQuantidadeProjection> rankingServicosPorTotalDemandas();
 
     @Query(value = """
     SELECT
-        u.id AS unidadeSaudeId,
-        u.nome AS unidadeSaudeNome,
+        u.id AS servicoId,
+        u.nome AS servicoNome,
         COUNT(d.id) FILTER (WHERE d.status = 'FINALIZADA') * 100.0 / COUNT(d.id) AS valor
-    FROM unidade_saude u
-    LEFT JOIN demanda d ON d.unidade_responsavel_id = u.id
+    FROM servico u
+    LEFT JOIN demanda d ON d.servico_responsavel_id = u.id
     GROUP BY u.id, u.nome
     HAVING COUNT(d.id) > 0
     ORDER BY valor DESC, u.nome ASC
     """, nativeQuery = true)
-    List<RankingValorProjection> rankingUnidadesPorPercentualResolucao();
+    List<RankingValorProjection> rankingServicosPorPercentualResolucao();
 
     @Query(value = """
     SELECT
-        u.id AS unidadeSaudeId,
-        u.nome AS unidadeSaudeNome,
+        u.id AS servicoId,
+        u.nome AS servicoNome,
         AVG(EXTRACT(EPOCH FROM (d.data_hora_finalizacao - d.data_hora_criacao))) AS valor
-    FROM unidade_saude u
-    JOIN demanda d ON d.unidade_responsavel_id = u.id
+    FROM servico u
+    JOIN demanda d ON d.servico_responsavel_id = u.id
     WHERE d.data_hora_finalizacao IS NOT NULL
     GROUP BY u.id, u.nome
     ORDER BY valor ASC, u.nome ASC
     """, nativeQuery = true)
-    List<RankingValorProjection> rankingUnidadesPorTempoMedioResolucao();
+    List<RankingValorProjection> rankingServicosPorTempoMedioResolucao();
 }

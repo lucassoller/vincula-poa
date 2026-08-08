@@ -35,10 +35,10 @@ public class Usuario {
     private Endereco endereco;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "unidade_saude_id", nullable = false)
-    private UnidadeSaude unidadeSaude;
+    @JoinColumn(name = "servico_id", nullable = false)
+    private Servico servico;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unidade_solicitante_id")
-    private UnidadeSaude unidadeSolicitante;
+    @JoinColumn(name = "servico_solicitante_id")
+    private Servico servicoSolicitante;
 }

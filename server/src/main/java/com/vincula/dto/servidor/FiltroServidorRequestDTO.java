@@ -10,5 +10,5 @@ public class FiltroServidorRequestDTO {
     private Long id;
     private String nome;
     private List<PerfilServidor> perfil;
-    private Long unidadeSaudeId;
+    private Long servicoId;
 }

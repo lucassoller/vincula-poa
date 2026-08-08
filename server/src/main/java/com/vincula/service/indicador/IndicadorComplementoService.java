@@ -18,8 +18,8 @@ public class IndicadorComplementoService {
     public List<MotivoQuantidadeDTO> gerarIndicadores(FiltroIndicadorRequestDTO filtro) {
 
         return demandaRepository.listarPrincipaisComplementos(
-                        filtro.getUnidadeResponsavelId(),
-                        filtro.getUnidadeSolicitanteId(),
+                        filtro.getServicoResponsavelId(),
+                        filtro.getServicoSolicitanteId(),
                         filtro.getDataInicial(),
                         filtro.getDataFinal()
                 )

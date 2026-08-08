@@ -79,7 +79,7 @@ class IndicadorProcessoServiceTest {
 
     @Test
     void deveRetornarPercentualZeroPorServidorQuandoNaoExistiremDemandas() {
-        when(demandaRepository.countByUnidadeSolicitanteId(1L))
+        when(demandaRepository.countByServicoSolicitanteId(1L))
                 .thenReturn(0.0);
 
         IndicadorValorDTO dto =
@@ -90,10 +90,10 @@ class IndicadorProcessoServiceTest {
 
     @Test
     void deveCalcularPercentualDemandasResolvidasPorServidor() {
-        when(demandaRepository.countByUnidadeSolicitanteId(1L))
+        when(demandaRepository.countByServicoSolicitanteId(1L))
                 .thenReturn(20.0);
 
-        when(demandaRepository.countByStatusAndUnidadeResponsavelId(
+        when(demandaRepository.countByStatusAndServicoResponsavelId(
                 StatusDemanda.FINALIZADA, 1L))
                 .thenReturn(5.0);
 
@@ -104,27 +104,27 @@ class IndicadorProcessoServiceTest {
     }
 
     @Test
-    void deveRetornarPercentualZeroPorUnidadeQuandoNaoExistiremDemandas() {
-        when(demandaRepository.countByUnidadeResponsavelId(1L))
+    void deveRetornarPercentualZeroPorServicoQuandoNaoExistiremDemandas() {
+        when(demandaRepository.countByServicoResponsavelId(1L))
                 .thenReturn(0.0);
 
         IndicadorValorDTO dto =
-                indicadorProcessoService.percentualDemandasResolvidasPorUnidade(1L);
+                indicadorProcessoService.percentualDemandasResolvidasPorServico(1L);
 
         assertEquals(0.0, dto.getValor());
     }
 
     @Test
-    void deveCalcularPercentualDemandasResolvidasPorUnidade() {
-        when(demandaRepository.countByUnidadeResponsavelId(1L))
+    void deveCalcularPercentualDemandasResolvidasPorServico() {
+        when(demandaRepository.countByServicoResponsavelId(1L))
                 .thenReturn(10.0);
 
-        when(demandaRepository.countByStatusAndUnidadeResponsavelId(
+        when(demandaRepository.countByStatusAndServicoResponsavelId(
                 StatusDemanda.FINALIZADA, 1L))
                 .thenReturn(4.0);
 
         IndicadorValorDTO dto =
-                indicadorProcessoService.percentualDemandasResolvidasPorUnidade(1L);
+                indicadorProcessoService.percentualDemandasResolvidasPorServico(1L);
 
         assertEquals(40.0, dto.getValor());
     }
@@ -164,31 +164,31 @@ class IndicadorProcessoServiceTest {
     }
 
     @Test
-    void deveRetornarPercentualZeroPorUnidadeEPeriodoQuandoNaoExistiremDemandas() {
+    void deveRetornarPercentualZeroPorServicoEPeriodoQuandoNaoExistiremDemandas() {
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByServicoResponsavelIdAndDataHoraCriacaoBetween(
                 1L, inicio, fim))
                 .thenReturn(0.0);
 
         IndicadorValorDTO dto =
-                indicadorProcessoService.percentualDemandasResolvidasPorUnidadeEPeriodo(
+                indicadorProcessoService.percentualDemandasResolvidasPorServicoEPeriodo(
                         1L, inicio, fim);
 
         assertEquals(0.0, dto.getValor());
     }
 
     @Test
-    void deveCalcularPercentualDemandasResolvidasPorUnidadeEPeriodo() {
+    void deveCalcularPercentualDemandasResolvidasPorServicoEPeriodo() {
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByServicoResponsavelIdAndDataHoraCriacaoBetween(
                 1L, inicio, fim))
                 .thenReturn(12.0);
 
-        when(demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByStatusAndServicoResponsavelIdAndDataHoraCriacaoBetween(
                 StatusDemanda.FINALIZADA,
                 1L,
                 inicio,
@@ -196,7 +196,7 @@ class IndicadorProcessoServiceTest {
                 .thenReturn(3.0);
 
         IndicadorValorDTO dto =
-                indicadorProcessoService.percentualDemandasResolvidasPorUnidadeEPeriodo(
+                indicadorProcessoService.percentualDemandasResolvidasPorServicoEPeriodo(
                         1L, inicio, fim);
 
         assertEquals(25.0, dto.getValor());
@@ -207,7 +207,7 @@ class IndicadorProcessoServiceTest {
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countByUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByServicoSolicitanteIdAndDataHoraCriacaoBetween(
                 1L, inicio, fim))
                 .thenReturn(0.0);
 
@@ -223,11 +223,11 @@ class IndicadorProcessoServiceTest {
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countByUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByServicoSolicitanteIdAndDataHoraCriacaoBetween(
                 1L, inicio, fim))
                 .thenReturn(16.0);
 
-        when(demandaRepository.countByStatusAndUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByStatusAndServicoSolicitanteIdAndDataHoraCriacaoBetween(
                 StatusDemanda.FINALIZADA,
                 1L,
                 inicio,
@@ -242,48 +242,48 @@ class IndicadorProcessoServiceTest {
     }
 
     @Test
-    void deveMontarProcessoPorUnidade() {
-        when(demandaRepository.countByUnidadeResponsavelId(1L)).thenReturn(10.0);
-        when(demandaRepository.countByStatusAndUnidadeResponsavelId(
+    void deveMontarProcessoPorServico() {
+        when(demandaRepository.countByServicoResponsavelId(1L)).thenReturn(10.0);
+        when(demandaRepository.countByStatusAndServicoResponsavelId(
                 StatusDemanda.FINALIZADA, 1L))
                 .thenReturn(5.0);
 
-        when(demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidade(1L))
+        when(demandaRepository.calcularTempoMedioResolucaoEmSegundosPorServico(1L))
                 .thenReturn(3600.0);
 
-        when(tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidade(1L))
+        when(tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorServico(1L))
                 .thenReturn(1800.0);
 
-        when(tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidade(1L))
+        when(tentativaContatoRepository.calcularMediaTentativasPorDemandaPorServico(1L))
                 .thenReturn(2.0);
 
-        when(tentativaContatoRepository.calcularMediaTentativasPorServidorPorUnidade(1L))
+        when(tentativaContatoRepository.calcularMediaTentativasPorServidorPorServico(1L))
                 .thenReturn(3.0);
 
         List<IndicadorValorDTO> resultado =
-                indicadorProcessoService.montarProcessoPorUnidade(1L);
+                indicadorProcessoService.montarProcessoPorServico(1L);
 
         assertEquals(5, resultado.size());
     }
 
     @Test
     void deveMontarProcessoPorServidor() {
-        when(demandaRepository.countByUnidadeSolicitanteId(1L)).thenReturn(10.0);
+        when(demandaRepository.countByServicoSolicitanteId(1L)).thenReturn(10.0);
 
-        when(demandaRepository.countByStatusAndUnidadeResponsavelId(
+        when(demandaRepository.countByStatusAndServicoResponsavelId(
                 StatusDemanda.FINALIZADA, 1L))
                 .thenReturn(5.0);
 
-        when(demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidadeSolicitante(1L))
+        when(demandaRepository.calcularTempoMedioResolucaoEmSegundosPorServicoSolicitante(1L))
                 .thenReturn(3600.0);
 
-        when(tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeSolicitante(1L))
+        when(tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorServicoSolicitante(1L))
                 .thenReturn(1800.0);
 
-        when(tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeSolicitante(1L))
+        when(tentativaContatoRepository.calcularMediaTentativasPorDemandaPorServicoSolicitante(1L))
                 .thenReturn(2.0);
 
-        when(tentativaContatoRepository.calcularMediaTentativasPorServidorPorUnidadeSolicitante(1L))
+        when(tentativaContatoRepository.calcularMediaTentativasPorServidorPorServicoSolicitante(1L))
                 .thenReturn(3.0);
 
         List<IndicadorValorDTO> resultado =
@@ -323,36 +323,36 @@ class IndicadorProcessoServiceTest {
     }
 
     @Test
-    void deveMontarProcessoPorUnidadeEPeriodo() {
+    void deveMontarProcessoPorServicoEPeriodo() {
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByServicoResponsavelIdAndDataHoraCriacaoBetween(
                 1L, inicio, fim))
                 .thenReturn(10.0);
 
-        when(demandaRepository.countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByStatusAndServicoResponsavelIdAndDataHoraCriacaoBetween(
                 StatusDemanda.FINALIZADA, 1L, inicio, fim))
                 .thenReturn(5.0);
 
-        when(demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidadeEPeriodo(
+        when(demandaRepository.calcularTempoMedioResolucaoEmSegundosPorServicoEPeriodo(
                 1L, inicio, fim))
                 .thenReturn(3600.0);
 
-        when(tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeEPeriodo(
+        when(tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorServicoEPeriodo(
                 1L, inicio, fim))
                 .thenReturn(1800.0);
 
-        when(tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeEPeriodo(
+        when(tentativaContatoRepository.calcularMediaTentativasPorDemandaPorServicoEPeriodo(
                 1L, inicio, fim))
                 .thenReturn(2.0);
 
-        when(tentativaContatoRepository.calcularMediaTentativasPorServidorPorUnidadeEPeriodo(
+        when(tentativaContatoRepository.calcularMediaTentativasPorServidorPorServicoEPeriodo(
                 1L, inicio, fim))
                 .thenReturn(3.0);
 
         List<IndicadorValorDTO> resultado =
-                indicadorProcessoService.montarProcessoPorUnidadeEPeriodo(1L, inicio, fim);
+                indicadorProcessoService.montarProcessoPorServicoEPeriodo(1L, inicio, fim);
 
         assertEquals(5, resultado.size());
     }
@@ -362,27 +362,27 @@ class IndicadorProcessoServiceTest {
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countByUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByServicoSolicitanteIdAndDataHoraCriacaoBetween(
                 1L, inicio, fim))
                 .thenReturn(10.0);
 
-        when(demandaRepository.countByStatusAndUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
+        when(demandaRepository.countByStatusAndServicoSolicitanteIdAndDataHoraCriacaoBetween(
                 StatusDemanda.FINALIZADA, 1L, inicio, fim))
                 .thenReturn(5.0);
 
-        when(demandaRepository.calcularTempoMedioResolucaoEmSegundosPorUnidadeSolicitanteEPeriodo(
+        when(demandaRepository.calcularTempoMedioResolucaoEmSegundosPorServicoSolicitanteEPeriodo(
                 1L, inicio, fim))
                 .thenReturn(3600.0);
 
-        when(tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorUnidadeSolicitanteEPeriodo(
+        when(tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativaEmHorasPorServicoSolicitanteEPeriodo(
                 1L, inicio, fim))
                 .thenReturn(1800.0);
 
-        when(tentativaContatoRepository.calcularMediaTentativasPorDemandaPorUnidadeSolicitanteEPeriodo(
+        when(tentativaContatoRepository.calcularMediaTentativasPorDemandaPorServicoSolicitanteEPeriodo(
                 1L, inicio, fim))
                 .thenReturn(2.0);
 
-        when(tentativaContatoRepository.calcularMediaTentativasPorServidorPorUnidadeSolicitanteEPeriodo(
+        when(tentativaContatoRepository.calcularMediaTentativasPorServidorPorServicoSolicitanteEPeriodo(
                 1L, inicio, fim))
                 .thenReturn(3.0);
 

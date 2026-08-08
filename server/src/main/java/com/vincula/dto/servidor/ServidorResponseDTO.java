@@ -12,8 +12,8 @@ public class ServidorResponseDTO {
     private String email;
     private String login;
     private PerfilServidor perfil;
-    private Long unidadeSaudeId;
-    private String unidadeSaudeNome;
+    private Long servicoId;
+    private String servicoNome;
     private TipoServico tipoServico;
     private Boolean ativo;
 }

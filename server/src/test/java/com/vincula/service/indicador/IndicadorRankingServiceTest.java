@@ -59,14 +59,14 @@ class IndicadorRankingServiceTest {
         RankingQuantidadeProjection ranking =
                 mock(RankingQuantidadeProjection.class);
 
-        when(ranking.getUnidadeSaudeId()).thenReturn(1L);
-        when(ranking.getUnidadeSaudeNome()).thenReturn("UBS Centro");
+        when(ranking.getServicoId()).thenReturn(1L);
+        when(ranking.getServicoNome()).thenReturn("UBS Centro");
         when(ranking.getValor()).thenReturn(10L);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        when(demandaRepository.rankingUnidadesPorTotalDemandas())
+        when(demandaRepository.rankingServicosPorTotalDemandas())
                 .thenReturn(List.of(ranking));
 
         List<IndicadorRankingDTO> resultado =
@@ -84,14 +84,14 @@ class IndicadorRankingServiceTest {
         RankingValorProjection ranking =
                 mock(RankingValorProjection.class);
 
-        when(ranking.getUnidadeSaudeId()).thenReturn(1L);
-        when(ranking.getUnidadeSaudeNome()).thenReturn("UBS Centro");
+        when(ranking.getServicoId()).thenReturn(1L);
+        when(ranking.getServicoNome()).thenReturn("UBS Centro");
         when(ranking.getValor()).thenReturn(83.456);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        when(demandaRepository.rankingUnidadesPorPercentualResolucao())
+        when(demandaRepository.rankingServicosPorPercentualResolucao())
                 .thenReturn(List.of(ranking));
 
         List<IndicadorRankingDTO> resultado =
@@ -108,14 +108,14 @@ class IndicadorRankingServiceTest {
         RankingValorProjection ranking =
                 mock(RankingValorProjection.class);
 
-        when(ranking.getUnidadeSaudeId()).thenReturn(1L);
-        when(ranking.getUnidadeSaudeNome()).thenReturn("UBS Centro");
+        when(ranking.getServicoId()).thenReturn(1L);
+        when(ranking.getServicoNome()).thenReturn("UBS Centro");
         when(ranking.getValor()).thenReturn(3661.0);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        when(demandaRepository.rankingUnidadesPorTempoMedioResolucao())
+        when(demandaRepository.rankingServicosPorTempoMedioResolucao())
                 .thenReturn(List.of(ranking));
 
         List<IndicadorRankingDTO> resultado =
@@ -132,14 +132,14 @@ class IndicadorRankingServiceTest {
         RankingValorProjection ranking =
                 mock(RankingValorProjection.class);
 
-        when(ranking.getUnidadeSaudeId()).thenReturn(1L);
-        when(ranking.getUnidadeSaudeNome()).thenReturn("UBS Centro");
+        when(ranking.getServicoId()).thenReturn(1L);
+        when(ranking.getServicoNome()).thenReturn("UBS Centro");
         when(ranking.getValor()).thenReturn(7200.0);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        when(tentativaContatoRepository.rankingUnidadesPorTempoAtePrimeiraTentativa())
+        when(tentativaContatoRepository.rankingServicosPorTempoAtePrimeiraTentativa())
                 .thenReturn(List.of(ranking));
 
         List<IndicadorRankingDTO> resultado =
@@ -156,14 +156,14 @@ class IndicadorRankingServiceTest {
         RankingQuantidadeProjection ranking =
                 mock(RankingQuantidadeProjection.class);
 
-        when(ranking.getUnidadeSaudeId()).thenReturn(1L);
-        when(ranking.getUnidadeSaudeNome()).thenReturn("UBS");
+        when(ranking.getServicoId()).thenReturn(1L);
+        when(ranking.getServicoNome()).thenReturn("UBS");
         when(ranking.getValor()).thenReturn(null);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        when(demandaRepository.rankingUnidadesPorTotalDemandas())
+        when(demandaRepository.rankingServicosPorTotalDemandas())
                 .thenReturn(List.of(ranking));
 
         List<IndicadorRankingDTO> resultado =
@@ -179,14 +179,14 @@ class IndicadorRankingServiceTest {
 
         RankingValorProjection ranking = mock(RankingValorProjection.class);
 
-        when(ranking.getUnidadeSaudeId()).thenReturn(1L);
-        when(ranking.getUnidadeSaudeNome()).thenReturn("UBS Centro");
+        when(ranking.getServicoId()).thenReturn(1L);
+        when(ranking.getServicoNome()).thenReturn("UBS Centro");
         when(ranking.getValor()).thenReturn(null);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        when(demandaRepository.rankingUnidadesPorTempoMedioResolucao())
+        when(demandaRepository.rankingServicosPorTempoMedioResolucao())
                 .thenReturn(List.of(ranking));
 
         List<IndicadorRankingDTO> resultado =
@@ -202,14 +202,14 @@ class IndicadorRankingServiceTest {
 
         RankingValorProjection ranking = mock(RankingValorProjection.class);
 
-        when(ranking.getUnidadeSaudeId()).thenReturn(1L);
-        when(ranking.getUnidadeSaudeNome()).thenReturn("UBS Centro");
+        when(ranking.getServicoId()).thenReturn(1L);
+        when(ranking.getServicoNome()).thenReturn("UBS Centro");
         when(ranking.getValor()).thenReturn(0.0);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        when(demandaRepository.rankingUnidadesPorTempoMedioResolucao())
+        when(demandaRepository.rankingServicosPorTempoMedioResolucao())
                 .thenReturn(List.of(ranking));
 
         List<IndicadorRankingDTO> resultado =
@@ -225,14 +225,14 @@ class IndicadorRankingServiceTest {
 
         RankingValorProjection ranking = mock(RankingValorProjection.class);
 
-        when(ranking.getUnidadeSaudeId()).thenReturn(1L);
-        when(ranking.getUnidadeSaudeNome()).thenReturn("UBS Centro");
+        when(ranking.getServicoId()).thenReturn(1L);
+        when(ranking.getServicoNome()).thenReturn("UBS Centro");
         when(ranking.getValor()).thenReturn(null);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        when(demandaRepository.rankingUnidadesPorPercentualResolucao())
+        when(demandaRepository.rankingServicosPorPercentualResolucao())
                 .thenReturn(List.of(ranking));
 
         List<IndicadorRankingDTO> resultado =

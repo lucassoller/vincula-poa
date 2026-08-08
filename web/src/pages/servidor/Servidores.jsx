@@ -31,7 +31,7 @@ function Servidores() {
     const [erros, setErros] = useState({});
     const [transferencia, setTransferencia] = useState({
         perfil: "",
-        unidadeSaudeId: "",
+        servicoId: "",
         tipoServico: ""
     });
 
@@ -41,7 +41,7 @@ function Servidores() {
         id: "",
         nome: "",
         perfil: [],
-        unidade: ""
+        servico: ""
     });
 
     async function carregarDados(paginaAtual = pagina, filtrosAtuais = filtros) {
@@ -54,11 +54,11 @@ function Servidores() {
                 id: filtrosAtuais.id || null,
                 nome: filtrosAtuais.nome || null,
                 perfil: filtrosAtuais.perfil || null,
-                unidadeSaudeId: filtrosAtuais.unidade || null,
+                servicoId: filtrosAtuais.servico || null,
             };
 
             if(servidor.perfil === 'SOLICITANTE' || servidor.perfil === 'SOLICITANTE'){
-                payload.unidadeSaudeId = servidor.unidadeSaudeId;
+                payload.servicoId = servidor.servicoId;
             }
 
             const servidoresResponse = await api.post(
@@ -116,7 +116,7 @@ function Servidores() {
             id: "",
             nome: "",
             perfil: [],
-            unidade: ""
+            servico: ""
         };
 
         setFiltros(filtrosVazios);
@@ -125,9 +125,9 @@ function Servidores() {
     }
 
     useEffect(() => {
-        async function carregarUnidades() {
+        async function carregarServicos() {
             try {
-                const servicosResponse = await api.get("/unidades-saude/all");
+                const servicosResponse = await api.get("/servicos/all");
                 setServicos(servicosResponse.data.todos)
                 setUnidades(servicosResponse.data.ubs);
                 setOutros(servicosResponse.data.outros);
@@ -138,16 +138,16 @@ function Servidores() {
                 setMensagemSucesso("");
             }
         }
-        void carregarUnidades();
+        void carregarServicos();
     }, []);
 
-    async function abrirCardUbs(unidadeSaudeId) {
-        if(unidadeSaudeId === null){
+    async function abrirCardUbs(servicoId) {
+        if(servicoId === null){
             return
         }
         try {
             setCarregandoUbs(true);
-            const response = await api.get(`/unidades-saude/${unidadeSaudeId}`);
+            const response = await api.get(`/servicos/${servicoId}`);
             setUbsSelecionada(response.data);
         } catch {
             setMensagem("Erro ao carregar dados do serviço.");
@@ -164,7 +164,7 @@ function Servidores() {
 
         setTransferencia({
             perfil: servidor.perfil,
-            unidadeSaudeId: String(servidor.unidadeSaudeId ?? ""),
+            servicoId: String(servidor.servicoId ?? ""),
             tipoServico: servidor.tipoServico
         });
     }
@@ -175,8 +175,8 @@ function Servidores() {
 
         const payload = {
             perfil: transferencia.perfil || null,
-            unidadeSaudeId: transferencia.unidadeSaudeId
-                ? Number(transferencia.unidadeSaudeId)
+            servicoId: transferencia.servicoId
+                ? Number(transferencia.servicoId)
                 : null,
         };
         try {
@@ -210,7 +210,7 @@ function Servidores() {
         setMensagem("");
         setTransferencia({
             perfil: "",
-            unidadeSaudeId: "",
+            servicoId: "",
             tipoServico: ""
         });
     }
@@ -237,7 +237,7 @@ function Servidores() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
                 {mensagemErro && (
@@ -304,11 +304,11 @@ function Servidores() {
                                     <td>
                                         <span
                                             className="ubs-badge ubs-clickable"
-                                            onClick={() => abrirCardUbs(s.unidadeSaudeId)}
+                                            onClick={() => abrirCardUbs(s.servicoId)}
                                         >
                                             {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(s.perfil)
                                                 ? "Sem serviço vinculado"
-                                                : s.unidadeSaudeNome}
+                                                : s.servicoNome}
                                         </span>
                                     </td>
                                     <td>

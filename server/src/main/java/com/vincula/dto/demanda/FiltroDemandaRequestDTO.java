@@ -15,8 +15,8 @@ public class FiltroDemandaRequestDTO {
     private MotivoBuscaAtiva motivo;
     private MotivoComplemento complemento;
 
-    private Long unidadeResponsavelId;
-    private Long unidadeSolicitanteId;
+    private Long servicoResponsavelId;
+    private Long servicoSolicitanteId;
     private Long usuarioId;
 
     private LocalDate dataAbInicial;

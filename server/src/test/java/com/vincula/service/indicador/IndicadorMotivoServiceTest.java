@@ -82,16 +82,16 @@ class IndicadorMotivoServiceTest {
     }
 
     @Test
-    void deveListarMotivosPorUnidade() {
+    void deveListarMotivosPorServico() {
 
         when(demandaRepository
-                .listarPrincipaisMotivosPorUnidade(1L))
+                .listarPrincipaisMotivosPorServico(1L))
                 .thenReturn(List.of());
 
-        service.principaisMotivosPorUnidade(1L);
+        service.principaisMotivosPorServico(1L);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosPorUnidade(1L);
+                .listarPrincipaisMotivosPorServico(1L);
     }
 
     @Test
@@ -111,25 +111,25 @@ class IndicadorMotivoServiceTest {
     }
 
     @Test
-    void deveListarMotivosPorUnidadeEPeriodo() {
+    void deveListarMotivosPorServicoEPeriodo() {
 
         LocalDateTime inicio = LocalDateTime.now().minusDays(30);
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .listarPrincipaisMotivosPorUnidadeEPeriodo(
+                .listarPrincipaisMotivosPorServicoEPeriodo(
                         1L,
                         inicio,
                         fim))
                 .thenReturn(List.of());
 
-        service.principaisMotivosPorUnidadeEPeriodo(
+        service.principaisMotivosPorServicoEPeriodo(
                 1L,
                 inicio,
                 fim);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosPorUnidadeEPeriodo(
+                .listarPrincipaisMotivosPorServicoEPeriodo(
                         1L,
                         inicio,
                         fim);
@@ -142,7 +142,7 @@ class IndicadorMotivoServiceTest {
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .listarPrincipaisMotivosPorUnidadeSolicitanteEPeriodo(
+                .listarPrincipaisMotivosPorServicoSolicitanteEPeriodo(
                         1L,
                         inicio,
                         fim))
@@ -154,7 +154,7 @@ class IndicadorMotivoServiceTest {
                 fim);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosPorUnidadeSolicitanteEPeriodo(
+                .listarPrincipaisMotivosPorServicoSolicitanteEPeriodo(
                         1L,
                         inicio,
                         fim);
@@ -164,13 +164,13 @@ class IndicadorMotivoServiceTest {
     void deveListarMotivosPorServidor() {
 
         when(demandaRepository
-                .listarPrincipaisMotivosPorUnidadeSolicitante(1L))
+                .listarPrincipaisMotivosPorServicoSolicitante(1L))
                 .thenReturn(List.of());
 
         service.principaisMotivosPorServidor(1L);
 
         verify(demandaRepository)
-                .listarPrincipaisMotivosPorUnidadeSolicitante(1L);
+                .listarPrincipaisMotivosPorServicoSolicitante(1L);
     }
 }
 

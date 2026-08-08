@@ -9,14 +9,14 @@ import Layout from "./components/Layout";
 import UsuarioCadastro from "./pages/usuario/UsuarioCadastro.jsx";
 import UsuarioEditar from "./pages/usuario/UsuarioEditar.jsx";
 import ServidorCadastro from "./pages/servidor/ServidorCadastro.jsx";
-import UnidadeSaudeCadastro from "./pages/unidadeSaude/UnidadeSaudeCadastro.jsx";
-import UnidadeSaudeEditar from "./pages/unidadeSaude/UnidadeSaudeEditar.jsx";
+import ServicoCadastro from "./pages/servico/ServicoCadastro.jsx";
+import ServicoEditar from "./pages/servico/ServicoEditar.jsx";
 import MeuPerfil from "./pages/servidor/MeuPerfil.jsx";
 import AlterarSenha from "./pages/auth/AlterarSenha.jsx";
 import DemandaCadastro from "./pages/demanda/DemandaCadastro.jsx";
 import MapaTerritorios from "./pages/mapa/MapasTerritorio.jsx";
 import ImportarMapa from "./pages/mapa/ImportarMapa.jsx";
-import UnidadesSaude from "./pages/unidadeSaude/UnidadesSaude.jsx";
+import Servicos from "./pages/servico/Servicos.jsx";
 import {useAuth} from "./context/AuthContext.jsx";
 import EsqueciSenha from "./pages/auth/EsqueciSenha.jsx";
 import RedefinirSenha from "./pages/auth/RedefinirSenha.jsx";
@@ -156,33 +156,33 @@ function App() {
             />
 
             <Route
-                path="/unidades-saude/cadastro"
+                path="/servicos/cadastro"
                 element={
                     <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
-                            <UnidadeSaudeCadastro />
+                            <ServicoCadastro />
                         </Layout>
                     </ProtectedRoute>
                 }
             />
 
             <Route
-                path="/unidades-saude"
+                path="/servicos"
                 element={
                     <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "SERVIDOR_APS", "SOLICITANTE", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
-                            <UnidadesSaude />
+                            <Servicos />
                         </Layout>
                     </ProtectedRoute>
                 }
             />
 
             <Route
-                path="/unidades-saude/:id/editar"
+                path="/servicos/:id/editar"
                 element={
                     <ProtectedRoute perfisPermitidos={["GESTAO_MUNICIPAL", "VIGILANCIA", "COORDENADORIA"]}>
                         <Layout>
-                            <UnidadeSaudeEditar />
+                            <ServicoEditar />
                         </Layout>
                     </ProtectedRoute>
                 }

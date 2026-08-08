@@ -21,22 +21,22 @@ public class IndicadorResultadoService {
 
     public List<IndicadorValorDTO> gerarIndicadores(FiltroIndicadorRequestDTO filtro) {
 
-        Long unidadeResponsavelId = filtro.getUnidadeResponsavelId();
-        Long unidadeSolicitanteId = filtro.getUnidadeSolicitanteId();
+        Long servicoResponsavelId = filtro.getServicoResponsavelId();
+        Long servicoSolicitanteId = filtro.getServicoSolicitanteId();
         LocalDate inicio = filtro.getDataInicial();
         LocalDate fim = filtro.getDataFinal();
 
         Long totalFinalizadas =
                  demandaRepository.countDemandasFinalizadas(
-                        unidadeResponsavelId,
-                        unidadeSolicitanteId,
+                        servicoResponsavelId,
+                        servicoSolicitanteId,
                         inicio,
                         fim
                 );
 
         return demandaRepository.agruparPorDesfecho(
-                        unidadeResponsavelId,
-                        unidadeSolicitanteId,
+                        servicoResponsavelId,
+                        servicoSolicitanteId,
                         inicio,
                         fim
                 )

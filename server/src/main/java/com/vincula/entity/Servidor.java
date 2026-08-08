@@ -33,6 +33,6 @@ public class Servidor {
     private Boolean ativo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unidade_saude_id")
-    private UnidadeSaude unidadeSaude;
+    @JoinColumn(name = "servico_id")
+    private Servico servico;
 }

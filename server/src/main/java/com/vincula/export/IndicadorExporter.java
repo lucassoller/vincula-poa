@@ -50,7 +50,7 @@ public class IndicadorExporter {
     private void adicionarRanking(StringBuilder sb, String categoria, List<IndicadorRankingDTO> ranking) {
         for (IndicadorRankingDTO item : ranking) {
             sb.append(categoria).append(",")
-                    .append(escapar(item.getUnidadeSaudeNome())).append(",")
+                    .append(escapar(item.getServicoNome())).append(",")
                     .append(item.getValor()).append("\n");
         }
     }

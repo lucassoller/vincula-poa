@@ -39,12 +39,12 @@ public class DemandaSpecification {
             spec = spec.and(complemento(filtro.getComplemento()));
         }
 
-        if (filtro.getUnidadeResponsavelId() != null) {
-            spec = spec.and(unidadeResponsavel(filtro.getUnidadeResponsavelId()));
+        if (filtro.getServicoResponsavelId() != null) {
+            spec = spec.and(servicoResponsavel(filtro.getServicoResponsavelId()));
         }
 
-        if (filtro.getUnidadeSolicitanteId() != null) {
-            spec = spec.and(unidadeSolicitante(filtro.getUnidadeSolicitanteId()));
+        if (filtro.getServicoSolicitanteId() != null) {
+            spec = spec.and(servicoSolicitante(filtro.getServicoSolicitanteId()));
         }
 
         if (filtro.getUsuarioId() != null) {
@@ -101,20 +101,20 @@ public class DemandaSpecification {
                 cb.equal(root.get("motivoComplemento"), complemento);
     }
 
-    public static Specification<Demanda> unidadeResponsavel(Long unidadeId) {
+    public static Specification<Demanda> servicoResponsavel(Long servicoId) {
 
         return (root, query, cb) ->
-                cb.equal(root.get("unidadeResponsavel").get("id"), unidadeId);
+                cb.equal(root.get("servicoResponsavel").get("id"), servicoId);
     }
 
-    public static Specification<Demanda> unidadeSolicitante(Long unidadeId) {
+    public static Specification<Demanda> servicoSolicitante(Long servicoId) {
 
         return (root, query, cb) -> {
-            if (unidadeId == -1L) {
-                return cb.isNull(root.get("unidadeSolicitante"));
+            if (servicoId == -1L) {
+                return cb.isNull(root.get("servicoSolicitante"));
             }
 
-            return cb.equal(root.get("unidadeSolicitante").get("id"), unidadeId);
+            return cb.equal(root.get("servicoSolicitante").get("id"), servicoId);
         };
     }
 

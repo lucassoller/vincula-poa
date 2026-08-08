@@ -1,7 +1,7 @@
 package com.vincula.service;
 
 import com.vincula.entity.TerritorioUbs;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.repository.TerritorioUbsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +24,12 @@ class TerritorializacaoServiceTest {
     @Test
     void deveRetornarUbsQuandoCoordenadaEstiverDentroDoTerritorio() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
 
         TerritorioUbs territorio = new TerritorioUbs();
-        territorio.setUnidadeSaude(unidade);
+        territorio.setServico(servico);
 
         territorio.setGeojson("""
         {
@@ -47,7 +47,7 @@ class TerritorializacaoServiceTest {
         when(repository.findAll())
                 .thenReturn(List.of(territorio));
 
-        UnidadeSaude resultado =
+        Servico resultado =
                 territorializacaoService.buscarUbsPorCoordenada(
                         -29.5,
                         -50.5
@@ -60,10 +60,10 @@ class TerritorializacaoServiceTest {
     @Test
     void deveRetornarNullQuandoCoordenadaEstiverForaDosTerritorios() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
+        Servico servico = new Servico();
 
         TerritorioUbs territorio = new TerritorioUbs();
-        territorio.setUnidadeSaude(unidade);
+        territorio.setServico(servico);
 
         territorio.setGeojson("""
         {
@@ -81,7 +81,7 @@ class TerritorializacaoServiceTest {
         when(repository.findAll())
                 .thenReturn(List.of(territorio));
 
-        UnidadeSaude resultado =
+        Servico resultado =
                 territorializacaoService.buscarUbsPorCoordenada(
                         -32.0,
                         -55.0
@@ -99,7 +99,7 @@ class TerritorializacaoServiceTest {
         when(repository.findAll())
                 .thenReturn(List.of(territorio));
 
-        UnidadeSaude resultado =
+        Servico resultado =
                 territorializacaoService.buscarUbsPorCoordenada(
                         -30.0,
                         -51.0
@@ -111,11 +111,11 @@ class TerritorializacaoServiceTest {
     @Test
     void deveRetornarPrimeiroTerritorioEncontrado() {
 
-        UnidadeSaude unidade1 = new UnidadeSaude();
-        unidade1.setId(1L);
+        Servico servico1 = new Servico();
+        servico1.setId(1L);
 
-        UnidadeSaude unidade2 = new UnidadeSaude();
-        unidade2.setId(2L);
+        Servico servico2 = new Servico();
+        servico2.setId(2L);
 
         String geojson = """
         {
@@ -132,16 +132,16 @@ class TerritorializacaoServiceTest {
 
         TerritorioUbs t1 = new TerritorioUbs();
         t1.setGeojson(geojson);
-        t1.setUnidadeSaude(unidade1);
+        t1.setServico(servico1);
 
         TerritorioUbs t2 = new TerritorioUbs();
         t2.setGeojson(geojson);
-        t2.setUnidadeSaude(unidade2);
+        t2.setServico(servico2);
 
         when(repository.findAll())
                 .thenReturn(List.of(t1, t2));
 
-        UnidadeSaude resultado =
+        Servico resultado =
                 territorializacaoService.buscarUbsPorCoordenada(
                         -29.5,
                         -50.5

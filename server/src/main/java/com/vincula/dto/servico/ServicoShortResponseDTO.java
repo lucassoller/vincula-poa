@@ -1,9 +1,9 @@
-package com.vincula.dto.unidadeSaude;
+package com.vincula.dto.servico;
 
 import lombok.Data;
 
 @Data
-public class UnidadeSaudeShortResponseDTO {
+public class ServicoShortResponseDTO {
 
     private Long id;
     private String nome;

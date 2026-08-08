@@ -1,15 +1,15 @@
 package com.vincula.service;
 
-import com.vincula.dto.unidadeSaude.*;
+import com.vincula.dto.servico.*;
 import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Usuario;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.enums.TipoServico;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
-import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.repository.ServicoRepository;
 import com.vincula.specification.ServicoSpecification;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
@@ -24,47 +24,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UnidadeSaudeService {
+public class ServicoService {
 
-    private final UnidadeSaudeRepository unidadeSaudeRepository;
+    private final ServicoRepository servicoRepository;
     private final EnderecoMapper enderecoMapper;
     private final AuditoriaFacade auditoriaFacade;
 
-    public UnidadeSaudeService(UnidadeSaudeRepository unidadeSaudeRepository,
+    public ServicoService(ServicoRepository servicoRepository,
                                EnderecoMapper enderecoMapper,
                                AuditoriaFacade auditoriaFacade) {
-        this.unidadeSaudeRepository = unidadeSaudeRepository;
+        this.servicoRepository = servicoRepository;
         this.enderecoMapper = enderecoMapper;
         this.auditoriaFacade = auditoriaFacade;
     }
 
-    public UnidadeSaudeResponseDTO criar(UnidadeSaudeDTO dto) {
+    public ServicoResponseDTO criar(ServicoDTO dto) {
         validarCnesCreate(dto);
-        UnidadeSaude entity = toEntity(dto);
-        UnidadeSaude salvo = unidadeSaudeRepository.save(entity);
-        auditoriaFacade.unidadeSaudeCriada(salvo.getId());
+        Servico entity = toEntity(dto);
+        Servico salvo = servicoRepository.save(entity);
+        auditoriaFacade.servicoCriado(salvo.getId());
         return toDTO(salvo);
     }
 
-    public List<UnidadeSaudeShortResponseDTO> listarTodasUnidades() {
-        return unidadeSaudeRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS)
+    public List<ServicoShortResponseDTO> listarTodasServicos() {
+        return servicoRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS)
                 .stream()
                 .map(this::toShortDTO)
                 .toList();
     }
 
-    public List<UnidadeSaudeShortResponseDTO> listarTodosServicos() {
-        return unidadeSaudeRepository.findAllByOrderByTipoServicoAndNomeAsc()
+    public List<ServicoShortResponseDTO> listarTodosServicos() {
+        return servicoRepository.findAllByOrderByTipoServicoAndNomeAsc()
                 .stream()
                 .map(this::toShortDTO)
                 .toList();
     }
 
-    public Page<UnidadeSaudeResponseDTO> listarTodosFiltrados(
+    public Page<ServicoResponseDTO> listarTodosFiltrados(
             FiltroServicoRequestDTO filtro,
             Pageable pageable) {
 
-        Specification<UnidadeSaude> specification =
+        Specification<Servico> specification =
                 ServicoSpecification.comFiltros(filtro);
 
         Pageable pageableOrdenado = PageRequest.of(
@@ -73,31 +73,31 @@ public class UnidadeSaudeService {
                 Sort.by("nome")
         );
 
-        return unidadeSaudeRepository.findAll(specification, pageableOrdenado)
+        return servicoRepository.findAll(specification, pageableOrdenado)
                 .map(this::toDTO);
     }
 
-    public UnidadesResponseDTO listarServicos() {
+    public ServicosResponseDTO listarServicos() {
 
-        List<UnidadeSaude> todas = unidadeSaudeRepository.findAllByOrderByTipoServicoAndNomeAsc();
+        List<Servico> todas = servicoRepository.findAllByOrderByTipoServicoAndNomeAsc();
 
-        List<UnidadeSaudeShortResponseDTO> todasDto = new ArrayList<>();
-        List<UnidadeSaudeShortResponseDTO> ubs = new ArrayList<>();
-        List<UnidadeSaudeShortResponseDTO> servicos = new ArrayList<>();
-        List<UnidadeSaudeShortResponseDTO> outros = new ArrayList<>();
-        List<UnidadeSaudeShortResponseDTO> especializados = new ArrayList<>();
+        List<ServicoShortResponseDTO> todasDto = new ArrayList<>();
+        List<ServicoShortResponseDTO> ubs = new ArrayList<>();
+        List<ServicoShortResponseDTO> servicos = new ArrayList<>();
+        List<ServicoShortResponseDTO> outros = new ArrayList<>();
+        List<ServicoShortResponseDTO> especializados = new ArrayList<>();
 
-        for (UnidadeSaude unidade : todas) {
+        for (Servico servico : todas) {
 
-            UnidadeSaudeShortResponseDTO dto = toShortDTO(unidade);
+            ServicoShortResponseDTO dto = toShortDTO(servico);
 
             todasDto.add(dto);
 
-            if (unidade.getTipoServico() == TipoServico.UBS) {
+            if (servico.getTipoServico() == TipoServico.UBS) {
                 ubs.add(dto);
             } else {
                 servicos.add(dto);
-                if (unidade.getTipoServico() == TipoServico.OUTRO) {
+                if (servico.getTipoServico() == TipoServico.OUTRO) {
                     outros.add(dto);
                 }else{
                     especializados.add(dto);
@@ -105,7 +105,7 @@ public class UnidadeSaudeService {
             }
         }
 
-        return new UnidadesResponseDTO(
+        return new ServicosResponseDTO(
                 todasDto,
                 ubs,
                 servicos,
@@ -114,68 +114,68 @@ public class UnidadeSaudeService {
         );
     }
 
-    public UnidadeSaudeResponseDTO buscarPorId(Long id) {
-        UnidadeSaude entity = buscarUnidadeSaudePorId(id);
+    public ServicoResponseDTO buscarPorId(Long id) {
+        Servico entity = buscarServicoPorId(id);
         return toDTO(entity);
     }
 
-    public UnidadeSaudeResponseDTO buscarPorCnes(String cnes) {
-        UnidadeSaude entity = buscarUnidadeSaudePorCnes(cnes);
+    public ServicoResponseDTO buscarPorCnes(String cnes) {
+        Servico entity = buscarServicoPorCnes(cnes);
         return toDTO(entity);
     }
 
-    public UnidadeSaudeResponseDTO atualizar(Long id, UnidadeSaudeDTO dto) {
-        UnidadeSaude entity = buscarUnidadeSaudePorId(id);
+    public ServicoResponseDTO atualizar(Long id, ServicoDTO dto) {
+        Servico entity = buscarServicoPorId(id);
         validarCnesUpdate(dto, id);
-        String descricaoLog = AuditoriaDescricaoUtil.unidadeSaudeAtualizada(entity, dto);
+        String descricaoLog = AuditoriaDescricaoUtil.servicoAtualizada(entity, dto);
 
         entity.setNome(dto.getNome());
         entity.setCnes(dto.getCnes());
         entity.setTelefone(dto.getTelefone());
         entity.setTipoServico(dto.getTipoServico());
         enderecoMapper.updateEntityFromDto(dto.getEndereco(), entity.getEndereco());
-        UnidadeSaude atualizado = unidadeSaudeRepository.save(entity);
-        auditoriaFacade.unidadeSaudeAtualizada(atualizado.getId(), descricaoLog);
+        Servico atualizado = servicoRepository.save(entity);
+        auditoriaFacade.servicoAtualizado(atualizado.getId(), descricaoLog);
 
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
-        UnidadeSaude entity = buscarUnidadeSaudePorId(id);
+        Servico entity = buscarServicoPorId(id);
 
-        Long unidadeId = entity.getId();
+        Long servicoId = entity.getId();
 
-        unidadeSaudeRepository.delete(entity);
+        servicoRepository.delete(entity);
 
-        auditoriaFacade.unidadeSaudeDeletada(unidadeId);
+        auditoriaFacade.servicoDeletado(servicoId);
     }
 
-    private void validarCnesCreate(UnidadeSaudeDTO dto) {
-        if (unidadeSaudeRepository.existsByCnes(dto.getCnes())) {
+    private void validarCnesCreate(ServicoDTO dto) {
+        if (servicoRepository.existsByCnes(dto.getCnes())) {
             throw new ConflictException("CNES já cadastrado");
         }
     }
 
-    private void validarCnesUpdate(UnidadeSaudeDTO dto, Long id) {
-        if (unidadeSaudeRepository.existsByCnesAndIdNot(dto.getCnes(), id)) {
+    private void validarCnesUpdate(ServicoDTO dto, Long id) {
+        if (servicoRepository.existsByCnesAndIdNot(dto.getCnes(), id)) {
             throw new ConflictException("CNES já cadastrado");
         }
     }
 
-    private UnidadeSaude buscarUnidadeSaudePorId(Long id) {
-        return unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+    private Servico buscarServicoPorId(Long id) {
+        return servicoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Serviço não encontrado"));
     }
 
-    private UnidadeSaude buscarUnidadeSaudePorCnes(String cnes){
-        return unidadeSaudeRepository.findByCnes(cnes)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+    private Servico buscarServicoPorCnes(String cnes){
+        return servicoRepository.findByCnes(cnes)
+                .orElseThrow(() -> new NotFoundException("Serviço não encontrado"));
     }
 
-    public UnidadeSaude toEntity(UnidadeSaudeDTO dto){
+    public Servico toEntity(ServicoDTO dto){
         Endereco endereco = enderecoMapper.toEntity(dto.getEndereco());
 
-        UnidadeSaude entity = new UnidadeSaude();
+        Servico entity = new Servico();
         entity.setNome(dto.getNome());
         entity.setCnes(dto.getCnes());
         entity.setTelefone(dto.getTelefone());
@@ -186,8 +186,8 @@ public class UnidadeSaudeService {
         return entity;
     }
 
-    public UnidadeSaudeResponseDTO toDTO(UnidadeSaude entity) {
-        UnidadeSaudeResponseDTO dto = new UnidadeSaudeResponseDTO();
+    public ServicoResponseDTO toDTO(Servico entity) {
+        ServicoResponseDTO dto = new ServicoResponseDTO();
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
         dto.setCnes(entity.getCnes());
@@ -199,8 +199,8 @@ public class UnidadeSaudeService {
     }
 
 
-    public UnidadeSaudeShortResponseDTO toShortDTO(UnidadeSaude entity) {
-        UnidadeSaudeShortResponseDTO dto = new UnidadeSaudeShortResponseDTO();
+    public ServicoShortResponseDTO toShortDTO(Servico entity) {
+        ServicoShortResponseDTO dto = new ServicoShortResponseDTO();
         dto.setId(entity.getId());
         dto.setNome(entity.getNome());
         dto.setCnes(entity.getCnes());
@@ -216,8 +216,8 @@ public class UnidadeSaudeService {
         dto.setDataNascimento(entity.getDataNascimento());
         dto.setDocumento(entity.getDocumento());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
-        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
-        dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
+        dto.setServicoId(entity.getServico().getId());
+        dto.setServicoNome(entity.getServico().getNome());
         dto.setSexo(entity.getSexo());
 
         return dto;

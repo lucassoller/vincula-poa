@@ -4,7 +4,6 @@ import api from "../../api/api.js";
 import EnderecoForm from "../../components/EnderecoForm.jsx";
 import "../../styles/usuarioCadastro.css";
 import { useForm } from "react-hook-form";
-
 import ModalRedirecionarDemandas from "../../components/Modal/ModalRedirecionarDemandas.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {perfilLabel} from "../../utils/utils.js";
@@ -24,7 +23,7 @@ function UsuarioEditar() {
             documento: "",
             dataNascimento: "",
             sexo: "",
-            unidadeSaudeNome: "",
+            servicoNome: "",
             endereco: {
                 rua: "",
                 numero: "",
@@ -43,24 +42,24 @@ function UsuarioEditar() {
     const [mensagem, setMensagem] = useState("");
     const [mensagemSucesso, setMensagemSucesso] = useState("");
     const [carregando, setCarregando] = useState(true);
-    const [unidadeOriginalId, setUnidadeOriginalId] = useState(null);
+    const [servicoOriginalId, setServicoOriginalId] = useState(null);
     const [mostrarConfirmacaoRedirecionamento, setMostrarConfirmacaoRedirecionamento] = useState(false);
     const [usuarioAtualizado, setUsuarioAtualizado] = useState(null);
-    const unidadeSaudeNome = watch("unidadeSaudeNome");
+    const servicoNome = watch("servicoNome");
 
     useEffect(() => {
         async function carregarUsuario() {
             try {
                 const response = await api.get(`/usuarios/${id}`);
                 reset(response.data);
-                if(servidor?.perfil === 'SOLICITANTE' && servidor?.unidadeSaudeId !== response.data.unidadeSolicitanteId){
+                if(servidor?.perfil === 'SOLICITANTE' && servidor?.servicoId !== response.data.servicoSolicitanteId){
                     navigate("/usuarios");
                     return;
-                }else if(servidor?.perfil === 'SERVIDOR_APS' && servidor?.unidadeSaudeId !== response.data.unidadeSaudeId){
+                }else if(servidor?.perfil === 'SERVIDOR_APS' && servidor?.servicoId !== response.data.servicoId){
                     navigate("/usuarios");
                     return;
                 }
-                setUnidadeOriginalId(response.data.unidadeSaudeId);
+                setServicoOriginalId(response.data.servicoId);
             } catch {
                 setMensagemSucesso("")
                 setMensagem("Erro ao carregar usuário.");
@@ -98,16 +97,16 @@ function UsuarioEditar() {
 
             setUsuarioAtualizado(response.data);
 
-            const mudouUnidade =
-                Number(unidadeOriginalId) !== Number(response.data.unidadeSaudeId);
+            const mudouServico =
+                Number(servicoOriginalId) !== Number(response.data.servicoId);
 
-            if (mudouUnidade) {
+            if (mudouServico) {
                 setMostrarConfirmacaoRedirecionamento(true);
-                setMensagemSucesso("Usuário atualizado. A UBS vinculada mudou.");
+                setMensagemSucesso("Usuário atualizado. O serviço vinculado mudou.");
                 return;
             }
 
-            setMensagemSucesso("Usuário atualizado com sucesso e vinculado na Unidade " + response.data.unidadeSaudeNome);
+            setMensagemSucesso("Usuário atualizado com sucesso e vinculado no Serviço " + response.data.servicoNome);
             setEtapa(1);
 
         } catch (error) {
@@ -126,7 +125,7 @@ function UsuarioEditar() {
     async function confirmarRedirecionamentoDemandas() {
         try {
             await api.patch(`/usuarios/${id}/redirecionar-abertas`, {
-                novaUnidadeResponsavelId: usuarioAtualizado.unidadeSaudeId,
+                novaServicoResponsavelId: usuarioAtualizado.servicoId,
                 motivoRedirecionamento: "Atualização de endereço/território",
             });
 
@@ -163,7 +162,7 @@ function UsuarioEditar() {
                         <p>Atualize os dados cadastrais do usuário</p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
 
@@ -256,7 +255,7 @@ function UsuarioEditar() {
                             <EnderecoForm
                                 register={register}
                                 erros={erros}
-                                unidadeSaude={unidadeSaudeNome}
+                                servico={servicoNome}
                             />
 
                             <div className="form-actions">

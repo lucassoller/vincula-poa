@@ -137,7 +137,7 @@ class ServidorControllerTest {
     void deveTransferirServidor() throws Exception {
 
         TransferirServidorDTO dto = new TransferirServidorDTO();
-        dto.setUnidadeSaudeId(1L);
+        dto.setServicoId(1L);
         dto.setPerfil(PerfilServidor.SERVIDOR_APS);
 
         when(servidorService.transferirServidor(eq(1L), any()))

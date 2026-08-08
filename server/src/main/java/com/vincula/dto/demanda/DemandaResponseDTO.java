@@ -37,11 +37,11 @@ public class DemandaResponseDTO {
     private Long usuarioId;
     private String usuarioNome;
 
-    private Long unidadeSolicitanteId;
-    private String unidadeSolicitanteNome;
+    private Long servicoSolicitanteId;
+    private String servicoSolicitanteNome;
 
-    private Long unidadeResponsavelId;
-    private String unidadeResponsavelNome;
+    private Long servicoResponsavelId;
+    private String servicoResponsavelNome;
 
     private Long servidorCriadorId;
     private String servidorCriadorNome;
@@ -49,8 +49,8 @@ public class DemandaResponseDTO {
     private Long servidorEncerramentoId;
     private String servidorEncerramentoNome;
 
-    private Long unidadeResponsavelAnteriorId;
-    private String unidadeResponsavelAnteriorNome;
+    private Long servicoResponsavelAnteriorId;
+    private String servicoResponsavelAnteriorNome;
 
     private Boolean foiRedirecionada;
     private String motivoRedirecionamento;

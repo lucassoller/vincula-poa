@@ -73,7 +73,7 @@ function DemandaCadastro() {
         if (usuario) {
             setValue("usuarioId", String(usuario.id));
             setBuscaUsuario(`${usuario.nomeCompleto} - ${usuario.documento}`);
-            setUbsUsuario(usuario.unidadeSaudeNome || "");
+            setUbsUsuario(usuario.servicoNome || "");
             setUsuarioSelecionado(usuario);
         }
     }, [location.state, usuarios, setValue]);
@@ -143,7 +143,7 @@ function DemandaCadastro() {
         setUsuarioSelecionado(usuario);
         setValue("usuarioId", usuario.id);
         setBuscaUsuario(`${usuario.nomeCompleto} - ${usuario.documento}`);
-        setUbsUsuario(usuario.unidadeSaudeNome || "");
+        setUbsUsuario(usuario.servicoNome || "");
         setSugestoes([]);
     }
 
@@ -192,7 +192,7 @@ function DemandaCadastro() {
                         <p>Cadastre uma solicitação de busca ativa para acompanhamento</p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
 

@@ -94,20 +94,20 @@ class DemandaControllerTest {
 
 
     @Test
-    void deveListarFiltradasPorUnidade() throws Exception {
+    void deveListarFiltradasPorServico() throws Exception {
 
-        when(demandaService.listarPorUnidadeSaudeFiltradas(
+        when(demandaService.listarPorServicoFiltradas(
                 eq(1L), eq("teste"), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/demandas/filtradas/unidade/1/teste"))
+        mockMvc.perform(get("/demandas/filtradas/servico/1/teste"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void deveListarFiltradasPorSolicitante() throws Exception {
 
-        when(demandaService.listarPorUnidadeSolicitanteFiltradas(
+        when(demandaService.listarPorServicoSolicitanteFiltradas(
                 eq(1L), eq("teste"), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
@@ -200,7 +200,7 @@ class DemandaControllerTest {
     void deveRedirecionarDemanda() throws Exception {
 
         RedirecionarDemandaDTO dto = new RedirecionarDemandaDTO();
-        dto.setNovaUnidadeResponsavelId(2L);
+        dto.setNovoServicoResponsavelId(2L);
         dto.setMotivoRedirecionamento("motivo");
 
         when(demandaService.redirecionar(
@@ -250,19 +250,19 @@ class DemandaControllerTest {
     }
 
     @Test
-    void deveExportarPorUnidadeCsv() throws Exception {
+    void deveExportarPorServicoCsv() throws Exception {
 
-        when(demandaService.exportarDemandasPorUnidadeCsv(1L))
+        when(demandaService.exportarDemandasPorServicoCsv(1L))
                 .thenReturn("id,nome\n1,teste");
 
-        mockMvc.perform(get("/demandas/exportar/unidade/1"))
+        mockMvc.perform(get("/demandas/exportar/servico/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void deveExportarPorUnidadeSolicitanteCsv() throws Exception {
+    void deveExportarPorServicoSolicitanteCsv() throws Exception {
 
-        when(demandaService.exportarDemandasPorUnidadeSolicitanteCsv(1L))
+        when(demandaService.exportarDemandasPorServicoSolicitanteCsv(1L))
                 .thenReturn("id,nome\n1,teste");
 
         mockMvc.perform(get("/demandas/exportar/solicitante/1"))
@@ -280,19 +280,19 @@ class DemandaControllerTest {
     }
 
     @Test
-    void deveExportarFiltradasPorUnidadeCsv() throws Exception {
+    void deveExportarFiltradasPorServicoCsv() throws Exception {
 
-        when(demandaService.exportarDemandasFiltradasPorUnidadeCsv(1L, "teste"))
+        when(demandaService.exportarDemandasFiltradasPorServicoCsv(1L, "teste"))
                 .thenReturn("id,nome\n1,teste");
 
-        mockMvc.perform(get("/demandas/exportar/filtradas/unidade/1/teste"))
+        mockMvc.perform(get("/demandas/exportar/filtradas/servico/1/teste"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void deveExportarFiltradasPorUnidadeSolicitanteCsv() throws Exception {
+    void deveExportarFiltradasPorServicoSolicitanteCsv() throws Exception {
 
-        when(demandaService.exportarDemandasFiltradasPorUnidadeSolicitanteCsv(1L, "teste"))
+        when(demandaService.exportarDemandasFiltradasPorServicoSolicitanteCsv(1L, "teste"))
                 .thenReturn("id,nome\n1,teste");
 
         mockMvc.perform(get("/demandas/exportar/filtradas/solicitante/1/teste"))

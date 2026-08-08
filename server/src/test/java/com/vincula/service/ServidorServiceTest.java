@@ -3,14 +3,14 @@ package com.vincula.service;
 import com.vincula.dto.senha.MudancaSenhaDTO;
 import com.vincula.dto.servidor.*;
 import com.vincula.entity.Servidor;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.enums.TipoServico;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.repository.ServidorRepository;
-import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.repository.ServicoRepository;
 import com.vincula.security.SecurityUtils;
 import com.vincula.util.AuditoriaFacade;
 import org.junit.jupiter.api.Test;
@@ -20,13 +20,8 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +34,7 @@ class ServidorServiceTest {
     private ServidorRepository servidorRepository;
 
     @Mock
-    private UnidadeSaudeRepository unidadeSaudeRepository;
+    private ServicoRepository servicoRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -363,14 +358,14 @@ class ServidorServiceTest {
     @Test
     void deveCriarServidor() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(10L);
-        unidade.setNome("UBS Centro");
-        unidade.setTipoServico(TipoServico.UBS);
+        Servico servico = new Servico();
+        servico.setId(10L);
+        servico.setNome("UBS Centro");
+        servico.setTipoServico(TipoServico.UBS);
 
         ServidorDTO dto = new ServidorDTO();
         dto.setPerfil(PerfilServidor.SERVIDOR_APS);
-        dto.setUnidadeSaudeId(10L);
+        dto.setServicoId(10L);
 
         when(servidorRepository.existsByEmail(any()))
                 .thenReturn(false);
@@ -381,8 +376,8 @@ class ServidorServiceTest {
         when(passwordEncoder.encode(any()))
                 .thenReturn("hash");
 
-        when(unidadeSaudeRepository.findById(10L))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findById(10L))
+                .thenReturn(Optional.of(servico));
 
         when(servidorRepository.save(any()))
                 .thenAnswer(i -> {
@@ -501,10 +496,10 @@ class ServidorServiceTest {
         Servidor servidor = new Servidor();
         servidor.setId(1L);
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(10L);
-        unidade.setNome("UBS Centro");
-        unidade.setTipoServico(TipoServico.UBS);
+        Servico servico = new Servico();
+        servico.setId(10L);
+        servico.setNome("UBS Centro");
+        servico.setTipoServico(TipoServico.UBS);
 
         ServidorDTO dto = new ServidorDTO();
         dto.setNome("Novo Nome");
@@ -513,13 +508,13 @@ class ServidorServiceTest {
         dto.setPerfil(PerfilServidor.SERVIDOR_APS);
         dto.setAtivo(true);
         dto.setSenha("123456");
-        dto.setUnidadeSaudeId(10L);
+        dto.setServicoId(10L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
 
-        when(unidadeSaudeRepository.findById(10L))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findById(10L))
+                .thenReturn(Optional.of(servico));
 
         when(passwordEncoder.encode("123456"))
                 .thenReturn("hash");
@@ -542,9 +537,9 @@ class ServidorServiceTest {
         Servidor servidor = new Servidor();
         servidor.setId(1L);
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setTipoServico(TipoServico.UBS);
-        unidade.setId(10L);
+        Servico servico = new Servico();
+        servico.setTipoServico(TipoServico.UBS);
+        servico.setId(10L);
 
         ServidorDTO dto = new ServidorDTO();
         dto.setNome("Novo");
@@ -552,13 +547,13 @@ class ServidorServiceTest {
         dto.setLogin("novo");
         dto.setPerfil(PerfilServidor.SERVIDOR_APS);
         dto.setAtivo(true);
-        dto.setUnidadeSaudeId(10L);
+        dto.setServicoId(10L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
 
-        when(unidadeSaudeRepository.findById(10L))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findById(10L))
+                .thenReturn(Optional.of(servico));
 
         when(servidorRepository.save(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -618,14 +613,14 @@ class ServidorServiceTest {
     }
 
     @Test
-    void deveLancarExceptionQuandoGestaoMunicipalPossuiUnidade() {
+    void deveLancarExceptionQuandoGestaoMunicipalPossuiServico() {
 
         Servidor servidor = new Servidor();
         servidor.setId(1L);
 
         ServidorDTO dto = new ServidorDTO();
         dto.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
-        dto.setUnidadeSaudeId(10L);
+        dto.setServicoId(10L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
@@ -637,7 +632,7 @@ class ServidorServiceTest {
     }
 
     @Test
-    void deveLancarExceptionQuandoServidorApsSemUnidade() {
+    void deveLancarExceptionQuandoServidorApsSemServico() {
 
         Servidor servidor = new Servidor();
         servidor.setId(1L);
@@ -655,19 +650,19 @@ class ServidorServiceTest {
     }
 
     @Test
-    void deveLancarNotFoundQuandoUnidadeNaoExiste() {
+    void deveLancarNotFoundQuandoServicoNaoExiste() {
 
         Servidor servidor = new Servidor();
         servidor.setId(1L);
 
         ServidorDTO dto = new ServidorDTO();
         dto.setPerfil(PerfilServidor.SERVIDOR_APS);
-        dto.setUnidadeSaudeId(99L);
+        dto.setServicoId(99L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
 
-        when(unidadeSaudeRepository.findById(99L))
+        when(servicoRepository.findById(99L))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -677,7 +672,7 @@ class ServidorServiceTest {
     }
 
     @Test
-    void deveRetornarServidorSemUnidade() {
+    void deveRetornarServidorSemServico() {
 
         Servidor servidor = new Servidor();
         servidor.setId(1L);
@@ -693,8 +688,8 @@ class ServidorServiceTest {
         ServidorResponseDTO dto =
                 servidorService.buscarPorId(1L);
 
-        assertNull(dto.getUnidadeSaudeId());
-        assertNull(dto.getUnidadeSaudeNome());
+        assertNull(dto.getServicoId());
+        assertNull(dto.getServicoNome());
     }
 
     @Test
@@ -838,7 +833,7 @@ class ServidorServiceTest {
 
         TransferirServidorDTO dto = new TransferirServidorDTO();
         dto.setPerfil(PerfilServidor.SOLICITANTE);
-        dto.setUnidadeSaudeId(1L);
+        dto.setServicoId(1L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
@@ -863,7 +858,7 @@ class ServidorServiceTest {
 
         TransferirServidorDTO dto = new TransferirServidorDTO();
         dto.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
-        dto.setUnidadeSaudeId(1L);
+        dto.setServicoId(1L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
@@ -886,19 +881,19 @@ class ServidorServiceTest {
         servidor.setId(1L);
         servidor.setPerfil(PerfilServidor.SOLICITANTE);
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(10L);
-        unidade.setTipoServico(TipoServico.UBS);
+        Servico servico = new Servico();
+        servico.setId(10L);
+        servico.setTipoServico(TipoServico.UBS);
 
         TransferirServidorDTO dto = new TransferirServidorDTO();
         dto.setPerfil(PerfilServidor.SOLICITANTE);
-        dto.setUnidadeSaudeId(10L);
+        dto.setServicoId(10L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
 
-        when(unidadeSaudeRepository.findById(10L))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findById(10L))
+                .thenReturn(Optional.of(servico));
 
         BusinessException ex = assertThrows(
                 BusinessException.class,
@@ -918,19 +913,19 @@ class ServidorServiceTest {
         servidor.setId(1L);
         servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(10L);
-        unidade.setTipoServico(TipoServico.OUTRO);
+        Servico servico = new Servico();
+        servico.setId(10L);
+        servico.setTipoServico(TipoServico.OUTRO);
 
         TransferirServidorDTO dto = new TransferirServidorDTO();
         dto.setPerfil(PerfilServidor.SERVIDOR_APS);
-        dto.setUnidadeSaudeId(10L);
+        dto.setServicoId(10L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
 
-        when(unidadeSaudeRepository.findById(10L))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findById(10L))
+                .thenReturn(Optional.of(servico));
 
         BusinessException ex = assertThrows(
                 BusinessException.class,
@@ -950,19 +945,19 @@ class ServidorServiceTest {
         servidor.setId(1L);
         servidor.setPerfil(PerfilServidor.SOLICITANTE);
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(10L);
-        unidade.setTipoServico(TipoServico.UBS);
+        Servico servico = new Servico();
+        servico.setId(10L);
+        servico.setTipoServico(TipoServico.UBS);
 
         TransferirServidorDTO dto = new TransferirServidorDTO();
         dto.setPerfil(PerfilServidor.SERVIDOR_APS);
-        dto.setUnidadeSaudeId(10L);
+        dto.setServicoId(10L);
 
         when(servidorRepository.findById(1L))
                 .thenReturn(Optional.of(servidor));
 
-        when(unidadeSaudeRepository.findById(10L))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findById(10L))
+                .thenReturn(Optional.of(servico));
 
         when(servidorRepository.save(any()))
                 .thenAnswer(i -> i.getArgument(0));
@@ -982,16 +977,16 @@ class ServidorServiceTest {
     @Test
     void deveLancarExcecaoQuandoSolicitanteForVinculadoEmUbs2() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setTipoServico(TipoServico.UBS);
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setTipoServico(TipoServico.UBS);
 
         ServidorDTO dto = new ServidorDTO();
         dto.setPerfil(PerfilServidor.SOLICITANTE);
-        dto.setUnidadeSaudeId(1L);
+        dto.setServicoId(1L);
 
-        when(unidadeSaudeRepository.findById(1L))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findById(1L))
+                .thenReturn(Optional.of(servico));
 
         BusinessException ex = assertThrows(
                 BusinessException.class,
@@ -1007,16 +1002,16 @@ class ServidorServiceTest {
     @Test
     void deveLancarExcecaoQuandoServidorApsForVinculadoEmServicoOutro2() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setTipoServico(TipoServico.OUTRO);
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setTipoServico(TipoServico.OUTRO);
 
         ServidorDTO dto = new ServidorDTO();
         dto.setPerfil(PerfilServidor.SERVIDOR_APS);
-        dto.setUnidadeSaudeId(1L);
+        dto.setServicoId(1L);
 
-        when(unidadeSaudeRepository.findById(1L))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findById(1L))
+                .thenReturn(Optional.of(servico));
 
         BusinessException ex = assertThrows(
                 BusinessException.class,
@@ -1030,10 +1025,10 @@ class ServidorServiceTest {
     }
 
     @Test
-    void deveCriarGestaoMunicipalSemUnidade() {
+    void deveCriarGestaoMunicipalSemServico() {
         ServidorDTO dto = new ServidorDTO();
         dto.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
-        dto.setUnidadeSaudeId(null);
+        dto.setServicoId(null);
 
         Servidor servidorSalvo = new Servidor();
         servidorSalvo.setId(1L);
@@ -1044,6 +1039,6 @@ class ServidorServiceTest {
         ServidorResponseDTO response = servidorService.criar(dto);
 
         assertNotNull(response);
-        assertNull(response.getUnidadeSaudeId());
+        assertNull(response.getServicoId());
     }
 }

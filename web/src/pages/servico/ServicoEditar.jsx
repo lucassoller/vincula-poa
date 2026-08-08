@@ -8,7 +8,7 @@ import {perfilLabel} from "../../utils/utils.js";
 
 const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2", "tipoServico"];
 
-function UnidadeSaudeEditar() {
+function ServicoEditar() {
     const {
         register,
         handleSubmit,
@@ -40,9 +40,9 @@ function UnidadeSaudeEditar() {
     const { servidor } = useAuth();
 
     useEffect(() => {
-        async function carregarUnidade() {
+        async function carregarServico() {
             try {
-                const response = await api.get(`/unidades-saude/${id}`);
+                const response = await api.get(`/servicos/${id}`);
                 reset(response.data);
             } catch {
                 setMensagem("Erro ao carregar serviço de saúde.");
@@ -52,7 +52,7 @@ function UnidadeSaudeEditar() {
             }
         }
 
-        void carregarUnidade();
+        void carregarServico();
 
     }, [id, reset]);
 
@@ -73,7 +73,7 @@ function UnidadeSaudeEditar() {
         setErros({});
 
         try {
-            await api.put(`/unidades-saude/${id}`, dados);
+            await api.put(`/servicos/${id}`, dados);
             setMensagemSucesso("Serviço de saúde editado com sucesso!");
             setEtapa(1);
         } catch (error) {
@@ -109,7 +109,7 @@ function UnidadeSaudeEditar() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
                 {mensagem && (
@@ -220,7 +220,7 @@ function UnidadeSaudeEditar() {
                                 </span>
                                 <span
                                     className="buscar-btn"
-                                    onClick={() => navigate("/unidades-saude")}
+                                    onClick={() => navigate("/servicos")}
                                 >
                                     Cancelar
                                 </span>
@@ -255,4 +255,4 @@ function UnidadeSaudeEditar() {
     );
 }
 
-export default UnidadeSaudeEditar;
+export default ServicoEditar;

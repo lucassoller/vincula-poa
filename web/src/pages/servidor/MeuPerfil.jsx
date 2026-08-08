@@ -51,7 +51,7 @@ function MeuPerfil() {
                         <p>Atualize seus dados de acesso ao sistema</p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
 

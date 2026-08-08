@@ -48,7 +48,7 @@ function ModalTransferirServidor({servidor, unidades, outros, especializados, tr
                                 setTransferencia({
                                     ...transferencia,
                                     perfil: e.target.value,
-                                    unidadeSaudeId: ""
+                                    servicoId: ""
                                 })
                             }
                         >
@@ -79,7 +79,7 @@ function ModalTransferirServidor({servidor, unidades, outros, especializados, tr
                                     setTransferencia({
                                         ...transferencia,
                                         tipoServico: e.target.value,
-                                        unidadeSaudeId: ""
+                                        servicoId: ""
                                     })
                                 }
                             >
@@ -100,11 +100,11 @@ function ModalTransferirServidor({servidor, unidades, outros, especializados, tr
 
                         <select
                             className="input-field"
-                            value={transferencia.unidadeSaudeId}
+                            value={transferencia.servicoId}
                             onChange={(e) =>
                                 setTransferencia({
                                     ...transferencia,
-                                    unidadeSaudeId: e.target.value
+                                    servicoId: e.target.value
                                 })
                             }
                         >
@@ -122,8 +122,8 @@ function ModalTransferirServidor({servidor, unidades, outros, especializados, tr
                             ))}
                         </select>
 
-                        {erros.unidadeSaudeId && (
-                            <small>{erros.unidadeSaudeId}</small>
+                        {erros.servicoId && (
+                            <small>{erros.servicoId}</small>
                         )}
                     </div>
 

@@ -5,9 +5,9 @@ import java.time.LocalDate;
 
 @Data
 public class FiltroIndicadorRequestDTO {
-    private Long unidadeResponsavelId;
+    private Long servicoResponsavelId;
 
-    private Long unidadeSolicitanteId;
+    private Long servicoSolicitanteId;
 
     private LocalDate dataInicial;
 

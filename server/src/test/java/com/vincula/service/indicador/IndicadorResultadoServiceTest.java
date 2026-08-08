@@ -101,12 +101,12 @@ class IndicadorResultadoServiceTest {
     }
 
     @Test
-    void deveRetornarPercentualPorDesfechoPorUnidade() {
-        Long unidadeId = 1L;
+    void deveRetornarPercentualPorDesfechoPorServico() {
+        Long servicoId = 1L;
 
-        when(demandaRepository.countByStatusAndUnidadeResponsavelId(
+        when(demandaRepository.countByStatusAndServicoResponsavelId(
                 StatusDemanda.FINALIZADA,
-                unidadeId
+                servicoId
         )).thenReturn(10.0);
 
         DesfechoQuantidadeProjection projection =
@@ -117,11 +117,11 @@ class IndicadorResultadoServiceTest {
         when(projection.getQuantidade())
                 .thenReturn(2L);
 
-        when(demandaRepository.agruparPorDesfechoEUnidade(unidadeId))
+        when(demandaRepository.agruparPorDesfechoEServico(servicoId))
                 .thenReturn(List.of(projection));
 
         List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfechoPorUnidade(unidadeId);
+                indicadorResultadoService.percentualPorDesfechoPorServico(servicoId);
 
         assertEquals(1, resultado.size());
         assertEquals("Óbito", resultado.get(0).getIndicador());
@@ -131,7 +131,7 @@ class IndicadorResultadoServiceTest {
     void deveRetornarPercentualPorDesfechoPorServidor() {
         Long servidorId = 1L;
 
-        when(demandaRepository.countByStatusAndUnidadeSolicitanteId(
+        when(demandaRepository.countByStatusAndServicoSolicitanteId(
                 StatusDemanda.FINALIZADA,
                 servidorId
         )).thenReturn(10.0);
@@ -144,7 +144,7 @@ class IndicadorResultadoServiceTest {
         when(projection.getQuantidade())
                 .thenReturn(3L);
 
-        when(demandaRepository.agruparPorDesfechoEUnidadeSolicitante(servidorId))
+        when(demandaRepository.agruparPorDesfechoEServicoSolicitante(servidorId))
                 .thenReturn(List.of(projection));
 
         List<IndicadorValorDTO> resultado =
@@ -184,15 +184,15 @@ class IndicadorResultadoServiceTest {
     }
 
     @Test
-    void deveRetornarPercentualPorDesfechoPorUnidadeEPeriodo() {
-        Long unidadeId = 1L;
+    void deveRetornarPercentualPorDesfechoPorServicoEPeriodo() {
+        Long servicoId = 1L;
         LocalDateTime inicio = LocalDateTime.now().minusDays(30);
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .countByStatusAndUnidadeResponsavelIdAndDataHoraCriacaoBetween(
+                .countByStatusAndServicoResponsavelIdAndDataHoraCriacaoBetween(
                         StatusDemanda.FINALIZADA,
-                        unidadeId,
+                        servicoId,
                         inicio,
                         fim
                 ))
@@ -207,16 +207,16 @@ class IndicadorResultadoServiceTest {
                 .thenReturn(1L);
 
         when(demandaRepository
-                .agruparPorDesfechoEUnidadePorPeriodo(
-                        unidadeId,
+                .agruparPorDesfechoEServicoPorPeriodo(
+                        servicoId,
                         inicio,
                         fim
                 ))
                 .thenReturn(List.of(projection));
 
         List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfechoPorUnidadeEPeriodo(
-                        unidadeId,
+                indicadorResultadoService.percentualPorDesfechoPorServicoEPeriodo(
+                        servicoId,
                         inicio,
                         fim
                 );
@@ -232,7 +232,7 @@ class IndicadorResultadoServiceTest {
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .countByStatusAndUnidadeSolicitanteIdAndDataHoraCriacaoBetween(
+                .countByStatusAndServicoSolicitanteIdAndDataHoraCriacaoBetween(
                         StatusDemanda.FINALIZADA,
                         servidorId,
                         inicio,
@@ -249,7 +249,7 @@ class IndicadorResultadoServiceTest {
                 .thenReturn(2L);
 
         when(demandaRepository
-                .agruparPorDesfechoEUnidadeSolicitantePorPeriodo(
+                .agruparPorDesfechoEServicoSolicitantePorPeriodo(
                         servidorId,
                         inicio,
                         fim

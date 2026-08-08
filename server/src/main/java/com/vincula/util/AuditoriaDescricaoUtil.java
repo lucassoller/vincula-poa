@@ -5,7 +5,7 @@ import com.vincula.dto.endereco.EnderecoDTO;
 import com.vincula.dto.servidor.TransferirServidorDTO;
 import com.vincula.dto.usuario.UsuarioDTO;
 import com.vincula.dto.tentativaContato.TentativaContatoDTO;
-import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
+import com.vincula.dto.servico.ServicoDTO;
 import com.vincula.dto.servidor.MeuPerfilDTO;
 import com.vincula.dto.servidor.ServidorDTO;
 import com.vincula.entity.*;
@@ -62,14 +62,14 @@ public class AuditoriaDescricaoUtil {
     }
 
     public static String demandaRedirecionada(Demanda demanda) {
-        return "Demanda redirecionada da unidade ["
-                + demanda.getUnidadeResponsavelAnterior().getId() + " - " + demanda.getUnidadeResponsavelAnterior().getNome()
+        return "Demanda redirecionada do serviço ["
+                + demanda.getServicoResponsavelAnterior().getId() + " - " + demanda.getServicoResponsavelAnterior().getNome()
                 + "] para ["
-                + demanda.getUnidadeResponsavel().getId() + " - " + demanda.getUnidadeResponsavel().getNome()
+                + demanda.getServicoResponsavel().getId() + " - " + demanda.getServicoResponsavel().getNome()
                 + "]. Motivo: " + demanda.getMotivoRedirecionamento();
     }
 
-    public static String unidadeSaudeAtualizada(UnidadeSaude entity, UnidadeSaudeDTO dto) {
+    public static String servicoAtualizada(Servico entity, ServicoDTO dto) {
         StringBuilder sb = new StringBuilder();
 
         adicionarAlteracao(sb, "Nome", entity.getNome(), dto.getNome());
@@ -84,7 +84,7 @@ public class AuditoriaDescricaoUtil {
             }
         }
 
-        return sb.isEmpty() ? "Unidade de saúde atualizada sem alterações relevantes" : sb.toString();
+        return sb.isEmpty() ? "Serviço atualizado sem alterações relevantes" : sb.toString();
     }
 
     public static String enderecoAtualizado(Endereco entity, EnderecoDTO dto) {
@@ -104,8 +104,8 @@ public class AuditoriaDescricaoUtil {
         adicionarAlteracao(sb, "Perfil", entity.getPerfil(), dto.getPerfil());
         adicionarAlteracao(sb, "Ativo", entity.getAtivo(), dto.getAtivo());
 
-        Long unidadeAntes = entity.getUnidadeSaude() != null ? entity.getUnidadeSaude().getId() : null;
-        adicionarAlteracao(sb, "Unidade de saúde", unidadeAntes, dto.getUnidadeSaudeId());
+        Long servicoAntes = entity.getServico() != null ? entity.getServico().getId() : null;
+        adicionarAlteracao(sb, "Serviço", servicoAntes, dto.getServicoId());
 
         return sb.isEmpty() ? "Servidor atualizado sem alterações relevantes" : sb.toString();
     }
@@ -114,8 +114,8 @@ public class AuditoriaDescricaoUtil {
         StringBuilder sb = new StringBuilder();
         adicionarAlteracao(sb, "Perfil", entity.getPerfil(), dto.getPerfil());
 
-        Long unidadeAntes = entity.getUnidadeSaude() != null ? entity.getUnidadeSaude().getId() : null;
-        adicionarAlteracao(sb, "Unidade de saúde", unidadeAntes, dto.getUnidadeSaudeId());
+        Long servicoAntes = entity.getServico() != null ? entity.getServico().getId() : null;
+        adicionarAlteracao(sb, "Serviço", servicoAntes, dto.getServicoId());
 
         return sb.isEmpty() ? "Servidor atualizado sem alterações relevantes" : sb.toString();
     }

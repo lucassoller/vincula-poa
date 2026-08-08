@@ -51,12 +51,12 @@ function ImportarMapa() {
                     <div>
                         <h1>Importar mapa</h1>
                         <p>
-                            Importe territórios e unidades de saúde
+                            Importe territórios e serviços
                             diretamente do Google My Maps
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
 

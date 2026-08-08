@@ -24,10 +24,10 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
                MIN(t.data_hora) AS primeira_tentativa
         FROM demanda d
         JOIN tentativa_contato t ON t.demanda_id = d.id
-        WHERE (:unidadeResponsavelId IS NULL OR d.unidade_responsavel_id = :unidadeResponsavelId)
-          AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+        WHERE (:servicoResponsavelId IS NULL OR d.servico_responsavel_id = :servicoResponsavelId)
+          AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
           AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -37,8 +37,8 @@ public interface TentativaContatoRepository extends JpaRepository<TentativaConta
     ) sub
     """, nativeQuery = true)
     Double calcularTempoMedioAtePrimeiraTentativa(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim
     );
@@ -49,10 +49,10 @@ FROM (
     SELECT COUNT(*) AS qtd
     FROM tentativa_contato t
     JOIN demanda d ON d.id = t.demanda_id
-    WHERE (:unidadeResponsavelId IS NULL OR d.unidade_responsavel_id = :unidadeResponsavelId)
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+    WHERE (:servicoResponsavelId IS NULL OR d.servico_responsavel_id = :servicoResponsavelId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -62,8 +62,8 @@ FROM (
 ) sub
 """, nativeQuery = true)
     Double calcularMediaTentativasPorDemanda(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim);
 
@@ -73,10 +73,10 @@ FROM (
     SELECT t.servidor_id, COUNT(*) AS qtd
     FROM tentativa_contato t
     JOIN demanda d ON d.id = t.demanda_id
-    WHERE (:unidadeResponsavelId IS NULL OR d.unidade_responsavel_id = :unidadeResponsavelId)
-      AND (:unidadeSolicitanteId IS NULL
-            OR (:unidadeSolicitanteId = -1 AND d.unidade_solicitante_id IS NULL)
-            OR d.unidade_solicitante_id = :unidadeSolicitanteId)
+    WHERE (:servicoResponsavelId IS NULL OR d.servico_responsavel_id = :servicoResponsavelId)
+      AND (:servicoSolicitanteId IS NULL
+            OR (:servicoSolicitanteId = -1 AND d.servico_solicitante_id IS NULL)
+            OR d.servico_solicitante_id = :servicoSolicitanteId)
       AND (
         (CAST(:inicio AS DATE) IS NULL OR d.data_hora_criacao >= CAST(:inicio AS DATE))
         AND
@@ -86,31 +86,31 @@ FROM (
 ) sub
 """, nativeQuery = true)
     Double calcularMediaTentativasPorServidor(
-            Long unidadeResponsavelId,
-            Long unidadeSolicitanteId,
+            Long servicoResponsavelId,
+            Long servicoSolicitanteId,
             LocalDate inicio,
             LocalDate fim);
 
 
     @Query(value = """
     SELECT
-        sub.unidade_responsavel_id AS unidadeSaudeId,
-        sub.unidade_saude_nome AS unidadeSaudeNome,
+        sub.servico_responsavel_id AS servicoId,
+        sub.servico_nome AS servicoNome,
         AVG(EXTRACT(EPOCH FROM (sub.primeira_tentativa - sub.data_hora_criacao))) AS valor
     FROM (
         SELECT
             d.id,
-            d.unidade_responsavel_id,
-            u.nome AS unidade_saude_nome,
+            d.servico_responsavel_id,
+            u.nome AS servico_nome,
             d.data_hora_criacao,
             MIN(t.data_hora) AS primeira_tentativa
         FROM demanda d
-        JOIN unidade_saude u ON u.id = d.unidade_responsavel_id
+        JOIN servico u ON u.id = d.servico_responsavel_id
         JOIN tentativa_contato t ON t.demanda_id = d.id
-        GROUP BY d.id, d.unidade_responsavel_id, u.nome, d.data_hora_criacao
+        GROUP BY d.id, d.servico_responsavel_id, u.nome, d.data_hora_criacao
     ) sub
-    GROUP BY sub.unidade_responsavel_id, sub.unidade_saude_nome
-    ORDER BY valor ASC, sub.unidade_saude_nome ASC
+    GROUP BY sub.servico_responsavel_id, sub.servico_nome
+    ORDER BY valor ASC, sub.servico_nome ASC
     """, nativeQuery = true)
-    List<RankingValorProjection> rankingUnidadesPorTempoAtePrimeiraTentativa();
+    List<RankingValorProjection> rankingServicosPorTempoAtePrimeiraTentativa();
 }

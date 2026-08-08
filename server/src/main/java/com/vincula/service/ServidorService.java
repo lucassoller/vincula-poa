@@ -2,14 +2,14 @@ package com.vincula.service;
 
 import com.vincula.dto.senha.MudancaSenhaDTO;
 import com.vincula.dto.servidor.*;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.entity.Servidor;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.enums.TipoServico;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
-import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.repository.ServicoRepository;
 import com.vincula.repository.ServidorRepository;
 import com.vincula.specification.ServidorSpecification;
 import com.vincula.util.AuditoriaDescricaoUtil;
@@ -29,16 +29,16 @@ import java.util.Objects;
 public class ServidorService {
 
     private final ServidorRepository servidorRepository;
-    private final UnidadeSaudeRepository unidadeSaudeRepository;
+    private final ServicoRepository servicoRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditoriaFacade auditoriaFacade;
 
     public ServidorService(ServidorRepository servidorRepository,
-                           UnidadeSaudeRepository unidadeSaudeRepository,
+                           ServicoRepository servicoRepository,
                            PasswordEncoder passwordEncoder,
                            AuditoriaFacade auditoriaFacade) {
         this.servidorRepository = servidorRepository;
-        this.unidadeSaudeRepository = unidadeSaudeRepository;
+        this.servicoRepository = servicoRepository;
         this.passwordEncoder = passwordEncoder;
         this.auditoriaFacade = auditoriaFacade;
     }
@@ -107,7 +107,7 @@ public class ServidorService {
         entity.setLogin(dto.getLogin());
         entity.setPerfil(dto.getPerfil());
         entity.setAtivo(dto.getAtivo());
-        entity.setUnidadeSaude(resolverUnidadeSaude(dto));
+        entity.setServico(resolverServico(dto));
 
         if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
             entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
@@ -153,17 +153,17 @@ public class ServidorService {
             throw new BusinessException("Não é possível mudar o perfil de um servidor para o tipo gestão");
         }
 
-        UnidadeSaude unidadeSaude = buscarUnidadePorId(dto.getUnidadeSaudeId());
+        Servico servico = buscarServicoPorId(dto.getServicoId());
         String descricaoLog = AuditoriaDescricaoUtil.servidorAtualizado(entity, dto);
 
-        if(dto.getPerfil() == PerfilServidor.SOLICITANTE && unidadeSaude.getTipoServico() == TipoServico.UBS){
+        if(dto.getPerfil() == PerfilServidor.SOLICITANTE && servico.getTipoServico() == TipoServico.UBS){
             throw new BusinessException("Solicitante só pode ser vinculado a serviço do tipo outro ou serviço especializado");
-        }else if(dto.getPerfil() == PerfilServidor.SERVIDOR_APS && unidadeSaude.getTipoServico() != TipoServico.UBS){
+        }else if(dto.getPerfil() == PerfilServidor.SERVIDOR_APS && servico.getTipoServico() != TipoServico.UBS){
             throw new BusinessException("Servidor APS só pode ser vinculado a serviço do tipo UBS");
         }
 
         entity.setPerfil(dto.getPerfil());
-        entity.setUnidadeSaude(unidadeSaude);
+        entity.setServico(servico);
 
         Servidor atualizado = servidorRepository.save(entity);
 
@@ -266,31 +266,31 @@ public class ServidorService {
                 .orElseThrow(() -> new NotFoundException("Servidor do sistema não encontrado"));
     }
 
-    private UnidadeSaude buscarUnidadePorId(Long id){
-        return unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+    private Servico buscarServicoPorId(Long id){
+        return servicoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Serviço não encontrado"));
     }
 
-    private UnidadeSaude resolverUnidadeSaude(ServidorDTO dto) {
+    private Servico resolverServico(ServidorDTO dto) {
         if(dto.getPerfil() == PerfilServidor.GESTAO_MUNICIPAL ||
                 dto.getPerfil() == PerfilServidor.VIGILANCIA ||
                 dto.getPerfil() == PerfilServidor.COORDENADORIA){
-            if(dto.getUnidadeSaudeId() != null){
-                throw new BusinessException("Perfil do tipo gestão não deve estar vinculado a uma unidade de saúde");
+            if(dto.getServicoId() != null){
+                throw new BusinessException("Perfil do tipo gestão não deve estar vinculado a um serviço");
             }
             return null;
         }else{
-            if(dto.getUnidadeSaudeId() == null){
+            if(dto.getServicoId() == null){
                 throw new BusinessException(dto.getPerfil() + " deve estar vinculado a um serviço de saúde");
             }else{
-                UnidadeSaude unidadeSaude = buscarUnidadePorId(dto.getUnidadeSaudeId());
+                Servico servico = buscarServicoPorId(dto.getServicoId());
 
-                if(dto.getPerfil() == PerfilServidor.SOLICITANTE && unidadeSaude.getTipoServico() == TipoServico.UBS){
+                if(dto.getPerfil() == PerfilServidor.SOLICITANTE && servico.getTipoServico() == TipoServico.UBS){
                     throw new BusinessException("Solicitante só pode ser vinculado a serviço do tipo outro ou serviço especializado");
-                }else if(dto.getPerfil() == PerfilServidor.SERVIDOR_APS && unidadeSaude.getTipoServico() != TipoServico.UBS){
+                }else if(dto.getPerfil() == PerfilServidor.SERVIDOR_APS && servico.getTipoServico() != TipoServico.UBS){
                     throw new BusinessException("Servidor APS só pode ser vinculado a serviço do tipo UBS");
                 }
-                return unidadeSaude;
+                return servico;
             }
         }
     }
@@ -312,7 +312,7 @@ public class ServidorService {
         entity.setSenhaHash(passwordEncoder.encode(dto.getSenha()));
         entity.setPerfil(dto.getPerfil());
         entity.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : true);
-        entity.setUnidadeSaude(resolverUnidadeSaude(dto));
+        entity.setServico(resolverServico(dto));
 
         return entity;
     }
@@ -326,10 +326,10 @@ public class ServidorService {
         dto.setLogin(entity.getLogin());
         dto.setPerfil(entity.getPerfil());
         dto.setAtivo(entity.getAtivo());
-        if (entity.getUnidadeSaude() != null) {
-            dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
-            dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
-            dto.setTipoServico(entity.getUnidadeSaude().getTipoServico());
+        if (entity.getServico() != null) {
+            dto.setServicoId(entity.getServico().getId());
+            dto.setServicoNome(entity.getServico().getNome());
+            dto.setTipoServico(entity.getServico().getTipoServico());
         }
 
         return dto;

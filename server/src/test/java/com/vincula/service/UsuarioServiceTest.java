@@ -6,7 +6,7 @@ import com.vincula.dto.usuario.UsuarioResponseDTO;
 import com.vincula.dto.usuario.UsuarioShortResponseDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Servidor;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.entity.Usuario;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.exception.BusinessException;
@@ -20,10 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
@@ -72,15 +68,15 @@ class UsuarioServiceTest {
     @Test
     void deveRetornarUsuarioQuandoBuscarPorId() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
 
         Usuario usuario = new Usuario();
         usuario.setId(1L);
         usuario.setNomeCompleto("Lucas");
         usuario.setDocumento("123");
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         when(usuarioRepository.findById(1L))
                 .thenReturn(Optional.of(usuario));
@@ -179,15 +175,15 @@ class UsuarioServiceTest {
     @Test
     void deveBuscarUsuarioPorDocumento() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
 
         Usuario usuario = new Usuario();
         usuario.setId(1L);
         usuario.setDocumento("123");
         usuario.setNomeCompleto("Lucas");
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         when(usuarioRepository.findByDocumento("123"))
                 .thenReturn(Optional.of(usuario));
@@ -207,15 +203,15 @@ class UsuarioServiceTest {
 
         Endereco endereco = new Endereco();
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
 
         Usuario usuario = new Usuario();
         usuario.setNomeCompleto("Lucas");
         usuario.setDocumento("12345678900");
         usuario.setEndereco(endereco);
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         Servidor servidor = new Servidor();
         servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
@@ -237,7 +233,7 @@ class UsuarioServiceTest {
         }).when(geocodingService).preencherCoordenadas(any());
 
         when(territorializacaoService.buscarUbsPorCoordenada(any(), any()))
-                .thenReturn(unidade);
+                .thenReturn(servico);
 
         when(usuarioRepository.save(any()))
                 .thenReturn(usuario);
@@ -356,15 +352,15 @@ class UsuarioServiceTest {
     @Test
     void deveListarTodosUsuarios() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
 
         Usuario usuario = new Usuario();
         usuario.setId(1L);
         usuario.setNomeCompleto("Lucas");
         usuario.setDocumento("123");
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         when(usuarioRepository.findAllByOrderByNomeCompletoAsc())
                 .thenReturn(List.of(usuario));
@@ -379,14 +375,14 @@ class UsuarioServiceTest {
     @Test
     void deveFiltrarUsuariosPorNomeOuDocumento() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
 
         Usuario usuario = new Usuario();
         usuario.setNomeCompleto("Lucas");
         usuario.setDocumento("123");
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         when(usuarioRepository.buscarPorNomeOuDocumento("Lucas"))
                 .thenReturn(List.of(usuario));
@@ -402,9 +398,9 @@ class UsuarioServiceTest {
 
         Long usuarioId = 1L;
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
-        unidade.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
 
         Endereco endereco = new Endereco();
         endereco.setLatitude(-30.0);
@@ -415,7 +411,7 @@ class UsuarioServiceTest {
         usuario.setNomeCompleto("Nome Antigo");
         usuario.setDocumento("123");
         usuario.setEndereco(endereco);
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         UsuarioDTO dto = new UsuarioDTO();
         dto.setNomeCompleto("Nome Novo");
@@ -435,7 +431,7 @@ class UsuarioServiceTest {
                 .preencherCoordenadas(any());
 
         when(territorializacaoService.buscarUbsPorCoordenada(anyDouble(), anyDouble()))
-                .thenReturn(unidade);
+                .thenReturn(servico);
 
         when(usuarioRepository.save(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -467,8 +463,8 @@ class UsuarioServiceTest {
     @Test
     void deveLancarBusinessExceptionQuandoNaoEncontrarUbsAoAtualizar() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
+        Servico servico = new Servico();
+        servico.setId(1L);
 
         Endereco endereco = new Endereco();
         endereco.setLatitude(-30.0);
@@ -478,7 +474,7 @@ class UsuarioServiceTest {
         usuario.setId(1L);
         usuario.setDocumento("123");
         usuario.setEndereco(endereco);
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         UsuarioDTO dto = new UsuarioDTO();
         dto.setDocumento("123");
@@ -503,14 +499,14 @@ class UsuarioServiceTest {
 
         Endereco endereco = new Endereco();
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
+        Servico servico = new Servico();
+        servico.setId(1L);
 
         Usuario usuario = new Usuario();
         usuario.setId(1L);
         usuario.setDocumento("123");
         usuario.setEndereco(endereco);
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         UsuarioDTO dto = new UsuarioDTO();
         dto.setDocumento("123");
@@ -536,14 +532,14 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void deveDefinirUnidadeSolicitanteQuandoServidorForSolicitante() {
+    void deveDefinirServicoSolicitanteQuandoServidorForSolicitante() {
 
-        UnidadeSaude unidadeSolicitante = new UnidadeSaude();
-        unidadeSolicitante.setId(10L);
+        Servico servicoSolicitante = new Servico();
+        servicoSolicitante.setId(10L);
 
         Servidor servidor = new Servidor();
         servidor.setPerfil(PerfilServidor.SOLICITANTE);
-        servidor.setUnidadeSaude(unidadeSolicitante);
+        servidor.setServico(servicoSolicitante);
 
         EnderecoDTO enderecoDTO = new EnderecoDTO();
 
@@ -555,7 +551,7 @@ class UsuarioServiceTest {
         endereco.setLatitude(-30.0);
         endereco.setLongitude(-51.0);
 
-        UnidadeSaude ubsTerritorio = new UnidadeSaude();
+        Servico ubsTerritorio = new Servico();
         ubsTerritorio.setId(20L);
 
         when(enderecoMapper.toEntity(enderecoDTO))
@@ -576,28 +572,28 @@ class UsuarioServiceTest {
         );
 
         assertEquals(
-                unidadeSolicitante,
-                resultado.getUnidadeSolicitante()
+                servicoSolicitante,
+                resultado.getServicoSolicitante()
         );
     }
 
     @Test
-    void deveMapearUnidadeSolicitanteNoShortDTO() {
+    void deveMapearServicoSolicitanteNoShortDTO() {
 
-        UnidadeSaude unidadeSaude = new UnidadeSaude();
-        unidadeSaude.setId(1L);
-        unidadeSaude.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
 
-        UnidadeSaude unidadeSolicitante = new UnidadeSaude();
-        unidadeSolicitante.setId(2L);
-        unidadeSolicitante.setNome("Hospital Conceição");
+        Servico servicoSolicitante = new Servico();
+        servicoSolicitante.setId(2L);
+        servicoSolicitante.setNome("Hospital Conceição");
 
         Usuario usuario = new Usuario();
         usuario.setId(10L);
         usuario.setNomeCompleto("João da Silva");
         usuario.setDocumento("123456789");
-        usuario.setUnidadeSaude(unidadeSaude);
-        usuario.setUnidadeSolicitante(unidadeSolicitante);
+        usuario.setServico(servico);
+        usuario.setServicoSolicitante(servicoSolicitante);
 
         UsuarioShortResponseDTO dto =
                 ReflectionTestUtils.invokeMethod(
@@ -606,10 +602,10 @@ class UsuarioServiceTest {
                         usuario
                 );
 
-        assertEquals(2L, dto.getUnidadeSolicitanteId());
+        assertEquals(2L, dto.getServicoSolicitanteId());
         assertEquals(
                 "Hospital Conceição",
-                dto.getUnidadeSolicitanteNome()
+                dto.getServicoSolicitanteNome()
         );
     }
 }

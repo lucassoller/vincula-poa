@@ -1,7 +1,7 @@
 package com.vincula.service;
 
 import com.vincula.entity.TerritorioUbs;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.repository.TerritorioUbsRepository;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
@@ -18,7 +18,7 @@ public class TerritorializacaoService {
 
     private final TerritorioUbsRepository repository;
 
-    public UnidadeSaude buscarUbsPorCoordenada(Double latitude, Double longitude) {
+    public Servico buscarUbsPorCoordenada(Double latitude, Double longitude) {
         GeometryFactory geometryFactory = new GeometryFactory();
         Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
         GeoJsonReader reader = new GeoJsonReader();
@@ -29,7 +29,7 @@ public class TerritorializacaoService {
                 Geometry geometry = reader.read(territorio.getGeojson());
 
                 if (geometry.contains(point)) {
-                    return territorio.getUnidadeSaude();
+                    return territorio.getServico();
                 }
             } catch (Exception ignored) {
             }

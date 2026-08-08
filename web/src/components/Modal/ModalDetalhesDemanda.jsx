@@ -55,17 +55,17 @@ function ModalDetalhesDemanda({ demanda, tentativasContato, onFechar }) {
                     <div className="detalhe-grid">
                         <CampoDetalhe
                             label="Serviço solicitante"
-                            valor={demanda.unidadeSolicitanteNome || "Solicitado pela Gestão Municipal"}
+                            valor={demanda.servicoSolicitanteNome || "Solicitado pela Gestão Municipal"}
                         />
 
                         <CampoDetalhe
-                            label="Unidade responsável"
-                            valor={demanda.unidadeResponsavelNome}
+                            label="Serviço responsável"
+                            valor={demanda.servicoResponsavelNome}
                         />
 
                         <CampoDetalhe
-                            label="Unidade anterior"
-                            valor={demanda.unidadeResponsavelAnteriorNome}
+                            label="Serviço anterior"
+                            valor={demanda.servicoResponsavelAnteriorNome}
                         />
                     </div>
                 </div>

@@ -14,5 +14,5 @@ public class FiltroAuditoriaRequestDTO {
     private List<PerfilServidor> perfil;
     private LocalDateTime dataInicial;
     private LocalDateTime dataFinal;
-    private Long unidadeSaudeId;
+    private Long servicoId;
 }

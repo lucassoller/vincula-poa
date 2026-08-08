@@ -11,5 +11,5 @@ public class TransferirServidorDTO {
     private PerfilServidor perfil;
 
     @NotNull(message = "O serviço é obrigatório")
-    private Long unidadeSaudeId;
+    private Long servicoId;
 }

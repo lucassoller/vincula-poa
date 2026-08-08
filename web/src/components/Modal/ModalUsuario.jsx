@@ -57,13 +57,13 @@ function ModalUsuario({ usuarioSelecionado, setUsuarioSelecionado }) {
                 </div>
 
                 <div className="detalhe-section">
-                    <h3>Unidade vinculada</h3>
+                    <h3>Serviço vinculado</h3>
 
                     <div className="detalhe-grid">
                         <CampoDetalhe
                             label="UBS"
                             valor={
-                                usuarioSelecionado.unidadeSaudeNome
+                                usuarioSelecionado.servicoNome
                             }
                         />
                     </div>

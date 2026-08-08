@@ -9,7 +9,7 @@ function ModalFiltrosAuditoria({
                                  onAplicar,
                                  onLimpar,
                                  servidores = [],
-                                 unidades = [],
+                                 servicos = [],
                                  buscarServidores,
                                  setServidores,
                              }) {
@@ -153,27 +153,27 @@ function ModalFiltrosAuditoria({
 
                 <div className="grupo-filtro">
 
-                    <h4>Unidade de saúde</h4>
+                    <h4>Serviço</h4>
 
                     <select
-                        value={filtros.unidade}
+                        value={filtros.servico}
                         onChange={(e) =>
                             setFiltros(prev => ({
                                 ...prev,
-                                unidade: e.target.value
+                                servico: e.target.value
                             }))
                         }
                     >
                         <option value="">
                             Todas
                         </option>
-                        {unidades.map(unidade => (
+                        {servicos.map(servico => (
 
                             <option
-                                key={unidade.id}
-                                value={unidade.id}
+                                key={servico.id}
+                                value={servico.id}
                             >
-                                {unidade.nome}
+                                {servico.nome}
                             </option>
                         ))}
                     </select>

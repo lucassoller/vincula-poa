@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vincula.dto.TerritorioUbsDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.TerritorioUbs;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.repository.TerritorioUbsRepository;
-import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.repository.ServicoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ class ImportarTerritorioServiceTest {
     private TerritorioUbsRepository territorioUbsRepository;
 
     @Mock
-    private UnidadeSaudeRepository unidadeSaudeRepository;
+    private ServicoRepository servicoRepository;
 
     @Mock
     private ObjectMapper objectMapper;
@@ -41,7 +41,7 @@ class ImportarTerritorioServiceTest {
 
         service = new ImportarTerritorioService(
                 territorioUbsRepository,
-                unidadeSaudeRepository,
+                servicoRepository,
                 objectMapper
         );
     }
@@ -52,19 +52,19 @@ class ImportarTerritorioServiceTest {
     @Test
     void deveListarTodosTerritorios() {
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setTelefone("51999999999");
-        unidade.setTelefone2("51888888888");
+        Servico servico = new Servico();
+        servico.setTelefone("51999999999");
+        servico.setTelefone2("51888888888");
 
         Endereco endereco = new Endereco();
-        unidade.setEndereco(endereco);
+        servico.setEndereco(endereco);
 
         TerritorioUbs territorio = new TerritorioUbs();
         territorio.setNome("Território A");
         territorio.setCnes("123");
         territorio.setDistrito("Norte");
         territorio.setGeojson("{}");
-        territorio.setUnidadeSaude(unidade);
+        territorio.setServico(servico);
 
         when(territorioUbsRepository.findAll())
                 .thenReturn(List.of(territorio));
@@ -100,12 +100,12 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository, never()).save(any());
+        verify(servicoRepository, never()).save(any());
     }
 
     @Test
@@ -137,16 +137,16 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("12345"))
+        when(servicoRepository.findByCnes("12345"))
                 .thenReturn(Optional.empty());
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository, atLeastOnce())
-                .save(any(UnidadeSaude.class));
+        verify(servicoRepository, atLeastOnce())
+                .save(any(Servico.class));
     }
 
     @Test
@@ -169,12 +169,12 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository, never())
+        verify(servicoRepository, never())
                 .save(argThat(u -> "UBS".equals(u.getNome())));
     }
 
@@ -184,12 +184,12 @@ class ImportarTerritorioServiceTest {
         ObjectNode geojson = objectMapper.createObjectNode();
         geojson.set("features", objectMapper.createArrayNode());
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
+        when(servicoRepository.findByCnes("2264706"))
                 .thenReturn(Optional.empty());
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository)
+        verify(servicoRepository)
                 .save(argThat(u ->
                         "2264706".equals(u.getCnes())
                 ));
@@ -218,11 +218,11 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
-        when(unidadeSaudeRepository.findByCnes("123"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("123"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
@@ -257,15 +257,15 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("123"))
+        when(servicoRepository.findByCnes("123"))
                 .thenReturn(Optional.empty());
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository, atLeastOnce())
+        verify(servicoRepository, atLeastOnce())
                 .save(argThat(u ->
                         "Não informado".equals(u.getEndereco().getRua())
                                 && "S/N".equals(u.getEndereco().getNumero())
@@ -304,15 +304,15 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("123"))
+        when(servicoRepository.findByCnes("123"))
                 .thenReturn(Optional.empty());
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository).save(
+        verify(servicoRepository).save(
                 argThat(u ->
                         "51999999999".equals(u.getTelefone())
                                 && "51984441111".equals(u.getTelefone2())
@@ -348,15 +348,15 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("123"))
+        when(servicoRepository.findByCnes("123"))
                 .thenReturn(Optional.empty());
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository).save(
+        verify(servicoRepository).save(
                 argThat(u ->
                         "51999991111".equals(u.getTelefone())
                 )
@@ -391,15 +391,15 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("123"))
+        when(servicoRepository.findByCnes("123"))
                 .thenReturn(Optional.empty());
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository).save(
+        verify(servicoRepository).save(
                 argThat(u ->
                         u.getTelefone().length() == 11
                 )
@@ -434,15 +434,15 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("123"))
+        when(servicoRepository.findByCnes("123"))
                 .thenReturn(Optional.empty());
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 
-        verify(unidadeSaudeRepository).save(
+        verify(servicoRepository).save(
                 argThat(u ->
                         "51999999999".equals(u.getTelefone())
                                 && u.getTelefone2() == null
@@ -486,13 +486,13 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        UnidadeSaude unidade = new UnidadeSaude();
+        Servico servico = new Servico();
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
-        when(unidadeSaudeRepository.findByCnes("123"))
-                .thenReturn(Optional.of(unidade));
+        when(servicoRepository.findByCnes("123"))
+                .thenReturn(Optional.of(servico));
 
         service.importar(geojson);
 
@@ -547,11 +547,11 @@ class ImportarTerritorioServiceTest {
         features.add(feature);
         geojson.set("features", features);
 
-        when(unidadeSaudeRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("2264706"))
+                .thenReturn(Optional.of(new Servico()));
 
-        when(unidadeSaudeRepository.findByCnes("123"))
-                .thenReturn(Optional.of(new UnidadeSaude()));
+        when(servicoRepository.findByCnes("123"))
+                .thenReturn(Optional.of(new Servico()));
 
         service.importar(geojson);
 

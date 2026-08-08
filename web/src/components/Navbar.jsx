@@ -107,7 +107,7 @@ function Navbar() {
 
                     <div className="nav-dropdown-menu">
                         <Link
-                            to="/unidades-saude"
+                            to="/servicos"
                             className="dropdown-link"
                         >
                             Listar serviços
@@ -115,7 +115,7 @@ function Navbar() {
 
                         {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                         <Link
-                            to="/unidades-saude/cadastro"
+                            to="/servicos/cadastro"
                             className="dropdown-link"
                         >
                             Cadastrar serviço

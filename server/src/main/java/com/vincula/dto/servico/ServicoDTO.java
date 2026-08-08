@@ -1,4 +1,4 @@
-package com.vincula.dto.unidadeSaude;
+package com.vincula.dto.servico;
 
 import com.vincula.dto.endereco.EnderecoDTO;
 import com.vincula.enums.TipoServico;
@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UnidadeSaudeDTO {
+public class ServicoDTO {
 
     @NotBlank(message = "O nome é obrigatório")
     @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")

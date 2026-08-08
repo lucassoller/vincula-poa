@@ -83,7 +83,7 @@ function ModalUbs({ ubsSelecionada, setUbsSelecionada }) {
                         <span
                             className="btn-visualizar"
                             onClick={() =>
-                                navigate(`/unidades-saude/${ubsSelecionada.id}/editar`)
+                                navigate(`/servicos/${ubsSelecionada.id}/editar`)
                             }
                         >
                             Editar Serviço

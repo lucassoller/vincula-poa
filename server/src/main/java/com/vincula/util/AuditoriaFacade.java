@@ -114,16 +114,16 @@ public class AuditoriaFacade {
         registrar(TipoAcaoAuditoria.SERVIDOR_SENHA_ALTERADA, "Servidor", id, "Senha alterada");
     }
 
-    public void unidadeSaudeCriada(Long id) {
-        registrar(TipoAcaoAuditoria.UNIDADE_SAUDE_CRIADA, "UnidadeSaude", id, "Unidade de saúde criada");
+    public void servicoCriado(Long id) {
+        registrar(TipoAcaoAuditoria.SERVICO_CRIADO, "Servico", id, "Serviço criado");
     }
 
-    public void unidadeSaudeAtualizada(Long id, String descricao) {
-        registrar(TipoAcaoAuditoria.UNIDADE_SAUDE_ATUALIZADA, "UnidadeSaude", id, descricao);
+    public void servicoAtualizado(Long id, String descricao) {
+        registrar(TipoAcaoAuditoria.SERVICO_ATUALIZADO, "Servico", id, descricao);
     }
 
-    public void unidadeSaudeDeletada(Long id) {
-        registrar(TipoAcaoAuditoria.UNIDADE_SAUDE_DELETADA, "UnidadeSaude", id, "Unidade de saúde deletada");
+    public void servicoDeletado(Long id) {
+        registrar(TipoAcaoAuditoria.SERVICO_DELETADO, "Servico", id, "Serviço deletado");
     }
 
     public void loginRealizado(Servidor servidor) {

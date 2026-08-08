@@ -80,48 +80,48 @@ class IndicadorPrazoServiceTest {
     }
 
     @Test
-    void deveListarIndicadoresPorUnidade() {
+    void deveListarIndicadoresPorServico() {
 
-        when(demandaRepository.countDentroPrazoPorUnidade(1L))
+        when(demandaRepository.countDentroPrazoPorServico(1L))
                 .thenReturn(1L);
 
-        when(demandaRepository.countAtrasadasPorUnidade(1L))
+        when(demandaRepository.countAtrasadasPorServico(1L))
                 .thenReturn(1L);
 
-        when(demandaRepository.countFinalizadasAtrasadasPorUnidade(1L))
+        when(demandaRepository.countFinalizadasAtrasadasPorServico(1L))
                 .thenReturn(1L);
 
-        when(demandaRepository.tempoMedioAtrasoPorUnidade(1L))
+        when(demandaRepository.tempoMedioAtrasoPorServico(1L))
                 .thenReturn(10.0);
 
-        service.indicadoresPrazoPorUnidade(1L);
+        service.indicadoresPrazoPorServico(1L);
 
         verify(demandaRepository)
-                .countDentroPrazoPorUnidade(1L);
+                .countDentroPrazoPorServico(1L);
 
         verify(demandaRepository)
-                .countAtrasadasPorUnidade(1L);
+                .countAtrasadasPorServico(1L);
 
         verify(demandaRepository)
-                .countFinalizadasAtrasadasPorUnidade(1L);
+                .countFinalizadasAtrasadasPorServico(1L);
 
         verify(demandaRepository)
-                .tempoMedioAtrasoPorUnidade(1L);
+                .tempoMedioAtrasoPorServico(1L);
     }
 
     @Test
     void deveListarIndicadoresPorServidor() {
 
-        when(demandaRepository.countDentroPrazoPorUnidadeSolicitante(1L))
+        when(demandaRepository.countDentroPrazoPorServicoSolicitante(1L))
                 .thenReturn(2L);
 
-        when(demandaRepository.countAtrasadasPorUnidadeSolicitante(1L))
+        when(demandaRepository.countAtrasadasPorServicoSolicitante(1L))
                 .thenReturn(1L);
 
-        when(demandaRepository.countFinalizadasAtrasadasPorUnidadeSolicitante(1L))
+        when(demandaRepository.countFinalizadasAtrasadasPorServicoSolicitante(1L))
                 .thenReturn(1L);
 
-        when(demandaRepository.tempoMedioAtrasoPorUnidadeSolicitante(1L))
+        when(demandaRepository.tempoMedioAtrasoPorServicoSolicitante(1L))
                 .thenReturn(3600.0);
 
         List<IndicadorValorDTO> resultado =
@@ -130,16 +130,16 @@ class IndicadorPrazoServiceTest {
         assertEquals(4, resultado.size());
 
         verify(demandaRepository)
-                .countDentroPrazoPorUnidadeSolicitante(1L);
+                .countDentroPrazoPorServicoSolicitante(1L);
 
         verify(demandaRepository)
-                .countAtrasadasPorUnidadeSolicitante(1L);
+                .countAtrasadasPorServicoSolicitante(1L);
 
         verify(demandaRepository)
-                .countFinalizadasAtrasadasPorUnidadeSolicitante(1L);
+                .countFinalizadasAtrasadasPorServicoSolicitante(1L);
 
         verify(demandaRepository)
-                .tempoMedioAtrasoPorUnidadeSolicitante(1L);
+                .tempoMedioAtrasoPorServicoSolicitante(1L);
     }
 
     @Test
@@ -176,38 +176,38 @@ class IndicadorPrazoServiceTest {
     }
 
     @Test
-    void deveListarIndicadoresPorUnidadeEPeriodo() {
+    void deveListarIndicadoresPorServicoEPeriodo() {
 
-        Long unidadeId = 1L;
+        Long servicoId = 1L;
 
         LocalDateTime inicio = LocalDateTime.now().minusDays(30);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countDentroPrazoPorUnidadeEPeriodo(unidadeId, inicio, fim))
+        when(demandaRepository.countDentroPrazoPorServicoEPeriodo(servicoId, inicio, fim))
                 .thenReturn(2L);
 
-        when(demandaRepository.countDemandasAtrasadasPorUnidadeEPeriodo(unidadeId, inicio, fim))
+        when(demandaRepository.countDemandasAtrasadasPorServicoEPeriodo(servicoId, inicio, fim))
                 .thenReturn(1L);
 
-        when(demandaRepository.countFinalizadasAtrasadasPorUnidadeEPeriodo(unidadeId, inicio, fim))
+        when(demandaRepository.countFinalizadasAtrasadasPorServicoEPeriodo(servicoId, inicio, fim))
                 .thenReturn(1L);
 
-        when(demandaRepository.tempoMedioAtrasoEmSegundosPorUnidadeEPeriodo(unidadeId, inicio, fim))
+        when(demandaRepository.tempoMedioAtrasoEmSegundosPorServicoEPeriodo(servicoId, inicio, fim))
                 .thenReturn(120.0);
 
-        service.indicadoresPrazoPorUnidadeEPeriodo(unidadeId, inicio, fim);
+        service.indicadoresPrazoPorServicoEPeriodo(servicoId, inicio, fim);
 
         verify(demandaRepository)
-                .countDentroPrazoPorUnidadeEPeriodo(unidadeId, inicio, fim);
+                .countDentroPrazoPorServicoEPeriodo(servicoId, inicio, fim);
 
         verify(demandaRepository)
-                .countDemandasAtrasadasPorUnidadeEPeriodo(unidadeId, inicio, fim);
+                .countDemandasAtrasadasPorServicoEPeriodo(servicoId, inicio, fim);
 
         verify(demandaRepository)
-                .countFinalizadasAtrasadasPorUnidadeEPeriodo(unidadeId, inicio, fim);
+                .countFinalizadasAtrasadasPorServicoEPeriodo(servicoId, inicio, fim);
 
         verify(demandaRepository)
-                .tempoMedioAtrasoEmSegundosPorUnidadeEPeriodo(unidadeId, inicio, fim);
+                .tempoMedioAtrasoEmSegundosPorServicoEPeriodo(servicoId, inicio, fim);
     }
 
     @Test
@@ -218,31 +218,31 @@ class IndicadorPrazoServiceTest {
         LocalDateTime inicio = LocalDateTime.now().minusDays(30);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.countDentroPrazoPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim))
+        when(demandaRepository.countDentroPrazoPorServicoSolicitanteEPeriodo(servidorId, inicio, fim))
                 .thenReturn(2L);
 
-        when(demandaRepository.countDemandasAtrasadasPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim))
+        when(demandaRepository.countDemandasAtrasadasPorServicoSolicitanteEPeriodo(servidorId, inicio, fim))
                 .thenReturn(1L);
 
-        when(demandaRepository.countFinalizadasAtrasadasPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim))
+        when(demandaRepository.countFinalizadasAtrasadasPorServicoSolicitanteEPeriodo(servidorId, inicio, fim))
                 .thenReturn(1L);
 
-        when(demandaRepository.tempoMedioAtrasoEmSegundosPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim))
+        when(demandaRepository.tempoMedioAtrasoEmSegundosPorServicoSolicitanteEPeriodo(servidorId, inicio, fim))
                 .thenReturn(120.0);
 
         service.indicadoresPrazoPorServidorEPeriodo(servidorId, inicio, fim);
 
         verify(demandaRepository)
-                .countDentroPrazoPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
+                .countDentroPrazoPorServicoSolicitanteEPeriodo(servidorId, inicio, fim);
 
         verify(demandaRepository)
-                .countDemandasAtrasadasPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
+                .countDemandasAtrasadasPorServicoSolicitanteEPeriodo(servidorId, inicio, fim);
 
         verify(demandaRepository)
-                .countFinalizadasAtrasadasPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
+                .countFinalizadasAtrasadasPorServicoSolicitanteEPeriodo(servidorId, inicio, fim);
 
         verify(demandaRepository)
-                .tempoMedioAtrasoEmSegundosPorUnidadeSolicitanteEPeriodo(servidorId, inicio, fim);
+                .tempoMedioAtrasoEmSegundosPorServicoSolicitanteEPeriodo(servidorId, inicio, fim);
     }
 
 }

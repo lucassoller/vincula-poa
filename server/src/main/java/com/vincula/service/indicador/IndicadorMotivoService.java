@@ -18,8 +18,8 @@ public class IndicadorMotivoService {
     public List<MotivoQuantidadeDTO> gerarIndicadores(FiltroIndicadorRequestDTO filtro) {
 
         return demandaRepository.listarPrincipaisMotivos(
-                        filtro.getUnidadeResponsavelId(),
-                        filtro.getUnidadeSolicitanteId(),
+                        filtro.getServicoResponsavelId(),
+                        filtro.getServicoSolicitanteId(),
                         filtro.getDataInicial(),
                         filtro.getDataFinal()
                 )

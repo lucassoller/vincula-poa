@@ -1,4 +1,4 @@
-function ModalRedirecionarDemanda({demanda, unidades, redirecionamento, setRedirecionamento, erros, onSalvar, onFechar, mensagem, setMensagem}) {
+function ModalRedirecionarDemanda({demanda, servicos, redirecionamento, setRedirecionamento, erros, onSalvar, onFechar, mensagem, setMensagem}) {
     return (
         <div className="modal-overlay">
             <div className="modal-card">
@@ -20,29 +20,29 @@ function ModalRedirecionarDemanda({demanda, unidades, redirecionamento, setRedir
 
                 <form onSubmit={onSalvar}>
                     <div className="form-group">
-                        <label>Nova unidade responsável <span>*</span></label>
+                        <label>Novo serviço responsável <span>*</span></label>
 
                         <select
                             className="input-field"
-                            value={redirecionamento.novaUnidadeResponsavelId}
+                            value={redirecionamento.novaServicoResponsavelId}
                             onChange={(e) =>
                                 setRedirecionamento({
                                     ...redirecionamento,
-                                    novaUnidadeResponsavelId: e.target.value,
+                                    novaServicoResponsavelId: e.target.value,
                                 })
                             }
                         >
                             <option value="">Selecione</option>
 
-                            {unidades.map((u) => (
+                            {servicos.map((u) => (
                                 <option key={u.id} value={u.id}>
                                     {u.nome}
                                 </option>
                             ))}
                         </select>
 
-                        {erros.novaUnidadeResponsavelId && (
-                            <small>{erros.novaUnidadeResponsavelId}</small>
+                        {erros.novaServicoResponsavelId && (
+                            <small>{erros.novaServicoResponsavelId}</small>
                         )}
                     </div>
 

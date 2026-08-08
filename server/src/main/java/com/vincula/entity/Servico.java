@@ -6,9 +6,9 @@ import lombok.Data;
 import java.util.List;
 
 @Entity
-@Table(name = "unidade_saude")
+@Table(name = "servico")
 @Data
-public class UnidadeSaude {
+public class Servico {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,9 +34,9 @@ public class UnidadeSaude {
     @JoinColumn(name = "endereco_id", nullable = false, unique = true)
     private Endereco endereco;
 
-    @OneToMany(mappedBy = "unidadeSaude", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "servico", fetch = FetchType.LAZY)
     private List<Usuario> usuarios;
 
-    @OneToMany(mappedBy = "unidadeSaude", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "servico", fetch = FetchType.LAZY)
     private List<TerritorioUbs> territorios;
 }

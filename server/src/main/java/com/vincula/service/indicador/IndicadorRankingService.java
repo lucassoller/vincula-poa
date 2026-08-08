@@ -23,28 +23,28 @@ public class IndicadorRankingService {
     }
 
     public List<IndicadorRankingDTO> gerarRankingPorTotalDemandas() {
-        return demandaRepository.rankingUnidadesPorTotalDemandas()
+        return demandaRepository.rankingServicosPorTotalDemandas()
                 .stream()
                 .map(this::toDTO)
                 .toList();
     }
 
     public List<IndicadorRankingDTO> gerarRankingPorPercentualResolucao() {
-        return demandaRepository.rankingUnidadesPorPercentualResolucao()
+        return demandaRepository.rankingServicosPorPercentualResolucao()
                 .stream()
                 .map(this::toDTONumerico)
                 .toList();
     }
 
     public List<IndicadorRankingDTO> gerarRankingPorTempoMedioResolucao() {
-        return demandaRepository.rankingUnidadesPorTempoMedioResolucao()
+        return demandaRepository.rankingServicosPorTempoMedioResolucao()
                 .stream()
                 .map(this::toDTOTempo)
                 .toList();
     }
 
     public List<IndicadorRankingDTO> gerarRankingPorTempoAtePrimeiraTentativa() {
-        return tentativaContatoRepository.rankingUnidadesPorTempoAtePrimeiraTentativa()
+        return tentativaContatoRepository.rankingServicosPorTempoAtePrimeiraTentativa()
                 .stream()
                 .map(this::toDTOTempo)
                 .toList();
@@ -52,24 +52,24 @@ public class IndicadorRankingService {
 
     private IndicadorRankingDTO toDTO(RankingQuantidadeProjection item) {
         return new IndicadorRankingDTO(
-                item.getUnidadeSaudeId(),
-                item.getUnidadeSaudeNome(),
+                item.getServicoId(),
+                item.getServicoNome(),
                 item.getValor() == null ? 0.0 : item.getValor().doubleValue()
         );
     }
 
     private IndicadorRankingDTO toDTONumerico(RankingValorProjection item) {
         return new IndicadorRankingDTO(
-                item.getUnidadeSaudeId(),
-                item.getUnidadeSaudeNome(),
+                item.getServicoId(),
+                item.getServicoNome(),
                 arredondar(item.getValor())
         );
     }
 
     private IndicadorRankingDTO toDTOTempo(RankingValorProjection item) {
         return new IndicadorRankingDTO(
-                item.getUnidadeSaudeId(),
-                item.getUnidadeSaudeNome(),
+                item.getServicoId(),
+                item.getServicoNome(),
                 formatarTempo(item.getValor())
         );
     }

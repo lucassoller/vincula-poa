@@ -11,6 +11,6 @@ public class FiltroUsuarioRequestDTO {
     private Long id;
     private String nomeCompleto;
     private List<FaixaEtaria> faixaEtaria;
-    private Long unidadeSaudeId;
-    private Long unidadeSolicitanteId;
+    private Long servicoId;
+    private Long servicoSolicitanteId;
 }

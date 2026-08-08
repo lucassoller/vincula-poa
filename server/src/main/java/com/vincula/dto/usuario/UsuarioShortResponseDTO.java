@@ -8,9 +8,9 @@ public class UsuarioShortResponseDTO {
     private Long id;
     private String nomeCompleto;
     private String documento;
-    private String unidadeSaudeNome;
-    private Long unidadeSaudeId;
-    private Long unidadeSolicitanteId;
-    private String unidadeSolicitanteNome;
+    private String servicoNome;
+    private Long servicoId;
+    private Long servicoSolicitanteId;
+    private String servicoSolicitanteNome;
 
 }

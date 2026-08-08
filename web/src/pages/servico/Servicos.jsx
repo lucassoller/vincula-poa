@@ -9,12 +9,12 @@ import ModalUbs from "../../components/Modal/ModalUbs.jsx";
 import {perfilLabel, tipoServico} from "../../utils/utils.js";
 import ModalFiltrosServico from "../../components/Modal/ModalFiltrosServico.jsx";
 
-function UnidadesSaude() {
+function Servicos() {
     const navigate = useNavigate();
     const { servidor } = useAuth();
     const [servicosBusca, setServicosBusca] = useState([]);
     const [servicos, setServicos] = useState([]);
-    const [unidadeDetalhada, setUnidadeDetalhada] = useState(null);
+    const [servicoDetalhada, setServicoDetalhada] = useState(null);
     const [mensagem, setMensagem] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [pagina, setPagina] = useState(0);
@@ -40,7 +40,7 @@ function UnidadesSaude() {
             };
 
             const servicosReponse = await api.post(
-                `/unidades-saude/filtrados?page=${paginaAtual}&size=${tamanhoPagina}`,
+                `/servicos/filtrados?page=${paginaAtual}&size=${tamanhoPagina}`,
                 payload
             );
 
@@ -61,7 +61,7 @@ function UnidadesSaude() {
     useEffect(() => {
         async function carregarServicos() {
             try {
-                const response = await api.get("/unidades-saude/servicos");
+                const response = await api.get("/servicos/servicos");
                 setServicosBusca(response.data);
             } catch {
                 setMensagem("Erro ao carregar serviços.");
@@ -114,7 +114,7 @@ function UnidadesSaude() {
                     </div>
 
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
 
                 </div>
@@ -147,7 +147,7 @@ function UnidadesSaude() {
                         {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) && (
                             <span
                                 className="buscar-btn"
-                                onClick={() => navigate("/unidades-saude/cadastro")}
+                                onClick={() => navigate("/servicos/cadastro")}
                             >
                                 + Novo serviço
                             </span>
@@ -191,7 +191,7 @@ function UnidadesSaude() {
                                     <div className="acoes-container">
                                         <span
                                             className="btn-visualizar"
-                                            onClick={() => setUnidadeDetalhada(servico)}
+                                            onClick={() => setServicoDetalhada(servico)}
                                         >
                                             Ver mais
                                         </span>
@@ -199,7 +199,7 @@ function UnidadesSaude() {
                                             <span
                                                 className="btn-visualizar"
                                                 onClick={() =>
-                                                    navigate(`/unidades-saude/${servico.id}/editar`)
+                                                    navigate(`/servicos/${servico.id}/editar`)
                                                 }
                                             >
                                                 Editar
@@ -226,10 +226,10 @@ function UnidadesSaude() {
                     />
                 </div>
             </div>
-            {unidadeDetalhada && (
+            {servicoDetalhada && (
                 <ModalUbs
-                    ubsSelecionada={unidadeDetalhada}
-                    setUbsSelecionada={setUnidadeDetalhada}
+                    ubsSelecionada={servicoDetalhada}
+                    setUbsSelecionada={setServicoDetalhada}
                 />
             )}
 
@@ -250,4 +250,4 @@ function UnidadesSaude() {
     );
 }
 
-export default UnidadesSaude;
+export default Servicos;

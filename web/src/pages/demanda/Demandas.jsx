@@ -66,7 +66,7 @@ function Demandas() {
     });
 
     const [redirecionamento, setRedirecionamento] = useState({
-        novaUnidadeResponsavelId: "",
+        novaServicoResponsavelId: "",
         motivoRedirecionamento: "",
     });
 
@@ -89,8 +89,8 @@ function Demandas() {
                 usuarioId: filtrosAtuais.usuarioId || null,
                 nomeCompleto: filtrosAtuais.nomeCompleto || null,
                 complemento: filtrosAtuais.complemento || null,
-                unidadeResponsavelId: filtrosAtuais.unidade || null,
-                unidadeSolicitanteId: filtrosAtuais.servico || null,
+                servicoResponsavelId: filtrosAtuais.unidade || null,
+                servicoSolicitanteId: filtrosAtuais.servico || null,
                 dataAbInicial: filtrosAtuais.dataAbInicial || null,
                 dataAbFinal: filtrosAtuais.dataAbFinal || null,
                 dataEnInicial: filtrosAtuais.dataEnInicial || null,
@@ -99,11 +99,11 @@ function Demandas() {
 
             if (servidor?.perfil === "SERVIDOR_APS") {
 
-                payload.unidadeResponsavelId = servidor.unidadeSaudeId;
+                payload.servicoResponsavelId = servidor.servicoId;
 
             } else if (servidor?.perfil === "SOLICITANTE") {
 
-                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
+                payload.servicoSolicitanteId = servidor.servicoId;
 
             }
 
@@ -138,14 +138,14 @@ function Demandas() {
 
             const payload = {
                 nomeCompleto: nome,
-                unidadeSaudeId: null,
-                unidadeSolicitanteId: null,
+                servicoId: null,
+                servicoSolicitanteId: null,
             };
 
             if(servidor.perfil === 'SOLICITANTE'){
-                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
+                payload.servicoSolicitanteId = servidor.servicoId;
             }else if(servidor.perfil === 'SERVIDOR_APS'){
-                payload.unidadeSaudeId = servidor.unidadeSaudeId;
+                payload.servicoId = servidor.servicoId;
             }
 
             const response = await api.post(
@@ -204,28 +204,27 @@ function Demandas() {
     }
 
     useEffect(() => {
-        async function carregarUnidades() {
+        async function carregarServicos() {
             try {
-                const response = await api.get("/unidades-saude/all");
+                const response = await api.get("/servicos/all");
                 setUnidades(response.data.ubs);
                 setServicos(response.data.servicos);
-
             } catch {
-                setMensagemErro("Erro ao carregar unidades.");
+                setMensagemErro("Erro ao carregar serviços.");
                 setMensagemSucesso("");
             }
         }
 
-        void carregarUnidades();
+        void carregarServicos();
     }, []);
 
-    async function abrirCardUbs(unidadeSaudeId) {
-        if(unidadeSaudeId === null){
+    async function abrirCardUbs(servicoId) {
+        if(servicoId === null){
             return
         }
         try {
             setCarregandoUbs(true);
-            const response = await api.get(`/unidades-saude/${unidadeSaudeId}`);
+            const response = await api.get(`/servicos/${servicoId}`);
             setUbsSelecionada(response.data);
         } catch {
             setMensagem("Erro ao carregar dados do serviço.");
@@ -251,7 +250,7 @@ function Demandas() {
         });
 
         setRedirecionamento({
-            novaUnidadeResponsavelId: "",
+            novaServicoResponsavelId: "",
             motivoRedirecionamento: "",
         });
 
@@ -289,8 +288,8 @@ function Demandas() {
         e.preventDefault();
 
         const payload = {
-            novaUnidadeResponsavelId: redirecionamento.novaUnidadeResponsavelId
-                ? Number(redirecionamento.novaUnidadeResponsavelId)
+            novaServicoResponsavelId: redirecionamento.novaServicoResponsavelId
+                ? Number(redirecionamento.novaServicoResponsavelId)
                 : null,
             motivoRedirecionamento: redirecionamento.motivoRedirecionamento,
         };
@@ -367,8 +366,8 @@ function Demandas() {
                 motivo: filtros.motivo || null,
                 usuarioId: filtros.usuario || null,
                 complemento: filtros.complemento || null,
-                unidadeResponsavelId: filtros.unidade || null,
-                unidadeSolicitanteId: filtros.servico || null,
+                servicoResponsavelId: filtros.servico || null,
+                servicoSolicitanteId: filtros.servico || null,
                 dataAbInicial: filtros.dataAbInicial || null,
                 dataAbFinal: filtros.dataAbFinal || null,
                 dataEnInicial: filtros.dataEnInicial || null,
@@ -377,11 +376,11 @@ function Demandas() {
 
             if (servidor?.perfil === "SERVIDOR_APS") {
 
-                payload.unidadeResponsavelId = servidor.unidadeSaudeId;
+                payload.servicoResponsavelId = servidor.servicoId;
 
             } else if (servidor?.perfil === "SOLICITANTE") {
 
-                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
+                payload.servicoSolicitanteId = servidor.servicoId;
 
             }
 
@@ -449,7 +448,7 @@ function Demandas() {
 
                     </div>
 
-                    <span className="perfil-badge">{['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}</span>
+                    <span className="perfil-badge">{['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}</span>
                 </div>
 
                 {mensagemSucesso && (
@@ -510,7 +509,7 @@ function Demandas() {
                             <th>Tempo restante</th>
                             <th>Status</th>
                             <th>Prioridade</th>
-                            <th>Unidade responsável</th>
+                            <th>Serviço responsável</th>
                             <th>Ações</th>
                         </tr>
                         </thead>
@@ -525,8 +524,8 @@ function Demandas() {
                                 <td>
                                     <span
                                             className="ubs-badge ubs-clickable"
-                                            onClick={() => abrirCardUbs(d.unidadeSolicitanteId)}>
-                                        {d.unidadeSolicitanteNome || "Solicitado pela Gestão Municipal"}
+                                            onClick={() => abrirCardUbs(d.servicoSolicitanteId)}>
+                                        {d.servicoSolicitanteNome || "Solicitado pela Gestão Municipal"}
                                     </span>
                                 </td>
                                 <td>{formatarDataHora(d.dataHoraCriacao)}</td>
@@ -545,8 +544,8 @@ function Demandas() {
                                 <td>
                                     <span
                                             className="ubs-badge ubs-clickable"
-                                            onClick={() => abrirCardUbs(d.unidadeResponsavelId)}>
-                                        {d.unidadeResponsavelNome || d.unidadeResponsavelId || "-"}
+                                            onClick={() => abrirCardUbs(d.servicoResponsavelId)}>
+                                        {d.servicoResponsavelNome || d.servicoResponsavelId || "-"}
                                     </span>
                                 </td>
                                 <td>
@@ -620,7 +619,7 @@ function Demandas() {
             {demandaSelecionada && acao === "REDIRECIONAR" && (
                 <ModalRedirecionarDemanda
                     demanda={demandaSelecionada}
-                    unidades={unidades}
+                    servicos={servicos}
                     redirecionamento={redirecionamento}
                     setRedirecionamento={setRedirecionamento}
                     erros={erros}

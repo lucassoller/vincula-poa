@@ -15,6 +15,6 @@ public class LoginResponseDTO {
     private String email;
     private PerfilServidor perfil;
     private Boolean ativo;
-    private Long unidadeSaudeId;
-    private String unidadeSaude;
+    private Long servicoId;
+    private String servico;
 }

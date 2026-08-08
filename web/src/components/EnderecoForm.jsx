@@ -1,4 +1,4 @@
-function EnderecoForm({register, erros, unidadeSaude}) {
+function EnderecoForm({register, erros, servico}) {
     return (
         <>
             <div className="endereco-header">
@@ -105,7 +105,7 @@ function EnderecoForm({register, erros, unidadeSaude}) {
             </div>
 
             <div className="form-grid two">
-                {unidadeSaude && unidadeSaude !== "" &&(
+                {servico && servico !== "" &&(
                     <div className="form-group">
                         <label>
                             UBS do usuário
@@ -113,7 +113,7 @@ function EnderecoForm({register, erros, unidadeSaude}) {
 
                         <input
                             className="input-field"
-                            value={unidadeSaude}
+                            value={servico}
                             disabled
                         />
                     </div>

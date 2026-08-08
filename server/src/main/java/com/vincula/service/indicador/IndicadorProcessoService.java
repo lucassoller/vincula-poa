@@ -34,15 +34,15 @@ public class IndicadorProcessoService {
     public IndicadorValorDTO percentualDemandasResolvidas(FiltroIndicadorRequestDTO filtro) {
 
         double total = demandaRepository.countDemandas(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );
 
         double finalizadas = demandaRepository.countDemandasFinalizadas(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );
@@ -58,8 +58,8 @@ public class IndicadorProcessoService {
     public IndicadorValorDTO tempoMedioResolucao(FiltroIndicadorRequestDTO filtro) {
 
         Double media = demandaRepository.calcularTempoMedioResolucao(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );
@@ -73,8 +73,8 @@ public class IndicadorProcessoService {
     public IndicadorValorDTO tempoMedioAtePrimeiraTentativa(FiltroIndicadorRequestDTO filtro) {
 
         Double media = tentativaContatoRepository.calcularTempoMedioAtePrimeiraTentativa(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );
@@ -87,8 +87,8 @@ public class IndicadorProcessoService {
 
     public IndicadorValorDTO mediaTentativasPorDemanda(FiltroIndicadorRequestDTO filtro) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorDemanda(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );
@@ -101,8 +101,8 @@ public class IndicadorProcessoService {
 
     public IndicadorValorDTO mediaTentativasPorServidor(FiltroIndicadorRequestDTO filtro) {
         Double valor = tentativaContatoRepository.calcularMediaTentativasPorServidor(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );

@@ -6,6 +6,6 @@ import lombok.Data;
 public class AutocompleteUsuarioRequestDTO {
 
     private String nomeCompleto;
-    private Long unidadeSaudeId;
-    private Long unidadeSolicitanteId;
+    private Long servicoId;
+    private Long servicoSolicitanteId;
 }

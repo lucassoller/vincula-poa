@@ -21,8 +21,8 @@ public class DemandaExporter {
                         "data_criacao,data_limite,data_finalizacao," +
                         "desfecho,descricao_desfecho," +
                         "foi_redirecionada,motivo_redirecionamento," +
-                        "unidade_solicitante,unidade_responsavel," +
-                        "servidor_criador,unidadeResponsavelAnterior," +
+                        "servico_solicitante,servico_responsavel," +
+                        "servidor_criador,servicoResponsavelAnterior," +
                         "servidorEncerramento,servidorRedirecionamento\n"
         );
 
@@ -101,15 +101,15 @@ public class DemandaExporter {
                     .append(",")
 
                     .append(escapar(
-                            d.getUnidadeSolicitante() != null
-                                    ? d.getUnidadeSolicitante().getNome()
+                            d.getServicoSolicitante() != null
+                                    ? d.getServicoSolicitante().getNome()
                                     : ""
                     ))
                     .append(",")
 
                     .append(escapar(
-                            d.getUnidadeResponsavel() != null
-                                    ? d.getUnidadeResponsavel().getNome()
+                            d.getServicoResponsavel() != null
+                                    ? d.getServicoResponsavel().getNome()
                                     : ""
                     ))
                     .append(",")
@@ -122,8 +122,8 @@ public class DemandaExporter {
                     .append(",")
 
                         .append(escapar(
-                                d.getUnidadeResponsavelAnterior() != null
-                                        ? d.getUnidadeResponsavelAnterior().getNome()
+                                d.getServicoResponsavelAnterior() != null
+                                        ? d.getServicoResponsavelAnterior().getNome()
                                         : ""
                         ))
                         .append(",")    

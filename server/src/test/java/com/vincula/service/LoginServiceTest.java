@@ -3,7 +3,7 @@ package com.vincula.service;
 import com.vincula.dto.login.LoginRequestDTO;
 import com.vincula.dto.login.LoginResponseDTO;
 import com.vincula.entity.Servidor;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.NotFoundException;
@@ -61,11 +61,11 @@ class LoginServiceTest {
         servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
         servidor.setAtivo(true);
 
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(10L);
-        unidade.setNome("UBS Centro");
+        Servico servico = new Servico();
+        servico.setId(10L);
+        servico.setNome("UBS Centro");
 
-        servidor.setUnidadeSaude(unidade);
+        servidor.setServico(servico);
 
         UserDetails userDetails = mock(UserDetails.class);
 
@@ -147,7 +147,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void deveRealizarLoginSemUnidadeSaude() {
+    void deveRealizarLoginSemServico() {
 
         LoginRequestDTO dto = new LoginRequestDTO();
         dto.setLogin("lucas");
@@ -175,7 +175,7 @@ class LoginServiceTest {
         LoginResponseDTO response =
                 loginService.login(dto);
 
-        assertNull(response.getUnidadeSaudeId());
-        assertNull(response.getUnidadeSaude());
+        assertNull(response.getServicoId());
+        assertNull(response.getServico());
     }
 }

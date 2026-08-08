@@ -136,11 +136,11 @@ function ModalFiltrosServidor({
                         <h4>Serviço vinculado</h4>
 
                         <select
-                            value={filtros.unidade}
+                            value={filtros.servico}
                             onChange={(e) =>
                                 setFiltros(prev => ({
                                     ...prev,
-                                    unidade: e.target.value
+                                    servico: e.target.value
                                 }))
                             }
                         >

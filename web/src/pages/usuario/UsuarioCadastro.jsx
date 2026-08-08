@@ -92,7 +92,7 @@ function UsuarioCadastro() {
                         <p>Preencha os dados do usuário para iniciar o acompanhamento</p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil]: servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil]: servidor.servico}
                     </div>
                 </div>
 

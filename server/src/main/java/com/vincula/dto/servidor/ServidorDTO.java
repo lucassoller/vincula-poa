@@ -34,7 +34,7 @@ public class ServidorDTO {
     @NotNull(message = "O perfil é obrigatório")
     private PerfilServidor perfil;
 
-    private Long unidadeSaudeId;
+    private Long servicoId;
 
     private Boolean ativo;
 }

@@ -1,4 +1,4 @@
-package com.vincula.dto.unidadeSaude;
+package com.vincula.dto.servico;
 
 import com.vincula.enums.TipoServico;
 import lombok.Data;

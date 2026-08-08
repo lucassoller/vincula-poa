@@ -28,12 +28,12 @@ public class UsuarioSpecification {
             spec = spec.and(faixaEtaria(filtro.getFaixaEtaria()));
         }
 
-        if (filtro.getUnidadeSaudeId() != null) {
-            spec = spec.and(unidadeSaude(filtro.getUnidadeSaudeId()));
+        if (filtro.getServicoId() != null) {
+            spec = spec.and(servico(filtro.getServicoId()));
         }
 
-        if (filtro.getUnidadeSolicitanteId() != null) {
-            spec = spec.and(unidadeSolicitante(filtro.getUnidadeSolicitanteId()));
+        if (filtro.getServicoSolicitanteId() != null) {
+            spec = spec.and(servicoSolicitante(filtro.getServicoSolicitanteId()));
         }
 
         return spec;
@@ -96,16 +96,16 @@ public class UsuarioSpecification {
         };
     }
 
-    public static Specification<Usuario> unidadeSaude(Long unidadeId) {
+    public static Specification<Usuario> servico(Long servicoId) {
 
         return (root, query, cb) ->
-                cb.equal(root.get("unidadeSaude").get("id"), unidadeId);
+                cb.equal(root.get("servico").get("id"), servicoId);
     }
 
-    public static Specification<Usuario> unidadeSolicitante(Long unidadeId) {
+    public static Specification<Usuario> servicoSolicitante(Long servicoId) {
 
         return (root, query, cb) ->
-                cb.equal(root.get("unidadeSolicitante").get("id"), unidadeId);
+                cb.equal(root.get("servicoSolicitante").get("id"), servicoId);
     }
 
     public static Specification<Usuario> id(Long id) {

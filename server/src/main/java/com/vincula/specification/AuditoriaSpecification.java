@@ -35,8 +35,8 @@ public class AuditoriaSpecification {
         }
 
 
-        if (filtro.getUnidadeSaudeId() != null) {
-            spec = spec.and(unidadeSaude(filtro.getUnidadeSaudeId()));
+        if (filtro.getServicoId() != null) {
+            spec = spec.and(servico(filtro.getServicoId()));
         }
 
         return spec;
@@ -56,10 +56,10 @@ public class AuditoriaSpecification {
         return (root, query, cb) -> root.get("servidor").get("perfil").in(perfis);
     }
 
-    public static Specification<Auditoria> unidadeSaude(Long unidadeId) {
+    public static Specification<Auditoria> servico(Long servicoId) {
 
         return (root, query, cb) ->
-                cb.equal(root.get("servidor").get("unidadeSaude").get("id"), unidadeId);
+                cb.equal(root.get("servidor").get("servico").get("id"), servicoId);
     }
 
     private static Specification<Auditoria> dataHora(

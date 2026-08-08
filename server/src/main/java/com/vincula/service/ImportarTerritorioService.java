@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vincula.dto.TerritorioUbsDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.TerritorioUbs;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.enums.TipoServico;
 import com.vincula.repository.TerritorioUbsRepository;
-import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.repository.ServicoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -22,16 +22,16 @@ import java.util.regex.Pattern;
 public class ImportarTerritorioService {
 
     private final TerritorioUbsRepository territorioUbsRepository;
-    private final UnidadeSaudeRepository unidadeSaudeRepository;
+    private final ServicoRepository servicoRepository;
     private final ObjectMapper objectMapper;
 
     public ImportarTerritorioService(
             TerritorioUbsRepository territorioUbsRepository,
-            UnidadeSaudeRepository unidadeSaudeRepository,
+            ServicoRepository servicoRepository,
             ObjectMapper objectMapper
     ) {
         this.territorioUbsRepository = territorioUbsRepository;
-        this.unidadeSaudeRepository = unidadeSaudeRepository;
+        this.servicoRepository = servicoRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -49,9 +49,9 @@ public class ImportarTerritorioService {
         dto.setCnes(territorioUbs.getCnes());
         dto.setDistrito(territorioUbs.getDistrito());
         dto.setGeojson(territorioUbs.getGeojson());
-        dto.setTelefone(territorioUbs.getUnidadeSaude().getTelefone());
-        dto.setTelefone2(territorioUbs.getUnidadeSaude().getTelefone2());
-        dto.setEndereco(territorioUbs.getUnidadeSaude().getEndereco());
+        dto.setTelefone(territorioUbs.getServico().getTelefone());
+        dto.setTelefone2(territorioUbs.getServico().getTelefone2());
+        dto.setEndereco(territorioUbs.getServico().getEndereco());
 
         return dto;
     }
@@ -81,7 +81,7 @@ public class ImportarTerritorioService {
                 }
             }
 
-            if (unidadeSaudeRepository.findByCnes("2264706").isEmpty()) {
+            if (servicoRepository.findByCnes("2264706").isEmpty()) {
 
                 Endereco endereco = new Endereco();
 
@@ -92,12 +92,12 @@ public class ImportarTerritorioService {
                 endereco.setEstado("RS");
                 endereco.setNumero("S/N");
 
-                UnidadeSaude usRamos = new UnidadeSaude();
+                Servico usRamos = new Servico();
                 usRamos.setNome("US Ramos");
                 usRamos.setCnes("2264706");
                 usRamos.setTipoServico(TipoServico.UBS);
                 usRamos.setEndereco(endereco);
-                unidadeSaudeRepository.save(usRamos);
+                servicoRepository.save(usRamos);
             }
 
             for (JsonNode feature : features) {
@@ -148,9 +148,9 @@ public class ImportarTerritorioService {
 
         String[] telefones = extrairTelefones(texto(properties, "Telefones"));
 
-        UnidadeSaude unidade = unidadeSaudeRepository.findByCnes(cnes).orElseGet(UnidadeSaude::new);
+        Servico servico = servicoRepository.findByCnes(cnes).orElseGet(Servico::new);
 
-        Endereco endereco = unidade.getEndereco();
+        Endereco endereco = servico.getEndereco();
 
         if (endereco == null) {
             endereco = new Endereco();
@@ -158,14 +158,14 @@ public class ImportarTerritorioService {
 
         preencherEndereco(endereco, enderecoTexto, latitude, longitude);
 
-        unidade.setNome(nome);
-        unidade.setCnes(cnes);
-        unidade.setEndereco(endereco);
-        unidade.setTelefone(telefones[0]);
-        unidade.setTelefone2(telefones[1]);
-        unidade.setTipoServico(TipoServico.UBS);
+        servico.setNome(nome);
+        servico.setCnes(cnes);
+        servico.setEndereco(endereco);
+        servico.setTelefone(telefones[0]);
+        servico.setTelefone2(telefones[1]);
+        servico.setTipoServico(TipoServico.UBS);
 
-        unidadeSaudeRepository.save(unidade);
+        servicoRepository.save(servico);
     }
 
     private void importarTerritorio(JsonNode feature) throws Exception {
@@ -231,9 +231,9 @@ public class ImportarTerritorioService {
             territorio.setGeojson(objectMapper.writeValueAsString(geometry));
         }
 
-        UnidadeSaude unidade = unidadeSaudeRepository.findByCnes(cnes).orElse(null);
+        Servico servico = servicoRepository.findByCnes(cnes).orElse(null);
 
-        territorio.setUnidadeSaude(unidade);
+        territorio.setServico(servico);
         territorioUbsRepository.save(territorio);
     }
 

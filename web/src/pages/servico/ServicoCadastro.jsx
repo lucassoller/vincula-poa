@@ -8,7 +8,7 @@ import {perfilLabel} from "../../utils/utils.js";
 
 const camposEtapa1 = ["nome", "cnes", "telefone", "telefone2", "tipoServico"];
 
-function UnidadeSaudeCadastro() {
+function ServicoCadastro() {
     const {
         register,
         handleSubmit,
@@ -54,7 +54,7 @@ function UnidadeSaudeCadastro() {
         setMensagemSucesso("")
         setErros({});
         try {
-            await api.post("/unidades-saude", dados);
+            await api.post("/servicos", dados);
             setMensagemSucesso("Serviço de saúde cadastrado com sucesso!");
             reset();
             setErros({});
@@ -81,7 +81,7 @@ function UnidadeSaudeCadastro() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
                 {mensagem && (
@@ -194,7 +194,7 @@ function UnidadeSaudeCadastro() {
                                 </span>
                                 <span
                                     className="buscar-btn"
-                                    onClick={() => navigate("/unidades-saude")}
+                                    onClick={() => navigate("/servicos")}
                                 >
                                     Cancelar
                                 </span>
@@ -230,4 +230,4 @@ function UnidadeSaudeCadastro() {
     );
 }
 
-export default UnidadeSaudeCadastro;
+export default ServicoCadastro;

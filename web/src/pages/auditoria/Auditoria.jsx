@@ -15,7 +15,7 @@ function Auditoria() {
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
-    const [unidades, setUnidades] = useState([]);
+    const [servicos, setServicos] = useState([]);
 
     const tamanhoPagina = 10;
     const { servidor } = useAuth();
@@ -26,7 +26,7 @@ function Auditoria() {
         perfil: [],
         dataInicial: "",
         dataFinal: "",
-        unidade: "",
+        servico: "",
     });
 
     async function carregarDados(paginaAtual = pagina, filtrosAtuais = filtros) {
@@ -41,7 +41,7 @@ function Auditoria() {
                 perfil: filtrosAtuais.perfil,
                 dataInicial: filtrosAtuais.dataInicial,
                 dataFinal: filtrosAtuais.dataFinal,
-                unidadeSaudeId: filtrosAtuais.unidade || null,
+                servicoId: filtrosAtuais.servico || null,
             };
 
             const auditoriaReponse = await api.post(
@@ -101,7 +101,7 @@ function Auditoria() {
             perfil: [],
             dataInicial: "",
             dataFinal: "",
-            unidade: "",
+            servico: "",
         };
 
         setFiltros(filtrosVazios);
@@ -110,17 +110,17 @@ function Auditoria() {
     }
 
     useEffect(() => {
-        async function carregarUnidades() {
+        async function carregarServicos() {
             try {
-                const response = await api.get("/unidades-saude/ubs");
-                setUnidades(response.data);
+                const response = await api.get("/servicos/ubs");
+                setServicos(response.data);
 
             } catch {
-                setMensagem("Erro ao carregar unidades.");
+                setMensagem("Erro ao carregar serviços.");
             }
         }
 
-        void carregarUnidades();
+        void carregarServicos();
     }, []);
 
     if (carregando) {
@@ -144,7 +144,7 @@ function Auditoria() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
 
                 </div>
@@ -247,7 +247,7 @@ function Auditoria() {
                 onFechar={() => setMostrarFiltros(false)}
                 filtros={filtros}
                 setFiltros={setFiltros}
-                unidades={unidades}
+                servicos={servicos}
                 onAplicar={() => {
                     setMostrarFiltros(false);
                     void executarBusca();

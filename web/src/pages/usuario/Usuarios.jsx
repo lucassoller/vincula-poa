@@ -23,12 +23,12 @@ function Usuarios() {
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
-    const [unidades, setUnidades] = useState([]);
+    const [servicos, setServicos] = useState([]);
 
     const [filtros, setFiltros] = useState({
         id: "",
         nomeCompleto: "",
-        unidade: "",
+        servico: "",
         solicitante: "",
         faixaEtaria: []
     });
@@ -44,15 +44,15 @@ function Usuarios() {
             const payload = {
                 id: filtrosAtuais.id || null,
                 nomeCompleto: filtrosAtuais.nomeCompleto || null,
-                unidadeSaudeId: filtrosAtuais.unidade || null,
-                unidadeSolicitanteId: filtrosAtuais.solicitante || null,
+                servicoId: filtrosAtuais.servico || null,
+                servicoSolicitanteId: filtrosAtuais.solicitante || null,
                 faixaEtaria: filtrosAtuais.faixaEtaria || null
             };
 
             if(servidor.perfil === 'SOLICITANTE'){
-                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
+                payload.servicoSolicitanteId = servidor.servicoId;
             }else if(servidor.perfil === 'SERVIDOR_APS'){
-                payload.unidadeSaudeId = servidor.unidadeSaudeId;
+                payload.servicoId = servidor.servicoId;
             }
 
             const usuariosResponse = await api.post(
@@ -85,14 +85,14 @@ function Usuarios() {
 
             const payload = {
                 nomeCompleto: nome,
-                unidadeSaudeId: null,
-                unidadeSolicitanteId: null,
+                servicoId: null,
+                servicoSolicitanteId: null,
             };
 
             if(servidor.perfil === 'SOLICITANTE'){
-                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
+                payload.servicoSolicitanteId = servidor.servicoId;
             }else if(servidor.perfil === 'SERVIDOR_APS'){
-                payload.unidadeSaudeId = servidor.unidadeSaudeId;
+                payload.servicoId = servidor.servicoId;
             }
 
             const response = await api.post(
@@ -122,7 +122,7 @@ function Usuarios() {
         const filtrosVazios = {
             id: "",
             nomeCompleto: "",
-            unidade: "",
+            servico: "",
             solicitante: "",
             faixaEtaria: []
         };
@@ -133,23 +133,23 @@ function Usuarios() {
     }
 
     useEffect(() => {
-        async function carregarUnidades() {
+        async function carregarServicos() {
             try {
-                const response = await api.get("/unidades-saude/ubs");
-                setUnidades(response.data);
+                const response = await api.get("/servicos/ubs");
+                setServicos(response.data);
 
             } catch {
-                setMensagem("Erro ao carregar unidades.");
+                setMensagem("Erro ao carregar serviços.");
             }
         }
 
-        void carregarUnidades();
+        void carregarServicos();
     }, []);
 
-    async function abrirCardUbs(unidadeSaudeId) {
+    async function abrirCardUbs(servicoId) {
         try {
             setCarregandoUbs(true);
-            const response = await api.get(`/unidades-saude/${unidadeSaudeId}`);
+            const response = await api.get(`/servicos/${servicoId}`);
             setUbsSelecionada(response.data);
         } catch {
             setMensagem("Erro ao carregar dados da UBS.");
@@ -180,7 +180,7 @@ function Usuarios() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
                 {mensagem && (
@@ -245,9 +245,9 @@ function Usuarios() {
                                 <td>
                                     <span
                                         className="ubs-badge ubs-clickable"
-                                        onClick={() => abrirCardUbs(usuario.unidadeSaudeId)}
+                                        onClick={() => abrirCardUbs(usuario.servicoId)}
                                     >
-                                        {usuario.unidadeSaudeNome}
+                                        {usuario.servicoNome}
                                     </span>
                                 </td>
                                 <td>
@@ -332,7 +332,7 @@ function Usuarios() {
                 onFechar={() => setMostrarFiltros(false)}
                 filtros={filtros}
                 setFiltros={setFiltros}
-                unidades={unidades}
+                servicos={servicos}
                 onAplicar={() => {
                     setMostrarFiltros(false);
                     void executarBusca();

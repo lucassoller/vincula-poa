@@ -71,16 +71,16 @@ public class Demanda {
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unidade_solicitante_id")
-    private UnidadeSaude unidadeSolicitante;
+    @JoinColumn(name = "servico_solicitante_id")
+    private Servico servicoSolicitante;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "unidade_responsavel_id", nullable = false)
-    private UnidadeSaude unidadeResponsavel;
+    @JoinColumn(name = "servico_responsavel_id", nullable = false)
+    private Servico servicoResponsavel;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unidade_responsavel_anterior_id")
-    private UnidadeSaude unidadeResponsavelAnterior;
+    @JoinColumn(name = "servico_responsavel_anterior_id")
+    private Servico servicoResponsavelAnterior;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "servidor_criador_id", nullable = false)

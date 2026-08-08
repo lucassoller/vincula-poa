@@ -48,10 +48,10 @@ class IndicadorControllerTest {
         )).thenReturn(new IndicadorDTO());
 
         mockMvc.perform(get("/indicadores/geral")
-                        .param("unidadeSaudeId", "1")
+                        .param("servicoId", "1")
                         .param("inicio", "2025-01-01T00:00:00")
                         .param("fim", "2025-12-31T23:59:59")
-                        .param("unidadeSolicitanteId", "2"))
+                        .param("servicoSolicitanteId", "2"))
                 .andExpect(status().isOk());
     }
 
@@ -74,10 +74,10 @@ class IndicadorControllerTest {
         )).thenReturn("csv,dados");
 
         mockMvc.perform(get("/indicadores/exportar")
-                        .param("unidadeSaudeId", "1")
+                        .param("servicoId", "1")
                         .param("inicio", "2025-01-01T00:00:00")
                         .param("fim", "2025-12-31T23:59:59")
-                        .param("unidadeSolicitanteId", "2"))
+                        .param("servicoSolicitanteId", "2"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists(HttpHeaders.CONTENT_DISPOSITION))
                 .andExpect(content().contentType("text/csv"));

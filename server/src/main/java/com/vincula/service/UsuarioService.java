@@ -139,18 +139,18 @@ public class UsuarioService {
         geocodingService.preencherCoordenadas(usuario.getEndereco());
 
         if(usuario.getEndereco().getLatitude() == null || usuario.getEndereco().getLongitude() == null){
-            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+            throw new BusinessException("Serviço não encontrado para esse endereço");
         }
 
-        UnidadeSaude unidade = territorializacaoService.buscarUbsPorCoordenada(
+        Servico servico = territorializacaoService.buscarUbsPorCoordenada(
                 usuario.getEndereco().getLatitude(),
                 usuario.getEndereco().getLongitude());
 
-        if(unidade == null){
-            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+        if(servico == null){
+            throw new BusinessException("Serviço não encontrado para esse endereço");
         }
 
-        usuario.setUnidadeSaude(unidade);
+        usuario.setServico(servico);
 
         Usuario atualizado = usuarioRepository.save(usuario);
 
@@ -205,20 +205,20 @@ public class UsuarioService {
         geocodingService.preencherCoordenadas(entity.getEndereco());
 
         if(entity.getEndereco().getLatitude() == null || entity.getEndereco().getLongitude() == null){
-            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+            throw new BusinessException("Serviço não encontrado para esse endereço");
         }
 
-        UnidadeSaude unidade = territorializacaoService.buscarUbsPorCoordenada(
+        Servico servico = territorializacaoService.buscarUbsPorCoordenada(
                 entity.getEndereco().getLatitude(),
                 entity.getEndereco().getLongitude());
 
-        if(unidade == null){
-            throw new BusinessException("Unidade de Saúde não encontrada para esse endereço");
+        if(servico == null){
+            throw new BusinessException("Serviço não encontrado para esse endereço");
         }
-        entity.setUnidadeSaude(unidade);
+        entity.setServico(servico);
 
         if(servidor.getPerfil() == PerfilServidor.SOLICITANTE){
-            entity.setUnidadeSolicitante(servidor.getUnidadeSaude());
+            entity.setServicoSolicitante(servidor.getServico());
         }
 
         return entity;
@@ -234,13 +234,13 @@ public class UsuarioService {
         dto.setDataNascimento(entity.getDataNascimento());
         dto.setDocumento(entity.getDocumento());
         dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
-        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
-        dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
+        dto.setServicoId(entity.getServico().getId());
+        dto.setServicoNome(entity.getServico().getNome());
         dto.setSexo(entity.getSexo());
 
-        if(entity.getUnidadeSolicitante() != null){
-            dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
-            dto.setUnidadeSolicitanteNome(entity.getUnidadeSolicitante().getNome());
+        if(entity.getServicoSolicitante() != null){
+            dto.setServicoSolicitanteId(entity.getServicoSolicitante().getId());
+            dto.setServicoSolicitanteNome(entity.getServicoSolicitante().getNome());
         }
 
         return dto;
@@ -253,13 +253,13 @@ public class UsuarioService {
         dto.setId(entity.getId());
         dto.setNomeCompleto(entity.getNomeCompleto());
         dto.setDocumento(entity.getDocumento());
-        dto.setUnidadeSaudeNome(entity.getUnidadeSaude().getNome());
-        dto.setUnidadeSaudeId(entity.getUnidadeSaude().getId());
+        dto.setServicoNome(entity.getServico().getNome());
+        dto.setServicoId(entity.getServico().getId());
 
 
-        if(entity.getUnidadeSolicitante() != null){
-            dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
-            dto.setUnidadeSolicitanteNome(entity.getUnidadeSolicitante().getNome());
+        if(entity.getServicoSolicitante() != null){
+            dto.setServicoSolicitanteId(entity.getServicoSolicitante().getId());
+            dto.setServicoSolicitanteNome(entity.getServicoSolicitante().getNome());
         }
 
         return dto;

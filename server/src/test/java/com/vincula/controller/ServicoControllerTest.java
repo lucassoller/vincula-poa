@@ -2,12 +2,12 @@ package com.vincula.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.endereco.EnderecoDTO;
-import com.vincula.dto.unidadeSaude.UnidadeSaudeDTO;
-import com.vincula.dto.unidadeSaude.UnidadeSaudeResponseDTO;
+import com.vincula.dto.servico.ServicoDTO;
+import com.vincula.dto.servico.ServicoResponseDTO;
 import com.vincula.enums.TipoServico;
 import com.vincula.security.JwtAuthenticationFilter;
 import com.vincula.security.JwtService;
-import com.vincula.service.UnidadeSaudeService;
+import com.vincula.service.ServicoService;
 import com.vincula.util.AuditoriaFacade;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UnidadeSaudeController.class)
+@WebMvcTest(ServicoController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureJsonTesters
-class UnidadeSaudeControllerTest {
+class ServicoControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -48,40 +48,40 @@ class UnidadeSaudeControllerTest {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @MockitoBean
-    private UnidadeSaudeService unidadeSaudeService;
+    private ServicoService servicoService;
 
     @Test
     void deveBuscarPorId() throws Exception {
 
-        UnidadeSaudeResponseDTO dto = new UnidadeSaudeResponseDTO();
+        ServicoResponseDTO dto = new ServicoResponseDTO();
         dto.setId(1L);
         dto.setNome("UBS Centro");
 
-        when(unidadeSaudeService.buscarPorId(1L))
+        when(servicoService.buscarPorId(1L))
                 .thenReturn(dto);
 
-        mockMvc.perform(get("/unidades-saude/1"))
+        mockMvc.perform(get("/servicos/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("UBS Centro"));
 
-        verify(unidadeSaudeService).buscarPorId(1L);
+        verify(servicoService).buscarPorId(1L);
     }
 
     @Test
     void deveCriar() throws Exception {
 
-        UnidadeSaudeDTO request = new UnidadeSaudeDTO();
+        ServicoDTO request = new ServicoDTO();
         request.setNome("UBS Centro");
 
-        UnidadeSaudeResponseDTO response = new UnidadeSaudeResponseDTO();
+        ServicoResponseDTO response = new ServicoResponseDTO();
         response.setId(1L);
         response.setNome("UBS Centro");
 
-        when(unidadeSaudeService.criar(any(UnidadeSaudeDTO.class)))
+        when(servicoService.criar(any(ServicoDTO.class)))
                 .thenReturn(response);
 
-        mockMvc.perform(post("/unidades-saude")
+        mockMvc.perform(post("/servicos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -102,32 +102,32 @@ class UnidadeSaudeControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("UBS Centro"));
 
-        verify(unidadeSaudeService).criar(any(UnidadeSaudeDTO.class));
+        verify(servicoService).criar(any(ServicoDTO.class));
     }
 
     @Test
     void deveDeletar() throws Exception {
 
-        doNothing().when(unidadeSaudeService).deletar(1L);
+        doNothing().when(servicoService).deletar(1L);
 
-        mockMvc.perform(delete("/unidades-saude/1"))
+        mockMvc.perform(delete("/servicos/1"))
                 .andExpect(status().isNoContent());
 
-        verify(unidadeSaudeService).deletar(1L);
+        verify(servicoService).deletar(1L);
     }
 
     /*@Test
     void deveListarTodos() throws Exception {
 
-        when(unidadeSaudeService.listarTodos())
+        when(servicoService.listarTodos())
                 .thenReturn(List.of());
 
-        mockMvc.perform(get("/unidades-saude/all"))
+        mockMvc.perform(get("/servicos/all"))
                 .andExpect(status().isOk());
     }*/
 
     @Test
-    void deveAtualizarUnidadeSaude() throws Exception {
+    void deveAtualizarServico() throws Exception {
 
         EnderecoDTO endereco = new EnderecoDTO();
         endereco.setRua("Rua das Flores");
@@ -136,18 +136,18 @@ class UnidadeSaudeControllerTest {
         endereco.setCidade("Porto Alegre");
         endereco.setEstado("RS");
 
-        UnidadeSaudeDTO dto = new UnidadeSaudeDTO();
+        ServicoDTO dto = new ServicoDTO();
         dto.setNome("UBS Central");
         dto.setCnes("1234567");
         dto.setEndereco(endereco);
         dto.setTipoServico(TipoServico.UBS); // ajuste para o enum real
 
-        UnidadeSaudeResponseDTO response = new UnidadeSaudeResponseDTO();
+        ServicoResponseDTO response = new ServicoResponseDTO();
 
-        when(unidadeSaudeService.atualizar(eq(1L), any(UnidadeSaudeDTO.class)))
+        when(servicoService.atualizar(eq(1L), any(ServicoDTO.class)))
                 .thenReturn(response);
 
-        mockMvc.perform(put("/unidades-saude/1")
+        mockMvc.perform(put("/servicos/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk());

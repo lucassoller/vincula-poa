@@ -144,7 +144,7 @@ class UsuarioControllerTest {
 
         RedirecionarDemandaDTO dto = new RedirecionarDemandaDTO();
         dto.setMotivoRedirecionamento("motivo");
-        dto.setNovaUnidadeResponsavelId(1L);
+        dto.setNovoServicoResponsavelId(1L);
 
         doNothing().when(demandaService)
                 .redirecionarDemandasAbertasDoUsuario(eq(1L), any(dto.getClass()));

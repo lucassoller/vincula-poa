@@ -10,7 +10,7 @@ import com.vincula.exception.NotFoundException;
 import com.vincula.export.DemandaExporter;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.UsuarioRepository;
-import com.vincula.repository.UnidadeSaudeRepository;
+import com.vincula.repository.ServicoRepository;
 import com.vincula.specification.DemandaSpecification;
 import com.vincula.util.AuditoriaDescricaoUtil;
 import com.vincula.util.AuditoriaFacade;
@@ -30,19 +30,19 @@ public class DemandaService {
 
     private final DemandaRepository demandaRepository;
     private final UsuarioRepository usuarioRepository;
-    private final UnidadeSaudeRepository unidadeSaudeRepository;
+    private final ServicoRepository servicoRepository;
     private final ServidorService servidorService;
     private final AuditoriaFacade auditoriaFacade;
     private final DemandaExporter demandaExporter;
 
     public DemandaService(DemandaRepository demandaRepository,
                           UsuarioRepository usuarioRepository,
-                          UnidadeSaudeRepository unidadeSaudeRepository,
+                          ServicoRepository servicoRepository,
                           ServidorService servidorService,
                           AuditoriaFacade auditoriaFacade, DemandaExporter demandaExporter) {
         this.demandaRepository = demandaRepository;
         this.usuarioRepository = usuarioRepository;
-        this.unidadeSaudeRepository = unidadeSaudeRepository;
+        this.servicoRepository = servicoRepository;
         this.servidorService = servidorService;
         this.auditoriaFacade = auditoriaFacade;
         this.demandaExporter = demandaExporter;
@@ -150,16 +150,16 @@ public class DemandaService {
             throw new BusinessException("Não é possível redirecionar uma demanda finalizada");
         }
 
-        UnidadeSaude novaUnidade = buscarUnidadeSaudePorId(dto.getNovaUnidadeResponsavelId());
+        Servico novaServico = buscarServicoPorId(dto.getNovoServicoResponsavelId());
 
-        if (demanda.getUnidadeResponsavel().getId().equals(novaUnidade.getId())) {
-            throw new BusinessException("A nova unidade responsável deve ser diferente da atual");
+        if (demanda.getServicoResponsavel().getId().equals(novaServico.getId())) {
+            throw new BusinessException("O novo serviço responsável deve ser diferente da atual");
         }
 
         Servidor servidor = servidorService.buscarServidorAutenticado();
 
-        demanda.setUnidadeResponsavelAnterior(demanda.getUnidadeResponsavel());
-        demanda.setUnidadeResponsavel(novaUnidade);
+        demanda.setServicoResponsavelAnterior(demanda.getServicoResponsavel());
+        demanda.setServicoResponsavel(novaServico);
         demanda.setFoiRedirecionada(true);
         demanda.setMotivoRedirecionamento(dto.getMotivoRedirecionamento());
         demanda.setDataHoraRedirecionamento(LocalDateTime.now());
@@ -186,9 +186,9 @@ public class DemandaService {
                 );
 
         for (Demanda demanda : demandas) {
-            if (!demanda.getUnidadeResponsavel().getId().equals(usuario.getUnidadeSaude().getId())) {
-                demanda.setUnidadeResponsavelAnterior(demanda.getUnidadeResponsavel());
-                demanda.setUnidadeResponsavel(usuario.getUnidadeSaude());
+            if (!demanda.getServicoResponsavel().getId().equals(usuario.getServico().getId())) {
+                demanda.setServicoResponsavelAnterior(demanda.getServicoResponsavel());
+                demanda.setServicoResponsavel(usuario.getServico());
                 demanda.setFoiRedirecionada(true);
                 demanda.setMotivoRedirecionamento(dto.getMotivoRedirecionamento());
                 demanda.setServidorRedirecionamento(servidor);
@@ -224,9 +224,9 @@ public class DemandaService {
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
     }
 
-    private UnidadeSaude buscarUnidadeSaudePorId(Long id) {
-        return unidadeSaudeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
+    private Servico buscarServicoPorId(Long id) {
+        return servicoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Serviço não encontrado"));
     }
 
     private Demanda toEntity(DemandaDTO dto) {
@@ -238,11 +238,11 @@ public class DemandaService {
         entity.setUsuario(usuario);
         entity.setServidorCriador(servidorCriador);
 
-        if(servidorCriador.getUnidadeSaude() != null){
-            entity.setUnidadeSolicitante(servidorCriador.getUnidadeSaude());
+        if(servidorCriador.getServico() != null){
+            entity.setServicoSolicitante(servidorCriador.getServico());
         }
 
-        entity.setUnidadeResponsavel(usuario.getUnidadeSaude());
+        entity.setServicoResponsavel(usuario.getServico());
         entity.setPrioridade(dto.getPrioridade());
         entity.setDescricaoBusca(dto.getDescricaoBusca());
         entity.setPrazoDemanda(dto.getPrazoDemanda());
@@ -264,13 +264,13 @@ public class DemandaService {
         dto.setUsuarioId(entity.getUsuario().getId());
         dto.setUsuarioNome(entity.getUsuario().getNomeCompleto());
 
-        if (entity.getUnidadeSolicitante() != null) {
-            dto.setUnidadeSolicitanteId(entity.getUnidadeSolicitante().getId());
-            dto.setUnidadeSolicitanteNome(entity.getUnidadeSolicitante().getNome());
+        if (entity.getServicoSolicitante() != null) {
+            dto.setServicoSolicitanteId(entity.getServicoSolicitante().getId());
+            dto.setServicoSolicitanteNome(entity.getServicoSolicitante().getNome());
         }
 
-        dto.setUnidadeResponsavelId(entity.getUnidadeResponsavel().getId());
-        dto.setUnidadeResponsavelNome(entity.getUnidadeResponsavel().getNome());
+        dto.setServicoResponsavelId(entity.getServicoResponsavel().getId());
+        dto.setServicoResponsavelNome(entity.getServicoResponsavel().getNome());
 
         dto.setMotivoBuscaAtiva(entity.getMotivoBuscaAtiva());
         dto.setMotivoComplemento(entity.getMotivoComplemento());
@@ -296,9 +296,9 @@ public class DemandaService {
 
         dto.setFoiRedirecionada(entity.getFoiRedirecionada());
 
-        if (entity.getUnidadeResponsavelAnterior() != null) {
-            dto.setUnidadeResponsavelAnteriorId(entity.getUnidadeResponsavelAnterior().getId());
-            dto.setUnidadeResponsavelAnteriorNome(entity.getUnidadeResponsavelAnterior().getNome());
+        if (entity.getServicoResponsavelAnterior() != null) {
+            dto.setServicoResponsavelAnteriorId(entity.getServicoResponsavelAnterior().getId());
+            dto.setServicoResponsavelAnteriorNome(entity.getServicoResponsavelAnterior().getNome());
         }
 
         dto.setMotivoRedirecionamento(entity.getMotivoRedirecionamento());

@@ -2,7 +2,7 @@
 
 import com.vincula.dto.indicador.IndicadorDTO;
 import com.vincula.entity.Servidor;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.entity.Servico;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.exception.BusinessException;
 import com.vincula.export.IndicadorExporter;
@@ -94,7 +94,7 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void devePermitirAcessoUnidadeParaGestaoMunicipal() {
+    void devePermitirAcessoServicoParaGestaoMunicipal() {
         Servidor servidor = new Servidor();
         servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
 
@@ -104,20 +104,20 @@ class IndicadorServiceTest {
         assertDoesNotThrow(() ->
                 ReflectionTestUtils.invokeMethod(
                         indicadorService,
-                        "validarAcessoUnidade",
+                        "validarAcessoServico",
                         1L
                 )
         );
     }
 
     @Test
-    void devePermitirAcessoQuandoServidorForDaMesmaUnidade() {
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
+    void devePermitirAcessoQuandoServidorForDaMesmaServico() {
+        Servico servico = new Servico();
+        servico.setId(1L);
 
         Servidor servidor = new Servidor();
         servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
-        servidor.setUnidadeSaude(unidade);
+        servidor.setServico(servico);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
@@ -125,20 +125,20 @@ class IndicadorServiceTest {
         assertDoesNotThrow(() ->
                 ReflectionTestUtils.invokeMethod(
                         indicadorService,
-                        "validarAcessoUnidade",
+                        "validarAcessoServico",
                         1L
                 )
         );
     }
 
     @Test
-    void deveLancarExcecaoQuandoServidorAcessaOutraUnidade() {
-        UnidadeSaude unidade = new UnidadeSaude();
-        unidade.setId(1L);
+    void deveLancarExcecaoQuandoServidorAcessaOutraServico() {
+        Servico servico = new Servico();
+        servico.setId(1L);
 
         Servidor servidor = new Servidor();
         servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
-        servidor.setUnidadeSaude(unidade);
+        servidor.setServico(servico);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
@@ -147,14 +147,14 @@ class IndicadorServiceTest {
                 BusinessException.class,
                 () -> ReflectionTestUtils.invokeMethod(
                         indicadorService,
-                        "validarAcessoUnidade",
+                        "validarAcessoServico",
                         2L
                 )
         );
     }
 
     @Test
-    void deveLancarExcecaoQuandoServidorNaoPossuiUnidade() {
+    void deveLancarExcecaoQuandoServidorNaoPossuiServico() {
         Servidor servidor = new Servidor();
         servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
 
@@ -165,7 +165,7 @@ class IndicadorServiceTest {
                 BusinessException.class,
                 () -> ReflectionTestUtils.invokeMethod(
                         indicadorService,
-                        "validarAcessoUnidade",
+                        "validarAcessoServico",
                         1L
                 )
         );
@@ -222,7 +222,7 @@ class IndicadorServiceTest {
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
-        doReturn(dto).when(spy).indicadorPorUnidadeSolicitante(1L);
+        doReturn(dto).when(spy).indicadorPorServicoSolicitante(1L);
 
         IndicadorDTO resultado =
                 spy.indicadorGeral(null, null, null, 1L);
@@ -232,13 +232,13 @@ class IndicadorServiceTest {
 
 
     @Test
-    void deveBuscarIndicadorPorUnidadeSolicitanteEPeriodo() {
+    void deveBuscarIndicadorPorServicoSolicitanteEPeriodo() {
         IndicadorDTO dto = mock(IndicadorDTO.class);
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
         doReturn(dto).when(spy)
-                .indicadorPorUnidadeSolicitanteEPeriodo(inicio, fim, 1L);
+                .indicadorPorServicoSolicitanteEPeriodo(inicio, fim, 1L);
 
         IndicadorDTO resultado =
                 spy.indicadorGeral(null, inicio, fim, 1L);
@@ -247,12 +247,12 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveBuscarIndicadorPorUnidade() {
+    void deveBuscarIndicadorPorServico() {
         IndicadorDTO dto = mock(IndicadorDTO.class);
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
-        doReturn(dto).when(spy).indicadorPorUnidade(1L);
+        doReturn(dto).when(spy).indicadorPorServico(1L);
 
         IndicadorDTO resultado =
                 spy.indicadorGeral(1L, null, null, null);
@@ -261,13 +261,13 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveBuscarIndicadorPorUnidadeEPeriodo() {
+    void deveBuscarIndicadorPorServicoEPeriodo() {
         IndicadorDTO dto = mock(IndicadorDTO.class);
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
         doReturn(dto).when(spy)
-                .indicadorPorUnidadeEPeriodo(1L, inicio, fim);
+                .indicadorPorServicoEPeriodo(1L, inicio, fim);
 
         IndicadorDTO resultado =
                 spy.indicadorGeral(1L, inicio, fim, null);
@@ -291,21 +291,21 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveExportarIndicadorPorUnidade() {
+    void deveExportarIndicadorPorServico() {
         IndicadorDTO dto = mock(IndicadorDTO.class);
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
-        doReturn(dto).when(spy).indicadorPorUnidade(1L);
+        doReturn(dto).when(spy).indicadorPorServico(1L);
 
         when(csvExporter.exportar(dto)).thenReturn("csv");
 
-        String resultado = spy.exportarIndicadorPorUnidadeCsv(1L);
+        String resultado = spy.exportarIndicadorPorServicoCsv(1L);
 
         assertEquals("csv", resultado);
 
         verify(auditoriaFacade)
-                .exportacaoCsvRealizada("Indicador da unidade ID 1 exportado");
+                .exportacaoCsvRealizada("Indicador da servico ID 1 exportado");
     }
 
     @Test
@@ -328,18 +328,18 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveExportarIndicadorPorUnidadeEPeriodo() {
+    void deveExportarIndicadorPorServicoEPeriodo() {
         IndicadorDTO dto = mock(IndicadorDTO.class);
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
         doReturn(dto).when(spy)
-                .indicadorPorUnidadeEPeriodo(1L, inicio, fim);
+                .indicadorPorServicoEPeriodo(1L, inicio, fim);
 
         when(csvExporter.exportar(dto)).thenReturn("csv");
 
         String resultado =
-                spy.exportarIndicadorPorUnidadeEPeriodoCsv(1L, inicio, fim);
+                spy.exportarIndicadorPorServicoEPeriodoCsv(1L, inicio, fim);
 
         assertEquals("csv", resultado);
 
@@ -347,18 +347,18 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveExportarIndicadorPorUnidadeSolicitanteEPeriodo() {
+    void deveExportarIndicadorPorServicoSolicitanteEPeriodo() {
         IndicadorDTO dto = mock(IndicadorDTO.class);
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
         doReturn(dto).when(spy)
-                .indicadorPorUnidadeSolicitanteEPeriodo(inicio, fim, 1L);
+                .indicadorPorServicoSolicitanteEPeriodo(inicio, fim, 1L);
 
         when(csvExporter.exportar(dto)).thenReturn("csv");
 
         String resultado =
-                spy.exportarIndicadorPorUnidadeSolicitanteEPeriodoCsv(1L, inicio, fim);
+                spy.exportarIndicadorPorServicoSolicitanteEPeriodoCsv(1L, inicio, fim);
 
         assertEquals("csv", resultado);
 
@@ -388,28 +388,28 @@ class IndicadorServiceTest {
     void deveMontarIndicadorPorServidor() {
         Long servidorId = 1L;
 
-        when(indicadorProducaoService.indicadoresPorUnidadeSolicitante(servidorId))
+        when(indicadorProducaoService.indicadoresPorServicoSolicitante(servidorId))
                 .thenReturn(List.of());
 
-        IndicadorDTO result = indicadorService.indicadorPorUnidadeSolicitante(servidorId);
+        IndicadorDTO result = indicadorService.indicadorPorServicoSolicitante(servidorId);
 
         assertNotNull(result);
     }
 
     @Test
-    void deveMontarIndicadorPorUnidade() {
+    void deveMontarIndicadorPorServico() {
         Servidor servidor = new Servidor();
         servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        Long unidadeId = 10L;
+        Long servicoId = 10L;
 
-        when(indicadorProducaoService.indicadoresPorUnidade(unidadeId))
+        when(indicadorProducaoService.indicadoresPorServico(servicoId))
                 .thenReturn(List.of());
 
-        IndicadorDTO result = indicadorService.indicadorPorUnidade(unidadeId);
+        IndicadorDTO result = indicadorService.indicadorPorServico(servicoId);
 
         assertNotNull(result);
     }
@@ -434,28 +434,28 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveMontarIndicadorPorUnidadeEPeriodo() {
+    void deveMontarIndicadorPorServicoEPeriodo() {
         Servidor servidor = new Servidor();
         servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
-        Long unidadeId = 10L;
+        Long servicoId = 10L;
         LocalDateTime ini = LocalDateTime.now().minusDays(1);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(indicadorProducaoService.indicadoresPorUnidadeEPeriodo(unidadeId, ini, fim))
+        when(indicadorProducaoService.indicadoresPorServicoEPeriodo(servicoId, ini, fim))
                 .thenReturn(List.of());
 
         IndicadorDTO result =
-                indicadorService.indicadorPorUnidadeEPeriodo(unidadeId, ini, fim);
+                indicadorService.indicadorPorServicoEPeriodo(servicoId, ini, fim);
 
         assertNotNull(result);
     }
 
     @Test
-    void deveMontarIndicadorPorUnidadeSolicitanteEPeriodo() {
+    void deveMontarIndicadorPorServicoSolicitanteEPeriodo() {
         Long servidorId = 1L;
 
         LocalDateTime ini = LocalDateTime.now().minusDays(1);
@@ -465,7 +465,7 @@ class IndicadorServiceTest {
                 .thenReturn(List.of());
 
         IndicadorDTO result =
-                indicadorService.indicadorPorUnidadeSolicitanteEPeriodo(ini, fim, servidorId);
+                indicadorService.indicadorPorServicoSolicitanteEPeriodo(ini, fim, servidorId);
 
         assertNotNull(result);
     }
@@ -480,7 +480,7 @@ class IndicadorServiceTest {
 
         doReturn("csv-servidor-periodo")
                 .when(spy)
-                .exportarIndicadorPorUnidadeSolicitanteEPeriodoCsv(servidorId, ini, fim);
+                .exportarIndicadorPorServicoSolicitanteEPeriodoCsv(servidorId, ini, fim);
 
         String result = spy.exportarIndicadorGeralCsv(null, ini, fim, servidorId);
 
@@ -495,7 +495,7 @@ class IndicadorServiceTest {
 
         IndicadorDTO dtoMock = mock(IndicadorDTO.class);
 
-        doReturn(dtoMock).when(spy).indicadorPorUnidadeSolicitante(servidorId);
+        doReturn(dtoMock).when(spy).indicadorPorServicoSolicitante(servidorId);
         when(csvExporter.exportar(dtoMock)).thenReturn("csv-servidor");
 
         String result = spy.exportarIndicadorGeralCsv(null, null, null, servidorId);
@@ -507,35 +507,35 @@ class IndicadorServiceTest {
     }
 
     @Test
-    void deveExportarUnidadeComPeriodo() {
-        Long unidadeId = 10L;
+    void deveExportarServicoComPeriodo() {
+        Long servicoId = 10L;
         LocalDateTime ini = LocalDateTime.now().minusDays(1);
         LocalDateTime fim = LocalDateTime.now();
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
-        doReturn("csv-unidade-periodo")
+        doReturn("csv-servico-periodo")
                 .when(spy)
-                .exportarIndicadorPorUnidadeEPeriodoCsv(unidadeId, ini, fim);
+                .exportarIndicadorPorServicoEPeriodoCsv(servicoId, ini, fim);
 
-        String result = spy.exportarIndicadorGeralCsv(unidadeId, ini, fim, null);
+        String result = spy.exportarIndicadorGeralCsv(servicoId, ini, fim, null);
 
-        assertEquals("csv-unidade-periodo", result);
+        assertEquals("csv-servico-periodo", result);
     }
 
     @Test
-    void deveExportarUnidadeSemPeriodo() {
-        Long unidadeId = 10L;
+    void deveExportarServicoSemPeriodo() {
+        Long servicoId = 10L;
 
         IndicadorService spy = Mockito.spy(indicadorService);
 
-        doReturn("csv-unidade")
+        doReturn("csv-servico")
                 .when(spy)
-                .exportarIndicadorPorUnidadeCsv(unidadeId);
+                .exportarIndicadorPorServicoCsv(servicoId);
 
-        String result = spy.exportarIndicadorGeralCsv(unidadeId, null, null, null);
+        String result = spy.exportarIndicadorGeralCsv(servicoId, null, null, null);
 
-        assertEquals("csv-unidade", result);
+        assertEquals("csv-servico", result);
     }
 
     @Test
@@ -584,54 +584,54 @@ class IndicadorServiceTest {
                 .thenReturn(servidor);
 
         assertDoesNotThrow(() ->
-                indicadorService.indicadorPorUnidade(10L)
+                indicadorService.indicadorPorServico(10L)
         );
     }
 
     @Test
-    void devePermitirAcessoServidorApsNaMesmaUnidade() {
-        Long unidadeId = 10L;
+    void devePermitirAcessoServidorApsNaMesmaServico() {
+        Long servicoId = 10L;
 
-        UnidadeSaude unidade = mock(UnidadeSaude.class);
-        when(unidade.getId()).thenReturn(unidadeId);
+        Servico servico = mock(Servico.class);
+        when(servico.getId()).thenReturn(servicoId);
 
         Servidor servidor = mock(Servidor.class);
         when(servidor.getPerfil()).thenReturn(PerfilServidor.SERVIDOR_APS);
-        when(servidor.getUnidadeSaude()).thenReturn(unidade);
+        when(servidor.getServico()).thenReturn(servico);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
         assertDoesNotThrow(() ->
-                indicadorService.indicadorPorUnidade(unidadeId)
+                indicadorService.indicadorPorServico(servicoId)
         );
     }
 
     @Test
-    void deveLancarExcecaoQuandoServidorApsAcessaOutraUnidade() {
-        Long unidadeId = 10L;
+    void deveLancarExcecaoQuandoServidorApsAcessaOutraServico() {
+        Long servicoId = 10L;
 
-        UnidadeSaude outraUnidade = mock(UnidadeSaude.class);
-        when(outraUnidade.getId()).thenReturn(99L);
+        Servico outraServico = mock(Servico.class);
+        when(outraServico.getId()).thenReturn(99L);
 
         Servidor servidor = mock(Servidor.class);
         when(servidor.getPerfil()).thenReturn(PerfilServidor.SERVIDOR_APS);
-        when(servidor.getUnidadeSaude()).thenReturn(outraUnidade);
+        when(servidor.getServico()).thenReturn(outraServico);
 
         when(servidorService.buscarServidorAutenticado())
                 .thenReturn(servidor);
 
         BusinessException ex = assertThrows(
                 BusinessException.class,
-                () -> indicadorService.indicadorPorUnidade(unidadeId)
+                () -> indicadorService.indicadorPorServico(servicoId)
         );
 
-        assertEquals("Servidor não pode acessar indicadores de outra unidade", ex.getMessage());
+        assertEquals("Servidor não pode acessar indicadores de outra servico", ex.getMessage());
     }
 
     @Test
     void deveLancarExcecaoParaPerfilNaoAutorizado() {
-        Long unidadeId = 10L;
+        Long servicoId = 10L;
 
         Servidor servidor = mock(Servidor.class);
         when(servidor.getPerfil()).thenReturn(PerfilServidor.SOLICITANTE);
@@ -641,10 +641,10 @@ class IndicadorServiceTest {
 
         BusinessException ex = assertThrows(
                 BusinessException.class,
-                () -> indicadorService.indicadorPorUnidade(unidadeId)
+                () -> indicadorService.indicadorPorServico(servicoId)
         );
 
-        assertEquals("Servidor não pode acessar indicadores de outra unidade", ex.getMessage());
+        assertEquals("Servidor não pode acessar indicadores de outra servico", ex.getMessage());
     }
 
     @Test

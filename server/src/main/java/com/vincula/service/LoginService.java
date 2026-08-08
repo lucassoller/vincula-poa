@@ -71,12 +71,12 @@ public class LoginService {
                 servidor.getEmail(),
                 servidor.getPerfil(),
                 servidor.getAtivo(),
-                servidor.getUnidadeSaude() != null
-                        ? servidor.getUnidadeSaude().getId()
+                servidor.getServico() != null
+                        ? servidor.getServico().getId()
                         : null,
 
-                servidor.getUnidadeSaude() != null
-                        ? servidor.getUnidadeSaude().getNome()
+                servidor.getServico() != null
+                        ? servidor.getServico().getNome()
                         : null
         );
     }

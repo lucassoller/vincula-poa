@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class IndicadorRankingDTO {
 
-    private Long unidadeSaudeId;
-    private String unidadeSaudeNome;
+    private Long servicoId;
+    private String servicoNome;
     private Object valor;
 }

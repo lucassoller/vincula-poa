@@ -108,14 +108,14 @@ public class IndicadorService {
         switch (servidor.getPerfil()) {
 
             case SERVIDOR_APS -> {
-                filtro.setUnidadeResponsavelId(
-                        servidor.getUnidadeSaude().getId()
+                filtro.setServicoResponsavelId(
+                        servidor.getServico().getId()
                 );
             }
 
             case SOLICITANTE -> {
-                filtro.setUnidadeSolicitanteId(
-                        servidor.getUnidadeSaude().getId()
+                filtro.setServicoSolicitanteId(
+                        servidor.getServico().getId()
                 );
             }
 

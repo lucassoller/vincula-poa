@@ -20,22 +20,22 @@ public class IndicadorPrazoService {
     public List<IndicadorValorDTO> gerarIndicadores(FiltroIndicadorRequestDTO filtro) {
 
         long dentroPrazo = demandaRepository.countDemandasDentroDoPrazo(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );
 
         long abertasAtrasadas = demandaRepository.countDemandasAtrasadas(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );
 
         long finalizadasComAtraso = demandaRepository.countDemandasFinalizadasComAtraso(
-                filtro.getUnidadeResponsavelId(),
-                filtro.getUnidadeSolicitanteId(),
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
                 filtro.getDataInicial(),
                 filtro.getDataFinal()
         );
@@ -64,8 +64,8 @@ public class IndicadorPrazoService {
                         "Tempo médio de atraso",
                         formatarTempo(
                                 demandaRepository.calcularTempoMedioAtraso(
-                                        filtro.getUnidadeResponsavelId(),
-                                        filtro.getUnidadeSolicitanteId(),
+                                        filtro.getServicoResponsavelId(),
+                                        filtro.getServicoSolicitanteId(),
                                         filtro.getDataInicial(),
                                         filtro.getDataFinal()
                                 )

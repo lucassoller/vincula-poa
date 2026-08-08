@@ -1,7 +1,7 @@
 package com.vincula.dto.projection;
 
 public interface RankingValorProjection {
-    Long getUnidadeSaudeId();
-    String getUnidadeSaudeNome();
+    Long getServicoId();
+    String getServicoNome();
     Double getValor();
 }

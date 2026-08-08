@@ -28,18 +28,18 @@ function Indicador() {
     });
 
     useEffect(() => {
-        async function carregarUnidades() {
+        async function carregarServicos() {
             try {
-                const response = await api.get("/unidades-saude/all");
+                const response = await api.get("/servicos/all");
                 setUnidades(response.data.ubs);
                 setServicos(response.data.servicos);
 
             } catch {
-                setErro("Erro ao carregar unidades.");
+                setErro("Erro ao carregar serviços.");
             }
         }
 
-        void carregarUnidades();
+        void carregarServicos();
     }, []);
 
 
@@ -52,16 +52,16 @@ function Indicador() {
             const payload = {
                 usuarioId: filtrosAtuais.usuario || null,
                 complemento: filtrosAtuais.complemento || null,
-                unidadeResponsavelId: filtrosAtuais.unidade || null,
-                unidadeSolicitanteId: filtrosAtuais.servico || null,
+                servicoResponsavelId: filtrosAtuais.servico || null,
+                servicoSolicitanteId: filtrosAtuais.servico || null,
                 dataInicial: filtrosAtuais.dataInicial || null,
                 dataFinal: filtrosAtuais.dataFinal || null,
             };
 
             if (servidor?.perfil === "SERVIDOR_APS") {
-                payload.unidadeResponsavelId = servidor.unidadeSaudeId;
+                payload.servicoResponsavelId = servidor.servicoId;
             }else if (servidor?.perfil === "SOLICITANTE") {
-                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
+                payload.servicoSolicitanteId = servidor.servicoId;
             }
 
             const indicadorResponse = await api.post(
@@ -107,16 +107,16 @@ function Indicador() {
     async function exportarCsv() {
         try {
             const payload = {
-                unidadeResponsavelId: filtros.unidade || null,
-                unidadeSolicitanteId: filtros.servico || null,
+                servicoResponsavelId: filtros.servico || null,
+                servicoSolicitanteId: filtros.servico || null,
                 dataInicial: filtros.dataInicial || null,
                 dataFinal: filtros.dataFinal || null,
             };
 
             if (servidor?.perfil === "SERVIDOR_APS") {
-                payload.unidadeResponsavelId = servidor.unidadeSaudeId;
+                payload.servicoResponsavelId = servidor.servicoId;
             }else if (servidor?.perfil === "SOLICITANTE") {
-                payload.unidadeSolicitanteId = servidor.unidadeSaudeId;
+                payload.servicoSolicitanteId = servidor.servicoId;
             }
 
             const response = await api.post("/indicadores/exportar",
@@ -198,7 +198,7 @@ function Indicador() {
                         </div>
 
                         <div className="perfil-badge">
-                            {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                            {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                         </div>
                     </div>
 

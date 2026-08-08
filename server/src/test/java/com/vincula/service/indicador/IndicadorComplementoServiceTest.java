@@ -120,16 +120,16 @@ class IndicadorComplementoServiceTest {
     }
 
     @Test
-    void deveListarComplementosPorUnidade() {
+    void deveListarComplementosPorServico() {
 
         when(demandaRepository
-                .listarPrincipaisComplementosPorUnidade(1L))
+                .listarPrincipaisComplementosPorServico(1L))
                 .thenReturn(List.of());
 
-        service.principaisComplementosPorUnidade(1L);
+        service.principaisComplementosPorServico(1L);
 
         verify(demandaRepository)
-                .listarPrincipaisComplementosPorUnidade(1L);
+                .listarPrincipaisComplementosPorServico(1L);
     }
 
     @Test
@@ -149,25 +149,25 @@ class IndicadorComplementoServiceTest {
     }
 
     @Test
-    void deveListarComplementosPorUnidadeEPeriodo() {
+    void deveListarComplementosPorServicoEPeriodo() {
 
         LocalDateTime inicio = LocalDateTime.now().minusDays(30);
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .listarPrincipaisComplementosPorUnidadeEPeriodo(
+                .listarPrincipaisComplementosPorServicoEPeriodo(
                         1L,
                         inicio,
                         fim))
                 .thenReturn(List.of());
 
-        service.principaisComplementosPorUnidadeEPeriodo(
+        service.principaisComplementosPorServicoEPeriodo(
                 1L,
                 inicio,
                 fim);
 
         verify(demandaRepository)
-                .listarPrincipaisComplementosPorUnidadeEPeriodo(
+                .listarPrincipaisComplementosPorServicoEPeriodo(
                         1L,
                         inicio,
                         fim);
@@ -180,7 +180,7 @@ class IndicadorComplementoServiceTest {
         LocalDateTime fim = LocalDateTime.now();
 
         when(demandaRepository
-                .listarPrincipaisComplementosPorUnidadeSolicitanteEPeriodo(
+                .listarPrincipaisComplementosPorServicoSolicitanteEPeriodo(
                         1L,
                         inicio,
                         fim))
@@ -192,7 +192,7 @@ class IndicadorComplementoServiceTest {
                 fim);
 
         verify(demandaRepository)
-                .listarPrincipaisComplementosPorUnidadeSolicitanteEPeriodo(
+                .listarPrincipaisComplementosPorServicoSolicitanteEPeriodo(
                         1L,
                         inicio,
                         fim);
@@ -202,13 +202,13 @@ class IndicadorComplementoServiceTest {
     void deveListarComplementosPorServidor() {
 
         when(demandaRepository
-                .listarPrincipaisComplementosPorUnidadeSolicitante(1L))
+                .listarPrincipaisComplementosPorServicoSolicitante(1L))
                 .thenReturn(List.of());
 
         service.principaisComplementosPorServidor(1L);
 
         verify(demandaRepository)
-                .listarPrincipaisComplementosPorUnidadeSolicitante(1L);
+                .listarPrincipaisComplementosPorServicoSolicitante(1L);
     }
 }
 

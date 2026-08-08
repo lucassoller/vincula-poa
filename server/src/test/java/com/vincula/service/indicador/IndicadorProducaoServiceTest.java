@@ -121,42 +121,42 @@ class IndicadorProducaoServiceTest {
     }
 
     @Test
-    void deveListarIndicadoresPorUnidade() {
+    void deveListarIndicadoresPorServico() {
 
-        when(demandaRepository.agruparPorStatusPorUnidade(1L))
+        when(demandaRepository.agruparPorStatusPorServico(1L))
                 .thenReturn(List.of());
 
-        when(demandaRepository.countByUnidadeResponsavelId(1L))
+        when(demandaRepository.countByServicoResponsavelId(1L))
                 .thenReturn(10.0);
 
         List<IndicadorValorDTO> resultado =
-                service.indicadoresPorUnidade(1L);
+                service.indicadoresPorServico(1L);
 
         assertEquals(1, resultado.size());
 
         verify(demandaRepository)
-                .agruparPorStatusPorUnidade(1L);
+                .agruparPorStatusPorServico(1L);
 
         verify(demandaRepository)
-                .countByUnidadeResponsavelId(1L);
+                .countByServicoResponsavelId(1L);
     }
 
     @Test
-    void deveListarIndicadoresPorUnidadeSolicitante() {
+    void deveListarIndicadoresPorServicoSolicitante() {
 
-        when(demandaRepository.agruparPorStatusPorUnidadeSolicitante(1L))
+        when(demandaRepository.agruparPorStatusPorServicoSolicitante(1L))
                 .thenReturn(List.of());
 
-        when(demandaRepository.countByUnidadeSolicitanteId(1L))
+        when(demandaRepository.countByServicoSolicitanteId(1L))
                 .thenReturn(10.0);
 
-        service.indicadoresPorUnidadeSolicitante(1L);
+        service.indicadoresPorServicoSolicitante(1L);
 
         verify(demandaRepository)
-                .agruparPorStatusPorUnidadeSolicitante(1L);
+                .agruparPorStatusPorServicoSolicitante(1L);
 
         verify(demandaRepository)
-                .countByUnidadeSolicitanteId(1L);
+                .countByServicoSolicitanteId(1L);
     }
 
     @Test
@@ -181,45 +181,45 @@ class IndicadorProducaoServiceTest {
     }
 
     @Test
-    void deveListarIndicadoresPorUnidadeEPeriodo() {
+    void deveListarIndicadoresPorServicoEPeriodo() {
 
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.agruparPorStatusPorUnidadeEPeriodo(1L, inicio, fim))
+        when(demandaRepository.agruparPorStatusPorServicoEPeriodo(1L, inicio, fim))
                 .thenReturn(List.of());
 
-        when(demandaRepository.countByUnidadeResponsavelIdAndDataHoraCriacaoBetween(1L, inicio, fim))
+        when(demandaRepository.countByServicoResponsavelIdAndDataHoraCriacaoBetween(1L, inicio, fim))
                 .thenReturn(5.0);
 
-        when(demandaRepository.countByUnidadeResponsavelIdAndDataHoraFinalizacaoBetween(1L, inicio, fim))
+        when(demandaRepository.countByServicoResponsavelIdAndDataHoraFinalizacaoBetween(1L, inicio, fim))
                 .thenReturn(2.0);
 
-        service.indicadoresPorUnidadeEPeriodo(1L, inicio, fim);
+        service.indicadoresPorServicoEPeriodo(1L, inicio, fim);
 
         verify(demandaRepository)
-                .agruparPorStatusPorUnidadeEPeriodo(1L, inicio, fim);
+                .agruparPorStatusPorServicoEPeriodo(1L, inicio, fim);
     }
 
     @Test
-    void deveListarIndicadoresPorUnidadeSolicitanteEPeriodo() {
+    void deveListarIndicadoresPorServicoSolicitanteEPeriodo() {
 
         LocalDateTime inicio = LocalDateTime.now().minusDays(10);
         LocalDateTime fim = LocalDateTime.now();
 
-        when(demandaRepository.agruparPorStatusPorUnidadeSolicitanteEPeriodo(1L, inicio, fim))
+        when(demandaRepository.agruparPorStatusPorServicoSolicitanteEPeriodo(1L, inicio, fim))
                 .thenReturn(List.of());
 
-        when(demandaRepository.countByUnidadeSolicitanteIdAndDataHoraCriacaoBetween(1L, inicio, fim))
+        when(demandaRepository.countByServicoSolicitanteIdAndDataHoraCriacaoBetween(1L, inicio, fim))
                 .thenReturn(5.0);
 
-        when(demandaRepository.countByUnidadeSolicitanteIdAndDataHoraFinalizacaoBetween(1L, inicio, fim))
+        when(demandaRepository.countByServicoSolicitanteIdAndDataHoraFinalizacaoBetween(1L, inicio, fim))
                 .thenReturn(2.0);
 
         service.indicadoresPorServidorEPeriodo(1L, inicio, fim);
 
         verify(demandaRepository)
-                .agruparPorStatusPorUnidadeSolicitanteEPeriodo(1L, inicio, fim);
+                .agruparPorStatusPorServicoSolicitanteEPeriodo(1L, inicio, fim);
     }
 }
 

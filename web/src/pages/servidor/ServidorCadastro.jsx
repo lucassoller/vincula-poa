@@ -3,7 +3,6 @@ import api from "../../api/api.js";
 import {useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {useAuth} from "../../context/AuthContext.jsx";
-import * as Promisse from "axios";
 import {perfilLabel} from "../../utils/utils.js";
 
 function ServidorCadastro() {
@@ -20,7 +19,7 @@ function ServidorCadastro() {
             senha: "",
             confirmarSenha: "",
             perfil: "",
-            unidadeSaudeId: ""
+            servicoId: ""
         }
     });
     const perfil = watch("perfil");
@@ -35,9 +34,9 @@ function ServidorCadastro() {
     const { servidor } = useAuth();
 
     useEffect(() => {
-        async function carregarUnidades() {
+        async function carregarServicos() {
             try {
-                const response = await api.get("/unidades-saude/all")
+                const response = await api.get("/servicos/all")
                 setUnidades(response.data.ubs);
                 setServicos(response.data.servicos);
             } catch {
@@ -46,7 +45,7 @@ function ServidorCadastro() {
             }
         }
 
-        void carregarUnidades();
+        void carregarServicos();
     }, []);
 
 
@@ -60,8 +59,8 @@ function ServidorCadastro() {
 
                 perfil: dados.perfil || null,
 
-                unidadeSaudeId: dados.unidadeSaudeId
-                    ? Number(dados.unidadeSaudeId)
+                servicoId: dados.servicoId
+                    ? Number(dados.servicoId)
                     : null
             };
             await api.post("/servidores", payload);
@@ -90,7 +89,7 @@ function ServidorCadastro() {
                         </p>
                     </div>
                     <div className="perfil-badge">
-                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.unidadeSaude}
+                        {['GESTAO_MUNICIPAL', 'VIGILANCIA', 'COORDENADORIA'].includes(servidor?.perfil) ? perfilLabel[servidor.perfil] : servidor.servico}
                     </div>
                 </div>
                 {mensagem && (
@@ -254,7 +253,7 @@ function ServidorCadastro() {
 
                                 <select
                                     className="input-field"
-                                    {...register("unidadeSaudeId")}
+                                    {...register("servicoId")}
                                 >
                                     <option value="">Selecione</option>
 
@@ -265,8 +264,8 @@ function ServidorCadastro() {
                                     ))}
                                 </select>
 
-                                {erros.unidadeSaudeId && (
-                                    <small>{erros.unidadeSaudeId}</small>
+                                {erros.servicoId && (
+                                    <small>{erros.servicoId}</small>
                                 )}
                             </div>
                         )}

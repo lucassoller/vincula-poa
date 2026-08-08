@@ -1,7 +1,7 @@
 package com.vincula.specification;
 
-import com.vincula.dto.unidadeSaude.FiltroServicoRequestDTO;
-import com.vincula.entity.UnidadeSaude;
+import com.vincula.dto.servico.FiltroServicoRequestDTO;
+import com.vincula.entity.Servico;
 import com.vincula.enums.TipoServico;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -9,9 +9,9 @@ import java.util.List;
 
 public class ServicoSpecification {
 
-    public static Specification<UnidadeSaude> comFiltros(FiltroServicoRequestDTO filtro) {
+    public static Specification<Servico> comFiltros(FiltroServicoRequestDTO filtro) {
 
-        Specification<UnidadeSaude> spec =
+        Specification<Servico> spec =
                 Specification.where((root, query, cb) -> cb.conjunction());
 
         if (filtro.getId() != null) {
@@ -29,7 +29,7 @@ public class ServicoSpecification {
         return spec;
     }
 
-    private static Specification<UnidadeSaude> nome(String nome) {
+    private static Specification<Servico> nome(String nome) {
 
         return (root, query, cb) ->
                 cb.like(
@@ -38,13 +38,13 @@ public class ServicoSpecification {
                 );
     }
 
-    public static Specification<UnidadeSaude> id(Long id) {
+    public static Specification<Servico> id(Long id) {
 
         return (root, query, cb) ->
                 cb.equal(root.get("id"), id);
     }
 
-    private static Specification<UnidadeSaude> tipoServico(List<TipoServico> tiposServico) {
+    private static Specification<Servico> tipoServico(List<TipoServico> tiposServico) {
 
         return (root, query, cb) -> root.get("tipoServico").in(tiposServico);
     }

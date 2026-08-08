@@ -20,7 +20,7 @@ function Ranking({ titulo, dados }) {
                 {dadosExibidos.map((item, index) => (
 
                     <div
-                        key={item.unidadeSaudeId ?? index}
+                        key={item.servicoId ?? index}
                         className="ranking-item"
                     >
 
@@ -29,7 +29,7 @@ function Ranking({ titulo, dados }) {
                         </span>
                         <div>
                             <strong>
-                                {item.unidadeSaudeNome}
+                                {item.servicoNome}
                             </strong>
                             <p>{item.valor}</p>
                         </div>

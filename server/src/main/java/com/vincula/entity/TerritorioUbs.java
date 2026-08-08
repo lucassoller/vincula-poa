@@ -25,6 +25,6 @@ public class TerritorioUbs {
     private String geojson;
 
     @ManyToOne
-    @JoinColumn(name = "unidade_saude_id")
-    private UnidadeSaude unidadeSaude;
+    @JoinColumn(name = "servico_id")
+    private Servico servico;
 }
