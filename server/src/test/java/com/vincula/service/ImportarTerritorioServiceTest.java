@@ -63,7 +63,6 @@ class ImportarTerritorioServiceTest {
         territorio.setNome("Território A");
         territorio.setCnes("123");
         territorio.setDistrito("Norte");
-        territorio.setGeojson("{}");
         territorio.setServico(servico);
 
         when(territorioUbsRepository.findAll())
@@ -448,59 +447,6 @@ class ImportarTerritorioServiceTest {
                                 && u.getTelefone2() == null
                 )
         );
-    }
-
-    @Test
-    void deveImportarTerritorioGeometryCollection() throws Exception {
-
-        ObjectNode geojson = objectMapper.createObjectNode();
-        ArrayNode features = objectMapper.createArrayNode();
-
-        ObjectNode feature = objectMapper.createObjectNode();
-
-        ObjectNode properties = objectMapper.createObjectNode();
-        properties.put("name", "Território Teste");
-        properties.put("CNES", "123");
-        properties.put("Distrito_S", "Centro");
-
-        ObjectNode geometry = objectMapper.createObjectNode();
-        geometry.put("type", "GeometryCollection");
-
-        ArrayNode geometries = objectMapper.createArrayNode();
-
-        ObjectNode polygon = objectMapper.createObjectNode();
-        polygon.put("type", "Polygon");
-
-        ArrayNode polygonCoordinates = objectMapper.createArrayNode();
-        polygonCoordinates.add(objectMapper.createArrayNode());
-
-        polygon.set("coordinates", polygonCoordinates);
-
-        geometries.add(polygon);
-
-        geometry.set("geometries", geometries);
-
-        feature.set("properties", properties);
-        feature.set("geometry", geometry);
-
-        features.add(feature);
-        geojson.set("features", features);
-
-        Servico servico = new Servico();
-
-        when(servicoRepository.findByCnes("2264706"))
-                .thenReturn(Optional.of(new Servico()));
-
-        when(servicoRepository.findByCnes("123"))
-                .thenReturn(Optional.of(servico));
-
-        service.importar(geojson);
-
-        verify(territorioUbsRepository)
-                .save(argThat(t ->
-                        t.getGeojson() != null &&
-                                t.getGeojson().contains("MultiPolygon")
-                ));
     }
 
     @Test

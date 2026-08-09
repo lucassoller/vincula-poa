@@ -215,6 +215,7 @@ public class UsuarioService {
         if(servico == null){
             throw new BusinessException("Serviço não encontrado para esse endereço");
         }
+
         entity.setServico(servico);
 
         if(servidor.getPerfil() == PerfilServidor.SOLICITANTE){

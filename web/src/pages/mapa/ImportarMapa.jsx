@@ -27,6 +27,7 @@ function ImportarMapa() {
         try {
             setCarregando(true);
             const geojson = await converterGoogleMaps(url);
+
             await api.post("/territorios/importar", geojson);
 
             setMensagemSucesso("Mapa importado com sucesso!");

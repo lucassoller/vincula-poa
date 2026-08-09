@@ -1,56 +1,41 @@
-import {MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, Pane} from "react-leaflet";
+import {
+    MapContainer,
+    TileLayer,
+    GeoJSON,
+    CircleMarker,
+    Popup,
+    Pane
+} from "react-leaflet";
+import L from "leaflet";
 import { useEffect, useState } from "react";
 import api from "../../api/api.js";
 import "../../styles/mapasTerritorio.css";
 
 function MapaTerritorios() {
     const [territorios, setTerritorios] = useState([]);
-    const [geoJson, setGeoJson] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [mensagem, setMensagem] = useState("");
 
     useEffect(() => {
-        async function carregarUMapa() {
+        async function carregarMapa() {
             try {
                 setCarregando(true);
+
                 const response = await api.get("/territorios/mapa");
-                const territoriosApi = response.data || [];
-
-                setTerritorios(territoriosApi);
-
-                const featureCollection = {
-                    type: "FeatureCollection",
-                    features: territoriosApi.map((territorio) => ({
-
-                        type: "Feature",
-
-                        geometry:
-                            typeof territorio.geojson === "string"
-                                ? JSON.parse(territorio.geojson)
-                                : territorio.geojson,
-
-                        properties: {
-                            id: territorio.id,
-                            nome: territorio.nome,
-                            cnes: territorio.cnes,
-                            distrito: territorio.distrito,
-                            endereco: territorio.endereco,
-                        },
-                    })),
-                };
-                setGeoJson(featureCollection);
+                setTerritorios(response.data || []);
             } catch {
                 setMensagem("Erro ao carregar mapa");
             } finally {
                 setCarregando(false);
             }
         }
-        void carregarUMapa();
+
+        void carregarMapa();
     }, []);
 
-
     if (carregando) {
-        return (<div className="loading-container">
+        return (
+            <div className="loading-container">
                 <div className="loading-card">
                     <p>Carregando mapa...</p>
                 </div>
@@ -61,12 +46,17 @@ function MapaTerritorios() {
     return (
         <div className="usuarios-container">
             <div className="mapa-page">
+
                 {mensagem && (
                     <div className="alert-card">
                         <span>{mensagem}</span>
-                        <span onClick={() => setMensagem("")}>✕</span>
+
+                        <span onClick={() => setMensagem("")}>
+                            ✕
+                        </span>
                     </div>
                 )}
+
                 <MapContainer
                     center={[-30.03, -51.23]}
                     zoom={11}
@@ -79,67 +69,97 @@ function MapaTerritorios() {
 
                     <Pane
                         name="territorios"
-                        style={{zIndex: 400,}}
+                        style={{ zIndex: 400 }}
                     >
-                        {geoJson && (
-                            <GeoJSON
-                                data={geoJson}
-                                pane="territorios"
-                                style={() => ({
-                                    color: "#0288d1",
-                                    weight: 2,
-                                    fillOpacity: 0.25,
-                                })}
-                                onEachFeature={(feature, layer) => {
+                        {territorios.map((territorio) => {
+                            if (!territorio.geom) {
+                                return null;
+                            }
 
-                                    layer.bringToBack();
+                            let geometry;
 
-                                    const props = feature.properties || {};
+                            try {
+                                geometry =
+                                    typeof territorio.geom === "string"
+                                        ? JSON.parse(territorio.geom)
+                                        : territorio.geom;
+                            } catch {
+                                return null;
+                            }
 
-                                    layer.bindPopup(`
-                                        <div style="min-width:240px">
-    
-                                            <strong>${props.nome || "Território"}</strong>
-                                            <br/><br/>
-    
-                                            <b>CNES:</b>
-                                            ${props.cnes || "-"}
-                                            <br/>
-    
-                                            <b>Distrito:</b>
-                                            ${props.distrito || "-"}
-                                            <br/>
-                                        </div>
-                                    `);
-                                }}
-                            />
-                        )}
+                            return (
+                                <GeoJSON
+                                    key={`territorio-${territorio.id ?? territorio.cnes}`}
+                                    data={geometry}
+                                    pane="territorios"
+                                    style={() => ({
+                                        color: "#0288d1",
+                                        weight: 2,
+                                        fillOpacity: 0.25,
+                                    })}
+                                    onEachFeature={(feature, layer) => {
+                                        layer.bringToBack();
+
+                                        layer.bindPopup(`
+                                            <div style="min-width:240px">
+
+                                                <strong>
+                                                    ${territorio.nome || "Território"}
+                                                </strong>
+
+                                                <br/><br/>
+
+                                                <b>CNES:</b>
+                                                ${territorio.cnes || "-"}
+
+                                                <br/>
+
+                                                <b>Distrito:</b>
+                                                ${territorio.distrito || "-"}
+
+                                            </div>
+                                        `);
+                                    }}
+                                />
+                            );
+                        })}
                     </Pane>
 
                     <Pane
                         name="pontos"
-                        style={{zIndex: 650}}
+                        style={{ zIndex: 650 }}
                     >
-
-                        {territorios.map((territorio, index) => {
-                            const endereco = territorio.endereco;
-
-                            if (!endereco.latitude || !endereco.longitude) {
+                        {territorios.map((territorio) => {
+                            if (!territorio.geom) {
                                 return null;
                             }
 
-                            const enderecoFormatado = `
-                                ${endereco.rua || ""}
-                                ${endereco.numero ? ", " + endereco.numero : ""}
-                                ${endereco.bairro ? " - " + endereco.bairro : ""}
-                            `;
+                            let geometry;
+
+                            try {
+                                geometry =
+                                    typeof territorio.geom === "string"
+                                        ? JSON.parse(territorio.geom)
+                                        : territorio.geom;
+                            } catch {
+                                return null;
+                            }
+
+                            const layer = L.geoJSON(geometry);
+                            const bounds = layer.getBounds();
+
+                            if (!bounds.isValid()) {
+                                return null;
+                            }
+
+                            const centro = bounds.getCenter();
 
                             return (
                                 <CircleMarker
-                                    key={index}
+                                    key={`ponto-${territorio.id ?? territorio.cnes}`}
                                     center={[
-                                        endereco.latitude,
-                                        endereco.longitude
+                                        centro.lat,
+                                        centro.lng
                                     ]}
                                     radius={8}
                                     pane="pontos"
@@ -152,38 +172,50 @@ function MapaTerritorios() {
                                 >
                                     <Popup>
                                         <div style={{ minWidth: "260px" }}>
-                                            <strong>{territorio.nome}</strong>
+
+                                            <strong>
+                                                {territorio.nome}
+                                            </strong>
+
                                             <br /><br />
-                                            <b>CNES:</b>
-                                            {" "}
+
+                                            <b>CNES:</b>{" "}
                                             {territorio.cnes || "-"}
+
                                             <br />
 
-                                            <b>Distrito:</b>
-                                            {" "}
+                                            <b>Distrito:</b>{" "}
                                             {territorio.distrito || "-"}
+
                                             <br />
 
-                                            <b>Endereço:</b>
-                                            {" "}
-                                            {enderecoFormatado}
+                                            <b>Endereço:</b>{" "}
+                                            {territorio.endereco
+                                                ? `${territorio.endereco.rua || ""}${
+                                                    territorio.endereco.numero
+                                                        ? ", " + territorio.endereco.numero
+                                                        : ""
+                                                }${
+                                                    territorio.endereco.bairro
+                                                        ? " - " + territorio.endereco.bairro
+                                                        : ""
+                                                }`
+                                                : "-"}
+
                                             <br />
 
                                             <b>Telefone:</b>{" "}
-                                            {
-                                                territorio.telefone && territorio.telefone2
-                                                    ? `${territorio.telefone} - ${territorio.telefone2}`
-                                                    : territorio.telefone
-                                                        ? territorio.telefone
-                                                        : "-"
-                                            }
-                                            <br />
+                                            {territorio.telefone && territorio.telefone2
+                                                ? `${territorio.telefone} - ${territorio.telefone2}`
+                                                : territorio.telefone || "-"}
+
                                         </div>
                                     </Popup>
                                 </CircleMarker>
                             );
                         })}
                     </Pane>
+
                 </MapContainer>
             </div>
         </div>

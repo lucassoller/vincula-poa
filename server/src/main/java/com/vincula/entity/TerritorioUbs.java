@@ -2,6 +2,7 @@ package com.vincula.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.locationtech.jts.geom.Geometry;
 
 @Entity
 @Table(name = "territorio_ubs")
@@ -21,8 +22,8 @@ public class TerritorioUbs {
     @Column(nullable = false, length = 100)
     private String distrito;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String geojson;
+    @Column(columnDefinition = "geometry(Geometry,4326)")
+    private Geometry geom;
 
     @ManyToOne
     @JoinColumn(name = "servico_id")

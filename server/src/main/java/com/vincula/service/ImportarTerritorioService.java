@@ -2,8 +2,6 @@ package com.vincula.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vincula.dto.TerritorioUbsDTO;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.TerritorioUbs;
@@ -11,12 +9,16 @@ import com.vincula.entity.Servico;
 import com.vincula.enums.TipoServico;
 import com.vincula.repository.TerritorioUbsRepository;
 import com.vincula.repository.ServicoRepository;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 @Service
 public class ImportarTerritorioService {
@@ -48,17 +50,25 @@ public class ImportarTerritorioService {
         dto.setNome(territorioUbs.getNome());
         dto.setCnes(territorioUbs.getCnes());
         dto.setDistrito(territorioUbs.getDistrito());
-        dto.setGeojson(territorioUbs.getGeojson());
         dto.setTelefone(territorioUbs.getServico().getTelefone());
         dto.setTelefone2(territorioUbs.getServico().getTelefone2());
         dto.setEndereco(territorioUbs.getServico().getEndereco());
+        dto.setGeom(converterGeomParaGeoJson(territorioUbs.getGeom()));
 
         return dto;
     }
 
+    private String converterGeomParaGeoJson(Geometry geom) {
+        if (geom == null) {
+            return null;
+        }
+
+        GeoJsonWriter writer = new GeoJsonWriter();
+        return writer.write(geom);
+    }
+
     @Transactional
     public void importar(JsonNode geojson) {
-
         try {
             JsonNode features = geojson.get("features");
 
@@ -66,39 +76,116 @@ public class ImportarTerritorioService {
                 throw new RuntimeException("GeoJSON inválido");
             }
 
+            Map<String, Servico> servicosPorCnes = new HashMap<>();
+            Map<String, TerritorioUbs> territoriosPorCnes = new HashMap<>();
+
+            servicosPorCnes.put("2264706", null);
+
             for (JsonNode feature : features) {
 
+                JsonNode properties = feature.get("properties");
                 JsonNode geometry = feature.get("geometry");
 
-                if (geometry == null) {
+                if (properties == null || geometry == null) {
+                    continue;
+                }
+
+                String cnes = limparDecimal(
+                        texto(properties, "CNES")
+                );
+
+                if (cnes == null || cnes.isBlank()) {
                     continue;
                 }
 
                 String tipo = geometry.path("type").asText();
 
                 if ("Point".equalsIgnoreCase(tipo)) {
-                    importarPonto(feature);
+                    servicosPorCnes.putIfAbsent(cnes, null);
+                }
+
+                if ("Polygon".equalsIgnoreCase(tipo)
+                        || "MultiPolygon".equalsIgnoreCase(tipo)
+                        || "GeometryCollection".equalsIgnoreCase(tipo)) {
+
+                    territoriosPorCnes.putIfAbsent(cnes, null);
                 }
             }
 
-            if (servicoRepository.findByCnes("2264706").isEmpty()) {
+            if (!servicosPorCnes.isEmpty()) {
+
+                List<Servico> servicosExistentes =
+                        servicoRepository.findAllByCnesIn(
+                                servicosPorCnes.keySet()
+                        );
+
+                for (Servico servico : servicosExistentes) {
+                    servicosPorCnes.put(
+                            servico.getCnes(),
+                            servico
+                    );
+                }
+            }
+
+            if (!territoriosPorCnes.isEmpty()) {
+
+                List<TerritorioUbs> territoriosExistentes =
+                        territorioUbsRepository.findAllByCnesIn(
+                                territoriosPorCnes.keySet()
+                        );
+
+                for (TerritorioUbs territorio : territoriosExistentes) {
+                    territoriosPorCnes.put(
+                            territorio.getCnes(),
+                            territorio
+                    );
+                }
+            }
+
+            for (JsonNode feature : features) {
+
+                JsonNode geometry = feature.get("geometry");
+
+                if (geometry == null) {
+                    continue;
+                }
+
+                if ("Point".equalsIgnoreCase(
+                        geometry.path("type").asText())) {
+
+                    importarPonto(
+                            feature,
+                            servicosPorCnes
+                    );
+                }
+            }
+
+            if (servicosPorCnes.get("2264706") == null) {
 
                 Endereco endereco = new Endereco();
 
                 endereco.setRua("Rua K esquina Rua R C");
-
                 endereco.setBairro("Santa Rosa de Lima");
                 endereco.setCidade("Porto Alegre");
                 endereco.setEstado("RS");
                 endereco.setNumero("S/N");
 
                 Servico usRamos = new Servico();
+
                 usRamos.setNome("US Ramos");
                 usRamos.setCnes("2264706");
                 usRamos.setTipoServico(TipoServico.UBS);
                 usRamos.setEndereco(endereco);
-                servicoRepository.save(usRamos);
+
+                servicosPorCnes.put(
+                        "2264706",
+                        usRamos
+                );
             }
+
+            servicoRepository.saveAll(
+                    servicosPorCnes.values()
+            );
 
             for (JsonNode feature : features) {
 
@@ -110,17 +197,31 @@ public class ImportarTerritorioService {
 
                 String tipo = geometry.path("type").asText();
 
-                if ("Polygon".equalsIgnoreCase(tipo) || "MultiPolygon".equalsIgnoreCase(tipo) || "GeometryCollection".equalsIgnoreCase(tipo)) {
-                    importarTerritorio(feature);
+                if ("Polygon".equalsIgnoreCase(tipo)
+                        || "MultiPolygon".equalsIgnoreCase(tipo)
+                        || "GeometryCollection".equalsIgnoreCase(tipo)) {
+
+                    importarTerritorio(
+                            feature,
+                            territoriosPorCnes,
+                            servicosPorCnes
+                    );
                 }
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao importar mapa: " + e.getMessage(), e);
+
+            throw new RuntimeException(
+                    "Erro ao importar mapa: " + e.getMessage(),
+                    e
+            );
         }
     }
 
-    private void importarPonto(JsonNode feature){
+    private void importarPonto(
+            JsonNode feature,
+            Map<String, Servico> servicosPorCnes
+    ) {
 
         JsonNode properties = feature.get("properties");
         JsonNode geometry = feature.get("geometry");
@@ -137,6 +238,7 @@ public class ImportarTerritorioService {
         }
 
         JsonNode coordinates = geometry.get("coordinates");
+
         if (coordinates == null || coordinates.size() < 2) {
             return;
         }
@@ -146,9 +248,15 @@ public class ImportarTerritorioService {
 
         String enderecoTexto = texto(properties, "Endereço");
 
-        String[] telefones = extrairTelefones(texto(properties, "Telefones"));
+        String[] telefones = extrairTelefones(
+                texto(properties, "Telefones")
+        );
 
-        Servico servico = servicoRepository.findByCnes(cnes).orElseGet(Servico::new);
+        Servico servico = servicosPorCnes.get(cnes);
+
+        if (servico == null) {
+            servico = new Servico();
+        }
 
         Endereco endereco = servico.getEndereco();
 
@@ -156,7 +264,12 @@ public class ImportarTerritorioService {
             endereco = new Endereco();
         }
 
-        preencherEndereco(endereco, enderecoTexto, latitude, longitude);
+        preencherEndereco(
+                endereco,
+                enderecoTexto,
+                latitude,
+                longitude
+        );
 
         servico.setNome(nome);
         servico.setCnes(cnes);
@@ -165,76 +278,7 @@ public class ImportarTerritorioService {
         servico.setTelefone2(telefones[1]);
         servico.setTipoServico(TipoServico.UBS);
 
-        servicoRepository.save(servico);
-    }
-
-    private void importarTerritorio(JsonNode feature) throws Exception {
-
-        JsonNode properties = feature.get("properties");
-        JsonNode geometry = feature.get("geometry");
-
-        if (properties == null || geometry == null) {
-            return;
-        }
-
-        String nome = texto(properties, "name");
-        String cnes = limparDecimal(texto(properties, "CNES"));
-
-        if (cnes == null || cnes.isBlank()) {
-            return;
-        }
-
-        String distrito = texto(properties, "Distrito_S");
-
-        TerritorioUbs territorio = territorioUbsRepository.findByCnes(cnes).orElseGet(TerritorioUbs::new);
-        territorio.setNome(nome);
-        territorio.setCnes(cnes);
-        territorio.setDistrito(distrito);
-
-        String tipo = geometry.path("type").asText();
-
-        if ("GeometryCollection".equalsIgnoreCase(tipo)) {
-
-            ArrayNode multiPolygonCoordinates = objectMapper.createArrayNode();
-
-            JsonNode geometries = geometry.get("geometries");
-
-            if (geometries != null && geometries.isArray()) {
-                for (JsonNode geo : geometries) {
-                    String geoTipo = geo.path("type").asText();
-
-                    if ("Polygon".equalsIgnoreCase(geoTipo)) {
-                        JsonNode coordinates = geo.get("coordinates");
-                        multiPolygonCoordinates.add(coordinates);
-                    } else if ("MultiPolygon".equalsIgnoreCase(geoTipo)) {
-
-                        JsonNode coordinates = geo.get("coordinates");
-
-                        if (coordinates != null && coordinates.isArray()) {
-
-                            for (JsonNode polygon : coordinates) {
-                                multiPolygonCoordinates.add(polygon);
-                            }
-                        }
-                    }
-                }
-            }
-
-            ObjectNode multiPolygon = objectMapper.createObjectNode();
-
-            multiPolygon.put("type", "MultiPolygon");
-            multiPolygon.set("coordinates", multiPolygonCoordinates);
-
-            territorio.setGeojson(objectMapper.writeValueAsString(multiPolygon));
-
-        } else {
-            territorio.setGeojson(objectMapper.writeValueAsString(geometry));
-        }
-
-        Servico servico = servicoRepository.findByCnes(cnes).orElse(null);
-
-        territorio.setServico(servico);
-        territorioUbsRepository.save(territorio);
+        servicosPorCnes.put(cnes, servico);
     }
 
     private String texto(JsonNode node, String campo) {
@@ -355,5 +399,49 @@ public class ImportarTerritorioService {
             apenasNumeros = apenasNumeros.substring(0, 11);
         }
         return apenasNumeros;
+    }
+
+    private void importarTerritorio(
+            JsonNode feature,
+            Map<String, TerritorioUbs> territoriosPorCnes,
+            Map<String, Servico> servicosPorCnes
+    ) throws Exception {
+
+        JsonNode properties = feature.get("properties");
+        JsonNode geometry = feature.get("geometry");
+
+        if (properties == null || geometry == null) {
+            return;
+        }
+
+        String nome = texto(properties, "name");
+        String cnes = limparDecimal(texto(properties, "CNES"));
+        String distrito = texto(properties, "Distrito_S");
+
+        if (cnes == null || cnes.isBlank()) {
+            return;
+        }
+
+        TerritorioUbs territorio = territoriosPorCnes.get(cnes);
+
+        if (territorio == null) {
+            territorio = new TerritorioUbs();
+        }
+
+        territorio.setNome(nome);
+        territorio.setCnes(cnes);
+        territorio.setDistrito(distrito);
+
+        Servico servico = servicosPorCnes.get(cnes);
+        territorio.setServico(servico);
+
+        territoriosPorCnes.put(cnes, territorio);
+
+        territorioUbsRepository.save(territorio);
+
+        territorioUbsRepository.atualizarGeom(
+                cnes,
+                objectMapper.writeValueAsString(geometry)
+        );
     }
 }
