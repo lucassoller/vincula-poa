@@ -2,12 +2,15 @@ package com.vincula.service;
 
 import com.vincula.dto.usuario.*;
 import com.vincula.entity.*;
+import com.vincula.enums.CodigoErro;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.enums.Sexo;
 import com.vincula.exception.BusinessException;
 import com.vincula.exception.ConflictException;
+import com.vincula.exception.GeorreferenciamentoException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
+import com.vincula.repository.ServicoRepository;
 import com.vincula.repository.UsuarioRepository;
 import com.vincula.specification.AutocompleteUsuarioSpecification;
 import com.vincula.specification.UsuarioSpecification;
@@ -27,6 +30,7 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final ServicoRepository servicoRepository;
     private final EnderecoMapper enderecoMapper;
     private final AuditoriaFacade auditoriaFacade;
     private final TerritorializacaoService territorializacaoService;
@@ -34,11 +38,13 @@ public class UsuarioService {
     private final ServidorService servidorService;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
+                          ServicoRepository servicoRepository,
                           EnderecoMapper enderecoMapper,
                           AuditoriaFacade auditoriaFacade,
                           TerritorializacaoService territorializacaoService,
                           GeocodingService geocodingService, ServidorService servidorService) {
         this.usuarioRepository = usuarioRepository;
+        this.servicoRepository = servicoRepository;
         this.enderecoMapper = enderecoMapper;
         this.auditoriaFacade = auditoriaFacade;
         this.territorializacaoService = territorializacaoService;
@@ -136,22 +142,15 @@ public class UsuarioService {
 
         enderecoMapper.updateEntityFromDto(dto.getEndereco(), usuario.getEndereco());
 
-        geocodingService.preencherCoordenadas(usuario.getEndereco());
+        Servico servico;
 
-        if(usuario.getEndereco().getLatitude() == null || usuario.getEndereco().getLongitude() == null){
-            throw new BusinessException("Serviço não encontrado para esse endereço");
-        }
-
-        Servico servico = territorializacaoService.buscarUbsPorCoordenada(
-                usuario.getEndereco().getLatitude(),
-                usuario.getEndereco().getLongitude());
-
-        if(servico == null){
-            throw new BusinessException("Serviço não encontrado para esse endereço");
+        if(dto.getUnidadeSaudeId() != null){
+            servico = buscarServicoPorId(dto.getUnidadeSaudeId());
+        }else{
+            servico = georreferenciar(usuario.getEndereco());
         }
 
         usuario.setServico(servico);
-
         Usuario atualizado = usuarioRepository.save(usuario);
 
         auditoriaFacade.usuarioAtualizado(atualizado.getId(), descricaoLog);
@@ -202,18 +201,12 @@ public class UsuarioService {
         entity.setSexo(dto.getSexo() != null ? dto.getSexo() : Sexo.NAO_INFORMADO);
         entity.setEndereco(endereco);
 
-        geocodingService.preencherCoordenadas(entity.getEndereco());
+        Servico servico;
 
-        if(entity.getEndereco().getLatitude() == null || entity.getEndereco().getLongitude() == null){
-            throw new BusinessException("Serviço não encontrado para esse endereço");
-        }
-
-        Servico servico = territorializacaoService.buscarUbsPorCoordenada(
-                entity.getEndereco().getLatitude(),
-                entity.getEndereco().getLongitude());
-
-        if(servico == null){
-            throw new BusinessException("Serviço não encontrado para esse endereço");
+        if(dto.getUnidadeSaudeId() != null){
+            servico = buscarServicoPorId(dto.getUnidadeSaudeId());
+        }else{
+            servico = georreferenciar(entity.getEndereco());
         }
 
         entity.setServico(servico);
@@ -264,5 +257,38 @@ public class UsuarioService {
         }
 
         return dto;
+    }
+
+    private Servico georreferenciar(Endereco endereco) {
+
+        geocodingService.preencherCoordenadas(endereco);
+
+        if (endereco.getLatitude() == null ||
+                endereco.getLongitude() == null) {
+
+            throw new GeorreferenciamentoException(
+                    CodigoErro.GEORREFERENCIAMENTO_NAO_ENCONTRADO,
+                    "Não foi possível localizar o endereço informado."
+            );
+        }
+
+        Servico servico = territorializacaoService.buscarUbsPorCoordenada(
+                endereco.getLatitude(),
+                endereco.getLongitude()
+        );
+
+        if (servico == null) {
+            throw new GeorreferenciamentoException(
+                    CodigoErro.TERRITORIO_NAO_ENCONTRADO,
+                    "O endereço foi localizado, mas não pertence a nenhum território de UBS."
+            );
+        }
+
+        return servico;
+    }
+
+    private Servico buscarServicoPorId(Long id) {
+        return servicoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Unidade de saúde não encontrada"));
     }
 }

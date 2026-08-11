@@ -29,7 +29,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 "Acesso negado",
                 null,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         response.setStatus(HttpStatus.FORBIDDEN.value());

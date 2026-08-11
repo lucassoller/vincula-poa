@@ -32,7 +32,8 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO response = new ErrorResponseDTO(
                 "Dados inválidos",
                 errors,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -46,7 +47,8 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO response = new ErrorResponseDTO(
                 ex.getMessage(),
                 null,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -60,7 +62,8 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO response = new ErrorResponseDTO(
                 ex.getMessage(),
                 null,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -74,7 +77,8 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO response = new ErrorResponseDTO(
                 ex.getMessage(),
                 null,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -88,7 +92,8 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO response = new ErrorResponseDTO(
                 "Acesso negado",
                 null,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
@@ -102,9 +107,28 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO response = new ErrorResponseDTO(
                 "Erro interno do servidor",
                 null,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(GeorreferenciamentoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleGeorreferenciamento(
+            GeorreferenciamentoException ex,
+            HttpServletRequest request
+    ) {
+
+        ErrorResponseDTO response = new ErrorResponseDTO(
+                ex.getMessage(),
+                null,
+                request.getRequestURI(),
+                ex.getCodigo().name()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                .body(response);
     }
 }

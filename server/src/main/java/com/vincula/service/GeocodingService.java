@@ -26,6 +26,9 @@ public class GeocodingService {
 
     public void preencherCoordenadas(Endereco endereco) {
 
+        endereco.setLatitude(null);
+        endereco.setLongitude(null);
+
         try {
 
             String enderecoFormatado = String.format("%s, %s, %s, %s",

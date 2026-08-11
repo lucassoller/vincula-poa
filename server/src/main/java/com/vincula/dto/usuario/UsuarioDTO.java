@@ -33,4 +33,6 @@ public class UsuarioDTO {
     @NotNull(message = "O endereço é obrigatório")
     @Valid
     private EnderecoDTO endereco;
+
+    private Long unidadeSaudeId;
 }

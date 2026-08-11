@@ -2,7 +2,6 @@ package com.vincula.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.ErrorResponseDTO;
-import com.vincula.util.AuditoriaFacade;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -17,11 +16,9 @@ import java.io.IOException;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
-    private final AuditoriaFacade auditoriaFacade;
 
-    public CustomAuthenticationEntryPoint(ObjectMapper objectMapper, AuditoriaFacade auditoriaFacade) {
+    public CustomAuthenticationEntryPoint(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.auditoriaFacade = auditoriaFacade;
     }
 
     @Override
@@ -33,7 +30,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 "Não autenticado",
                 null,
-                request.getRequestURI()
+                request.getRequestURI(),
+                null
         );
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());

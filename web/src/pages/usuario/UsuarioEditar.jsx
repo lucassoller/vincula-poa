@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import ModalRedirecionarDemandas from "../../components/Modal/ModalRedirecionarDemandas.jsx";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {perfilLabel} from "../../utils/utils.js";
+import ModalVinculacaoManual from "../../components/Modal/ModalVinculacaoManual.jsx";
 
 const camposEtapa1 = ["nomeCompleto", "telefone", "documento", "dataNascimento", "sexo"];
 
@@ -24,6 +25,7 @@ function UsuarioEditar() {
             dataNascimento: "",
             sexo: "",
             servicoNome: "",
+            unidadeSaudeId: null,
             endereco: {
                 rua: "",
                 numero: "",
@@ -45,6 +47,11 @@ function UsuarioEditar() {
     const [servicoOriginalId, setServicoOriginalId] = useState(null);
     const [mostrarConfirmacaoRedirecionamento, setMostrarConfirmacaoRedirecionamento] = useState(false);
     const [usuarioAtualizado, setUsuarioAtualizado] = useState(null);
+    const [unidades, setUnidades] = useState([]);
+    const [mensagemModal, setMensagemModal] = useState("");
+    const [mostrarSelecaoUbs, setMostrarSelecaoUbs] = useState(false);
+    const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
+    const [dadosCadastroPendente, setDadosCadastroPendente] = useState(null);
     const servicoNome = watch("servicoNome");
 
     useEffect(() => {
@@ -82,17 +89,20 @@ function UsuarioEditar() {
         setMensagem("Dados inválidos.");
     }
 
-    async function salvar(dados) {
+    async function salvar(dados, unidadeSaudeId = null) {
         setMensagem("");
         setMensagemSucesso("")
         setErros({});
 
-        try {
-            const payload = {
-                ...dados,
-                sexo: dados.sexo || null
-            };
+        const payload = {
+            ...dados,
+            sexo: dados.sexo || null,
+            unidadeSaudeId: unidadeSaudeId
+                ? Number(unidadeSaudeId)
+                : null,
+        };
 
+        try {
             const response = await api.put(`/usuarios/${id}`, payload);
 
             setUsuarioAtualizado(response.data);
@@ -110,15 +120,50 @@ function UsuarioEditar() {
             setEtapa(1);
 
         } catch (error) {
-            setMensagemSucesso("")
-            if (error.response?.data?.errors) {
-                const errors = error.response.data.errors;
-                setErros(errors);
-                setMensagem(error.response.data.message || "Dados inválidos");
-                voltarParaEtapaComErro(errors);
-            } else {
-                setMensagem(error.response.data.message);
+
+            setMensagemSucesso("");
+
+            const data = error.response?.data;
+            const codigo = data?.codigo;
+
+            if (
+
+                (
+                    codigo === "GEORREFERENCIAMENTO_NAO_ENCONTRADO" ||
+                    codigo === "TERRITORIO_NAO_ENCONTRADO"
+                )
+            ) {
+                if (servidor.perfil === "SOLICITANTE") {
+                    setMensagem(
+                        `${data?.message} Entre em contato com um servidor do tipo gestão para relatar o erro.`
+                    );
+                    return;
+                }
+
+                setDadosCadastroPendente(payload);
+                setUnidadeSelecionada("");
+                setMostrarSelecaoUbs(true);
+                setMensagemModal(
+                    `${data?.message} Selecione manualmente uma unidade de saúde.`
+                );
+
+                return;
             }
+
+            if (data?.errors) {
+                const errors = data.errors;
+
+                setErros(errors);
+                setMensagem(data.message || "Dados inválidos");
+                voltarParaEtapaComErro(errors);
+
+                return;
+            }
+
+            setMensagem(
+                data?.message ||
+                "Ocorreu um erro ao realizar o cadastro"
+            );
         }
     }
 
@@ -140,8 +185,42 @@ function UsuarioEditar() {
         }
     }
 
+    useEffect(() => {
+        async function carregarUnidades() {
+            try {
+                const response = await api.get("/servicos/ubs");
+                setUnidades(response.data);
+            } catch {
+                setMensagem("Erro ao carregar unidades.");
+                setMensagemSucesso("");
+            }
+        }
+
+        void carregarUnidades();
+    }, []);
+
     function negarRedirecionamentoDemandas() {
         navigate(`/usuarios/${id}`);
+    }
+
+    function fecharModalVinculacao() {
+        setMostrarSelecaoUbs(false);
+        setUnidadeSelecionada("");
+        setDadosCadastroPendente(null);
+    }
+
+    async function salvarVinculacaoManual() {
+        if (!unidadeSelecionada) {
+            setMensagem("Selecione uma unidade de saúde.");
+            return;
+        }
+
+        await salvar(
+            dadosCadastroPendente,
+            unidadeSelecionada
+        );
+
+        fecharModalVinculacao();
     }
 
     if (carregando) {
@@ -275,6 +354,18 @@ function UsuarioEditar() {
                 <ModalRedirecionarDemandas
                     onConfirmar={confirmarRedirecionamentoDemandas}
                     onCancelar={negarRedirecionamentoDemandas}
+                />
+            )}
+
+            {mostrarSelecaoUbs && (
+                <ModalVinculacaoManual
+                    unidades={unidades}
+                    unidadeSelecionada={unidadeSelecionada}
+                    setUnidadeSelecionada={setUnidadeSelecionada}
+                    onSalvar={salvarVinculacaoManual}
+                    onFechar={fecharModalVinculacao}
+                    mensagem={mensagemModal}
+                    setMensagem={setMensagemModal}
                 />
             )}
         </div>
