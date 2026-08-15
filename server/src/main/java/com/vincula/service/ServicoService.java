@@ -206,20 +206,4 @@ public class ServicoService {
         dto.setCnes(entity.getCnes());
         return dto;
     }
-
-    private UsuarioResponseDTO toUsuarioDTO(Usuario entity) {
-        UsuarioResponseDTO dto = new UsuarioResponseDTO();
-
-        dto.setId(entity.getId());
-        dto.setNomeCompleto(entity.getNomeCompleto());
-        dto.setTelefone(entity.getTelefone());
-        dto.setDataNascimento(entity.getDataNascimento());
-        dto.setDocumento(entity.getDocumento());
-        dto.setEndereco(enderecoMapper.toDTO(entity.getEndereco()));
-        dto.setServicoId(entity.getServico().getId());
-        dto.setServicoNome(entity.getServico().getNome());
-        dto.setSexo(entity.getSexo());
-
-        return dto;
-    }
 }

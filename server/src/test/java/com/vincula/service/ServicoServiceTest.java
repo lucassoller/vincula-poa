@@ -1,10 +1,10 @@
 package com.vincula.service;
 
 import com.vincula.dto.endereco.EnderecoDTO;
-import com.vincula.dto.servico.ServicoDTO;
-import com.vincula.dto.servico.ServicoResponseDTO;
+import com.vincula.dto.servico.*;
 import com.vincula.entity.Endereco;
 import com.vincula.entity.Servico;
+import com.vincula.enums.TipoServico;
 import com.vincula.exception.ConflictException;
 import com.vincula.exception.NotFoundException;
 import com.vincula.mapper.EnderecoMapper;
@@ -17,7 +17,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -208,27 +214,6 @@ class ServicoServiceTest {
         verify(auditoriaFacade).servicoDeletado(1L);
     }
 
-    /*
-    @Test
-    void deveListarTodasServicos() {
-
-        Servico servico = new Servico();
-        servico.setId(1L);
-        servico.setNome("UBS Centro");
-        servico.setCnes("123");
-
-        when(servicoRepository.findAllByOrderByTipoServicoAndNomeAsc())
-                .thenReturn(List.of(servico));
-
-        List<ServicoShortResponseDTO> resultado =
-                servicoService.listarTodos();
-
-        assertEquals(1, resultado.size());
-    }
-
-
-     */
-
 
     @Test
     void deveBuscarServicoPorCnes() {
@@ -246,5 +231,195 @@ class ServicoServiceTest {
                 servicoService.buscarPorCnes("1234567");
 
         assertEquals("1234567", response.getCnes());
+    }
+
+    @Test
+    void deveListarTodasServicosUbs() {
+
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
+        servico.setCnes("1234567");
+        servico.setTipoServico(TipoServico.UBS);
+
+        when(servicoRepository.findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS))
+                .thenReturn(List.of(servico));
+
+        List<ServicoShortResponseDTO> resultado =
+                servicoService.listarTodasServicos();
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+
+        ServicoShortResponseDTO dto = resultado.get(0);
+
+        assertEquals(1L, dto.getId());
+        assertEquals("UBS Centro", dto.getNome());
+        assertEquals("1234567", dto.getCnes());
+
+        verify(servicoRepository)
+                .findAllByTipoServicoOrderByNomeAsc(TipoServico.UBS);
+    }
+
+    @Test
+    void deveListarTodosServicos() {
+
+        Servico servico1 = new Servico();
+        servico1.setId(1L);
+        servico1.setNome("UBS Centro");
+        servico1.setCnes("1234567");
+        servico1.setTipoServico(TipoServico.UBS);
+
+        Servico servico2 = new Servico();
+        servico2.setId(2L);
+        servico2.setNome("Farmácia");
+        servico2.setCnes("7654321");
+        servico2.setTipoServico(TipoServico.OUTRO);
+
+        when(servicoRepository.findAllByOrderByTipoServicoAndNomeAsc())
+                .thenReturn(List.of(servico1, servico2));
+
+        List<ServicoShortResponseDTO> resultado =
+                servicoService.listarTodosServicos();
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+
+        assertEquals(1L, resultado.get(0).getId());
+        assertEquals("UBS Centro", resultado.get(0).getNome());
+        assertEquals("1234567", resultado.get(0).getCnes());
+
+        assertEquals(2L, resultado.get(1).getId());
+        assertEquals("Farmácia", resultado.get(1).getNome());
+        assertEquals("7654321", resultado.get(1).getCnes());
+
+        verify(servicoRepository)
+                .findAllByOrderByTipoServicoAndNomeAsc();
+    }
+
+    @Test
+    void deveListarTodosServicosFiltrados() {
+
+        FiltroServicoRequestDTO filtro =
+                new FiltroServicoRequestDTO();
+
+        Pageable pageable =
+                PageRequest.of(0, 10);
+
+        Servico servico = new Servico();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
+        servico.setCnes("1234567");
+        servico.setTipoServico(TipoServico.UBS);
+
+        Page<Servico> pagina =
+                new PageImpl<>(
+                        List.of(servico),
+                        pageable,
+                        1
+                );
+
+        when(servicoRepository.findAll(
+                any(Specification.class),
+                any(Pageable.class)
+        )).thenReturn(pagina);
+
+        Page<ServicoResponseDTO> resultado =
+                servicoService.listarTodosFiltrados(
+                        filtro,
+                        pageable
+                );
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getTotalElements());
+        assertEquals(1, resultado.getContent().size());
+
+        ServicoResponseDTO dto =
+                resultado.getContent().get(0);
+
+        assertEquals(1L, dto.getId());
+        assertEquals("UBS Centro", dto.getNome());
+        assertEquals("1234567", dto.getCnes());
+
+        verify(servicoRepository).findAll(
+                any(Specification.class),
+                any(Pageable.class)
+        );
+    }
+
+    @Test
+    void deveListarServicosSeparadosPorTipo() {
+
+        Servico ubs = new Servico();
+        ubs.setId(1L);
+        ubs.setNome("UBS Centro");
+        ubs.setCnes("111");
+        ubs.setTipoServico(TipoServico.UBS);
+
+        Servico outro = new Servico();
+        outro.setId(2L);
+        outro.setNome("Outro Serviço");
+        outro.setCnes("222");
+        outro.setTipoServico(TipoServico.OUTRO);
+
+        Servico especializado = new Servico();
+        especializado.setId(3L);
+        especializado.setNome("Serviço Especializado");
+        especializado.setCnes("333");
+        especializado.setTipoServico(TipoServico.SERVICO_ESPECIALIZADO);
+
+        when(servicoRepository.findAllByOrderByTipoServicoAndNomeAsc())
+                .thenReturn(
+                        List.of(
+                                ubs,
+                                outro,
+                                especializado
+                        )
+                );
+
+        ServicosResponseDTO resultado =
+                servicoService.listarServicos();
+
+        assertNotNull(resultado);
+
+        assertEquals(3, resultado.getTodos().size());
+        assertEquals(1, resultado.getUbs().size());
+        assertEquals(2, resultado.getServicos().size());
+        assertEquals(1, resultado.getOutros().size());
+        assertEquals(1, resultado.getEspecializados().size());
+
+        assertEquals(
+                "UBS Centro",
+                resultado.getUbs().get(0).getNome()
+        );
+
+        assertEquals(
+                "Outro Serviço",
+                resultado.getOutros().get(0).getNome()
+        );
+
+        assertEquals(
+                "Serviço Especializado",
+                resultado.getEspecializados().get(0).getNome()
+        );
+
+        verify(servicoRepository)
+                .findAllByOrderByTipoServicoAndNomeAsc();
+    }
+
+    @Test
+    void deveConverterServicoParaShortDTO() {
+
+        Servico servico = new Servico();
+        servico.setId(10L);
+        servico.setNome("UBS Centro");
+        servico.setCnes("123");
+
+        ServicoShortResponseDTO dto =
+                servicoService.toShortDTO(servico);
+
+        assertEquals(10L, dto.getId());
+        assertEquals("UBS Centro", dto.getNome());
+        assertEquals("123", dto.getCnes());
     }
 }

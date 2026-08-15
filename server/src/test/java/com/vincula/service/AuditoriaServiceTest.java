@@ -1,6 +1,7 @@
 package com.vincula.service;
 
 import com.vincula.dto.auditoria.AuditoriaDTO;
+import com.vincula.dto.auditoria.FiltroAuditoriaRequestDTO;
 import com.vincula.entity.Auditoria;
 import com.vincula.entity.Servidor;
 import com.vincula.enums.TipoAcaoAuditoria;
@@ -11,17 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,6 +73,89 @@ class AuditoriaServiceTest {
 
         verify(auditoriaRepository)
                 .save(any(Auditoria.class));
+    }
+
+    @Test
+    void deveListarTodosFiltradosComPaginacaoEOrdenacao() {
+
+        FiltroAuditoriaRequestDTO filtro =
+                new FiltroAuditoriaRequestDTO();
+
+        Servidor servidor = new Servidor();
+        servidor.setId(1L);
+        servidor.setNome("Lucas");
+
+        Auditoria auditoria = new Auditoria();
+        auditoria.setId(10L);
+        auditoria.setServidor(servidor);
+
+        Pageable pageable =
+                PageRequest.of(
+                        1,
+                        5,
+                        Sort.by("id")
+                );
+
+        Page<Auditoria> page =
+                new PageImpl<>(
+                        List.of(auditoria),
+                        pageable,
+                        6
+                );
+
+        when(auditoriaRepository.findAll(
+                any(Specification.class),
+                any(Pageable.class)
+        )).thenReturn(page);
+
+        Page<AuditoriaDTO> resultado =
+                auditoriaService.listarTodosFiltrados(
+                        filtro,
+                        pageable
+                );
+
+        assertNotNull(resultado);
+
+        assertEquals(
+                1,
+                resultado.getContent().size()
+        );
+
+        assertEquals(
+                6,
+                resultado.getTotalElements()
+        );
+
+        AuditoriaDTO dto =
+                resultado.getContent().get(0);
+
+        assertEquals(
+                10L,
+                dto.getId()
+        );
+
+        assertEquals(
+                1L,
+                dto.getServidorId()
+        );
+
+        assertEquals(
+                "Lucas",
+                dto.getServidorNome()
+        );
+
+        verify(auditoriaRepository).findAll(
+                any(Specification.class),
+                argThat((Pageable p) ->
+                        p.getPageNumber() == 1 &&
+                                p.getPageSize() == 5 &&
+                                p.getSort().getOrderFor("dataHora") != null &&
+                                p.getSort()
+                                        .getOrderFor("dataHora")
+                                        .getDirection()
+                                        .isDescending()
+                )
+        );
     }
 
     @Test

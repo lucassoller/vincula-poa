@@ -1,10 +1,7 @@
 package com.vincula.service;
 
 import com.vincula.dto.MotivoBuscaResponseDTO;
-import com.vincula.dto.demanda.DemandaDTO;
-import com.vincula.dto.demanda.DemandaResponseDTO;
-import com.vincula.dto.demanda.EncerrarDemandaDTO;
-import com.vincula.dto.demanda.RedirecionarDemandaDTO;
+import com.vincula.dto.demanda.*;
 import com.vincula.entity.Demanda;
 import com.vincula.entity.Servidor;
 import com.vincula.entity.Servico;
@@ -24,10 +21,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -954,5 +950,196 @@ class DemandaServiceTest {
                     dto.getComplementos().size()
             );
         }
+    }
+
+    @Test
+    void deveListarTodasFiltradas2() {
+
+        FiltroDemandaRequestDTO filtro =
+                new FiltroDemandaRequestDTO();
+
+        Pageable pageable =
+                PageRequest.of(
+                        1,
+                        5,
+                        Sort.by("id")
+                );
+
+        Demanda demanda = criarDemanda();
+
+        Page<Demanda> page =
+                new PageImpl<>(
+                        List.of(demanda),
+                        PageRequest.of(1, 5),
+                        6
+                );
+
+        when(demandaRepository.findAll(
+                any(Specification.class),
+                any(Pageable.class)
+        )).thenReturn(page);
+
+        Page<DemandaResponseDTO> resultado =
+                demandaService.listarTodasFiltradas(
+                        filtro,
+                        pageable
+                );
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        assertEquals(6, resultado.getTotalElements());
+
+        assertEquals(
+                1L,
+                resultado.getContent()
+                        .get(0)
+                        .getId()
+        );
+
+        assertEquals(
+                "Lucas",
+                resultado.getContent()
+                        .get(0)
+                        .getUsuarioNome()
+        );
+
+        verify(demandaRepository).findAll(
+                any(Specification.class),
+                argThat((Pageable p) ->
+                        p.getPageNumber() == 1 &&
+                                p.getPageSize() == 5 &&
+                                p.getSort()
+                                        .getOrderFor("usuario.nomeCompleto") != null
+                )
+        );
+    }
+
+    @Test
+    void deveExportarDemandasCsv() {
+
+        FiltroDemandaRequestDTO filtro =
+                new FiltroDemandaRequestDTO();
+
+        Demanda demanda = criarDemanda();
+
+        List<Demanda> demandas =
+                List.of(demanda);
+
+        when(demandaRepository.findAll(
+                any(Specification.class),
+                any(Sort.class)
+        )).thenReturn(demandas);
+
+        when(demandaExporter.exportar(demandas))
+                .thenReturn("csv");
+
+        String resultado =
+                demandaService.exportarDemandasCsv(filtro);
+
+        assertEquals("csv", resultado);
+
+        verify(demandaRepository).findAll(
+                any(Specification.class),
+                argThat((Sort sort) ->
+                        sort.getOrderFor("usuario.nomeCompleto") != null
+                )
+        );
+
+        verify(auditoriaFacade)
+                .exportacaoCsvRealizadaDemanda(
+                        "Demandas exportadas"
+                );
+
+        verify(demandaExporter)
+                .exportar(demandas);
+    }
+
+    @Test
+    void deveListarTodasFiltradas() {
+
+        FiltroDemandaRequestDTO filtro =
+                new FiltroDemandaRequestDTO();
+
+        Pageable pageable =
+                PageRequest.of(1, 5, Sort.by("id"));
+
+        Demanda demanda = criarDemanda();
+
+        Page<Demanda> page =
+                new PageImpl<>(
+                        List.of(demanda),
+                        PageRequest.of(1, 5),
+                        6
+                );
+
+        when(demandaRepository.findAll(
+                any(Specification.class),
+                any(Pageable.class)
+        )).thenReturn(page);
+
+        Page<DemandaResponseDTO> resultado =
+                demandaService.listarTodasFiltradas(
+                        filtro,
+                        pageable
+                );
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getContent().size());
+        assertEquals(6, resultado.getTotalElements());
+        assertEquals(1L, resultado.getContent().get(0).getId());
+        assertEquals(
+                "Lucas",
+                resultado.getContent().get(0).getUsuarioNome()
+        );
+
+        verify(demandaRepository).findAll(
+                any(Specification.class),
+                argThat((Pageable p) ->
+                        p.getPageNumber() == 1 &&
+                                p.getPageSize() == 5 &&
+                                p.getSort()
+                                        .getOrderFor("usuario.nomeCompleto") != null
+                )
+        );
+    }
+
+    @Test
+    void deveExportarDemandasCsv2() {
+
+        FiltroDemandaRequestDTO filtro =
+                new FiltroDemandaRequestDTO();
+
+        Demanda demanda = criarDemanda();
+
+        List<Demanda> demandas =
+                List.of(demanda);
+
+        when(demandaRepository.findAll(
+                any(Specification.class),
+                any(Sort.class)
+        )).thenReturn(demandas);
+
+        when(demandaExporter.exportar(demandas))
+                .thenReturn("csv");
+
+        String resultado =
+                demandaService.exportarDemandasCsv(filtro);
+
+        assertEquals("csv", resultado);
+
+        verify(demandaRepository).findAll(
+                any(Specification.class),
+                argThat((Sort sort) ->
+                        sort.getOrderFor("usuario.nomeCompleto") != null
+                )
+        );
+
+        verify(auditoriaFacade)
+                .exportacaoCsvRealizadaDemanda(
+                        "Demandas exportadas"
+                );
+
+        verify(demandaExporter)
+                .exportar(demandas);
     }
 }

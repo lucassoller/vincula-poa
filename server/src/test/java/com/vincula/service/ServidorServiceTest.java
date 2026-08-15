@@ -20,8 +20,14 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -1040,5 +1046,99 @@ class ServidorServiceTest {
 
         assertNotNull(response);
         assertNull(response.getServicoId());
+    }
+
+    @Test
+    void deveListarTodosFiltrados() {
+
+        FiltroServidorRequestDTO filtro = new FiltroServidorRequestDTO();
+
+        Pageable pageable = PageRequest.of(
+                0,
+                10
+        );
+
+        Servidor servidor = new Servidor();
+        servidor.setId(1L);
+        servidor.setNome("Lucas");
+        servidor.setEmail("lucas@email.com");
+        servidor.setLogin("lucas");
+        servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
+        servidor.setAtivo(true);
+
+        Page<Servidor> pagina = new PageImpl<>(
+                List.of(servidor),
+                pageable,
+                1
+        );
+
+        when(servidorRepository.findAll(
+                any(Specification.class),
+                any(Pageable.class)
+        )).thenReturn(pagina);
+
+        Page<ServidorResponseDTO> resultado =
+                servidorService.listarTodosFiltrados(
+                        filtro,
+                        pageable
+                );
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getTotalElements());
+        assertEquals(1, resultado.getContent().size());
+
+        ServidorResponseDTO dto = resultado.getContent().get(0);
+
+        assertEquals(1L, dto.getId());
+        assertEquals("Lucas", dto.getNome());
+        assertEquals("lucas@email.com", dto.getEmail());
+        assertEquals("lucas", dto.getLogin());
+        assertEquals(
+                PerfilServidor.SERVIDOR_APS,
+                dto.getPerfil()
+        );
+        assertTrue(dto.getAtivo());
+
+        verify(servidorRepository).findAll(
+                any(Specification.class),
+                any(Pageable.class)
+        );
+    }
+
+
+    @Test
+    void deveListarServidoresFiltradosPorNome() {
+
+        Servidor servidor1 = new Servidor();
+        servidor1.setId(1L);
+        servidor1.setNome("Lucas Soller");
+        servidor1.setEmail("lucas@email.com");
+
+        Servidor servidor2 = new Servidor();
+        servidor2.setId(2L);
+        servidor2.setNome("Lucas Silva");
+        servidor2.setEmail("silva@email.com");
+
+        when(
+                servidorRepository
+                        .findTop10ByNomeContainingIgnoreCaseOrderByNome("Lucas")
+        ).thenReturn(List.of(servidor1, servidor2));
+
+        List<ServidorShortResponseDTO> resultado =
+                servidorService.listarTodosFiltradosPorNome("Lucas");
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+
+        assertEquals(1L, resultado.get(0).getId());
+        assertEquals("Lucas Soller", resultado.get(0).getNome());
+        assertEquals("lucas@email.com", resultado.get(0).getEmail());
+
+        assertEquals(2L, resultado.get(1).getId());
+        assertEquals("Lucas Silva", resultado.get(1).getNome());
+        assertEquals("silva@email.com", resultado.get(1).getEmail());
+
+        verify(servidorRepository)
+                .findTop10ByNomeContainingIgnoreCaseOrderByNome("Lucas");
     }
 }
