@@ -1,3 +1,6 @@
+Se tiver Docket rodar: docket compose up --build
+Se não, seguir os passos abaixo:
+
 1- baixar git bash ou fazer o download do zip, extrair e ir pro passo 3
 2- clonar repositório de https://github.com/lucassoller/vincula-poa.git
 3- baixar vs code

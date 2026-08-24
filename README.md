@@ -89,7 +89,17 @@ Configurar `.env`:
 VITE_API_URL=http://localhost:8080
 ```
 
-### 4. Database
+### 4. Docker Compose
+
+O projeto possui configuração com Docker Compose para facilitar a execução do sistema, incluindo o backend, frontend e banco de dados PostgreSQL.
+
+Com o Docker instalado, execute na raiz do projeto:
+
+```bash
+docker compose up --build
+```
+
+### 5. Database
 
 É necessário ter o banco de dados PostgreSQL baixado e configurado
 
