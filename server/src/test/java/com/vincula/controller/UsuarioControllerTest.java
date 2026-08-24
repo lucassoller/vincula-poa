@@ -3,8 +3,7 @@ package com.vincula.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.demanda.RedirecionarDemandaDTO;
 import com.vincula.dto.endereco.EnderecoDTO;
-import com.vincula.dto.usuario.UsuarioDTO;
-import com.vincula.dto.usuario.UsuarioResponseDTO;
+import com.vincula.dto.usuario.*;
 import com.vincula.enums.Sexo;
 import com.vincula.security.JwtAuthenticationFilter;
 import com.vincula.security.JwtService;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -23,11 +23,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UsuarioController.class)
@@ -162,5 +163,62 @@ class UsuarioControllerTest {
 
         mockMvc.perform(delete("/usuarios/1"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deveListarTodosFiltrados() throws Exception {
+
+        FiltroUsuarioRequestDTO filtro = new FiltroUsuarioRequestDTO();
+
+        UsuarioResponseDTO usuario = new UsuarioResponseDTO();
+
+        Page<UsuarioResponseDTO> page =
+                new PageImpl<>(List.of(usuario));
+
+        when(usuarioService.listarTodosFiltrados(
+                any(FiltroUsuarioRequestDTO.class),
+                any(Pageable.class)
+        )).thenReturn(page);
+
+        mockMvc.perform(post("/usuarios/filtrados")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filtro)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)));
+
+        verify(usuarioService).listarTodosFiltrados(
+                any(FiltroUsuarioRequestDTO.class),
+                any(Pageable.class)
+        );
+    }
+
+    @Test
+    void deveListarTodosFiltradosPorNomeCompleto() throws Exception {
+
+        AutocompleteUsuarioRequestDTO request =
+                new AutocompleteUsuarioRequestDTO();
+
+        UsuarioShortResponseDTO usuario =
+                new UsuarioShortResponseDTO();
+
+        usuario.setId(1L);
+        usuario.setNomeCompleto("Lucas Soller");
+
+        when(usuarioService.listarTodosFiltradosPorNomeCompleto(
+                any(AutocompleteUsuarioRequestDTO.class)
+        )).thenReturn(List.of(usuario));
+
+        mockMvc.perform(post("/usuarios/filtrados/nome-completo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nomeCompleto")
+                        .value("Lucas Soller"));
+
+        verify(usuarioService).listarTodosFiltradosPorNomeCompleto(
+                any(AutocompleteUsuarioRequestDTO.class)
+        );
     }
 }

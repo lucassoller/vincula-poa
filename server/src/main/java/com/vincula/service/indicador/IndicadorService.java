@@ -107,23 +107,17 @@ public class IndicadorService {
 
         switch (servidor.getPerfil()) {
 
-            case SERVIDOR_APS -> {
+            case SERVIDOR_APS ->
                 filtro.setServicoResponsavelId(
                         servidor.getServico().getId()
                 );
-            }
 
-            case SOLICITANTE -> {
+
+            case SOLICITANTE ->
                 filtro.setServicoSolicitanteId(
                         servidor.getServico().getId()
                 );
-            }
 
-            case GESTAO_MUNICIPAL, VIGILANCIA, COORDENADORIA -> {
-
-            }
-
-            default -> throw new BusinessException("Perfil sem permissão para acessar indicadores.");
         }
     }
 }

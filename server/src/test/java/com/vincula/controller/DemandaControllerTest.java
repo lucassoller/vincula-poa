@@ -3,10 +3,7 @@ package com.vincula.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.MotivoBuscaResponseDTO;
 import com.vincula.dto.MotivoComplementoResponseDTO;
-import com.vincula.dto.demanda.DemandaDTO;
-import com.vincula.dto.demanda.DemandaResponseDTO;
-import com.vincula.dto.demanda.EncerrarDemandaDTO;
-import com.vincula.dto.demanda.RedirecionarDemandaDTO;
+import com.vincula.dto.demanda.*;
 import com.vincula.enums.DesfechoDemanda;
 import com.vincula.enums.MotivoBuscaAtiva;
 import com.vincula.enums.MotivoComplemento;
@@ -21,24 +18,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.List;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DemandaController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -81,41 +78,6 @@ class DemandaControllerTest {
         mockMvc.perform(get("/demandas/usuario/1"))
                 .andExpect(status().isOk());
     }
-/*
-    @Test
-    void deveListarFiltradas() throws Exception {
-
-        when(demandaService.listarTodasFiltradas(eq("teste"), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/demandas/filtradas/teste"))
-                .andExpect(status().isOk());
-    }
-
-
-    @Test
-    void deveListarFiltradasPorServico() throws Exception {
-
-        when(demandaService.listarPorServicoFiltradas(
-                eq(1L), eq("teste"), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/demandas/filtradas/servico/1/teste"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveListarFiltradasPorSolicitante() throws Exception {
-
-        when(demandaService.listarPorServicoSolicitanteFiltradas(
-                eq(1L), eq("teste"), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get("/demandas/filtradas/solicitante/1/teste"))
-                .andExpect(status().isOk());
-    }
-
-     */
 
     @Test
     void deveCriarDemanda() throws Exception {
@@ -238,66 +200,57 @@ class DemandaControllerTest {
         mockMvc.perform(delete("/demandas/1"))
                 .andExpect(status().isNoContent());
     }
-/*
+
     @Test
-    void deveExportarCsv() throws Exception {
+    void deveListarTodasFiltradas() throws Exception {
 
-        when(demandaService.exportarDemandasCsv())
-                .thenReturn("id,nome\n1,teste");
+        FiltroDemandaRequestDTO filtro = new FiltroDemandaRequestDTO();
 
-        mockMvc.perform(get("/demandas/exportar"))
+        Page<DemandaResponseDTO> page =
+                new PageImpl<>(List.of(new DemandaResponseDTO()));
+
+        when(demandaService.listarTodasFiltradas(
+                any(FiltroDemandaRequestDTO.class),
+                any(Pageable.class)
+        )).thenReturn(page);
+
+        mockMvc.perform(post("/demandas/filtradas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filtro)))
                 .andExpect(status().isOk());
+
+        verify(demandaService).listarTodasFiltradas(
+                any(FiltroDemandaRequestDTO.class),
+                any(Pageable.class)
+        );
     }
 
     @Test
-    void deveExportarPorServicoCsv() throws Exception {
+    void deveExportarDemandasCsv() throws Exception {
 
-        when(demandaService.exportarDemandasPorServicoCsv(1L))
-                .thenReturn("id,nome\n1,teste");
+        FiltroDemandaRequestDTO filtro = new FiltroDemandaRequestDTO();
 
-        mockMvc.perform(get("/demandas/exportar/servico/1"))
-                .andExpect(status().isOk());
+        String csv = "Nome,Status\nLucas,ABERTA";
+
+        when(demandaService.exportarDemandasCsv(
+                any(FiltroDemandaRequestDTO.class)
+        )).thenReturn(csv);
+
+        mockMvc.perform(post("/demandas/exportar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filtro)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("text/csv"))
+                .andExpect(header().string(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        matchesPattern(
+                                "attachment; filename=demandas-vincula-poa-\\d{2}-\\d{2}-\\d{4}_\\d{2}-\\d{2}\\.csv"
+                        )
+                ))
+                .andExpect(content().string(csv));
+
+        verify(demandaService).exportarDemandasCsv(
+                any(FiltroDemandaRequestDTO.class)
+        );
     }
-
-    @Test
-    void deveExportarPorServicoSolicitanteCsv() throws Exception {
-
-        when(demandaService.exportarDemandasPorServicoSolicitanteCsv(1L))
-                .thenReturn("id,nome\n1,teste");
-
-        mockMvc.perform(get("/demandas/exportar/solicitante/1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveExportarFiltradasCsv() throws Exception {
-
-        when(demandaService.exportarDemandasFiltradasCsv("teste"))
-                .thenReturn("id,nome\n1,teste");
-
-        mockMvc.perform(get("/demandas/exportar/filtradas/teste"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveExportarFiltradasPorServicoCsv() throws Exception {
-
-        when(demandaService.exportarDemandasFiltradasPorServicoCsv(1L, "teste"))
-                .thenReturn("id,nome\n1,teste");
-
-        mockMvc.perform(get("/demandas/exportar/filtradas/servico/1/teste"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deveExportarFiltradasPorServicoSolicitanteCsv() throws Exception {
-
-        when(demandaService.exportarDemandasFiltradasPorServicoSolicitanteCsv(1L, "teste"))
-                .thenReturn("id,nome\n1,teste");
-
-        mockMvc.perform(get("/demandas/exportar/filtradas/solicitante/1/teste"))
-                .andExpect(status().isOk());
-    }
-
- */
 }

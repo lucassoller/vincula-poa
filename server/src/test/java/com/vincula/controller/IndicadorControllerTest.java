@@ -1,5 +1,7 @@
-/*package com.vincula.controller;
+package com.vincula.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.IndicadorDTO;
 import com.vincula.security.JwtAuthenticationFilter;
 import com.vincula.security.JwtService;
@@ -11,13 +13,15 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(IndicadorController.class)
@@ -40,49 +44,55 @@ class IndicadorControllerTest {
     @MockitoBean
     private AuditoriaFacade auditoriaFacade;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Test
-    void deveBuscarIndicadorGeral() throws Exception {
+    void deveGerarIndicadores() throws Exception {
 
-        when(indicadorService.indicadorGeral(
-                any(), any(), any(), any()
-        )).thenReturn(new IndicadorDTO());
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
 
-        mockMvc.perform(get("/indicadores/geral")
-                        .param("servicoId", "1")
-                        .param("inicio", "2025-01-01T00:00:00")
-                        .param("fim", "2025-12-31T23:59:59")
-                        .param("servicoSolicitanteId", "2"))
+        IndicadorDTO response = new IndicadorDTO();
+
+        when(indicadorService.gerarIndicadores(any(FiltroIndicadorRequestDTO.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(post("/indicadores/geral")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filtro)))
                 .andExpect(status().isOk());
+
+        verify(indicadorService)
+                .gerarIndicadores(any(FiltroIndicadorRequestDTO.class));
     }
 
     @Test
-    void deveBuscarIndicadorGeralSemParametros() throws Exception {
+    void deveExportarIndicadoresCsv() throws Exception {
 
-        when(indicadorService.indicadorGeral(
-                isNull(), isNull(), isNull(), isNull()
-        )).thenReturn(new IndicadorDTO());
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
 
-        mockMvc.perform(get("/indicadores/geral"))
-                .andExpect(status().isOk());
-    }
+        String csv = """
+                indicador,valor
+                Total de demandas,10
+                """;
 
-    @Test
-    void deveExportarIndicadorCsv() throws Exception {
+        when(indicadorService.exportarIndicadoresCsv(
+                any(FiltroIndicadorRequestDTO.class)))
+                .thenReturn(csv);
 
-        when(indicadorService.exportarIndicadorGeralCsv(
-                any(), any(), any(), any()
-        )).thenReturn("csv,dados");
-
-        mockMvc.perform(get("/indicadores/exportar")
-                        .param("servicoId", "1")
-                        .param("inicio", "2025-01-01T00:00:00")
-                        .param("fim", "2025-12-31T23:59:59")
-                        .param("servicoSolicitanteId", "2"))
+        mockMvc.perform(post("/indicadores/exportar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filtro)))
                 .andExpect(status().isOk())
-                .andExpect(header().exists(HttpHeaders.CONTENT_DISPOSITION))
-                .andExpect(content().contentType("text/csv"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("text/csv")))
+                .andExpect(header().string(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        matchesPattern(
+                                "attachment; filename=indicadores-vincula-poa\\d{2}-\\d{2}-\\d{4}_\\d{2}-\\d{2}\\.csv"
+                        )
+                ))
+                .andExpect(content().string(csv));
+
+        verify(indicadorService)
+                .exportarIndicadoresCsv(any(FiltroIndicadorRequestDTO.class));
     }
 }
-
-
- */

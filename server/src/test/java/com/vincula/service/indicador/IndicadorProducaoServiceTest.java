@@ -1,5 +1,6 @@
-/* package com.vincula.service.indicador;
+package com.vincula.service.indicador;
 
+import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.IndicadorValorDTO;
 import com.vincula.dto.projection.StatusQuantidadeProjection;
 import com.vincula.repository.DemandaRepository;
@@ -9,10 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,205 +23,195 @@ class IndicadorProducaoServiceTest {
     private DemandaRepository demandaRepository;
 
     @InjectMocks
-    private IndicadorProducaoService service;
+    private IndicadorProducaoService indicadorProducaoService;
 
     @Test
-    void deveTraduzirStatusAberta() {
+    void deveGerarIndicadoresComTodosOsStatus() {
 
-        StatusQuantidadeProjection item =
-                mock(StatusQuantidadeProjection.class);
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
 
-        when(item.getStatus()).thenReturn("ABERTA");
-        when(item.getQuantidade()).thenReturn(5.0);
+        filtro.setServicoResponsavelId(1L);
+        filtro.setServicoSolicitanteId(2L);
+        filtro.setDataInicial(LocalDate.of(2026, 1, 1));
+        filtro.setDataFinal(LocalDate.of(2026, 1, 31));
 
-        when(demandaRepository.agruparPorStatus())
-                .thenReturn(List.of(item));
+        StatusQuantidadeProjection aberta = mock(StatusQuantidadeProjection.class);
+        when(aberta.getStatus()).thenReturn("ABERTA");
+        when(aberta.getQuantidade()).thenReturn(5);
 
-        when(demandaRepository.countBy())
-                .thenReturn(5.0);
+        StatusQuantidadeProjection andamento = mock(StatusQuantidadeProjection.class);
+        when(andamento.getStatus()).thenReturn("EM_ANDAMENTO");
+        when(andamento.getQuantidade()).thenReturn(10);
+
+        StatusQuantidadeProjection finalizada = mock(StatusQuantidadeProjection.class);
+        when(finalizada.getStatus()).thenReturn("FINALIZADA");
+        when(finalizada.getQuantidade()).thenReturn(15);
+
+        when(demandaRepository.agruparPorStatus(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(List.of(
+                aberta,
+                andamento,
+                finalizada
+        ));
+
+        when(demandaRepository.countDemandas(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(30L);
 
         List<IndicadorValorDTO> resultado =
-                service.indicadoresGerais();
+                indicadorProducaoService.gerarIndicadores(filtro);
+
+        assertNotNull(resultado);
+        assertEquals(4, resultado.size());
 
         assertEquals(
                 "Demandas abertas",
                 resultado.get(0).getIndicador()
         );
-    }
-
-    @Test
-    void deveTraduzirStatusEmAndamento() {
-
-        StatusQuantidadeProjection item =
-                mock(StatusQuantidadeProjection.class);
-
-        when(item.getStatus()).thenReturn("EM_ANDAMENTO");
-        when(item.getQuantidade()).thenReturn(5.0);
-
-        when(demandaRepository.agruparPorStatus())
-                .thenReturn(List.of(item));
-
-        when(demandaRepository.countBy())
-                .thenReturn(5.0);
-
-        List<IndicadorValorDTO> resultado =
-                service.indicadoresGerais();
 
         assertEquals(
                 "Demandas em andamento",
-                resultado.get(0).getIndicador()
+                resultado.get(1).getIndicador()
         );
-    }
-
-    @Test
-    void deveTraduzirStatusFinalizada() {
-
-        StatusQuantidadeProjection item =
-                mock(StatusQuantidadeProjection.class);
-
-        when(item.getStatus()).thenReturn("FINALIZADA");
-        when(item.getQuantidade()).thenReturn(5.0);
-
-        when(demandaRepository.agruparPorStatus())
-                .thenReturn(List.of(item));
-
-        when(demandaRepository.countBy())
-                .thenReturn(5.0);
-
-        List<IndicadorValorDTO> resultado =
-                service.indicadoresGerais();
 
         assertEquals(
                 "Demandas finalizadas",
-                resultado.get(0).getIndicador()
+                resultado.get(2).getIndicador()
+        );
+
+        assertEquals(
+                "Total de demandas",
+                resultado.get(3).getIndicador()
+        );
+
+        assertEquals(5, resultado.get(0).getValor());
+        assertEquals(10, resultado.get(1).getValor());
+        assertEquals(15, resultado.get(2).getValor());
+        assertEquals(30L, resultado.get(3).getValor());
+
+        verify(demandaRepository).agruparPorStatus(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        );
+
+        verify(demandaRepository).countDemandas(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
         );
     }
 
     @Test
-    void deveRetornarStatusOriginalQuandoNaoTraduzido() {
+    void deveRetornarStatusOriginalQuandoNaoPossuirTraducao() {
+
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
+
+        filtro.setServicoResponsavelId(1L);
+        filtro.setServicoSolicitanteId(2L);
+        filtro.setDataInicial(LocalDate.of(2026, 1, 1));
+        filtro.setDataFinal(LocalDate.of(2026, 1, 31));
 
         StatusQuantidadeProjection item =
                 mock(StatusQuantidadeProjection.class);
 
-        when(item.getStatus()).thenReturn("QUALQUER_COISA");
-        when(item.getQuantidade()).thenReturn(5.0);
+        when(item.getStatus()).thenReturn("STATUS_DESCONHECIDO");
+        when(item.getQuantidade()).thenReturn(7);
 
-        when(demandaRepository.agruparPorStatus())
-                .thenReturn(List.of(item));
+        when(demandaRepository.agruparPorStatus(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(List.of(item));
 
-        when(demandaRepository.countBy())
-                .thenReturn(5.0);
-
-        List<IndicadorValorDTO> resultado =
-                service.indicadoresGerais();
-
-        assertEquals(
-                "QUALQUER_COISA",
-                resultado.get(0).getIndicador()
-        );
-    }
-
-    @Test
-    void deveListarIndicadoresPorServico() {
-
-        when(demandaRepository.agruparPorStatusPorServico(1L))
-                .thenReturn(List.of());
-
-        when(demandaRepository.countByServicoResponsavelId(1L))
-                .thenReturn(10.0);
+        when(demandaRepository.countDemandas(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(7L);
 
         List<IndicadorValorDTO> resultado =
-                service.indicadoresPorServico(1L);
-
-        assertEquals(1, resultado.size());
-
-        verify(demandaRepository)
-                .agruparPorStatusPorServico(1L);
-
-        verify(demandaRepository)
-                .countByServicoResponsavelId(1L);
-    }
-
-    @Test
-    void deveListarIndicadoresPorServicoSolicitante() {
-
-        when(demandaRepository.agruparPorStatusPorServicoSolicitante(1L))
-                .thenReturn(List.of());
-
-        when(demandaRepository.countByServicoSolicitanteId(1L))
-                .thenReturn(10.0);
-
-        service.indicadoresPorServicoSolicitante(1L);
-
-        verify(demandaRepository)
-                .agruparPorStatusPorServicoSolicitante(1L);
-
-        verify(demandaRepository)
-                .countByServicoSolicitanteId(1L);
-    }
-
-    @Test
-    void deveListarIndicadoresPorPeriodo() {
-
-        LocalDateTime inicio = LocalDateTime.now().minusDays(10);
-        LocalDateTime fim = LocalDateTime.now();
-
-        when(demandaRepository.agruparPorStatusPorPeriodo(inicio, fim))
-                .thenReturn(List.of());
-
-        when(demandaRepository.countByDataHoraCriacaoBetween(inicio, fim))
-                .thenReturn(5.0);
-
-        when(demandaRepository.countByDataHoraFinalizacaoBetween(inicio, fim))
-                .thenReturn(3.0);
-
-        List<IndicadorValorDTO> resultado =
-                service.indicadoresPorPeriodo(inicio, fim);
+                indicadorProducaoService.gerarIndicadores(filtro);
 
         assertEquals(2, resultado.size());
+
+        assertEquals(
+                "STATUS_DESCONHECIDO",
+                resultado.get(0).getIndicador()
+        );
+
+        assertEquals(
+                "Total de demandas",
+                resultado.get(1).getIndicador()
+        );
+
+        assertEquals(7, resultado.get(0).getValor());
+        assertEquals(7L, resultado.get(1).getValor());
     }
 
     @Test
-    void deveListarIndicadoresPorServicoEPeriodo() {
+    void deveGerarApenasTotalQuandoNaoHouverStatus() {
 
-        LocalDateTime inicio = LocalDateTime.now().minusDays(10);
-        LocalDateTime fim = LocalDateTime.now();
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
 
-        when(demandaRepository.agruparPorStatusPorServicoEPeriodo(1L, inicio, fim))
-                .thenReturn(List.of());
+        filtro.setServicoResponsavelId(1L);
+        filtro.setServicoSolicitanteId(2L);
+        filtro.setDataInicial(LocalDate.of(2026, 1, 1));
+        filtro.setDataFinal(LocalDate.of(2026, 1, 31));
 
-        when(demandaRepository.countByServicoResponsavelIdAndDataHoraCriacaoBetween(1L, inicio, fim))
-                .thenReturn(5.0);
+        when(demandaRepository.agruparPorStatus(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(List.of());
 
-        when(demandaRepository.countByServicoResponsavelIdAndDataHoraFinalizacaoBetween(1L, inicio, fim))
-                .thenReturn(2.0);
+        when(demandaRepository.countDemandas(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(0L);
 
-        service.indicadoresPorServicoEPeriodo(1L, inicio, fim);
+        List<IndicadorValorDTO> resultado =
+                indicadorProducaoService.gerarIndicadores(filtro);
 
-        verify(demandaRepository)
-                .agruparPorStatusPorServicoEPeriodo(1L, inicio, fim);
-    }
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
 
-    @Test
-    void deveListarIndicadoresPorServicoSolicitanteEPeriodo() {
+        assertEquals(
+                "Total de demandas",
+                resultado.get(0).getIndicador()
+        );
 
-        LocalDateTime inicio = LocalDateTime.now().minusDays(10);
-        LocalDateTime fim = LocalDateTime.now();
+        assertEquals(
+                0L,
+                resultado.get(0).getValor()
+        );
 
-        when(demandaRepository.agruparPorStatusPorServicoSolicitanteEPeriodo(1L, inicio, fim))
-                .thenReturn(List.of());
+        verify(demandaRepository).agruparPorStatus(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        );
 
-        when(demandaRepository.countByServicoSolicitanteIdAndDataHoraCriacaoBetween(1L, inicio, fim))
-                .thenReturn(5.0);
-
-        when(demandaRepository.countByServicoSolicitanteIdAndDataHoraFinalizacaoBetween(1L, inicio, fim))
-                .thenReturn(2.0);
-
-        service.indicadoresPorServidorEPeriodo(1L, inicio, fim);
-
-        verify(demandaRepository)
-                .agruparPorStatusPorServicoSolicitanteEPeriodo(1L, inicio, fim);
+        verify(demandaRepository).countDemandas(
+                1L,
+                2L,
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        );
     }
 }
-
- */

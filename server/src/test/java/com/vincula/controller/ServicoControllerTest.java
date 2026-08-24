@@ -2,8 +2,7 @@ package com.vincula.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.endereco.EnderecoDTO;
-import com.vincula.dto.servico.ServicoDTO;
-import com.vincula.dto.servico.ServicoResponseDTO;
+import com.vincula.dto.servico.*;
 import com.vincula.enums.TipoServico;
 import com.vincula.security.JwtAuthenticationFilter;
 import com.vincula.security.JwtService;
@@ -16,12 +15,14 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -116,16 +117,6 @@ class ServicoControllerTest {
         verify(servicoService).deletar(1L);
     }
 
-    /*@Test
-    void deveListarTodos() throws Exception {
-
-        when(servicoService.listarTodos())
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/servicos/all"))
-                .andExpect(status().isOk());
-    }*/
-
     @Test
     void deveAtualizarServico() throws Exception {
 
@@ -151,5 +142,119 @@ class ServicoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveListarTodosFiltrados() throws Exception {
+
+        FiltroServicoRequestDTO filtro = new FiltroServicoRequestDTO();
+
+        ServicoResponseDTO servico = new ServicoResponseDTO();
+        servico.setId(1L);
+        servico.setNome("UBS Centro");
+
+        Page<ServicoResponseDTO> page =
+                new PageImpl<>(List.of(servico));
+
+        when(servicoService.listarTodosFiltrados(
+                any(FiltroServicoRequestDTO.class),
+                any(Pageable.class)
+        )).thenReturn(page);
+
+        mockMvc.perform(post("/servicos/filtrados")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filtro)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].nome").value("UBS Centro"));
+
+        verify(servicoService).listarTodosFiltrados(
+                any(FiltroServicoRequestDTO.class),
+                any(Pageable.class)
+        );
+    }
+
+    @Test
+    void deveListarTodos() throws Exception {
+
+        ServicoShortResponseDTO ubs =
+                new ServicoShortResponseDTO();
+        ubs.setId(1L);
+        ubs.setNome("UBS Centro");
+        ubs.setCnes("1234567");
+
+        ServicoShortResponseDTO outro =
+                new ServicoShortResponseDTO();
+        outro.setId(2L);
+        outro.setNome("Outro Serviço");
+        outro.setCnes("7654321");
+
+        ServicosResponseDTO response = new ServicosResponseDTO(
+                List.of(ubs, outro),
+                List.of(ubs),
+                List.of(outro),
+                List.of(outro),
+                List.of()
+        );
+
+        when(servicoService.listarServicos())
+                .thenReturn(response);
+
+        mockMvc.perform(get("/servicos/all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.todos", hasSize(2)))
+                .andExpect(jsonPath("$.ubs", hasSize(1)))
+                .andExpect(jsonPath("$.servicos", hasSize(1)))
+                .andExpect(jsonPath("$.outros", hasSize(1)))
+                .andExpect(jsonPath("$.especializados", hasSize(0)));
+
+        verify(servicoService).listarServicos();
+    }
+
+    @Test
+    void deveListarTodasServicos() throws Exception {
+
+        ServicoShortResponseDTO dto =
+                new ServicoShortResponseDTO();
+
+        dto.setId(1L);
+        dto.setNome("UBS Centro");
+        dto.setCnes("1234567");
+
+        when(servicoService.listarTodasServicos())
+                .thenReturn(List.of(dto));
+
+        mockMvc.perform(get("/servicos/ubs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("UBS Centro"))
+                .andExpect(jsonPath("$[0].cnes").value("1234567"));
+
+        verify(servicoService).listarTodasServicos();
+    }
+
+    @Test
+    void deveListarTodosServicos() throws Exception {
+
+        ServicoShortResponseDTO dto =
+                new ServicoShortResponseDTO();
+
+        dto.setId(1L);
+        dto.setNome("Serviço Especializado");
+        dto.setCnes("1234567");
+
+        when(servicoService.listarTodosServicos())
+                .thenReturn(List.of(dto));
+
+        mockMvc.perform(get("/servicos/servicos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("Serviço Especializado"))
+                .andExpect(jsonPath("$[0].cnes").value("1234567"));
+
+        verify(servicoService).listarTodosServicos();
     }
 }

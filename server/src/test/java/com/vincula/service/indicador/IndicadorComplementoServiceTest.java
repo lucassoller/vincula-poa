@@ -1,20 +1,22 @@
-/* com.vincula.service.indicador;
+package com.vincula.service.indicador;
 
+import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.MotivoQuantidadeDTO;
-import com.vincula.dto.projection.MotivoQuantidadeProjection;
 import com.vincula.repository.DemandaRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
+import com.vincula.dto.projection.MotivoQuantidadeProjection;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,192 +26,189 @@ class IndicadorComplementoServiceTest {
     private DemandaRepository demandaRepository;
 
     @InjectMocks
-    private IndicadorComplementoService service;
+    private IndicadorComplementoService indicadorComplementoService;
 
     @Test
-    void deveTraduzirComplementoVacinacao() {
+    void deveGerarIndicadoresComFiltros() {
 
-        MotivoQuantidadeProjection projection =
-                mock(MotivoQuantidadeProjection.class);
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
+        filtro.setServicoResponsavelId(1L);
+        filtro.setServicoSolicitanteId(2L);
+        filtro.setDataInicial(null);
+        filtro.setDataFinal(null);
 
-        when(projection.getMotivo()).thenReturn("VACINACAO");
-        when(projection.getQuantidade()).thenReturn(10L);
+        MotivoQuantidadeProjection item = mock(MotivoQuantidadeProjection.class);
 
-        when(demandaRepository.listarPrincipaisComplementos())
-                .thenReturn(List.of(projection));
+        when(item.getMotivo()).thenReturn("GESTANTE");
+        when(item.getQuantidade()).thenReturn(10L);
+
+        when(demandaRepository.listarPrincipaisComplementos(
+                1L,
+                2L,
+                null,
+                null
+        )).thenReturn(List.of(item));
 
         List<MotivoQuantidadeDTO> resultado =
-                service.principaisComplementos();
+                indicadorComplementoService.gerarIndicadores(filtro);
 
-        assertEquals("Vacinação", resultado.get(0).getMotivo());
+        assertEquals(1, resultado.size());
+        assertEquals("Gestante", resultado.get(0).getMotivo());
         assertEquals(10L, resultado.get(0).getQuantidade());
-    }
 
-    @ParameterizedTest
-    @CsvSource({
-             "ABANDONO_TRATAMENTO,Abandono de tratamento",
-             "AVISO_CONSULTA,Aviso de consulta",
-             "EGRESSO_HOSPITALAR,Egresso hospitalar",
-             "FALTOSO_CONSULTA,Faltoso a consulta",
-             "FALTOSO_EXAME,Faltoso a exame",
-             "FALTOSO_PROCEDIMENTO,Faltoso a procedimento",
-             "CRIANCA_MENOR,Criança menor",
-             "DEMAIS_BENEFICIARIOS,Demais beneficiários",
-             "GESTANTE,Gestante",
-             "MULHER_IDADE_FERTIL,Mulher em idade fértil",
-             "VACINACAO_CRIANCA_MENOR,Vacinação criança menor",
-             "GESTANTE_EXPOSTA,Gestante exposta",
-             "PRE_NATAL,Pré-natal",
-             "PUERPERIO,Puerpério",
-             "RASTREAMENTO_CANCER_COLO_UTERO,Rastreamento câncer do colo do útero",
-             "RASTREAMENTO_CANCER_MAMA,Rastreamento câncer de mama",
-             "BAIXO_PESO,Baixo peso",
-             "BINOMIO,Binômio",
-             "CRIANCA_EXPOSTA,Criança exposta",
-             "DESENVOLVIMENTO_INFANTIL,Desenvolvimento infantil",
-             "PUERICULTURA,Puericultura",
-             "TRIAGEM_NEONATAL,Triagem neonatal",
-             "AVALIACAO_MULTIDIMENSIONAL,Avaliação multidimensional",
-             "DECLINIO_COGNITIVO,Declínio cognitivo",
-             "POLIFARMACIA,Polifarmácia",
-             "VISITA_DOMICILIAR,Visita domiciliar",
-             "VACINACAO,Vacinação",
-             "ADOLESCENTE,Adolescente",
-             "ADULTO,Adulto",
-             "CRIANCA,Criança",
-             "VACINACAO_GESTANTE,Vacinação gestante",
-             "IDOSO,Idoso",
-             "DIABETES,Diabetes",
-             "DOENCA_FALCIFORME,Doença falciforme",
-             "HIPERTENSAO_ARTERIAL,Hipertensão arterial",
-             "OUTROS_AGRAVOS_CRONICOS,Outros agravos crônicos",
-             "HANSENIASE,Hanseníase",
-             "HEPATITES_VIRAIS,Hepatites virais",
-             "HIV_AIDS,HIV/AIDS",
-             "OUTRAS_DOENCAS_NOTIFICACAO_COMPULSORIA,Outras doenças de notificação compulsória",
-             "SIFILIS,Sífilis",
-             "TUBERCULOSE,Tuberculose",
-             "MORTALIDADE_INFANTIL,Mortalidade infantil",
-             "MORTALIDADE_MATERNA,Mortalidade materna",
-             "TRABALHO_INFANTIL,Trabalho infantil",
-             "VIOLENCIA_CONTRA_CRIANCAS,Violência contra crianças",
-             "VIOLENCIA_CONTRA_IDOSOS,Violência contra idosos",
-             "VIOLENCIA_CONTRA_MULHERES,Violência contra mulheres",
-            "default,default"
-    })
-    void deveTraduzirComplementos(
-            String motivoBanco,
-            String motivoEsperado) {
-
-        MotivoQuantidadeProjection projection =
-                mock(MotivoQuantidadeProjection.class);
-
-        when(projection.getMotivo()).thenReturn(motivoBanco);
-        when(projection.getQuantidade()).thenReturn(1L);
-
-        when(demandaRepository.listarPrincipaisComplementos())
-                .thenReturn(List.of(projection));
-
-        List<MotivoQuantidadeDTO> resultado =
-                service.principaisComplementos();
-
-        assertEquals(
-                motivoEsperado,
-                resultado.get(0).getMotivo()
+        verify(demandaRepository).listarPrincipaisComplementos(
+                1L,
+                2L,
+                null,
+                null
         );
     }
 
     @Test
-    void deveListarComplementosPorServico() {
+    void deveRetornarSemComplementoQuandoMotivoForNulo() {
 
-        when(demandaRepository
-                .listarPrincipaisComplementosPorServico(1L))
-                .thenReturn(List.of());
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
 
-        service.principaisComplementosPorServico(1L);
+        MotivoQuantidadeProjection item = mock(MotivoQuantidadeProjection.class);
 
-        verify(demandaRepository)
-                .listarPrincipaisComplementosPorServico(1L);
+        when(item.getMotivo()).thenReturn(null);
+        when(item.getQuantidade()).thenReturn(5L);
+
+        when(demandaRepository.listarPrincipaisComplementos(
+                null,
+                null,
+                null,
+                null
+        )).thenReturn(List.of(item));
+
+        List<MotivoQuantidadeDTO> resultado =
+                indicadorComplementoService.gerarIndicadores(filtro);
+
+        assertEquals(1, resultado.size());
+        assertEquals("Sem complemento", resultado.get(0).getMotivo());
+        assertEquals(5L, resultado.get(0).getQuantidade());
     }
 
     @Test
-    void deveListarComplementosPorPeriodo() {
+    void deveManterComplementoQuandoNaoPossuirTraducao() {
 
-        LocalDateTime inicio = LocalDateTime.now().minusDays(30);
-        LocalDateTime fim = LocalDateTime.now();
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
 
-        when(demandaRepository
-                .listarPrincipaisComplementosPorPeriodo(inicio, fim))
-                .thenReturn(List.of());
+        MotivoQuantidadeProjection item = mock(MotivoQuantidadeProjection.class);
 
-        service.principaisComplementosPorPeriodo(inicio, fim);
+        when(item.getMotivo()).thenReturn("COMPLEMENTO_DESCONHECIDO");
+        when(item.getQuantidade()).thenReturn(3L);
 
-        verify(demandaRepository)
-                .listarPrincipaisComplementosPorPeriodo(inicio, fim);
+        when(demandaRepository.listarPrincipaisComplementos(
+                null,
+                null,
+                null,
+                null
+        )).thenReturn(List.of(item));
+
+        List<MotivoQuantidadeDTO> resultado =
+                indicadorComplementoService.gerarIndicadores(filtro);
+
+        assertEquals("COMPLEMENTO_DESCONHECIDO",
+                resultado.get(0).getMotivo());
+
+        assertEquals(3L, resultado.get(0).getQuantidade());
     }
 
-    @Test
-    void deveListarComplementosPorServicoEPeriodo() {
+    @ParameterizedTest
+    @MethodSource("complementos")
+    void deveTraduzirTodosOsComplementos(
+            String original,
+            String esperado) {
 
-        LocalDateTime inicio = LocalDateTime.now().minusDays(30);
-        LocalDateTime fim = LocalDateTime.now();
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
 
-        when(demandaRepository
-                .listarPrincipaisComplementosPorServicoEPeriodo(
-                        1L,
-                        inicio,
-                        fim))
-                .thenReturn(List.of());
+        MotivoQuantidadeProjection item = mock(MotivoQuantidadeProjection.class);
 
-        service.principaisComplementosPorServicoEPeriodo(
-                1L,
-                inicio,
-                fim);
+        when(item.getMotivo()).thenReturn(original);
+        when(item.getQuantidade()).thenReturn(1L);
 
-        verify(demandaRepository)
-                .listarPrincipaisComplementosPorServicoEPeriodo(
-                        1L,
-                        inicio,
-                        fim);
+        when(demandaRepository.listarPrincipaisComplementos(
+                null,
+                null,
+                null,
+                null
+        )).thenReturn(List.of(item));
+
+        List<MotivoQuantidadeDTO> resultado =
+                indicadorComplementoService.gerarIndicadores(filtro);
+
+        assertEquals(esperado, resultado.get(0).getMotivo());
+        assertEquals(1L, resultado.get(0).getQuantidade());
     }
 
-    @Test
-    void deveListarComplementosPorServidorEPeriodo() {
-
-        LocalDateTime inicio = LocalDateTime.now().minusDays(30);
-        LocalDateTime fim = LocalDateTime.now();
-
-        when(demandaRepository
-                .listarPrincipaisComplementosPorServicoSolicitanteEPeriodo(
-                        1L,
-                        inicio,
-                        fim))
-                .thenReturn(List.of());
-
-        service.principaisComplementosPorServidorEPeriodo(
-                1L,
-                inicio,
-                fim);
-
-        verify(demandaRepository)
-                .listarPrincipaisComplementosPorServicoSolicitanteEPeriodo(
-                        1L,
-                        inicio,
-                        fim);
-    }
-
-    @Test
-    void deveListarComplementosPorServidor() {
-
-        when(demandaRepository
-                .listarPrincipaisComplementosPorServicoSolicitante(1L))
-                .thenReturn(List.of());
-
-        service.principaisComplementosPorServidor(1L);
-
-        verify(demandaRepository)
-                .listarPrincipaisComplementosPorServicoSolicitante(1L);
+    private static Stream<Arguments> complementos() {
+        return Stream.of(
+                Arguments.of("ABANDONO_TRATAMENTO", "Abandono de tratamento"),
+                Arguments.of("AVISO_CONSULTA", "Aviso de consulta"),
+                Arguments.of("EGRESSO_HOSPITALAR", "Egresso hospitalar"),
+                Arguments.of("FALTOSO_CONSULTA", "Faltoso a consulta"),
+                Arguments.of("FALTOSO_EXAME", "Faltoso a exame"),
+                Arguments.of("FALTOSO_PROCEDIMENTO", "Faltoso a procedimento"),
+                Arguments.of("CRIANCA_MENOR", "Criança menor"),
+                Arguments.of("DEMAIS_BENEFICIARIOS", "Demais beneficiários"),
+                Arguments.of("GESTANTE", "Gestante"),
+                Arguments.of("MULHER_IDADE_FERTIL", "Mulher em idade fértil"),
+                Arguments.of("VACINACAO_CRIANCA_MENOR", "Vacinação criança menor"),
+                Arguments.of("GESTANTE_EXPOSTA", "Gestante exposta"),
+                Arguments.of("PRE_NATAL", "Pré-natal"),
+                Arguments.of("PUERPERIO", "Puerpério"),
+                Arguments.of("RASTREAMENTO_CANCER_COLO_UTERO",
+                        "Rastreamento câncer do colo do útero"),
+                Arguments.of("RASTREAMENTO_CANCER_MAMA",
+                        "Rastreamento câncer de mama"),
+                Arguments.of("BAIXO_PESO", "Baixo peso"),
+                Arguments.of("BINOMIO", "Binômio"),
+                Arguments.of("CRIANCA_EXPOSTA", "Criança exposta"),
+                Arguments.of("DESENVOLVIMENTO_INFANTIL",
+                        "Desenvolvimento infantil"),
+                Arguments.of("PUERICULTURA", "Puericultura"),
+                Arguments.of("TRIAGEM_NEONATAL", "Triagem neonatal"),
+                Arguments.of("AVALIACAO_MULTIDIMENSIONAL",
+                        "Avaliação multidimensional"),
+                Arguments.of("DECLINIO_COGNITIVO", "Declínio cognitivo"),
+                Arguments.of("POLIFARMACIA", "Polifarmácia"),
+                Arguments.of("VISITA_DOMICILIAR", "Visita domiciliar"),
+                Arguments.of("VACINACAO", "Vacinação"),
+                Arguments.of("ADOLESCENTE", "Adolescente"),
+                Arguments.of("ADULTO", "Adulto"),
+                Arguments.of("CRIANCA", "Criança"),
+                Arguments.of("VACINACAO_GESTANTE", "Vacinação gestante"),
+                Arguments.of("IDOSO", "Idoso"),
+                Arguments.of("DIABETES", "Diabetes"),
+                Arguments.of("DOENCA_FALCIFORME", "Doença falciforme"),
+                Arguments.of("HIPERTENSAO_ARTERIAL",
+                        "Hipertensão arterial"),
+                Arguments.of("OUTROS_AGRAVOS_CRONICOS",
+                        "Outros agravos crônicos"),
+                Arguments.of("HANSENIASE", "Hanseníase"),
+                Arguments.of("HEPATITES_VIRAIS", "Hepatites virais"),
+                Arguments.of("HIV_AIDS", "HIV/AIDS"),
+                Arguments.of(
+                        "OUTRAS_DOENCAS_NOTIFICACAO_COMPULSORIA",
+                        "Outras doenças de notificação compulsória"
+                ),
+                Arguments.of("SIFILIS", "Sífilis"),
+                Arguments.of("TUBERCULOSE", "Tuberculose"),
+                Arguments.of("MORTALIDADE_INFANTIL",
+                        "Mortalidade infantil"),
+                Arguments.of("MORTALIDADE_MATERNA",
+                        "Mortalidade materna"),
+                Arguments.of("TRABALHO_INFANTIL",
+                        "Trabalho infantil"),
+                Arguments.of("VIOLENCIA_CONTRA_CRIANCAS",
+                        "Violência contra crianças"),
+                Arguments.of("VIOLENCIA_CONTRA_IDOSOS",
+                        "Violência contra idosos"),
+                Arguments.of("VIOLENCIA_CONTRA_MULHERES",
+                        "Violência contra mulheres"),
+                Arguments.of("INTOXICACAO_EXOGENA",
+                        "Intoxicação exógena")
+        );
     }
 }
-
- */

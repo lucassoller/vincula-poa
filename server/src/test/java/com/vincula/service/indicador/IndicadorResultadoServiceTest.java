@@ -1,8 +1,8 @@
-/* package com.vincula.service.indicador;
+package com.vincula.service.indicador;
 
+import com.vincula.dto.indicador.FiltroIndicadorRequestDTO;
 import com.vincula.dto.indicador.IndicadorValorDTO;
 import com.vincula.dto.projection.DesfechoQuantidadeProjection;
-import com.vincula.enums.StatusDemanda;
 import com.vincula.repository.DemandaRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,12 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class IndicadorResultadoServiceTest {
@@ -28,45 +27,17 @@ class IndicadorResultadoServiceTest {
     @InjectMocks
     private IndicadorResultadoService indicadorResultadoService;
 
-    @Test
-    void deveRetornarPercentualZeroQuandoNaoExistiremDemandasFinalizadas() {
-        DesfechoQuantidadeProjection projection =
-                mock(DesfechoQuantidadeProjection.class);
 
-        when(projection.getDesfecho()).thenReturn("OBITO");
-        when(projection.getQuantidade()).thenReturn(10L);
+    private FiltroIndicadorRequestDTO criarFiltro() {
+        FiltroIndicadorRequestDTO filtro = new FiltroIndicadorRequestDTO();
+        filtro.setServicoResponsavelId(1L);
+        filtro.setServicoSolicitanteId(2L);
+        filtro.setDataInicial(LocalDate.of(2026, 1, 1));
+        filtro.setDataFinal(LocalDate.of(2026, 1, 31));
 
-        when(demandaRepository.countByStatus(StatusDemanda.FINALIZADA))
-                .thenReturn(0.0);
-
-        when(demandaRepository.agruparPorDesfecho())
-                .thenReturn(List.of(projection));
-
-        List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfecho();
-
-        assertEquals(0.0, resultado.get(0).getValor());
+        return filtro;
     }
 
-    @Test
-    void deveRetornarDesfechoOriginalQuandoNaoExistirTraducao() {
-        DesfechoQuantidadeProjection projection =
-                mock(DesfechoQuantidadeProjection.class);
-
-        when(projection.getDesfecho()).thenReturn("DESFECHO_TESTE");
-        when(projection.getQuantidade()).thenReturn(1L);
-
-        when(demandaRepository.countByStatus(StatusDemanda.FINALIZADA))
-                .thenReturn(1.0);
-
-        when(demandaRepository.agruparPorDesfecho())
-                .thenReturn(List.of(projection));
-
-        List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfecho();
-
-        assertEquals("DESFECHO_TESTE", resultado.get(0).getIndicador());
-    }
 
     @ParameterizedTest
     @CsvSource({
@@ -78,9 +49,9 @@ class IndicadorResultadoServiceTest {
             "OBITO,Óbito",
             "OUTRO,Outro"
     })
-    void deveTraduzirDesfechos(
-            String desfecho,
-            String esperado) {
+    void deveTraduzirDesfechos(String desfecho, String esperado) {
+
+        FiltroIndicadorRequestDTO filtro = criarFiltro();
 
         DesfechoQuantidadeProjection projection =
                 mock(DesfechoQuantidadeProjection.class);
@@ -88,186 +59,206 @@ class IndicadorResultadoServiceTest {
         when(projection.getDesfecho()).thenReturn(desfecho);
         when(projection.getQuantidade()).thenReturn(1L);
 
-        when(demandaRepository.countByStatus(StatusDemanda.FINALIZADA))
-                .thenReturn(1.0);
+        when(demandaRepository.countDemandasFinalizadas(
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(1L);
 
-        when(demandaRepository.agruparPorDesfecho())
-                .thenReturn(List.of(projection));
+        when(demandaRepository.agruparPorDesfecho(
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(List.of(projection));
 
         List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfecho();
+                indicadorResultadoService.gerarIndicadores(filtro);
 
+        assertEquals(1, resultado.size());
         assertEquals(esperado, resultado.get(0).getIndicador());
+        assertEquals(100.0, resultado.get(0).getValor());
     }
 
-    @Test
-    void deveRetornarPercentualPorDesfechoPorServico() {
-        Long servicoId = 1L;
 
-        when(demandaRepository.countByStatusAndServicoResponsavelId(
-                StatusDemanda.FINALIZADA,
-                servicoId
-        )).thenReturn(10.0);
+    @Test
+    void deveRetornarDesfechoOriginalQuandoNaoExistirTraducao() {
+
+        FiltroIndicadorRequestDTO filtro = criarFiltro();
 
         DesfechoQuantidadeProjection projection =
                 mock(DesfechoQuantidadeProjection.class);
 
         when(projection.getDesfecho())
-                .thenReturn("OBITO");
-        when(projection.getQuantidade())
-                .thenReturn(2L);
+                .thenReturn("DESFECHO_TESTE");
 
-        when(demandaRepository.agruparPorDesfechoEServico(servicoId))
-                .thenReturn(List.of(projection));
+        when(projection.getQuantidade())
+                .thenReturn(5L);
+
+        when(demandaRepository.countDemandasFinalizadas(
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(10L);
+
+        when(demandaRepository.agruparPorDesfecho(
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(List.of(projection));
 
         List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfechoPorServico(servicoId);
+                indicadorResultadoService.gerarIndicadores(filtro);
+
+        assertEquals(1, resultado.size());
+        assertEquals(
+                "DESFECHO_TESTE",
+                resultado.get(0).getIndicador()
+        );
+        assertEquals(50.0, resultado.get(0).getValor());
+    }
+
+
+    @Test
+    void deveRetornarPercentualZeroQuandoNaoExistiremDemandasFinalizadas() {
+
+        FiltroIndicadorRequestDTO filtro = criarFiltro();
+
+        DesfechoQuantidadeProjection projection =
+                mock(DesfechoQuantidadeProjection.class);
+
+        when(projection.getDesfecho()).thenReturn("OBITO");
+        when(projection.getQuantidade()).thenReturn(10L);
+
+        when(demandaRepository.countDemandasFinalizadas(
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(0L);
+
+        when(demandaRepository.agruparPorDesfecho(
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(List.of(projection));
+
+        List<IndicadorValorDTO> resultado =
+                indicadorResultadoService.gerarIndicadores(filtro);
 
         assertEquals(1, resultado.size());
         assertEquals("Óbito", resultado.get(0).getIndicador());
-        assertEquals(20.0, resultado.get(0).getValor());
+        assertEquals(0.0, resultado.get(0).getValor());
     }
-    @Test
-    void deveRetornarPercentualPorDesfechoPorServidor() {
-        Long servidorId = 1L;
 
-        when(demandaRepository.countByStatusAndServicoSolicitanteId(
-                StatusDemanda.FINALIZADA,
-                servidorId
-        )).thenReturn(10.0);
+
+    @Test
+    void deveCalcularPercentualCorretamente() {
+
+        FiltroIndicadorRequestDTO filtro = criarFiltro();
 
         DesfechoQuantidadeProjection projection =
                 mock(DesfechoQuantidadeProjection.class);
 
         when(projection.getDesfecho())
                 .thenReturn("NAO_LOCALIZADO");
+
         when(projection.getQuantidade())
                 .thenReturn(3L);
 
-        when(demandaRepository.agruparPorDesfechoEServicoSolicitante(servidorId))
-                .thenReturn(List.of(projection));
+        when(demandaRepository.countDemandasFinalizadas(
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(12L);
+
+        when(demandaRepository.agruparPorDesfecho(
+                filtro.getServicoResponsavelId(),
+                filtro.getServicoSolicitanteId(),
+                filtro.getDataInicial(),
+                filtro.getDataFinal()
+        )).thenReturn(List.of(projection));
 
         List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfechoPorServidor(servidorId);
+                indicadorResultadoService.gerarIndicadores(filtro);
 
-        assertEquals("Não localizado", resultado.get(0).getIndicador());
-        assertEquals(30.0, resultado.get(0).getValor());
-    }
-
-    @Test
-    void deveRetornarPercentualPorDesfechoPorPeriodo() {
-        LocalDateTime inicio = LocalDateTime.now().minusDays(30);
-        LocalDateTime fim = LocalDateTime.now();
-
-        when(demandaRepository.countByStatusAndDataHoraCriacaoBetween(
-                StatusDemanda.FINALIZADA,
-                inicio,
-                fim
-        )).thenReturn(5.0);
-
-        DesfechoQuantidadeProjection projection =
-                mock(DesfechoQuantidadeProjection.class);
-
-        when(projection.getDesfecho())
-                .thenReturn("OUTRO");
-        when(projection.getQuantidade())
-                .thenReturn(1L);
-
-        when(demandaRepository.agruparPorDesfechoPorPeriodo(inicio, fim))
-                .thenReturn(List.of(projection));
-
-        List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfechoPorPeriodo(inicio, fim);
-
-        assertEquals("Outro", resultado.get(0).getIndicador());
-        assertEquals(20.0, resultado.get(0).getValor());
-    }
-
-    @Test
-    void deveRetornarPercentualPorDesfechoPorServicoEPeriodo() {
-        Long servicoId = 1L;
-        LocalDateTime inicio = LocalDateTime.now().minusDays(30);
-        LocalDateTime fim = LocalDateTime.now();
-
-        when(demandaRepository
-                .countByStatusAndServicoResponsavelIdAndDataHoraCriacaoBetween(
-                        StatusDemanda.FINALIZADA,
-                        servicoId,
-                        inicio,
-                        fim
-                ))
-                .thenReturn(4.0);
-
-        DesfechoQuantidadeProjection projection =
-                mock(DesfechoQuantidadeProjection.class);
-
-        when(projection.getDesfecho())
-                .thenReturn("MUDOU_TERRITORIO");
-        when(projection.getQuantidade())
-                .thenReturn(1L);
-
-        when(demandaRepository
-                .agruparPorDesfechoEServicoPorPeriodo(
-                        servicoId,
-                        inicio,
-                        fim
-                ))
-                .thenReturn(List.of(projection));
-
-        List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfechoPorServicoEPeriodo(
-                        servicoId,
-                        inicio,
-                        fim
-                );
-
-        assertEquals("Mudou de território", resultado.get(0).getIndicador());
-        assertEquals(25.0, resultado.get(0).getValor());
-    }
-
-    @Test
-    void deveRetornarPercentualPorDesfechoPorServidorEPeriodo() {
-        Long servidorId = 1L;
-        LocalDateTime inicio = LocalDateTime.now().minusDays(30);
-        LocalDateTime fim = LocalDateTime.now();
-
-        when(demandaRepository
-                .countByStatusAndServicoSolicitanteIdAndDataHoraCriacaoBetween(
-                        StatusDemanda.FINALIZADA,
-                        servidorId,
-                        inicio,
-                        fim
-                ))
-                .thenReturn(8.0);
-
-        DesfechoQuantidadeProjection projection =
-                mock(DesfechoQuantidadeProjection.class);
-
-        when(projection.getDesfecho())
-                .thenReturn("ENDERECO_INCORRETO");
-        when(projection.getQuantidade())
-                .thenReturn(2L);
-
-        when(demandaRepository
-                .agruparPorDesfechoEServicoSolicitantePorPeriodo(
-                        servidorId,
-                        inicio,
-                        fim
-                ))
-                .thenReturn(List.of(projection));
-
-        List<IndicadorValorDTO> resultado =
-                indicadorResultadoService.percentualPorDesfechoPorServidorEPeriodo(
-                        servidorId,
-                        inicio,
-                        fim
-                );
-
-        assertEquals("Endereço incorreto", resultado.get(0).getIndicador());
+        assertEquals(1, resultado.size());
+        assertEquals(
+                "Não localizado",
+                resultado.get(0).getIndicador()
+        );
         assertEquals(25.0, resultado.get(0).getValor());
     }
 
 
+    @Test
+    void deveChamarRepositoryComOsFiltrosCorretos() {
+
+        FiltroIndicadorRequestDTO filtro = criarFiltro();
+
+        when(demandaRepository.countDemandasFinalizadas(
+                1L,
+                2L,
+                LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 1, 31)
+        )).thenReturn(0L);
+
+        when(demandaRepository.agruparPorDesfecho(
+                1L,
+                2L,
+                LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 1, 31)
+        )).thenReturn(List.of());
+
+        List<IndicadorValorDTO> resultado =
+                indicadorResultadoService.gerarIndicadores(filtro);
+
+        assertEquals(0, resultado.size());
+
+        verify(demandaRepository).countDemandasFinalizadas(
+                1L,
+                2L,
+                LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 1, 31)
+        );
+
+        verify(demandaRepository).agruparPorDesfecho(
+                1L,
+                2L,
+                LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 1, 31)
+        );
+    }
+
+
+    @Test
+    void deveRetornarListaVaziaQuandoNaoExistiremDesfechos() {
+
+        FiltroIndicadorRequestDTO filtro = criarFiltro();
+
+        when(demandaRepository.countDemandasFinalizadas(
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenReturn(0L);
+
+        when(demandaRepository.agruparPorDesfecho(
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenReturn(List.of());
+
+        List<IndicadorValorDTO> resultado =
+                indicadorResultadoService.gerarIndicadores(filtro);
+
+        assertEquals(0, resultado.size());
+        assertEquals(List.of(), resultado);
+    }
 }
-
- */

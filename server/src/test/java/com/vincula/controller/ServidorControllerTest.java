@@ -2,10 +2,7 @@ package com.vincula.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincula.dto.senha.MudancaSenhaDTO;
-import com.vincula.dto.servidor.MeuPerfilDTO;
-import com.vincula.dto.servidor.ServidorDTO;
-import com.vincula.dto.servidor.ServidorResponseDTO;
-import com.vincula.dto.servidor.TransferirServidorDTO;
+import com.vincula.dto.servidor.*;
 import com.vincula.enums.PerfilServidor;
 import com.vincula.security.JwtAuthenticationFilter;
 import com.vincula.security.JwtService;
@@ -16,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -24,12 +22,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ServidorController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -206,5 +204,57 @@ class ServidorControllerTest {
 
         mockMvc.perform(delete("/servidores/1"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deveListarTodosFiltrados() throws Exception {
+
+        FiltroServidorRequestDTO filtro = new FiltroServidorRequestDTO();
+
+        Page<ServidorResponseDTO> page =
+                new PageImpl<>(List.of(new ServidorResponseDTO()));
+
+        when(servidorService.listarTodosFiltrados(
+                any(FiltroServidorRequestDTO.class),
+                any(Pageable.class)
+        )).thenReturn(page);
+
+        mockMvc.perform(post("/servidores/filtrados")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filtro)))
+                .andExpect(status().isOk());
+
+        verify(servidorService).listarTodosFiltrados(
+                any(FiltroServidorRequestDTO.class),
+                any(Pageable.class)
+        );
+    }
+
+    @Test
+    void deveListarTodosFiltradosPorNome() throws Exception {
+
+        ServidorShortResponseDTO servidor =
+                new ServidorShortResponseDTO();
+
+        servidor.setId(1L);
+        servidor.setNome("Lucas");
+        servidor.setEmail("lucas@email.com");
+
+        when(servidorService.listarTodosFiltradosPorNome("Lucas"))
+                .thenReturn(List.of(servidor));
+
+        mockMvc.perform(get("/servidores/filtrados/buscas")
+                        .param("nome", "Lucas"))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("Lucas"))
+                .andExpect(jsonPath("$[0].email")
+                        .value("lucas@email.com"));
+
+        verify(servidorService)
+                .listarTodosFiltradosPorNome("Lucas");
     }
 }

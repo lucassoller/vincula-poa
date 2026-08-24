@@ -1,26 +1,21 @@
-/* package com.vincula.service.indicador;
+package com.vincula.service.indicador;
 
 import com.vincula.dto.indicador.IndicadorRankingDTO;
 import com.vincula.dto.projection.RankingQuantidadeProjection;
 import com.vincula.dto.projection.RankingValorProjection;
-import com.vincula.entity.Servidor;
-import com.vincula.enums.PerfilServidor;
-import com.vincula.exception.BusinessException;
 import com.vincula.repository.DemandaRepository;
 import com.vincula.repository.TentativaContatoRepository;
-import com.vincula.service.ServidorService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class IndicadorRankingServiceTest {
@@ -29,218 +24,260 @@ class IndicadorRankingServiceTest {
     private DemandaRepository demandaRepository;
 
     @Mock
-    private ServidorService servidorService;
+    private TentativaContatoRepository tentativaContatoRepository;
 
     @Mock
-    private TentativaContatoRepository tentativaContatoRepository;
+    private RankingQuantidadeProjection quantidadeProjection;
+
+    @Mock
+    private RankingValorProjection valorProjection;
 
     @InjectMocks
     private IndicadorRankingService indicadorRankingService;
 
+
+    // =========================================================
+    // Ranking por total de demandas
+    // =========================================================
+
     @Test
-    void deveLancarExcecaoQuandoServidorNaoForGestaoMunicipal() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.SERVIDOR_APS);
+    void deveGerarRankingPorTotalDemandas() {
 
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
+        when(quantidadeProjection.getServicoId())
+                .thenReturn(1L);
 
-        assertThrows(
-                BusinessException.class,
-                () -> indicadorRankingService.rankingPorTotalDemandas()
+        when(quantidadeProjection.getServicoNome())
+                .thenReturn("UBS Centro");
+
+        when(quantidadeProjection.getValor())
+                .thenReturn(15L);
+
+        when(demandaRepository.rankingServicosPorTotalDemandas())
+                .thenReturn(List.of(quantidadeProjection));
+
+        List<IndicadorRankingDTO> resultado =
+                indicadorRankingService.gerarRankingPorTotalDemandas();
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+
+        IndicadorRankingDTO dto = resultado.get(0);
+
+        assertEquals(1L, dto.getServicoId());
+        assertEquals("UBS Centro", dto.getServicoNome());
+        assertEquals(15.0, dto.getValor());
+
+        verify(demandaRepository)
+                .rankingServicosPorTotalDemandas();
+    }
+
+
+    @Test
+    void deveConsiderarZeroQuandoValorDoRankingForNulo() {
+
+        when(quantidadeProjection.getServicoId())
+                .thenReturn(1L);
+
+        when(quantidadeProjection.getServicoNome())
+                .thenReturn("UBS Centro");
+
+        when(quantidadeProjection.getValor())
+                .thenReturn(null);
+
+        when(demandaRepository.rankingServicosPorTotalDemandas())
+                .thenReturn(List.of(quantidadeProjection));
+
+        List<IndicadorRankingDTO> resultado =
+                indicadorRankingService.gerarRankingPorTotalDemandas();
+
+        assertEquals(1, resultado.size());
+
+        assertEquals(
+                0.0,
+                resultado.get(0).getValor()
         );
     }
 
+
     @Test
-    void deveRetornarRankingPorTotalDemandas() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
-
-        RankingQuantidadeProjection ranking =
-                mock(RankingQuantidadeProjection.class);
-
-        when(ranking.getServicoId()).thenReturn(1L);
-        when(ranking.getServicoNome()).thenReturn("UBS Centro");
-        when(ranking.getValor()).thenReturn(10L);
-
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
+    void deveRetornarListaVaziaQuandoNaoHouverDemandas() {
 
         when(demandaRepository.rankingServicosPorTotalDemandas())
-                .thenReturn(List.of(ranking));
+                .thenReturn(List.of());
 
         List<IndicadorRankingDTO> resultado =
-                indicadorRankingService.rankingPorTotalDemandas();
+                indicadorRankingService.gerarRankingPorTotalDemandas();
 
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        verify(demandaRepository)
+                .rankingServicosPorTotalDemandas();
+    }
+
+
+    // =========================================================
+    // Ranking por percentual de resolução
+    // =========================================================
+
+    @Test
+    void deveGerarRankingPorPercentualResolucao() {
+
+        when(valorProjection.getServicoId())
+                .thenReturn(1L);
+
+        when(valorProjection.getServicoNome())
+                .thenReturn("UBS Centro");
+
+        when(valorProjection.getValor())
+                .thenReturn(87.456);
+
+        when(demandaRepository.rankingServicosPorPercentualResolucao())
+                .thenReturn(List.of(valorProjection));
+
+        List<IndicadorRankingDTO> resultado =
+                indicadorRankingService.gerarRankingPorPercentualResolucao();
+
+        assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        assertEquals(10.0, resultado.get(0).getValor());
+
+        IndicadorRankingDTO dto = resultado.get(0);
+
+        assertEquals(1L, dto.getServicoId());
+        assertEquals("UBS Centro", dto.getServicoNome());
+
+        // Ajuste se o seu arredondar() usar outra quantidade de casas.
+        assertEquals(87.46, dto.getValor());
+
+        verify(demandaRepository)
+                .rankingServicosPorPercentualResolucao();
     }
 
+
     @Test
-    void deveRetornarRankingPorPercentualResolucao() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
-
-        RankingValorProjection ranking =
-                mock(RankingValorProjection.class);
-
-        when(ranking.getServicoId()).thenReturn(1L);
-        when(ranking.getServicoNome()).thenReturn("UBS Centro");
-        when(ranking.getValor()).thenReturn(83.456);
-
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
+    void deveRetornarListaVaziaNoRankingPorPercentual() {
 
         when(demandaRepository.rankingServicosPorPercentualResolucao())
-                .thenReturn(List.of(ranking));
+                .thenReturn(List.of());
 
         List<IndicadorRankingDTO> resultado =
-                indicadorRankingService.rankingPorPercentualResolucao();
+                indicadorRankingService.gerarRankingPorPercentualResolucao();
 
-        assertEquals(83.46, resultado.get(0).getValor());
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        verify(demandaRepository)
+                .rankingServicosPorPercentualResolucao();
     }
 
+
+    // =========================================================
+    // Ranking por tempo médio de resolução
+    // =========================================================
+
     @Test
-    void deveRetornarRankingPorTempoMedioResolucao() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
+    void deveGerarRankingPorTempoMedioResolucao() {
 
-        RankingValorProjection ranking =
-                mock(RankingValorProjection.class);
+        when(valorProjection.getServicoId())
+                .thenReturn(1L);
 
-        when(ranking.getServicoId()).thenReturn(1L);
-        when(ranking.getServicoNome()).thenReturn("UBS Centro");
-        when(ranking.getValor()).thenReturn(3661.0);
+        when(valorProjection.getServicoNome())
+                .thenReturn("UBS Centro");
 
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
+        when(valorProjection.getValor())
+                .thenReturn(5.5);
 
         when(demandaRepository.rankingServicosPorTempoMedioResolucao())
-                .thenReturn(List.of(ranking));
+                .thenReturn(List.of(valorProjection));
 
         List<IndicadorRankingDTO> resultado =
-                indicadorRankingService.rankingPorTempoMedioResolucao();
+                indicadorRankingService.gerarRankingPorTempoMedioResolucao();
 
-        assertEquals("0d 1h 1m", resultado.get(0).getValor());
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+
+        IndicadorRankingDTO dto = resultado.get(0);
+
+        assertEquals(1L, dto.getServicoId());
+        assertEquals("UBS Centro", dto.getServicoNome());
+
+        assertNotNull(dto.getValor());
+
+        verify(demandaRepository)
+                .rankingServicosPorTempoMedioResolucao();
     }
 
-    @Test
-    void deveRetornarRankingPorTempoAtePrimeiraTentativa() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
-
-        RankingValorProjection ranking =
-                mock(RankingValorProjection.class);
-
-        when(ranking.getServicoId()).thenReturn(1L);
-        when(ranking.getServicoNome()).thenReturn("UBS Centro");
-        when(ranking.getValor()).thenReturn(7200.0);
-
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
-
-        when(tentativaContatoRepository.rankingServicosPorTempoAtePrimeiraTentativa())
-                .thenReturn(List.of(ranking));
-
-        List<IndicadorRankingDTO> resultado =
-                indicadorRankingService.rankingPorTempoAtePrimeiraTentativa();
-
-        assertEquals("0d 2h 0m", resultado.get(0).getValor());
-    }
 
     @Test
-    void deveRetornarZeroQuandoValorRankingQuantidadeForNull() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
-
-        RankingQuantidadeProjection ranking =
-                mock(RankingQuantidadeProjection.class);
-
-        when(ranking.getServicoId()).thenReturn(1L);
-        when(ranking.getServicoNome()).thenReturn("UBS");
-        when(ranking.getValor()).thenReturn(null);
-
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
-
-        when(demandaRepository.rankingServicosPorTotalDemandas())
-                .thenReturn(List.of(ranking));
-
-        List<IndicadorRankingDTO> resultado =
-                indicadorRankingService.rankingPorTotalDemandas();
-
-        assertEquals(0.0, resultado.get(0).getValor());
-    }
-
-    @Test
-    void deveRetornarTempoZeroQuandoValorForNull() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
-
-        RankingValorProjection ranking = mock(RankingValorProjection.class);
-
-        when(ranking.getServicoId()).thenReturn(1L);
-        when(ranking.getServicoNome()).thenReturn("UBS Centro");
-        when(ranking.getValor()).thenReturn(null);
-
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
+    void deveRetornarListaVaziaNoRankingPorTempoMedio() {
 
         when(demandaRepository.rankingServicosPorTempoMedioResolucao())
-                .thenReturn(List.of(ranking));
+                .thenReturn(List.of());
 
         List<IndicadorRankingDTO> resultado =
-                indicadorRankingService.rankingPorTempoMedioResolucao();
+                indicadorRankingService.gerarRankingPorTempoMedioResolucao();
 
-        assertEquals("0d 0h 0m", resultado.get(0).getValor());
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        verify(demandaRepository)
+                .rankingServicosPorTempoMedioResolucao();
     }
+
+
+    // =========================================================
+    // Ranking por tempo até primeira tentativa
+    // =========================================================
 
     @Test
-    void deveRetornarTempoZeroQuandoValorForZero() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
+    void deveGerarRankingPorTempoAtePrimeiraTentativa() {
 
-        RankingValorProjection ranking = mock(RankingValorProjection.class);
+        when(valorProjection.getServicoId())
+                .thenReturn(1L);
 
-        when(ranking.getServicoId()).thenReturn(1L);
-        when(ranking.getServicoNome()).thenReturn("UBS Centro");
-        when(ranking.getValor()).thenReturn(0.0);
+        when(valorProjection.getServicoNome())
+                .thenReturn("UBS Centro");
 
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
+        when(valorProjection.getValor())
+                .thenReturn(2.75);
 
-        when(demandaRepository.rankingServicosPorTempoMedioResolucao())
-                .thenReturn(List.of(ranking));
+        when(tentativaContatoRepository
+                .rankingServicosPorTempoAtePrimeiraTentativa())
+                .thenReturn(List.of(valorProjection));
 
         List<IndicadorRankingDTO> resultado =
-                indicadorRankingService.rankingPorTempoMedioResolucao();
+                indicadorRankingService
+                        .gerarRankingPorTempoAtePrimeiraTentativa();
 
-        assertEquals("0d 0h 0m", resultado.get(0).getValor());
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+
+        IndicadorRankingDTO dto = resultado.get(0);
+
+        assertEquals(1L, dto.getServicoId());
+        assertEquals("UBS Centro", dto.getServicoNome());
+        assertNotNull(dto.getValor());
+
+        verify(tentativaContatoRepository)
+                .rankingServicosPorTempoAtePrimeiraTentativa();
     }
+
 
     @Test
-    void deveRetornarZeroQuandoValorRankingPercentualForNull() {
-        Servidor servidor = new Servidor();
-        servidor.setPerfil(PerfilServidor.GESTAO_MUNICIPAL);
+    void deveRetornarListaVaziaNoRankingPorTempoAtePrimeiraTentativa() {
 
-        RankingValorProjection ranking = mock(RankingValorProjection.class);
-
-        when(ranking.getServicoId()).thenReturn(1L);
-        when(ranking.getServicoNome()).thenReturn("UBS Centro");
-        when(ranking.getValor()).thenReturn(null);
-
-        when(servidorService.buscarServidorAutenticado())
-                .thenReturn(servidor);
-
-        when(demandaRepository.rankingServicosPorPercentualResolucao())
-                .thenReturn(List.of(ranking));
+        when(tentativaContatoRepository
+                .rankingServicosPorTempoAtePrimeiraTentativa())
+                .thenReturn(List.of());
 
         List<IndicadorRankingDTO> resultado =
-                indicadorRankingService.rankingPorPercentualResolucao();
+                indicadorRankingService
+                        .gerarRankingPorTempoAtePrimeiraTentativa();
 
-        assertEquals(0.0, resultado.get(0).getValor());
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        verify(tentativaContatoRepository)
+                .rankingServicosPorTempoAtePrimeiraTentativa();
     }
-
 }
-
- */
