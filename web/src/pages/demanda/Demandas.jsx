@@ -619,7 +619,7 @@ function Demandas() {
             {demandaSelecionada && acao === "REDIRECIONAR" && (
                 <ModalRedirecionarDemanda
                     demanda={demandaSelecionada}
-                    servicos={servicos}
+                    servicos={unidades}
                     redirecionamento={redirecionamento}
                     setRedirecionamento={setRedirecionamento}
                     erros={erros}
