@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -315,14 +316,12 @@ public class DemandaService {
     public void validarMotivoEComplemento(MotivoBuscaAtiva motivo,
                                         MotivoComplemento complemento) {
 
-        // se não tem complemento, não valida nada
         if (complemento == null || motivo == null || motivo == MotivoBuscaAtiva.OUTRO) {
             return;
         }
 
         Set<MotivoComplemento> permitidos = motivo.getComplementosPermitidos();
 
-        // se motivo não tem regra ou não permite nada
         if (!permitidos.contains(complemento)) {
             throw new BusinessException(
                 "O detalhamento é inválido para o motivo: " + motivo
