@@ -288,8 +288,8 @@ function Demandas() {
         e.preventDefault();
 
         const payload = {
-            novaServicoResponsavelId: redirecionamento.novaServicoResponsavelId
-                ? Number(redirecionamento.novaServicoResponsavelId)
+            novoServicoResponsavelId: redirecionamento.novoServicoResponsavelId
+                ? Number(redirecionamento.novoServicoResponsavelId)
                 : null,
             motivoRedirecionamento: redirecionamento.motivoRedirecionamento,
         };

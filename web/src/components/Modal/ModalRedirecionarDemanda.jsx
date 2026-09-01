@@ -24,11 +24,11 @@ function ModalRedirecionarDemanda({demanda, servicos, redirecionamento, setRedir
 
                         <select
                             className="input-field"
-                            value={redirecionamento.novaServicoResponsavelId}
+                            value={redirecionamento.novoServicoResponsavelId}
                             onChange={(e) =>
                                 setRedirecionamento({
                                     ...redirecionamento,
-                                    novaServicoResponsavelId: e.target.value,
+                                    novoServicoResponsavelId: e.target.value,
                                 })
                             }
                         >
@@ -41,8 +41,8 @@ function ModalRedirecionarDemanda({demanda, servicos, redirecionamento, setRedir
                             ))}
                         </select>
 
-                        {erros.novaServicoResponsavelId && (
-                            <small>{erros.novaServicoResponsavelId}</small>
+                        {erros.novoServicoResponsavelId && (
+                            <small>{erros.novoServicoResponsavelId}</small>
                         )}
                     </div>
 
