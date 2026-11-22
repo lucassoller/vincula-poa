@@ -1,0 +1,33 @@
+If you have Docker installed, run:
+docker compose up --build
+
+Otherwise, follow the steps below:
+
+1- Download Git Bash, or download the repository ZIP file, extract it, and skip to step 3
+2- Clone the repository from https://github.com/lucassoller/vincula-poa.git
+3- Download VS Code
+4- Download PostgreSQL
+5- Download Java
+6- Download Maven
+7- Download the JDK
+8- Check if Java, JDK, and Maven are added to your system PATH
+9- Create the vincula-poa database in PostgreSQL
+10- Configure the following system environment variables:
+PORT                    8080
+FRONTEND_URL            http://localhost:5173
+DB_URL                  jdbc:postgresql://localhost:5432/vincula-poa
+DATABASE_USER           postgres
+DATABASE_PASSWORD       postgres
+MAIL_TOKEN              {your token from the Resend website}
+JWT_SECRET              {any text string can be used here as the encryption key}
+
+11- Build and start the server: mvn spring-boot:run
+If the JDK is not found:
+12- Run `where javac` and copy the path
+13- Add the javac path to your system environment variables
+14- Build the server again: mvn spring-boot:run
+15- Run the server
+16- Download Node.js
+17- If the terminal/PowerShell does not recognize npm: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+18- npm install
+19- npm run dev
