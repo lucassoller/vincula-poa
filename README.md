@@ -113,7 +113,7 @@ A local installation and configuration of PostgreSQL is required (if running out
 - Database → PostgreSQL (Railway)
 
 Note: In production, update the frontend API URL via `VITE_API_URL` and configure the environment variables in the backend's `application.properties` file.  
-Full step-by-step instructions are available in `steb-by-step.txt`.
+Full step-by-step instructions are available in `steb_by_step.txt`.
 
 ## Author
 
